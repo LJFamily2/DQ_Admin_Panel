@@ -15,7 +15,8 @@ var app = express();
 app.use(session({
   secret: 'your_secret_key',
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: false,
+  cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 } 
 }));
 app.use(passport.initialize());
 app.use(passport.session());
