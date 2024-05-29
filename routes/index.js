@@ -3,7 +3,7 @@ const profilePage = require('./src/profileRoute');
 
 const routes = [
     {path: "/dang-nhap", route: signInPage},
-    {path: "/tai-khoan", route: profilePage}
+    {path: "/ho-so", route: profilePage}
 ]
 
 module.exports = routes;

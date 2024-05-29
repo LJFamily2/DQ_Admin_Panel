@@ -1,52 +1,130 @@
 <div class="row m-0 mt-2">
-    <div class="col-6">
-      <div class="card mb-0 rounded-3">
-        <div class="card-body">
-          <form action="" method="post">
-            <div class="mb-3">
-              <label for="username" class="form-label">Tài khoản</label>
-              <input type="text" class="form-control" id="username" onfocus="toggleButtons(true)" />
-            </div>
-            <button type="submit" class="btn btn-primary" style="display: none;">
-              <i class="ri-save-3-line"></i>
-              Lưu
-            </button>
-            <button type="reset" class="btn btn-secondary" style="display: none;">
-              <i class="ri-close-line"></i>
-              Hủy
-            </button>
-          </form>
-        </div>
+  <!-- Profile Section -->
+  <div class="col-md-6 col-12 mb-3" id="profile-section">
+    <div class="card mb-0 rounded-3">
+      <div class="card-body">
+        <form action="" method="post" class="profile-body">
+          <div class="mb-3">
+            <label for="username" class="form-label">Tài khoản</label>
+            <input
+              type="text"
+              class="form-control"
+              id="username"
+              onfocus="toggleButtons(true, '.profile-body button')"
+            />
+          </div>
+          <div class="mb-3">
+            <a
+            href="#passwordForm"
+              style="
+                text-decoration: underline;
+                color: blue;
+                cursor: pointer;
+                display: inline;
+              "
+              onclick="togglePasswordForm(true)"
+
+              
+            >
+              Đổi mật khẩu
+            </a>
+          </div>
+          <button type="submit" class="btn btn-primary" style="display: none">
+            <i class="ri-save-3-line"></i> Lưu
+          </button>
+          <button type="reset" class="btn btn-secondary" style="display: none">
+            <i class="ri-close-line"></i> Hủy
+          </button>
+        </form>
       </div>
     </div>
-    <div class="col-6">
-        <div class="card mb-0 rounded-3">
-          <div class="card-body">
-            <form action="" method="post">
-              <div class="mb-3">
-                <label for="username" class="form-label">Tài khoản</label>
-                <input type="text" class="form-control" id="username" onfocus="toggleButtons(true)" />
-              </div>
-              <button type="submit" class="btn btn-primary" style="display: none;">
-                <i class="ri-save-3-line"></i>
-                Lưu
-              </button>
-              <button type="reset" class="btn btn-secondary" style="display: none;">
-                <i class="ri-close-line"></i>
-                Hủy
-              </button>
-            </form>
-          </div>
-        </div>
-      </div>
   </div>
-  
-  <script>
-    function toggleButtons() {
-      const buttons = document.querySelectorAll('.card-body button');
-      buttons.forEach(button => {
-        button.style.display =   'inline-block' ;
-      });
+
+  <!-- Password Form Section -->
+  <div class="col-md-6 col-12 mb-3" id="passwordForm" style="display: none;">
+    <div class="card mb-0 rounded-3">
+      <div class="card-body">
+        <form action="" method="post">
+          <a href="#profile-section" style="text-decoration: none; color: black">
+            <i
+            class="ri-arrow-left-line"
+            onclick="togglePasswordForm(false)"
+            style="cursor: pointer"
+          ></i>
+          </a>
+          
+          <div class="mb-3">
+            <label for="oldPassword" class="form-label">Mật khẩu cũ</label>
+            <input
+              type="password"
+              class="form-control"
+              id="oldPassword"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="newPassword" class="form-label">Mật khẩu mới</label>
+            <input
+              type="password"
+              class="form-control"
+              id="newPassword"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="reEnterPassword" class="form-label"
+              >Nhập lại mật khẩu</label
+            >
+            <input
+              type="password"
+              class="form-control"
+              id="reEnterPassword"
+              onkeyup="checkPasswordsMatch()"
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            style="display: none"
+            id="changePasswordSubmit"
+          >
+            <i class="ri-save-3-line"></i> Lưu
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  function toggleButtons(show, selector) {
+    const buttons = document.querySelectorAll(selector);
+    buttons.forEach((button) => {
+      button.style.display = show ? "inline-block" : "none";
+    });
+  }
+
+  function togglePasswordForm(show) {
+    const passwordForm = document.getElementById("passwordForm");
+    passwordForm.style.display = show ? "block" : "none";
+  }
+
+  function checkPasswordsMatch() {
+    const newPassword = document.getElementById("newPassword").value;
+    const reenterPassword = document.getElementById("reEnterPassword").value;
+    const submitButton = document.getElementById("changePasswordSubmit");
+
+    if (newPassword === "" || reenterPassword === "") {
+      document.getElementById("reEnterPassword").style.borderColor = "red";
+      submitButton.style.display = "none";
+    } else if (newPassword !== reenterPassword) {
+      document.getElementById("reEnterPassword").style.borderColor = "red";
+      submitButton.style.display = "none";
+    } else {
+      document.getElementById("reEnterPassword").style.borderColor = "green";
+      submitButton.style.display = "inline-block";
     }
-  </script>
-  
+  }
+</script>
