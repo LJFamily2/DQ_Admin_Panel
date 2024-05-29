@@ -25,10 +25,10 @@ app.use(express.static(path.join(__dirname, "public")));
 
 
 // Routes
-// const routes = require("./routes");
-// routes.forEach((routeConfig) => {
-//   app.use(routeConfig.path, routeConfig.route);
-// });
+const routes = require("./routes");
+routes.forEach((routeConfig) => {
+  app.use(routeConfig.path, routeConfig.route);
+});
 
 app.listen(process.env.PORT || 1000, () => {
   console.log(`Server is running on port localhost:1000`);

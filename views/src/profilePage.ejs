@@ -1,0 +1,52 @@
+<div class="row m-0 mt-2">
+    <div class="col-6">
+      <div class="card mb-0 rounded-3">
+        <div class="card-body">
+          <form action="" method="post">
+            <div class="mb-3">
+              <label for="username" class="form-label">Tài khoản</label>
+              <input type="text" class="form-control" id="username" onfocus="toggleButtons(true)" />
+            </div>
+            <button type="submit" class="btn btn-primary" style="display: none;">
+              <i class="ri-save-3-line"></i>
+              Lưu
+            </button>
+            <button type="reset" class="btn btn-secondary" style="display: none;">
+              <i class="ri-close-line"></i>
+              Hủy
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="col-6">
+        <div class="card mb-0 rounded-3">
+          <div class="card-body">
+            <form action="" method="post">
+              <div class="mb-3">
+                <label for="username" class="form-label">Tài khoản</label>
+                <input type="text" class="form-control" id="username" onfocus="toggleButtons(true)" />
+              </div>
+              <button type="submit" class="btn btn-primary" style="display: none;">
+                <i class="ri-save-3-line"></i>
+                Lưu
+              </button>
+              <button type="reset" class="btn btn-secondary" style="display: none;">
+                <i class="ri-close-line"></i>
+                Hủy
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+  </div>
+  
+  <script>
+    function toggleButtons() {
+      const buttons = document.querySelectorAll('.card-body button');
+      buttons.forEach(button => {
+        button.style.display =   'inline-block' ;
+      });
+    }
+  </script>
+  

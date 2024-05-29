@@ -1,9 +1,9 @@
-var express = require('express');
-var router = express.Router();
+const signInPage = require('./src/signInRoute');
+const profilePage = require('./src/profileRoute');
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
-});
+const routes = [
+    {path: "/dang-nhap", route: signInPage},
+    {path: "/tai-khoan", route: profilePage}
+]
 
-module.exports = router;
+module.exports = routes;
