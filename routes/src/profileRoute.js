@@ -7,4 +7,6 @@ router.get("/", (req, res) => {
     res.render("src/profilePage" , {layout:"./layouts/defaultLayout"})
 })
 
+// router.post('/tao-tai-khoan', )
+
 module.exports = router;

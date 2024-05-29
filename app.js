@@ -5,15 +5,26 @@ var express = require('express');
 const mongoose = require("mongoose");
 const expressLayouts = require("express-ejs-layouts");
 var path = require('path');
+const session = require('express-session');
 var logger = require('morgan');
+const passport = require("passport");
 
 var app = express();
+
+// Setup Session
+app.use(session({
+  secret: 'your_secret_key',
+  resave: false,
+  saveUninitialized: false
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 
 // SetUp logger
 app.use(logger('dev'));
 
 // SetUp parse
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: false }));
 
 // Page Template Engine
 app.set("view engine", "ejs");
