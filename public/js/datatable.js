@@ -2,7 +2,6 @@ function initializeDataTable(tableId, ajaxUrl, modalTarget, columns) {
   $(tableId).DataTable({
     serverSide: true,
     processing: true,
-    order: [[1, 'asc']],
     ajax: {
       url: ajaxUrl,
       type: "POST",
@@ -41,6 +40,5 @@ function initializeDataTable(tableId, ajaxUrl, modalTarget, columns) {
       }
       return column;
     }),
-    
   });
 }
