@@ -21,7 +21,7 @@ function initializeDataTable(tableId, ajaxUrl, modalTarget, columns) {
       infoEmpty: "Hiển thị 0 đến 0 của 0 bản ghi",
       infoFiltered: "(lọc từ _MAX_ bản ghi)",
     },
-    lengthMenu: [5, 20],
+    lengthMenu: [10, 20],
     columns: columns.map((column) => {
       if (column.data === "id") {
         return {
