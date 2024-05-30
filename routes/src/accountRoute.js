@@ -1,5 +1,4 @@
 const express = require("express");
-const passport = require("passport");
 const connectEnsureLogin =  require('connect-ensure-login');
 const router = express.Router();
 const accountController = require('../../controllers/accountController')
@@ -19,5 +18,8 @@ router.post('/update/:id', accountController.updateUser);
 
 // Delete a user by ID
 router.post('/delete/:id', accountController.deleteUser);
+
+// Delete all users
+router.post('/deleteAll', accountController.deleteAllUsers);
 
 module.exports = router;

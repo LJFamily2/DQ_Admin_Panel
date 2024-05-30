@@ -1,0 +1,35 @@
+<% if (messages.fail) { %>
+<div
+  id="errorMessage"
+  class="alert alert-danger p-2"
+  role="alert"
+  style="border-radius: 15px"
+>
+  <%- messages.error %>
+</div>
+<% } %> 
+<% if (messages.success) { %>
+<div
+  id="successMessage"
+  class="alert alert-success p-2"
+  role="alert"
+  style="border-radius: 15px"
+>
+  <%- messages.success %>
+</div>
+<% } %>
+
+<script>
+  setTimeout(function () {
+    var errorMessage = document.getElementById("errorMessage");
+    var acceptedMessage = document.getElementById("successMessage");
+
+    if (errorMessage) {
+      errorMessage.style.display = "none";
+    }
+
+    if (acceptedMessage) {
+      acceptedMessage.style.display = "none";
+    }
+  }, 5000);
+</script>

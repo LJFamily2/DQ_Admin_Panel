@@ -8,18 +8,36 @@
   <script src="https://cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
   <script src="/js/datatable.js"></script>
 </head>
+
+<div class="position-absolute" style="right: 10px; top: 70px; width: max-content;">
+  <%- include('../partials/notificationMessage.ejs') %>
+</div>
+
 <section class="row m-0 px-2">
+  <!-- add button -->
   <button
-    type="button"
-    class="btn btn-primary"
-    data-bs-toggle="modal"
-    data-bs-target="#add-admin-user"
-    style="width: max-content"
+  type="button"
+  class="btn btn-primary"
+  data-bs-toggle="modal"
+  data-bs-target="#add-admin-user"
+  style="width: max-content"
   >
-    Tạo tài khoản
+  Tạo tài khoản
+  </button>
+
+  <!-- Delete all button -->
+  <button
+  type="button"
+  class="btn btn-danger mx-3"
+  data-bs-toggle="modal"
+  data-bs-target="#deleteAll-admin-user"
+  style="width: max-content"
+  >
+  Xóa tất cả tài khoản 
   </button>
 </section>
-<section class="row m-0">
+
+<section class="row m-0 mt-2">
   <table id="user_accounts">
     <thead>
       <tr>
@@ -55,8 +73,8 @@
               ></button>
             </div>
 
+            <form action="/quan-ly-tai-khoan/update/<%= user._id %>" method="post">
             <div class="modal-body">
-              <form action="/quan-ly-tai-khoan/update/<%= user._id %>" method="post">
                 <div class="mb-3">
                   <label for="username<%= index + 1 %>" class="form-label" style="float: left"
                     >Tài khoản</label
@@ -78,6 +96,7 @@
                     class="form-control"
                     id="password<%= index +1  %>"
                     name="password"
+                    placeholder="**********"
                   />
                 </div>
 
@@ -88,22 +107,23 @@
                      <option value="false" <%= (user.role === false) ? 'selected' : '' %>>Nhân viên</option>
                      </select>
                </div>
-                <div class="modal-footer">
-                  <button
-                    type="button"
-                    class="btn btn-danger"
-                    data-bs-target="#exampleModalToggle2<%= index %>"
-                    data-bs-toggle="modal"
-                  >
-                    Xóa tài khoản
-                  </button>
-                  <button type="submit" class="btn btn-success">Lưu mới</button>
-                </div>
-              </form>
+              </div>
+              <div class="modal-footer">
+                <button
+                type="button"
+                class="btn btn-danger"
+                data-bs-target="#exampleModalToggle2<%= index %>"
+                data-bs-toggle="modal"
+                >
+                Xóa tài khoản
+              </button>
+              <button type="submit" class="btn btn-success">Lưu mới</button>
             </div>
+          </form>
           </div>
         </div>
       </div>
+
       <!-- Delete confirming modal  -->
       <div
         class="modal fade"
@@ -139,6 +159,7 @@
         </div>
       </div>
       <% }) %>
+
     </tbody>
   </table>
 </section>
@@ -167,8 +188,8 @@
         ></button>
       </div>
 
+      <form action="/quan-ly-tai-khoan/createUser" method="post">
       <div class="modal-body">
-        <form action="/quan-ly-tai-khoan/createUser" method="post">
           <div class="mb-3">
             <label for="username" class="form-label" style="float: left"
               >Tài khoản</label
@@ -191,11 +212,48 @@
               name="password"
             />
           </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success">Tạo</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for deleting all users -->
+<div
+  class="modal fade"
+  id="deleteAll-admin-user"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="deleteUsers"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="deleteUsers">
+          Xóa tất cả tài khoản 
+        </h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+
+        <form action="/quan-ly-tai-khoan/deleteAll" method="post">
+          <div class="modal-body">
+            Bạn có muốn xóa <strong>tất cả</strong> tài khoản ? Hành động này không thể
+            hoàn tác.
+          </div>
           <div class="modal-footer">
-            <button type="submit" class="btn btn-success">Tạo</button>
+            <button type="submit" class="btn btn-danger">Xác nhận</button>
           </div>
         </form>
-      </div>
     </div>
   </div>
 </div>
