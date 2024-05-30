@@ -12,13 +12,12 @@ router.get("/", accountController.renderPage)
 router.post('/getUsers', accountController.getUsers);
 
 // Create a new user
-
-router.post('/', accountController.createUser);
+router.post('/createUser', accountController.createUser);
 
 // Update a user by ID
-router.put('/:id', accountController.updateUser);
+router.post('/update/:id', accountController.updateUser);
 
 // Delete a user by ID
-router.delete('/:id', accountController.deleteUser);
+router.post('/delete/:id', accountController.deleteUser);
 
 module.exports = router;

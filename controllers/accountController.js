@@ -12,18 +12,19 @@ async function renderPage(req, res) {
 
 async function createUser(req, res) {
   try {
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
-    const user = new UserModel({
-      username: req.body.username,
+    const { username, password } = req.body;
+    const hashedPassword = await bcrypt.hash(password, 10);
+     await UserModel.create({
+      username,
       password: hashedPassword,
-      role: req.body.role,
+      role: false,
     });
-    await user.save();
-    res.status(201).json(user);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(201).redirect('/quan-ly-tai-khoan');
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 }
+
 
 async function getUsers(req, res) {
   try {
@@ -46,9 +47,8 @@ async function getUsers(req, res) {
 
     const data = users.map((user, index) => ({
       no: start + index + 1,
-      created: user.getFormattedDateTime(),
       username: user.username,
-      email: user.email,
+      password: 'null',
       id: user._id,
     }));
 
@@ -66,17 +66,6 @@ async function getUsers(req, res) {
   }
 }
 
-async function getUser(req, res) {
-  try {
-    const user = await UserModel.findById(req.params.id);
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-    res.status(200).json(user);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-}
 
 async function updateUser(req, res) {
   try {
@@ -90,20 +79,20 @@ async function updateUser(req, res) {
       user.password = await bcrypt.hash(req.body.password, 10);
     }
     await user.save();
-    res.status(200).json(user);
+    res.status(200).redirect('/quan-ly-tai-khoan');
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.log(err)
+    res.status(500);
   }
 }
 
 async function deleteUser(req, res) {
   try {
-    const user = await UserModel.findById(req.params.id);
+    const user = await UserModel.findByIdAndDelete(req.params.id);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
-    await user.remove();
-    res.status(200).json({ message: "User deleted" });
+    res.status(200).redirect('/quan-ly-tai-khoan');
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -117,7 +106,6 @@ function logOut(req, res) {
 module.exports = {
   createUser,
   getUsers,
-  getUser,
   updateUser,
   deleteUser,
   logOut,

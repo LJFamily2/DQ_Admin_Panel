@@ -1,24 +1,23 @@
 <head>
-    <!-- Datatable -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- Datatable -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <link
     rel="stylesheet"
     href="https://cdn.datatables.net/2.0.8/css/dataTables.dataTables.min.css"
   />
-  <script
-    src="https://cdn.datatables.net/2.0.8/js/dataTables.min.js"
-  ></script>
+  <script src="https://cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
   <script src="/js/datatable.js"></script>
 </head>
 <section class="row m-0 px-2">
-
   <button
-         type="button"
-         class="btn btn-primary "
-         data-bs-toggle="modal"
-         data-bs-target="#add-admin-user"
-         style=" width: max-content;"
-      >Tạo tài khoản</button>
+    type="button"
+    class="btn btn-primary"
+    data-bs-toggle="modal"
+    data-bs-target="#add-admin-user"
+    style="width: max-content"
+  >
+    Tạo tài khoản
+  </button>
 </section>
 <section class="row m-0">
   <table id="user_accounts">
@@ -32,8 +31,8 @@
     </thead>
     <tbody>
       <% users.forEach( (user,index) => { %>
-        <!-- Modal for updating -->
-        <div
+      <!-- Modal for updating -->
+      <div
         class="modal fade"
         id="staticBackdrop<%= index + 1%>"
         data-bs-backdrop="static"
@@ -41,150 +40,164 @@
         tabindex="-1"
         aria-labelledby="staticBackdropLabel"
         aria-hidden="true"
-        >
+      >
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
           <div class="modal-content">
-            
             <div class="modal-header">
-              <h1
-              class="modal-title fs-5"
-              id="staticBackdropLabel"
-              >
-              Update <%= user.username %> information
-            </h1>
-            <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-            ></button>
-          </div>
-          
-          <div class="modal-body">
-            <form action="/users/update/<%= user._id %>" method="post">
-              <div class="mb-3">
-                <label for="username<%= index + 1  %>" class="form-label" style="float: left;">Username</label>
-                <input
-                type="text"
-                class="form-control"
-                id="username<%= index + 1  %>"
-                name="username"
-                value="<%= user.username %>"
-                />
-              </div>
-              <div class="mb-3">
-                <label for="email<%= index  + 1 %>" class="form-label" style="float: left;">Email</label>
-                <input
-                type="email"
-                class="form-control"
-                id="email<%= index  + 1 %>"
-                name="email"
-                value="<%= user.email %>"
-                />
-              </div>
-              
-              <div class="mb-3">
-                <label for="role<%= index + 1 %>" class="form-label" style="float: left;">Role</label>
-                <select class="form-select" id="role<%= index + 1 %>" name="role" aria-label="Default select example">
-                  <option value="true" <%= (user.role === true) ? 'selected' : '' %>>Admin</option>
-                  <option value="false" <%= (user.role === false) ? 'selected' : '' %>>User</option>
-                </select>
-              </div>
-              
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-danger" data-bs-target="#exampleModalToggle2<%= index %>" data-bs-toggle="modal">Delete user</button>
-                      <button type="submit" class="btn btn-success">
-                        Update
-                      </button>
-                      
-                      
-                    </div>
-                 </form>
+              <h1 class="modal-title fs-5" id="staticBackdropLabel">
+                Cập nhật thông tin cho <%= user.username %>
+              </h1>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+
+            <div class="modal-body">
+              <form action="/quan-ly-tai-khoan/update/<%= user._id %>" method="post">
+                <div class="mb-3">
+                  <label for="username<%= index + 1 %>" class="form-label" style="float: left"
+                    >Tài khoản</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="username<%= index + 1 %>"
+                    name="username"
+                    value="<%= user.username %>"
+                  />
                 </div>
-              </div>
+                <div class="mb-3">
+                  <label for="password<%= index +1  %>" class="form-label" style="float: left"
+                    >Mật khẩu mới</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="password<%= index +1  %>"
+                    name="password"
+                  />
+                </div>
+
+                <div class="mb-3">
+                  <label for="role<%= index %>" class="form-label" style="float: left;">Vai trò</label>
+                  <select class="form-select" id="role<%= index %>" name="role" aria-label="Default select example">
+                     <option value="true" <%= (user.role === true) ? 'selected' : '' %>>Admin</option>
+                     <option value="false" <%= (user.role === false) ? 'selected' : '' %>>Nhân viên</option>
+                     </select>
+               </div>
+                <div class="modal-footer">
+                  <button
+                    type="button"
+                    class="btn btn-danger"
+                    data-bs-target="#exampleModalToggle2<%= index %>"
+                    data-bs-toggle="modal"
+                  >
+                    Xóa tài khoản
+                  </button>
+                  <button type="submit" class="btn btn-success">Lưu mới</button>
+                </div>
+              </form>
             </div>
           </div>
-          <!-- Delete confirming modal  -->
-          <div class="modal fade" id="exampleModalToggle2<%= index %>" aria-hidden="true" aria-labelledby="exampleModalToggleLabel2<%= index %>" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h1 class="modal-title fs-5" id="exampleModalToggleLabel2">Deleting <%= user.username %></h1>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form action="/users/delete/<%=  user._id %>" method="post">
-                  
-                  <div class="modal-body">
-                    Do you want to delete <strong><%= user.username %></strong> ? This action cannot be undone.
-                  </div>
-                  <div class="modal-footer">
-                    <button type="submit" class="btn btn-success">Confirm</button>
-                  </div>
-                </form>
-              </div>
+        </div>
+      </div>
+      <!-- Delete confirming modal  -->
+      <div
+        class="modal fade"
+        id="exampleModalToggle2<%= index %>"
+        aria-hidden="true"
+        aria-labelledby="exampleModalToggleLabel2<%= index %>"
+        tabindex="-1"
+      >
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="exampleModalToggleLabel2">
+                Xóa <%= user.username %>
+              </h1>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
             </div>
+            <form action="/quan-ly-tai-khoan/delete/<%=  user._id %>" method="post">
+              <div class="modal-body">
+                Bạn có muốn xóa tài khoản
+                <strong><%= user.username %></strong> ? Hành động này không thể
+                hoàn tác.
+              </div>
+              <div class="modal-footer">
+                <button type="submit" class="btn btn-success">Xác nhận</button>
+              </div>
+            </form>
           </div>
-          <% }) %>
-        </tbody>
-      </table>
+        </div>
+      </div>
+      <% }) %>
+    </tbody>
+  </table>
 </section>
 
-   <!-- Modal for creating admin -->
-   <div class="modal fade"
-   id="add-admin-user"
-   data-bs-backdrop="static"
-   data-bs-keyboard="false"
-   tabindex="-1"
-   aria-labelledby="staticBackdropLabel"
-   aria-hidden="true"
+<!-- Modal for creating admin -->
+<div
+  class="modal fade"
+  id="add-admin-user"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="AddUser"
+  aria-hidden="true"
 >
-   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-      <div class="modal-content">
-         <div class="modal-header">
-            <h1
-               class="modal-title fs-5"
-               id="staticBackdropLabel"
-            >
-               Tạo tài khoản nhân viên
-            </h1>
-            <button
-               type="button"
-               class="btn-close"
-               data-bs-dismiss="modal"
-               aria-label="Close"
-            ></button>
-         </div>
-
-         <div class="modal-body">
-            <form action="/signup/addAdmin" method="post">
-               <div class="mb-3">
-                  <label for="username" class="form-label" style="float: left;">Tài khoản</label>
-                  <input
-                     type="text"
-                     class="form-control"
-                     id="username"
-                     name="username"
-                  />
-               </div>
-               <div class="mb-3">
-                  <label for="password" class="form-label" style="float: left;">Mật khẩu</label>
-                  <input
-                     type="password"
-                     class="form-control"
-                     id="password"
-                     name="password"
-                  />
-               </div>
-               <div class="modal-footer">
-                  <button type="submit" class="btn btn-success">
-                     Tạo
-                  </button>
-            </div>
-         </form>
-         </div>
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="AddUser">
+          Tạo tài khoản nhân viên
+        </h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
       </div>
-</div>
 
+      <div class="modal-body">
+        <form action="/quan-ly-tai-khoan/createUser" method="post">
+          <div class="mb-3">
+            <label for="username" class="form-label" style="float: left"
+              >Tài khoản</label
+            >
+            <input
+              type="text"
+              class="form-control"
+              id="username"
+              name="username"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="password" class="form-label" style="float: left"
+              >Mật khẩu</label
+            >
+            <input
+              type="password"
+              class="form-control"
+              id="password"
+              name="password"
+            />
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-success">Tạo</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -194,6 +207,11 @@
     { data: "password", orderable: false },
     { data: "id", orderable: false },
   ];
-  
-  initializeDataTable("#user_accounts", "/quan-ly-tai-khoan/getUsers", "#staticBackdrop", userColumns);
+
+  initializeDataTable(
+    "#user_accounts",
+    "/quan-ly-tai-khoan/getUsers",
+    "#staticBackdrop",
+    userColumns
+  );
 </script>
