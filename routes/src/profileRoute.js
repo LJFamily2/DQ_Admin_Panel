@@ -4,7 +4,8 @@ const connectEnsureLogin =  require('connect-ensure-login');
 const router = express.Router();
 
 router.get("/", (req, res) => {
-    res.render("src/profilePage" , {layout:"./layouts/defaultLayout"})
+    
+    res.render("src/profilePage" , {layout:"./layouts/defaultLayout", title: 'Hồ sơ cá nhân'})
 })
 
 // router.post('/tao-tai-khoan', )

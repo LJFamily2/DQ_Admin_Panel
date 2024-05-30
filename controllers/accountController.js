@@ -9,6 +9,7 @@ async function renderPage(req, res) {
       layout: "./layouts/defaultLayout",
       users,
       messages: req.flash(),
+      title: 'Quản lý tài khoản',
     });
   } catch {
     res.status(500).json({ error: err.message });
