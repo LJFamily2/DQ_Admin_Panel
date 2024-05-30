@@ -51,7 +51,7 @@ async function getUsers(req, res) {
   try {
     const { draw, start = 0, length = 10, search, order, columns } = req.body;
     const searchValue = search?.value || '';
-    const sortColumn = columns?.[order?.[0]?.column]?.data || 'username';
+    const sortColumn = columns?.[order?.[0]?.column]?.data;
     const sortDirection = order?.[0]?.dir === "asc" ? 1 : -1;
 
     const searchQuery = { role: false, ...searchValue && { username: { $regex: searchValue, $options: "i" } } };
