@@ -1,4 +1,4 @@
-const UserModel = require("../models/userAccount");
+const UserModel = require("../models/userAccountModel");
 const bcrypt = require("bcrypt");
 const handleResponse = require("./utils/responseHandler");
 

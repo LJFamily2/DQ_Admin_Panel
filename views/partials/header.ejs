@@ -3,7 +3,11 @@
     <div class="col-10"><h1><%= title %></h1></div>
     <div class="col-2 d-flex align-items-center">
       <div class="dropdown mb-0 rounded-3 border p-2" id="dropdownUser2"  data-bs-toggle="dropdown" aria-expanded="false" 
-      style="cursor: pointer; <%= title === 'Hồ sơ cá nhân' ? ' background: blue; color: white;' : '' %>"
+      <% if(title === "Hồ sơ cá nhân"){ %>
+        style="cursor: pointer; background: blue; color: white;" 
+      <%} else{ %>
+        style="cursor: pointer;" 
+      <% } %>
       >
         Username
       </div>
