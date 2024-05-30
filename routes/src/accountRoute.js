@@ -6,11 +6,13 @@ const accountController = require('../../controllers/accountController')
 
 
 
-router.get("/", (req, res) => {
-    res.render("src/accountPage" , {layout:"./layouts/defaultLayout"})
-})
+router.get("/", accountController.renderPage)
+
+// Get all users
+router.post('/getUsers', accountController.getUsers);
 
 // Create a new user
+
 router.post('/', accountController.createUser);
 
 // Update a user by ID

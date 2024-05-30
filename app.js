@@ -2,7 +2,6 @@ if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
 var express = require('express');
-const mongoose = require("mongoose");
 const expressLayouts = require("express-ejs-layouts");
 var path = require('path');
 const session = require('express-session');
@@ -25,7 +24,8 @@ app.use(passport.session());
 app.use(logger('dev'));
 
 // SetUp parse
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 // Page Template Engine
 app.set("view engine", "ejs");
@@ -35,6 +35,12 @@ app.use(expressLayouts);
 app.set("views", __dirname + "/views");
 app.use(express.static(path.join(__dirname, "public")));
 
+// Setup Database
+const mongoose = require('mongoose');
+mongoose
+  .connect(process.env.MONGODB_URI)
+  .then(() => console.log("Connected to MongoDB Atlas"))
+  .catch((error) => console.log("Error connecting to MongoDB:", error.message));
 
 // Routes
 const routes = require("./routes");
