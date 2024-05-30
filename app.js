@@ -7,6 +7,7 @@ var path = require('path');
 const session = require('express-session');
 var logger = require('morgan');
 const passport = require("passport");
+const flash = require("connect-flash");
 
 var app = express();
 
@@ -30,6 +31,7 @@ app.use(express.json());
 // Page Template Engine
 app.set("view engine", "ejs");
 app.use(expressLayouts);
+app.use(flash());
 
 // Static Files
 app.set("views", __dirname + "/views");
