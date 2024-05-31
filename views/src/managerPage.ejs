@@ -3,11 +3,19 @@
   style="right: 10px; top: 70px; width: max-content"
 >
   <%- include('../partials/notificationMessage.ejs') %>
+
+  <style>
+    @media (max-width: 768px) {
+      table {
+        min-width: 1200px;
+      }
+    }
+  </style>
 </div>
 
 <section class="row m-0 px-2">
-  <div class="col-md-9 col">
-    <div class="col rounded-2 px-1" style="box-shadow: 0 0 10px">
+  <div class="col-md-9 col p-0 px-md-3">
+    <div class="col rounded-2 px-1 overflow-auto" style="box-shadow: 0 0 10px">
       <table class="table table-striped" id="managers-table">
         <thead>
           <th>STT</th>
@@ -24,18 +32,12 @@
     </div>
   </div>
   <div
-    class="col-md-3 col rounded-2 py-4"
-    style="
-      box-shadow: 0 0 10px;
-      background: var(--background_color);
-    "
+    class="col-md-3 col rounded-2 my-5 m-md-0 py-4"
+    style="box-shadow: 0 0 10px; background: var(--background_color)"
   >
     <h4>Thêm người quản lý</h4>
     <form class="" action="" method="post" style="overflow: hidden">
-      <div
-        class="overflow"
-        style="overflow-y: auto; max-height: 78dvh"
-      >
+      <div class="overflow" style="overflow-y: auto; max-height: 78dvh">
         <div class="mb-3 mt-3">
           <label for="name" class="form-label">Tên</label>
           <input
