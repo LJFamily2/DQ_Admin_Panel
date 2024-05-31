@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "test": "nodemon app.js",
+    "test": "nodemon --ext *",
     "start": "node app.js"
   },
   "dependencies": {
@@ -23,6 +23,8 @@
   },
   "devDependencies": {
     "morgan": "^1.10.0",
-    "nodemon": "^3.1.1"
+    "nodemon": "^3.1.1",
+    "livereload": "^0.9.3",
+    "connect-livereload": "^0.6.1"
   }
 }

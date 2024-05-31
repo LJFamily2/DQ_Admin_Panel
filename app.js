@@ -1,6 +1,8 @@
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
+  
 }
+
 var express = require('express');
 const expressLayouts = require("express-ejs-layouts");
 var path = require('path');
@@ -10,6 +12,24 @@ const passport = require("passport");
 const flash = require("connect-flash");
 
 var app = express();
+
+// Include connect-livereload middleware
+var livereload = require("livereload");
+var connectLiveReload = require("connect-livereload");
+// LiveReload Setup
+if (process.env.NODE_ENV !== "production") {
+  const liveReloadServer = livereload.createServer();
+  liveReloadServer.watch(path.join(__dirname, 'public'));
+
+  liveReloadServer.server.once("connection", () => {
+    setTimeout(() => {
+      liveReloadServer.refresh("/");
+    }, 100);
+  });
+
+  app.use(connectLiveReload());
+}
+
 
 // Setup Session
 app.use(session({
@@ -53,4 +73,3 @@ routes.forEach((routeConfig) => {
 app.listen(process.env.PORT || 1000, () => {
   console.log(`Server is running on port localhost:1000`);
 });
-
