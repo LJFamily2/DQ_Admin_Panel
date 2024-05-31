@@ -1,6 +1,6 @@
 const UserModel = require("../models/userAccountModel");
 const bcrypt = require("bcrypt");
-const handleResponse = require("./utils/responseHandler");
+const handleResponse = require("./utils/handleResponse");
 
 async function renderPage(req, res) {
   try {
@@ -9,7 +9,7 @@ async function renderPage(req, res) {
       layout: "./layouts/defaultLayout",
       users,
       messages: req.flash(),
-      title: 'Quản lý tài khoản',
+      title: "Quản lý tài khoản",
     });
   } catch {
     res.status(500).json({ error: err.message });
@@ -51,11 +51,14 @@ async function createUser(req, res) {
 async function getUsers(req, res) {
   try {
     const { draw, start = 0, length = 10, search, order, columns } = req.body;
-    const searchValue = search?.value || '';
+    const searchValue = search?.value || "";
     const sortColumn = columns?.[order?.[0]?.column]?.data;
     const sortDirection = order?.[0]?.dir === "asc" ? 1 : -1;
 
-    const searchQuery = { role: false, ...searchValue && { username: { $regex: searchValue, $options: "i" } } };
+    const searchQuery = {
+      role: false,
+      ...(searchValue && { username: { $regex: searchValue, $options: "i" } }),
+    };
 
     const totalRecords = await UserModel.countDocuments({ role: false });
     const filteredRecords = await UserModel.countDocuments(searchQuery);
@@ -68,7 +71,7 @@ async function getUsers(req, res) {
     const data = users.map((user, index) => ({
       no: parseInt(start, 10) + index + 1,
       username: user.username,
-      password: "**********", 
+      password: "**********",
       id: user._id,
     }));
 
@@ -85,7 +88,6 @@ async function getUsers(req, res) {
     });
   }
 }
-
 
 async function updateUser(req, res) {
   try {

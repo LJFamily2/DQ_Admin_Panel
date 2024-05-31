@@ -43,7 +43,7 @@
     "
   >
     <h4>Thêm người quản lý</h4>
-    <form class="" action="" method="post">
+    <form action="/quan-ly-nguoi-quan-ly/addManger" method="post" enctype="multipart/form-data">
       <div class="my-3">
         <label for="name" class="form-label">Tên</label>
         <input
@@ -93,11 +93,11 @@
       </div>
 
       <div class="my-3">
-        <label for="CCCDMT" class="form-label">CCCD mặt trước </label>
+        <label for="frontIdentification" class="form-label">CCCD mặt trước </label>
         <input
           type="file"
           class="form-control"
-          id="CCCDMT"
+          id="frontIdentification"
           name="frontIdentification"
           onchange="previewImage(event, 'previewCCCDMT')"
         />
@@ -114,11 +114,11 @@
       </div>
 
       <div class="my-3">
-        <label for="CCCDMS" class="form-label">CCCD mặt sau </label>
+        <label for="backIdentification" class="form-label">CCCD mặt sau </label>
         <input
           type="file"
           class="form-control"
-          id="CCCDMS"
+          id="backIdentification"
           name="backIdentification"
           onchange="previewImage(event, 'previewCCCDMS')"
         />
