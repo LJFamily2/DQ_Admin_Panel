@@ -1,137 +1,142 @@
+<style>
+  @media (max-width: 768px) {
+    table {
+      min-width: 1200px;
+    }
+  }
+</style>
+
 <div
   class="position-absolute"
   style="right: 10px; top: 70px; width: max-content"
 >
   <%- include('../partials/notificationMessage.ejs') %>
-
-  <style>
-    @media (max-width: 768px) {
-      table {
-        min-width: 1200px;
-      }
-    }
-  </style>
 </div>
 
 <section class="row m-0 px-2">
-  <div class="col-md-9 col p-0 px-md-3">
+  <div class="col-md-9 col-12 p-0 px-md-3">
     <div class="col rounded-2 px-1 overflow-auto" style="box-shadow: 0 0 10px">
       <table class="table table-striped" id="managers-table">
         <thead>
-          <th>STT</th>
-          <th>Tên</th>
-          <th>Số điện thoại</th>
-          <th>Địa chỉ</th>
-          <th>Vườn quản lý</th>
-          <th>CCCD mặt trước</th>
-          <th>CCCD mặt sau</th>
-          <th>Chỉnh sửa</th>
+          <tr>
+            <th>STT</th>
+            <th>Tên</th>
+            <th>Số điện thoại</th>
+            <th>Địa chỉ</th>
+            <th>Vườn quản lý</th>
+            <th>CCCD mặt trước</th>
+            <th>CCCD mặt sau</th>
+            <th>Chỉnh sửa</th>
+          </tr>
         </thead>
         <tbody></tbody>
       </table>
     </div>
   </div>
   <div
-    class="col-md-3 col rounded-2 my-5 m-md-0 py-4"
-    style="box-shadow: 0 0 10px; background: var(--background_color)"
+    class="formContainer col-md-3 col-12 rounded-2 my-5 m-md-0 py-2"
+    style="
+      box-shadow: 0 0 10px;
+      background: var(--background_color);
+      max-height: 85dvh;
+      overflow-y: auto;
+    "
   >
     <h4>Thêm người quản lý</h4>
-    <form class="" action="" method="post" style="overflow: hidden">
-      <div class="overflow" style="overflow-y: auto; max-height: 78dvh">
-        <div class="mb-3 mt-3">
-          <label for="name" class="form-label">Tên</label>
-          <input
-            type="text"
-            class="form-control"
-            id="name"
-            name="name"
-            placeholder="Nhập tên"
-          />
-        </div>
-
-        <div class="mb-3 mt-3">
-          <label for="phone" class="form-label">Số điện thoại</label>
-          <input
-            type="text"
-            class="form-control"
-            id="phone"
-            name="phone"
-            placeholder="Nhập số điện thoại"
-            maxlength="12"
-          />
-        </div>
-
-        <div class="mb-3 mt-3">
-          <label for="address" class="form-label">Địa chỉ</label>
-          <input
-            type="text"
-            class="form-control"
-            id="address"
-            name="address"
-            placeholder="Nhập địa chỉ"
-          />
-        </div>
-
-        <div class="mb-3 mt-3">
-          <label for="plantation" class="form-label">Vườn quản lý</label>
-          <input
-            class="form-control"
-            list="datalistOptions"
-            id="plantation"
-            placeholder="Tìm kiếm vườn"
-          />
-          <datalist id="datalistOptions">
-            <option value="Vườn"></option>
-            <option value="Chicago"></option>
-          </datalist>
-        </div>
-
-        <div class="mb-3 mt-3">
-          <label for="CCCDMT" class="form-label">CCCD mặt trước </label>
-          <input
-            type="file"
-            class="form-control"
-            id="CCCDMT"
-            name="frontIdentification"
-            onchange="previewImage(event, 'previewCCCDMT')"
-          />
-          <div
-            class="image-preview"
-            style="max-width: 100%; height: auto; overflow: hidden"
-          >
-            <img
-              id="previewCCCDMT"
-              alt="CCCDMT"
-              style="max-width: 100%; display: none"
-            />
-          </div>
-        </div>
-
-        <div class="mb-3 mt-3">
-          <label for="CCCDMS" class="form-label">CCCD mặt sau </label>
-          <input
-            type="file"
-            class="form-control"
-            id="CCCDMS"
-            name="backIdentification"
-            onchange="previewImage(event, 'previewCCCDMS')"
-          />
-          <div
-            class="image-preview"
-            style="max-width: 100%; height: auto; overflow: hidden"
-          >
-            <img
-              id="previewCCCDMS"
-              alt="CCCDMS"
-              style="max-width: 100%; display: none"
-            />
-          </div>
-        </div>
-
-        <!-- Buttons -->
-        <button type="submit" class="btn btn-primary">Thêm</button>
-        <button type="reset" class="btn btn-secondary">Làm mới</button>
+    <form class="" action="" method="post">
+      <div class="my-3">
+        <label for="name" class="form-label">Tên</label>
+        <input
+          type="text"
+          class="form-control"
+          id="name"
+          name="name"
+          placeholder="Nhập tên"
+        />
       </div>
+
+      <div class="my-3">
+        <label for="phone" class="form-label">Số điện thoại</label>
+        <input
+          type="text"
+          class="form-control"
+          id="phone"
+          name="phone"
+          placeholder="Nhập số điện thoại"
+          maxlength="12"
+        />
+      </div>
+
+      <div class="my-3">
+        <label for="address" class="form-label">Địa chỉ</label>
+        <input
+          type="text"
+          class="form-control"
+          id="address"
+          name="address"
+          placeholder="Nhập địa chỉ"
+        />
+      </div>
+
+      <div class="my-3">
+        <label for="plantation" class="form-label">Vườn quản lý</label>
+        <input
+          class="form-control"
+          list="datalistOptions"
+          id="plantation"
+          placeholder="Tìm kiếm vườn"
+        />
+        <datalist id="datalistOptions">
+          <option value="Vườn"></option>
+          <option value="Chicago"></option>
+        </datalist>
+      </div>
+
+      <div class="my-3">
+        <label for="CCCDMT" class="form-label">CCCD mặt trước </label>
+        <input
+          type="file"
+          class="form-control"
+          id="CCCDMT"
+          name="frontIdentification"
+          onchange="previewImage(event, 'previewCCCDMT')"
+        />
+        <div
+          class="image-preview"
+          style="max-width: 100%; height: auto; overflow: hidden"
+        >
+          <img
+            id="previewCCCDMT"
+            alt="CCCDMT"
+            style="max-width: 100%; display: none"
+          />
+        </div>
+      </div>
+
+      <div class="my-3">
+        <label for="CCCDMS" class="form-label">CCCD mặt sau </label>
+        <input
+          type="file"
+          class="form-control"
+          id="CCCDMS"
+          name="backIdentification"
+          onchange="previewImage(event, 'previewCCCDMS')"
+        />
+        <div
+          class="image-preview"
+          style="max-width: 100%; height: auto; overflow: hidden"
+        >
+          <img
+            id="previewCCCDMS"
+            alt="CCCDMS"
+            style="max-width: 100%; display: none"
+          />
+        </div>
+      </div>
+
+      <!-- Buttons -->
+      <button type="submit" class="btn btn-primary">Thêm</button>
+      <button type="reset" class="btn btn-secondary">Làm mới</button>
     </form>
   </div>
 </section>
