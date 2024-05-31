@@ -50,18 +50,7 @@ routes.forEach((routeConfig) => {
   app.use(routeConfig.path, routeConfig.route);
 });
 
-
-const PORT = process.env.PORT || 1000;
-
-app.listen(PORT, () => {
-  console.log(`Server is running on port localhost:${PORT}`);
-
-  // Automatically open the browser during testing
-  import('open').then(open => {
-    open.default(`http://localhost:${PORT}`).catch(err => {
-      console.error('Failed to open the browser:', err.message);
-    });
-  }).catch(err => {
-    console.error('Error importing open:', err.message);
-  });
+app.listen(process.env.PORT || 1000, () => {
+  console.log(`Server is running on port localhost:1000`);
 });
+
