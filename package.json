@@ -22,7 +22,9 @@
     "path": "^0.12.7"
   },
   "devDependencies": {
+    "lite-server": "^2.6.1",
     "morgan": "^1.10.0",
-    "nodemon": "^3.1.1"
+    "nodemon": "^3.1.1",
+    "open": "^10.1.0"
   }
 }
