@@ -1,5 +1,4 @@
 const express = require("express");
-const passport = require("passport");
 const connectEnsureLogin =  require('connect-ensure-login');
 const router = express.Router();
 
@@ -10,6 +9,8 @@ router.get("/", (req, res) => {
         messages: req.flash(),
     })
 })
+
+// router.post('/addManger', )
 
 
 module.exports = router;
