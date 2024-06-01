@@ -63,39 +63,123 @@
                 </div>
 
                 <form
-                  action="/quan-ly-tai-khoan/update/<%= manager._id %>"
+                  action="/quan-ly-nguoi-quan-ly/update/<%= manager._id %>"
                   method="post"
+                  enctype="multipart/form-data"
                 >
                   <div class="modal-body">
-                    <div class="mb-3">
-                      <label
-                        for="name<%= index + 1 %>"
-                        class="form-label"
-                        style="float: left"
-                        >Tài khoản</label
-                      >
+                    <div class="my-3">
+                      <label for="name" class="form-label">Tên</label>
                       <input
                         type="text"
                         class="form-control"
-                        id="name<%= index + 1 %>"
+                        id="name"
                         name="name"
-                        value="<%= manager.username %>"
+                        placeholder="Nhập tên"
+                        value="<%= manager.name %>"
                       />
                     </div>
-                    <div class="mb-3">
-                      <label
-                        for="password<%= index +1  %>"
-                        class="form-label"
-                        style="float: left"
-                        >Mật khẩu mới</label
+
+                    <div class="my-3">
+                      <label for="phone" class="form-label"
+                        >Số điện thoại</label
                       >
                       <input
                         type="text"
                         class="form-control"
-                        id="password<%= index +1  %>"
-                        name="password"
-                        placeholder="**********"
+                        id="phone"
+                        name="phone"
+                        placeholder="Nhập số điện thoại"
+                        maxlength="12"
+                        value="<%= manager.phone %>"
                       />
+                    </div>
+
+                    <div class="my-3">
+                      <label for="address" class="form-label">Địa chỉ</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="address"
+                        name="address"
+                        placeholder="Nhập địa chỉ"
+                        value="<%= manager.address %>"
+                      />
+                    </div>
+
+                    <div class="my-3">
+                      <label for="plantation" class="form-label"
+                        >Vườn quản lý</label
+                      >
+                      <input
+                        class="form-control"
+                        list="datalistOptions"
+                        id="plantation"
+                        name="plantation"
+                        placeholder="Tìm kiếm vườn"
+                        value="<%= manager.plantation.name %>"
+                      />
+                      <datalist id="datalistOptions">
+                        <option value="665ac56fb8823876eec16b5e">CV</option>
+                      </datalist>
+                    </div>
+
+                    <div class="my-3">
+                      <label for="frontIdentification<%= index + 1 %>" class="form-label"
+                        >CCCD mặt trước</label
+                      >
+                      <input
+                        type="file"
+                        class="form-control"
+                        id="frontIdentification<%= index + 1 %>"
+                        name="frontIdentification"
+                        onchange="previewImage(event, 'updatePreviewCCCDMT<%= index + 1 %>')"
+                      />
+                      <div
+                        class="image-preview d-flex align-items-center"
+                        style="max-width: 100%; height: auto; overflow: hidden"
+                      >
+                        <img
+                          src="/images/<%= manager.frontIdentification %>"
+                          alt="CCCDMT"
+                          style="max-width: 49%"
+                        />
+                        <i class="ri-arrow-right-double-fill"></i>
+                        <img
+                          id="updatePreviewCCCDMT<%= index + 1 %>"
+                          alt="CCCDMT"
+                          style="max-width: 49%; display: none"
+                        />
+                      </div>
+                    </div>
+
+                    <div class="my-3">
+                      <label for="backIdentification<%= index + 1 %>" class="form-label"
+                        >CCCD mặt sau
+                      </label>
+                      <input
+                        type="file"
+                        class="form-control"
+                        id="backIdentification<%= index + 1 %>"
+                        name="backIdentification"
+                        onchange="previewImage(event, 'updatePreviewCCCDMS<%= index + 1 %>')"
+                      />
+                      <div
+                        class="image-preview d-flex align-items-center"
+                        style="max-width: 100%; height: auto; overflow: hidden"
+                      >
+                        <img
+                          src="/images/<%= manager.backIdentification %>"
+                          alt="CCCDMT"
+                          style="max-width: 49%"
+                        />
+                        <i class="ri-arrow-right-double-fill"></i>
+                        <img
+                          id="updatePreviewCCCDMS<%= index + 1 %>"
+                          alt="CCCDMS"
+                          style="max-width: 49%; display: none"
+                        />
+                      </div>
                     </div>
                   </div>
                   <div class="modal-footer">
@@ -130,16 +214,16 @@
                   ></button>
                 </div>
                 <form
-                  action="/quan-ly-tai-khoan/delete/<%=  manager._id %>"
+                  action="/quan-ly-nguoi-quan-ly/delete/<%=  manager._id %>"
                   method="post"
                 >
                   <div class="modal-body">
-                    Bạn có muốn xóa tài khoản
-                    <strong><%= manager.username %></strong> ? Hành động này
-                    không thể hoàn tác.
+                    Bạn có muốn xóa
+                    <strong><%= manager.name %></strong> ? Hành động này không
+                    thể hoàn tác.
                   </div>
                   <div class="modal-footer">
-                    <button type="submit" class="btn btn-success">
+                    <button type="submit" class="btn btn-danger">
                       Xác nhận
                     </button>
                   </div>
@@ -211,8 +295,7 @@
           placeholder="Tìm kiếm vườn"
         />
         <datalist id="datalistOptions">
-          <option value="665863184056d8d230b302f7"></option>
-          <option value="Chicago"></option>
+          <option value="665ac56fb8823876eec16b5e">CV</option>
         </datalist>
       </div>
 
@@ -274,8 +357,20 @@
     { data: "phone" },
     { data: "address" },
     { data: "plantation" },
-    { data: "frontIdentification", orderable: false },
-    { data: "backIdentification", orderable: false },
+    {
+      data: "frontIdentification",
+      orderable: false,
+      render: function (data, type, row) {
+        return `<img src="/images/${data}" alt="Front Identification" style="max-height: 100px;" />`;
+      },
+    },
+    {
+      data: "backIdentification",
+      orderable: false,
+      render: function (data, type, row) {
+        return `<img src="/images/${data}" alt="Back Identification" style="max-height: 100px;" />`;
+      },
+    },
     { data: "id", orderable: false },
   ];
 
