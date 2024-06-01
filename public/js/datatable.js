@@ -1,4 +1,4 @@
-function initializeDataTable(tableId, ajaxUrl, modalTarget, columns) {
+function initializeDataTable(tableId, ajaxUrl, modalUpdateTarget, modalDeleteTarget, columns) {
   $(tableId).DataTable({
     serverSide: true,
     processing: true,
@@ -28,12 +28,18 @@ function initializeDataTable(tableId, ajaxUrl, modalTarget, columns) {
           ...column,
           render: function (data, type, row) {
             return `
-                <i
-                    class="ri-edit-box-line"
-                    data-bs-toggle="modal"
-                    data-bs-target="${modalTarget}${row.no}"
-                    style="cursor: pointer;"
-                ></i>
+            <i
+                class="ri-edit-box-line"
+                data-bs-toggle="modal"
+                data-bs-target="${modalUpdateTarget}${row.no}"
+                style="cursor: pointer;"
+            ></i>
+            <i
+                class="ri-delete-bin-line"
+                data-bs-toggle="modal"
+                data-bs-target="${modalDeleteTarget}${row.no}"
+                style="cursor: pointer;"
+            ></i>
             `;
           },
         };

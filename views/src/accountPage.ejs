@@ -108,14 +108,6 @@
                </div>
               </div>
               <div class="modal-footer">
-                <button
-                type="button"
-                class="btn btn-danger"
-                data-bs-target="#exampleModalToggle2<%= index %>"
-                data-bs-toggle="modal"
-                >
-                Xóa tài khoản
-              </button>
               <button type="submit" class="btn btn-success">Lưu mới</button>
             </div>
           </form>
@@ -126,15 +118,15 @@
       <!-- Delete confirming modal  -->
       <div
         class="modal fade"
-        id="exampleModalToggle2<%= index %>"
+        id="deleteModalToggle<%= index + 1 %>"
         aria-hidden="true"
-        aria-labelledby="exampleModalToggleLabel2<%= index %>"
+        aria-labelledby="exampleModalToggleLabel"
         tabindex="-1"
       >
         <div class="modal-dialog modal-dialog-centered">
           <div class="modal-content">
             <div class="modal-header">
-              <h1 class="modal-title fs-5" id="exampleModalToggleLabel2">
+              <h1 class="modal-title fs-5" id="exampleModalToggleLabel">
                 Xóa <%= user.username %>
               </h1>
               <button
@@ -268,6 +260,7 @@
     "#user_accounts",
     "/quan-ly-tai-khoan/getUsers",
     "#staticBackdrop",
+    "#deleteModalToggle",
     userColumns
   );
 </script>
