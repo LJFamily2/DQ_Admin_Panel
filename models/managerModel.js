@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Vườn = require("./plantationModel")
 
 const managerSchema = new mongoose.Schema({
     name: {

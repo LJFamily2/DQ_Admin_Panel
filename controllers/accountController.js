@@ -83,9 +83,7 @@ async function getUsers(req, res) {
     });
   } catch (error) {
     console.error("Error handling DataTable request:", error);
-    res.status(500).json({
-      error: "An error occurred while processing the request.",
-    });
+    res.status(500);
   }
 }
 

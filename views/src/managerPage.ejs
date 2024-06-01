@@ -1,10 +1,15 @@
-<style>
-  @media (max-width: 768px) {
-    table {
-      min-width: 1200px;
+<head>
+  <!-- js -->
+  <script src="/js/datatable.js"></script>
+
+  <style>
+    @media (max-width: 768px) {
+      table {
+        min-width: 1200px;
+      }
     }
-  }
-</style>
+  </style>
+</head>
 
 <div
   class="position-absolute"
@@ -16,7 +21,7 @@
 <section class="row m-0 px-2">
   <div class="col-md-9 col-12 p-0 px-md-3">
     <div class="col rounded-2 px-1 overflow-auto" style="box-shadow: 0 0 10px">
-      <table class="table table-striped" id="managers-table">
+      <table class="table table-striped" id="managers_table">
         <thead>
           <tr>
             <th>STT</th>
@@ -29,12 +34,126 @@
             <th>Chỉnh sửa</th>
           </tr>
         </thead>
-        <tbody></tbody>
+        <tbody>
+          <% managers.forEach( (manager,index) => { %>
+          <!-- Modal for updating -->
+          <div
+            class="modal fade"
+            id="staticBackdrop<%= index + 1%>"
+            data-bs-backdrop="static"
+            data-bs-keyboard="false"
+            tabindex="-1"
+            aria-labelledby="staticBackdropLabel"
+            aria-hidden="true"
+          >
+            <div
+              class="modal-dialog modal-dialog-centered modal-dialog-scrollable"
+            >
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="staticBackdropLabel">
+                    Cập nhật thông tin cho <%= manager.name %>
+                  </h1>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
+
+                <form
+                  action="/quan-ly-tai-khoan/update/<%= manager._id %>"
+                  method="post"
+                >
+                  <div class="modal-body">
+                    <div class="mb-3">
+                      <label
+                        for="name<%= index + 1 %>"
+                        class="form-label"
+                        style="float: left"
+                        >Tài khoản</label
+                      >
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="name<%= index + 1 %>"
+                        name="name"
+                        value="<%= manager.username %>"
+                      />
+                    </div>
+                    <div class="mb-3">
+                      <label
+                        for="password<%= index +1  %>"
+                        class="form-label"
+                        style="float: left"
+                        >Mật khẩu mới</label
+                      >
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="password<%= index +1  %>"
+                        name="password"
+                        placeholder="**********"
+                      />
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">
+                      Lưu mới
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <!-- Delete confirming modal  -->
+          <div
+            class="modal fade"
+            id="deleteModalToggle<%= index + 1 %>"
+            aria-hidden="true"
+            aria-labelledby="exampleModalToggleLabel"
+            tabindex="-1"
+          >
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="exampleModalToggleLabel">
+                    Xóa <%= manager.name %>
+                  </h1>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
+                <form
+                  action="/quan-ly-tai-khoan/delete/<%=  manager._id %>"
+                  method="post"
+                >
+                  <div class="modal-body">
+                    Bạn có muốn xóa tài khoản
+                    <strong><%= manager.username %></strong> ? Hành động này
+                    không thể hoàn tác.
+                  </div>
+                  <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">
+                      Xác nhận
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+          <% }) %>
+        </tbody>
       </table>
     </div>
   </div>
   <div
-    class="formContainer col-md-3 col-12 rounded-2 my-5 m-md-0 py-2"
+    class="formContainer col-md-3 col-12 rounded-2 my-5 m-md-0 py-3"
     style="
       box-shadow: 0 0 10px;
       background: var(--background_color);
@@ -43,7 +162,11 @@
     "
   >
     <h4>Thêm người quản lý</h4>
-    <form action="/quan-ly-nguoi-quan-ly/addManger" method="post" enctype="multipart/form-data">
+    <form
+      action="/quan-ly-nguoi-quan-ly/addManger"
+      method="post"
+      enctype="multipart/form-data"
+    >
       <div class="my-3">
         <label for="name" class="form-label">Tên</label>
         <input
@@ -84,16 +207,19 @@
           class="form-control"
           list="datalistOptions"
           id="plantation"
+          name="plantation"
           placeholder="Tìm kiếm vườn"
         />
         <datalist id="datalistOptions">
-          <option value="Vườn"></option>
+          <option value="665863184056d8d230b302f7"></option>
           <option value="Chicago"></option>
         </datalist>
       </div>
 
       <div class="my-3">
-        <label for="frontIdentification" class="form-label">CCCD mặt trước </label>
+        <label for="frontIdentification" class="form-label"
+          >CCCD mặt trước</label
+        >
         <input
           type="file"
           class="form-control"
@@ -140,3 +266,24 @@
     </form>
   </div>
 </section>
+
+<script>
+  const managerColumns = [
+    { data: "no", orderable: false },
+    { data: "name" },
+    { data: "phone" },
+    { data: "address" },
+    { data: "plantation" },
+    { data: "frontIdentification", orderable: false },
+    { data: "backIdentification", orderable: false },
+    { data: "id", orderable: false },
+  ];
+
+  initializeDataTable(
+    "#managers_table",
+    "/quan-ly-nguoi-quan-ly/getManagers",
+    "#staticBackdrop",
+    "#deleteModalToggle",
+    managerColumns
+  );
+</script>
