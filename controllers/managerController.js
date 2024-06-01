@@ -2,6 +2,8 @@ const fs = require('fs');
 const path = require('path');
 const ManagerModel = require("../models/managerModel");
 const handleResponse = require("./utils/handleResponse");
+const removeImagePath = require("./utils/imagePathRemover")
+const PlantationModel = require('../models/plantationModel')
 
 async function renderPage(req, res) {
   try {
@@ -46,45 +48,44 @@ async function createManager(req, res) {
 async function updateManager(req, res) {
   try {
     const { id } = req.params;
-    const manager = await ManagerModel.findById(id);
-
-    if (!manager) {
-      return res.status(404).json({ message: "Manager not found" });
-    }
 
     const frontIdentification = req.files["frontIdentification"]
       ? req.files["frontIdentification"][0].filename
-      : manager.frontIdentification;
+      : undefined;
     const backIdentification = req.files["backIdentification"]
       ? req.files["backIdentification"][0].filename
-      : manager.backIdentification;
+      : undefined;
 
-    if (req.files["frontIdentification"] && manager.frontIdentification) {
-      fs.unlink(path.join(__dirname, '../uploads/', manager.frontIdentification), (err) => {
-        if (err) console.error(err);
-      });
+    const updatedManager = await ManagerModel.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          name: req.body.name,
+          phone: req.body.phone,
+          address: req.body.address,
+          plantation: req.body.plantation,
+          ...(frontIdentification && { frontIdentification }),
+          ...(backIdentification && { backIdentification }),
+        },
+      },
+      { new: true }
+    );
+
+    if (!updatedManager) {
+      return res.status(404);
     }
-    if (req.files["backIdentification"] && manager.backIdentification) {
-      fs.unlink(path.join(__dirname, '../uploads/', manager.backIdentification), (err) => {
-        if (err) console.error(err);
-      });
-    }
 
-    manager.name = req.body.name;
-    manager.phone = req.body.phone;
-    manager.address = req.body.address;
-    manager.plantation = req.body.plantation;
-    manager.frontIdentification = frontIdentification;
-    manager.backIdentification = backIdentification;
-
-    await manager.save();
+    // Call removeImagePath function to delete associated image files
+    await removeImagePath(updatedManager.frontIdentification);
+    await removeImagePath(updatedManager.backIdentification);
 
     handleResponse(req, res, 200, "success", "Cập nhật người quản lý thành công", "/quan-ly-nguoi-quan-ly");
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: error.message });
+    res.status(500);
   }
 }
+
 
 async function deleteManager(req, res) {
   try {
@@ -92,16 +93,9 @@ async function deleteManager(req, res) {
     const manager = await ManagerModel.findByIdAndDelete(id);
 
     if (manager) {
-      if (manager.frontIdentification) {
-        fs.unlink(path.join(__dirname, '../uploads/', manager.frontIdentification), (err) => {
-          if (err) console.error(err);
-        });
-      }
-      if (manager.backIdentification) {
-        fs.unlink(path.join(__dirname, '../uploads/', manager.backIdentification), (err) => {
-          if (err) console.error(err);
-        });
-      }
+      // Call removeImagePath function to delete associated image files
+      await removeImagePath(manager.frontIdentification);
+      await removeImagePath(manager.backIdentification);
     }
 
     handleResponse(req, res, 200, "success", "Xóa người quản lý thành công", "/quan-ly-nguoi-quan-ly");
@@ -118,19 +112,11 @@ async function deleteAllManagers(req, res) {
     // Delete all manager documents
     await ManagerModel.deleteMany({});
 
-    // Delete associated files
-    managers.forEach(manager => {
-      if (manager.frontIdentification) {
-        fs.unlink(path.join(__dirname, '../uploads/', manager.frontIdentification), (err) => {
-          if (err) console.error(err);
-        });
-      }
-      if (manager.backIdentification) {
-        fs.unlink(path.join(__dirname, '../uploads/', manager.backIdentification), (err) => {
-          if (err) console.error(err);
-        });
-      }
-    });
+    // Call removeImagePath function for each manager to delete associated image files
+    await Promise.all(managers.map(async (manager) => {
+      await removeImagePath(manager.frontIdentification);
+      await removeImagePath(manager.backIdentification);
+    }));
 
     handleResponse(req, res, 200, "success", "Đã xóa tất cả người quản lý", "/quan-ly-nguoi-quan-ly");
   } catch (error) {
