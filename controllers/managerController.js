@@ -1,7 +1,17 @@
 const ManagerModel = require("../models/managerModel");
 const handleResponse = require("./utils/handleResponse");
-const removeImagePath = require("./utils/imagePathRemover")
+// const deleteImageFile = require("./utils/imagePathRemover")
 const PlantationModel = require('../models/plantationModel')
+const fs = require('fs').promises;
+const path = require('path');
+
+const deleteImageFile = async (image) => {
+  try {
+      await fs.unlink(path.join('public/images', image));
+  } catch (err) {
+     console.log('Error deleting image file:', err);
+  }
+};
 
 async function renderPage(req, res) {
   try {
@@ -50,7 +60,7 @@ async function createManager(req, res) {
 }
 
 async function updateManager(req, res) {
-  console.log(req.body)
+  console.log(req.body);
 
   try {
     const { id } = req.params;
@@ -61,30 +71,37 @@ async function updateManager(req, res) {
       return res.redirect("/quan-ly-nguoi-quan-ly");
     }
 
+    // Update basic fields
     const updateFields = {
       name: req.body.name,
       phone: req.body.phone,
       address: req.body.address,
-      plantation: req.body.plantation,
+      plantation: req.body.plantation || null,
     };
 
-    // Function to delete image file and update the field if a new image is uploaded
-    const updateImageField = async (fileType, field) => {
-      if (req.files[fileType] && req.files[fileType].length > 0) {
-        // Delete the old image file
-        if (manager[field]) {
-          await removeImagePath(manager[field]);
+    // Helper function to handle image field updates
+    const updateImageField = async (imageField, newImageField) => {
+      if (req.files[newImageField] && req.files[newImageField].length > 0) {
+        // Check if the old image exists and delete it
+        if (manager[imageField]) {
+          try {
+            await deleteImageFile(manager[imageField]);
+            console.log(`Deleted old image: ${manager[imageField]}`);
+          } catch (err) {
+            console.error(`Error deleting old image ${manager[imageField]}:`, err);
+          }
         }
-        // Update the field with the filename of the new image
-        updateFields[field] = req.files[fileType][0].filename;
+        // Set new image filename
+        updateFields[imageField] = req.files[newImageField][0].filename;
       }
     };
 
-    // Update image fields if new images are uploaded
-    await updateImageField("newFrontIdentification", "frontIdentification");
-    await updateImageField("newBackIdentification", "backIdentification");
+    await Promise.all([
+      updateImageField("frontIdentification", "newFrontIdentification"),
+      updateImageField("backIdentification", "newBackIdentification"),
+    ]);
 
-    // Perform the update
+    // Update manager document
     const updatedManager = await ManagerModel.findByIdAndUpdate(
       id,
       { $set: updateFields },
@@ -102,7 +119,9 @@ async function updateManager(req, res) {
     console.error("Error updating manager:", error);
     res.status(500).json({ error: error.message });
   }
-};
+}
+
+
 
 
 
@@ -112,9 +131,9 @@ async function deleteManager(req, res) {
     const manager = await ManagerModel.findByIdAndDelete(id);
 
     if (manager) {
-      // Call removeImagePath function to delete associated image files
-      await removeImagePath(manager.frontIdentification);
-      await removeImagePath(manager.backIdentification);
+      // Call deleteImageFile function to delete associated image files
+      await deleteImageFile(manager.frontIdentification);
+      await deleteImageFile(manager.backIdentification);
     }
 
     handleResponse(req, res, 200, "success", "Xóa người quản lý thành công", "/quan-ly-nguoi-quan-ly");
@@ -131,10 +150,10 @@ async function deleteAllManagers(req, res) {
     // Delete all manager documents
     await ManagerModel.deleteMany({});
 
-    // Call removeImagePath function for each manager to delete associated image files
+    // Call deleteImageFile function for each manager to delete associated image files
     await Promise.all(managers.map(async (manager) => {
-      await removeImagePath(manager.frontIdentification);
-      await removeImagePath(manager.backIdentification);
+      await deleteImageFile(manager.frontIdentification);
+      await deleteImageFile(manager.backIdentification);
     }));
 
     handleResponse(req, res, 200, "success", "Đã xóa tất cả người quản lý", "/quan-ly-nguoi-quan-ly");

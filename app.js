@@ -24,7 +24,7 @@ if (process.env.NODE_ENV !== "production") {
   liveReloadServer.server.once("connection", () => {
     setTimeout(() => {
       liveReloadServer.refresh("/");
-    }, 100);
+    }, 200);
   });
 
   app.use(connectLiveReload());

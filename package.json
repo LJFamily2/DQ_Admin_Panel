@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "test": "nodemon --ext *",
+    "test": "nodemon --ext js,css,ejs",
     "start": "node app.js"
   },
   "dependencies": {

@@ -13,13 +13,15 @@
   </style>
 </head>
 
-<div
-  class="position-absolute"
-  style="right: 10px; top: 70px; width: max-content"
+<button
+  type="button"
+  class="btn btn-danger mx-4"
+  data-bs-toggle="modal"
+  data-bs-target="#deleteAll-admin-user"
+  style="width: max-content"
 >
-  <%- include('../partials/notificationMessage.ejs') %>
-</div>
-
+  Xóa tất cả tài khoản
+</button>
 <section class="row m-0 px-2">
   <div class="col-md-9 col-12 p-0 px-md-3">
     <div class="col rounded-2 px-1 overflow-auto" style="box-shadow: 0 0 10px">
@@ -247,6 +249,7 @@
       overflow-y: auto;
     "
   >
+    <%- include('../partials/notificationMessage.ejs') %>
     <h4>Thêm người quản lý</h4>
     <form
       action="/quan-ly-nguoi-quan-ly/addManger"
@@ -352,6 +355,40 @@
   </div>
 </section>
 
+<!-- Modal for deleting all managers -->
+<div
+  class="modal fade"
+  id="deleteAll-admin-user"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="deleteUsers"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="deleteUsers">Xóa tất cả tài khoản</h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+
+      <form action="/quan-ly-nguoi-quan-ly/deleteAll" method="post">
+        <div class="modal-body">
+          Bạn có muốn xóa <strong>tất cả</strong> thông tin người quản lý ? Hành
+          động này không thể hoàn tác.
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-danger">Xác nhận</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 <script>
   const managerColumns = [
     { data: "no", orderable: false },
