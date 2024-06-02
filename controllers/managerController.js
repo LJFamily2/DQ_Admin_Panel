@@ -1,5 +1,3 @@
-const fs = require('fs');
-const path = require('path');
 const ManagerModel = require("../models/managerModel");
 const handleResponse = require("./utils/handleResponse");
 const removeImagePath = require("./utils/imagePathRemover")
@@ -7,10 +5,12 @@ const PlantationModel = require('../models/plantationModel')
 
 async function renderPage(req, res) {
   try {
+    const plantations = await PlantationModel.find({});
     const managers = await ManagerModel.find({}).populate('plantation').exec();
     res.render("src/managerPage", {
       layout: "./layouts/defaultLayout",
       managers,
+      plantations,
       messages: req.flash(),
       title: "Người quản lý",
     });
@@ -20,6 +20,8 @@ async function renderPage(req, res) {
 }
 
 async function createManager(req, res) {
+  console.log("Form data:", req.body);
+  console.log("Files:", req.files);
   try {
     const frontIdentification = req.files["frontIdentification"]
       ? req.files["frontIdentification"][0].filename
@@ -30,13 +32,15 @@ async function createManager(req, res) {
 
     const newManager = await ManagerModel.create({
       ...req.body,
+      plantation: req.body.plantation || null,
       frontIdentification,
       backIdentification,
     });
 
     if (!newManager) {
       handleResponse(req, res, 404, "fail", "Tạo người quản lý thất bại", "/quan-ly-nguoi-quan-ly");
-    } else {
+    }
+     else {
       handleResponse(req, res, 201, "success", "Tạo người quản lý thành công", "/quan-ly-nguoi-quan-ly");
     }
   } catch (error) {
@@ -46,45 +50,60 @@ async function createManager(req, res) {
 }
 
 async function updateManager(req, res) {
+  console.log(req.body)
+
   try {
     const { id } = req.params;
+    const manager = await ManagerModel.findById(id);
 
-    const frontIdentification = req.files["frontIdentification"]
-      ? req.files["frontIdentification"][0].filename
-      : undefined;
-    const backIdentification = req.files["backIdentification"]
-      ? req.files["backIdentification"][0].filename
-      : undefined;
+    if (!manager) {
+      req.flash("rejected", "Manager not found!");
+      return res.redirect("/quan-ly-nguoi-quan-ly");
+    }
 
+    const updateFields = {
+      name: req.body.name,
+      phone: req.body.phone,
+      address: req.body.address,
+      plantation: req.body.plantation,
+    };
+
+    // Function to delete image file and update the field if a new image is uploaded
+    const updateImageField = async (fileType, field) => {
+      if (req.files[fileType] && req.files[fileType].length > 0) {
+        // Delete the old image file
+        if (manager[field]) {
+          await removeImagePath(manager[field]);
+        }
+        // Update the field with the filename of the new image
+        updateFields[field] = req.files[fileType][0].filename;
+      }
+    };
+
+    // Update image fields if new images are uploaded
+    await updateImageField("newFrontIdentification", "frontIdentification");
+    await updateImageField("newBackIdentification", "backIdentification");
+
+    // Perform the update
     const updatedManager = await ManagerModel.findByIdAndUpdate(
       id,
-      {
-        $set: {
-          name: req.body.name,
-          phone: req.body.phone,
-          address: req.body.address,
-          plantation: req.body.plantation,
-          ...(frontIdentification && { frontIdentification }),
-          ...(backIdentification && { backIdentification }),
-        },
-      },
+      { $set: updateFields },
       { new: true }
     );
 
     if (!updatedManager) {
-      return res.status(404);
+      req.flash("rejected", "Manager update failed!");
+      return res.redirect("/quan-ly-nguoi-quan-ly");
     }
 
-    // Call removeImagePath function to delete associated image files
-    await removeImagePath(updatedManager.frontIdentification);
-    await removeImagePath(updatedManager.backIdentification);
-
-    handleResponse(req, res, 200, "success", "Cập nhật người quản lý thành công", "/quan-ly-nguoi-quan-ly");
+    req.flash("accepted", "Cập nhật người quản lý thành công");
+    res.redirect("/quan-ly-nguoi-quan-ly");
   } catch (error) {
-    console.error(error);
-    res.status(500);
+    console.error("Error updating manager:", error);
+    res.status(500).json({ error: error.message });
   }
-}
+};
+
 
 
 async function deleteManager(req, res) {
@@ -153,7 +172,7 @@ async function getManagers(req, res) {
       name: manager.name,
       phone: manager.phone,
       address: manager.address,
-      plantation: manager.plantation.name, // Ensure plantation name is displayed
+      plantation: manager.plantation ? manager.plantation.name : "",
       frontIdentification: manager.frontIdentification,
       backIdentification: manager.backIdentification,
       id: manager._id,

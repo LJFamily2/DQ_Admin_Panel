@@ -18,8 +18,8 @@ router.post('/addManger', upload.fields([
 
 // Update an existing manager
 router.post('/update/:id', upload.fields([
-  { name: 'frontIdentification', maxCount: 1 },
-  { name: 'backIdentification', maxCount: 1 }
+  { name: 'newFrontIdentification', maxCount: 1 },
+  { name: 'newBackIdentification', maxCount: 1 }
 ]), managerController.updateManager);
 
 // Delete a manager
