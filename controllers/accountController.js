@@ -18,12 +18,12 @@ async function renderPage(req, res) {
 
 async function createUser(req, res) {
   try {
-    const { username, password } = req.body;
+    const { username, password,role } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await UserModel.create({
       username,
       password: hashedPassword,
-      role: false,
+      role
     });
     if (!user) {
       handleResponse(
@@ -44,7 +44,7 @@ async function createUser(req, res) {
       "/quan-ly-tai-khoan"
     );
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500);
   }
 }
 
