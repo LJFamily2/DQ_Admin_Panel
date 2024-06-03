@@ -15,28 +15,22 @@
 
 <button
   type="button"
-  class="btn btn-danger mx-4"
+  class="btn btn-danger mx-2 mx-md-4 my-3"
   data-bs-toggle="modal"
   data-bs-target="#deleteAll-admin-user"
   style="width: max-content"
 >
   Xóa tất cả tài khoản
 </button>
-<section class="row m-0 px-2">
-  <div class="col-md-9 col-12 p-0 px-md-3">
-    <div class="col rounded-2 px-1 overflow-auto" style="box-shadow: 0 0 10px">
-      <table class="table table-striped" id="managers_table">
+<div class="row m-0">
+  <div class="col-12 col-md-9" >
+    <div class="col rounded-2 px-1 overflow-auto" style="box-shadow: 0 0 10px; max-height: 80dvh;">
+      <table class="table table-striped" id="managers_table" >
         <thead>
           <tr>
-            <th style="width: 10%;">STT</th>
-            <th style="width: 15%;">Tên</th>
-            <th style="width: 15%;">Số điện thoại</th>
-            <th style="width: 15%;">Địa chỉ</th>
-            <th style="width: 15;">Vườn quản lý</th>
-            <th style="width: 10%;">CCCD mặt trước</th>
-            <th style="width: 10%;">CCCD mặt sau</th>
-            <th style="width: 10%;">Chỉnh sửa</th>
-          </tr>
+            <% ['STT', 'Tên', 'Số điện thoại', 'Địa chỉ', 'Vườn quản lý', 'CCCD mặt trước', 'CCCD mặt sau', 'Chỉnh sửa'].forEach((header, index) => { %>
+              <th style="width: 12.5%;"><%= header %></th>
+            <% }) %>
         </thead>
         <tbody>
           <% managers.forEach( (manager,index) => { %>
@@ -241,11 +235,11 @@
     </div>
   </div>
   <div
-    class="formContainer col-md-3 col-12 rounded-2 my-5 m-md-0 py-3 overflow-auto"
+    class="col-12 col-md-3 rounded-2 my-5 m-md-0 py-3 "
     style="
       box-shadow: 0 0 10px;
       background: var(--background_color);
-      max-height: 85dvh;
+      max-height: 80dvh;
       overflow-y: auto;
     "
   >
@@ -353,7 +347,7 @@
       <button type="reset" class="btn btn-secondary">Làm mới</button>
     </form>
   </div>
-</section>
+</div>
 
 <!-- Modal for deleting all managers -->
 <div

@@ -1,17 +1,7 @@
 const ManagerModel = require("../models/managerModel");
 const handleResponse = require("./utils/handleResponse");
-// const deleteImageFile = require("./utils/imagePathRemover")
+const deleteImageFile = require("./utils/deleteImageFile")
 const PlantationModel = require("../models/plantationModel");
-const fs = require("fs").promises;
-const path = require("path");
-
-const deleteImageFile = async (image) => {
-  try {
-    await fs.unlink(path.join("public/images", image));
-  } catch (err) {
-    console.log("Error deleting image file:", err);
-  }
-};
 
 async function renderPage(req, res) {
   try {

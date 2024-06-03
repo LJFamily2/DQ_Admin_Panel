@@ -3,9 +3,7 @@ const path = require('path');
 
 const deleteImageFile = async (image) => {
   try {
-    const imagePath = path.resolve('public', 'images', image);
-    await fs.unlink(imagePath);
-    console.log(`Deleted image file: ${imagePath}`);
+    await fs.unlink(path.join("public/images", image));
   } catch (err) {
     console.log("Error deleting image file:", err);
   }
