@@ -1,22 +1,22 @@
 const ManagerModel = require("../models/managerModel");
 const handleResponse = require("./utils/handleResponse");
 // const deleteImageFile = require("./utils/imagePathRemover")
-const PlantationModel = require('../models/plantationModel')
-const fs = require('fs').promises;
-const path = require('path');
+const PlantationModel = require("../models/plantationModel");
+const fs = require("fs").promises;
+const path = require("path");
 
 const deleteImageFile = async (image) => {
   try {
-      await fs.unlink(path.join('public/images', image));
+    await fs.unlink(path.join("public/images", image));
   } catch (err) {
-     console.log('Error deleting image file:', err);
+    console.log("Error deleting image file:", err);
   }
 };
 
 async function renderPage(req, res) {
   try {
     const plantations = await PlantationModel.find({});
-    const managers = await ManagerModel.find({}).populate('plantation').exec();
+    const managers = await ManagerModel.find({}).populate("plantation").exec();
     res.render("src/managerPage", {
       layout: "./layouts/defaultLayout",
       managers,
@@ -48,10 +48,23 @@ async function createManager(req, res) {
     });
 
     if (!newManager) {
-      handleResponse(req, res, 404, "fail", "Tạo người quản lý thất bại", "/quan-ly-nguoi-quan-ly");
-    }
-     else {
-      handleResponse(req, res, 201, "success", "Tạo người quản lý thành công", "/quan-ly-nguoi-quan-ly");
+      handleResponse(
+        req,
+        res,
+        404,
+        "fail",
+        "Tạo người quản lý thất bại",
+        "/quan-ly-nguoi-quan-ly"
+      );
+    } else {
+      handleResponse(
+        req,
+        res,
+        201,
+        "success",
+        "Tạo người quản lý thành công",
+        "/quan-ly-nguoi-quan-ly"
+      );
     }
   } catch (error) {
     console.error(error);
@@ -88,7 +101,10 @@ async function updateManager(req, res) {
             await deleteImageFile(manager[imageField]);
             console.log(`Deleted old image: ${manager[imageField]}`);
           } catch (err) {
-            console.error(`Error deleting old image ${manager[imageField]}:`, err);
+            console.error(
+              `Error deleting old image ${manager[imageField]}:`,
+              err
+            );
           }
         }
         // Set new image filename
@@ -121,10 +137,6 @@ async function updateManager(req, res) {
   }
 }
 
-
-
-
-
 async function deleteManager(req, res) {
   try {
     const { id } = req.params;
@@ -136,7 +148,14 @@ async function deleteManager(req, res) {
       await deleteImageFile(manager.backIdentification);
     }
 
-    handleResponse(req, res, 200, "success", "Xóa người quản lý thành công", "/quan-ly-nguoi-quan-ly");
+    handleResponse(
+      req,
+      res,
+      200,
+      "success",
+      "Xóa người quản lý thành công",
+      "/quan-ly-nguoi-quan-ly"
+    );
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: error.message });
@@ -151,12 +170,21 @@ async function deleteAllManagers(req, res) {
     await ManagerModel.deleteMany({});
 
     // Call deleteImageFile function for each manager to delete associated image files
-    await Promise.all(managers.map(async (manager) => {
-      await deleteImageFile(manager.frontIdentification);
-      await deleteImageFile(manager.backIdentification);
-    }));
+    await Promise.all(
+      managers.map(async (manager) => {
+        await deleteImageFile(manager.frontIdentification);
+        await deleteImageFile(manager.backIdentification);
+      })
+    );
 
-    handleResponse(req, res, 200, "success", "Đã xóa tất cả người quản lý", "/quan-ly-nguoi-quan-ly");
+    handleResponse(
+      req,
+      res,
+      200,
+      "success",
+      "Đã xóa tất cả người quản lý",
+      "/quan-ly-nguoi-quan-ly"
+    );
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: error.message });
@@ -170,17 +198,28 @@ async function getManagers(req, res) {
     const sortColumn = columns?.[order?.[0]?.column]?.data;
     const sortDirection = order?.[0]?.dir === "asc" ? 1 : -1;
 
-    const searchQuery = {
-      ...(searchValue && { name: { $regex: searchValue, $options: "i" } }),
-      ...(searchValue && { phone: { $regex: searchValue, $options: "i" } }),
-      ...(searchValue && { address: { $regex: searchValue, $options: "i" } }),
-      ...(searchValue && { plantation: { $regex: searchValue, $options: "i" } }),
-    };
+    //  Find the ObjectId(s) of the plantation(s) that match the searchValue
+    const plantations = await PlantationModel.find({
+      name: { $regex: searchValue, $options: "i" },
+    });
+    const plantationIds = plantations.map((plantation) => plantation._id);
+
+    // Use these ObjectId(s) in your searchQuery
+    const searchQuery = searchValue
+      ? {
+          $or: [
+            { name: { $regex: searchValue, $options: "i" } },
+            { phone: { $regex: searchValue, $options: "i" } },
+            { address: { $regex: searchValue, $options: "i" } },
+            { plantation: { $in: plantationIds } },
+          ],
+        }
+      : {};
 
     const totalRecords = await ManagerModel.countDocuments();
     const filteredRecords = await ManagerModel.countDocuments(searchQuery);
     const managers = await ManagerModel.find(searchQuery)
-      .populate('plantation')
+      .populate("plantation")
       .sort({ [sortColumn]: sortDirection })
       .skip(parseInt(start, 10))
       .limit(parseInt(length, 10))
