@@ -1,3 +1,131 @@
-<section class="row m-0 bg-danger">
+<head>
+  <style>
+    .rotate {
+      transform: rotate(180deg);
+      transition: transform 0.3s ease-in-out;
+    }
+  </style>
+</head>
+<button
+  type="button"
+  class="btn btn-danger mx-2 mx-md-4 my-3"
+  data-bs-toggle="modal"
+  data-bs-target="#deleteAll-admin-user"
+  style="width: max-content"
+>
+  Xóa tất cả hàng hóa
+</button>
+<div class="row m-0 px-2">
+  <div class="col-12 col-md-9 p-0 px-md-3">
+    <div
+      class="col rounded-2 p-2"
+      style="box-shadow: 0 0 10px; max-height: 80dvh"
+    >
+      <div class="areaList">
+        <button
+          class="btn btn-secondary w-100 d-flex justify-content-between my-2"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#area"
+          aria-expanded="false"
+          aria-controls="area"
+        >
+          Button with data-bs-target
+          <i class="ri-arrow-up-s-line"></i>
+        </button>
 
-</section>
+        <div class="collapse my-1" id="area">
+          <div class="card card-body">
+            <ul
+              class="gap-5 h-100 m-0 p-0"
+              style="list-style: none; display: flex; flex-wrap: wrap"
+            >
+              <li>1. khu a</li>
+              <li>1. khu a</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="col-12 col-md-3 rounded-2 my-5 m-md-0 py-3"
+    style="
+      box-shadow: 0 0 10px;
+      background: var(--background_color);
+      max-height: 80dvh;
+      overflow-y: auto;
+    "
+  >
+    <%- include('../partials/notificationMessage.ejs') %>
+    <h4>Thêm hàng hóa</h4>
+    <form action="/quan-ly-hang-hoa/addProduct" method="post">
+      <div class="my-3">
+        <label for="name" class="form-label">Tên</label>
+        <input
+          type="text"
+          class="form-control"
+          id="name"
+          name="name"
+          placeholder="Nhập tên"
+        />
+      </div>
+
+      <div class="my-3">
+        <label for="unit" class="fo rm-label">Đơn vị</label>
+        <input
+          type="text"
+          class="form-control"
+          id="unit"
+          name="unit"
+          placeholder="Nhập đơn vị"
+        />
+      </div>
+
+      <!-- Buttons -->
+      <button type="submit" class="btn btn-primary">Thêm</button>
+      <button type="reset" class="btn btn-secondary">Làm mới</button>
+    </form>
+  </div>
+</div>
+
+<!-- Modal for deleting all products -->
+<div
+  class="modal fade"
+  id="deleteAll-admin-user"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="deleteUsers"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="deleteUsers">Xóa tất cả tài khoản</h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+
+      <form action="/quan-ly-hang-hoa/deleteAll" method="post">
+        <div class="modal-body">
+          Bạn có muốn xóa <strong>tất cả</strong> thông tin người quản lý ? Hành
+          động này không thể hoàn tác.
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-danger">Xác nhận</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(".btn").click(function () {
+    $(this).find(".ri-arrow-up-s-line").toggleClass("rotate");
+  });
+</script>
