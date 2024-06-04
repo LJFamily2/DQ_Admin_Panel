@@ -1,14 +1,16 @@
 const AreaModel = require("../models/areaModel");
 const handleResponse = require("./utils/handleResponse");
-const PlantationModel = require('../models/plantationModel')
+const PlantationModel = require("../models/plantationModel");
 
 async function renderPage(req, res) {
   try {
-    const areas = await AreaModel.find({}).populate('plantations').exec();
+    const plantations = await PlantationModel.find({});
+    const areas = await AreaModel.find({}).populate("plantations").exec();
     res.render("src/areaPage", {
       layout: "./layouts/defaultLayout",
       title: "Quản lý khu vực",
       areas,
+      plantations,
       messages: req.flash(),
     });
   } catch (err) {
@@ -18,10 +20,9 @@ async function renderPage(req, res) {
 
 async function createArea(req, res) {
   try {
-    console.log(req.body)
     const { name, plantation } = req.body;
 
-    let checkExist = await AreaModel.findOne({name: name});
+    let checkExist = await AreaModel.findOne({ name: name });
 
     if (checkExist) {
       return handleResponse(
@@ -35,30 +36,30 @@ async function createArea(req, res) {
     }
 
     // Ensure plantation is an array
-    const plantationArray = Array.isArray(plantation) ? plantation : [plantation];
+    let plantationArray = Array.isArray(plantation)
+      ? plantation
+      : [plantation];
 
-    const plantationIds = [];
+    plantationArray = plantationArray.filter(p => p && p.trim() !== '' )
 
-    for (const p of plantationArray) {
-      let plantationRecord = await PlantationModel.findOne({ name: p });
+    const plantationPromises = plantationArray.map(async p => {
+      let plantationRecord = await PlantationModel.findOneOrCreate({ name: p });
 
-      if (!plantationRecord) {
-        plantationRecord = await PlantationModel.create({ name: p });
-      } else {
-        // Find the area that currently has the plantation
-        const currentArea = await AreaModel.findOne({ plantations: plantationRecord._id });
+      // Find and update the area that currently has the plantation
+      await AreaModel.findOneAndUpdate(
+        { plantations: plantationRecord._id },
+        { $pull: { plantations: plantationRecord._id } }
+      );
 
-        if (currentArea) {
-          // Remove the plantation from the current area
-          currentArea.plantations.pull(plantationRecord._id);
-          await currentArea.save();
-        }
-      }
+      return plantationRecord._id;
+    });
 
-      plantationIds.push(plantationRecord._id);
-    }
+    const plantationIds = await Promise.all(plantationPromises);
 
-    const newArea = await AreaModel.create({ name, plantations: plantationIds });
+    const newArea = await AreaModel.create({
+      name,
+      plantations: plantationIds,
+    });
 
     if (!newArea) {
       return handleResponse(
@@ -85,21 +86,18 @@ async function createArea(req, res) {
   }
 }
 
-
 async function updateArea(req, res) {
   try {
-    console.log(req.body)
+    console.log(req.body);
     const id = req.params.id;
     const { name, unit } = req.body;
-    const updateFields ={
-        name,
-        unit
-    }
-    const updatedArea = await AreaModel.findByIdAndUpdate(
-      id,
-      updateFields,
-      { new: true }
-    );
+    const updateFields = {
+      name,
+      unit,
+    };
+    const updatedArea = await AreaModel.findByIdAndUpdate(id, updateFields, {
+      new: true,
+    });
 
     if (!updatedArea) {
       handleResponse(
@@ -171,13 +169,13 @@ async function deleteAllAreas(req, res) {
   try {
     await AreaModel.deleteMany({});
     handleResponse(
-        req,
-        res,
-        200,
-        "success",
-        "Xóa tất cả khu vực thành công",
-        "/quan-ly-hang-hoa"
-      );
+      req,
+      res,
+      200,
+      "success",
+      "Xóa tất cả khu vực thành công",
+      "/quan-ly-hang-hoa"
+    );
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message });
@@ -186,7 +184,9 @@ async function deleteAllAreas(req, res) {
 
 async function getArea(req, res) {
   var areaId = req.params.id;
-  var areaData = await AreaModel.findById(areaId).populate('plantations').exec();
+  var areaData = await AreaModel.findById(areaId)
+    .populate("plantations")
+    .exec();
   res.json(areaData);
 }
 
