@@ -4,10 +4,11 @@ const router = express.Router();
 const areaController = require('../../controllers/areaController')
 
 router.get("/", areaController.renderPage )
-router.post("/addProduct", areaController.createProduct )
-router.post("/getProducts", areaController.getProducts )
-router.post("/update/:id", areaController.updateProduct )
-router.post("/delete/:id", areaController.deleteProduct )
-router.post("/deleteAll", areaController.deleteAllProducts )
+router.post("/addArea", areaController.createArea )
+router.post("/getAreas", areaController.getAreas )
+router.post("/getArea/:id", areaController.getArea )
+router.post("/update/:id", areaController.updateArea )
+router.post("/delete/:id", areaController.deleteArea )
+router.post("/deleteAll", areaController.deleteAllAreas )
 
 module.exports = router;

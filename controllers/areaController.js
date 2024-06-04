@@ -1,12 +1,13 @@
 const AreaModel = require("../models/areaModel");
 const handleResponse = require("./utils/handleResponse");
+const PlantationModel = require('../models/plantationModel')
 
 async function renderPage(req, res) {
   try {
-    const areas = await AreaModel.find({});
+    const areas = await AreaModel.find({}).populate('plantations').exec();
     res.render("src/areaPage", {
       layout: "./layouts/defaultLayout",
-      title: "Quản lý hàng hóa",
+      title: "Quản lý khu vực",
       areas,
       messages: req.flash(),
     });
@@ -15,37 +16,77 @@ async function renderPage(req, res) {
   }
 }
 
-async function createProduct(req, res) {
+async function createArea(req, res) {
   try {
     console.log(req.body)
-    const { name, unit } = req.body;
+    const { name, plantation } = req.body;
 
-    const newProduct = await ProductModel.create({ name, unit });
-    if (!newProduct) {
-      handleResponse(
+    let checkExist = await AreaModel.findOne({name: name});
+
+    if (checkExist) {
+      return handleResponse(
         req,
         res,
         404,
         "fail",
-        "Thêm hàng hóa thất bại",
-        "/quan-ly-hang-hoa"
+        "Khu vực đã tồn tại",
+        "/quan-ly-khu-vuc"
       );
     }
-    handleResponse(
+
+    // Ensure plantation is an array
+    const plantationArray = Array.isArray(plantation) ? plantation : [plantation];
+
+    const plantationIds = [];
+
+    for (const p of plantationArray) {
+      let plantationRecord = await PlantationModel.findOne({ name: p });
+
+      if (!plantationRecord) {
+        plantationRecord = await PlantationModel.create({ name: p });
+      } else {
+        // Find the area that currently has the plantation
+        const currentArea = await AreaModel.findOne({ plantations: plantationRecord._id });
+
+        if (currentArea) {
+          // Remove the plantation from the current area
+          currentArea.plantations.pull(plantationRecord._id);
+          await currentArea.save();
+        }
+      }
+
+      plantationIds.push(plantationRecord._id);
+    }
+
+    const newArea = await AreaModel.create({ name, plantations: plantationIds });
+
+    if (!newArea) {
+      return handleResponse(
+        req,
+        res,
+        404,
+        "fail",
+        "Thêm khu vực thất bại",
+        "/quan-ly-khu-vuc"
+      );
+    }
+
+    return handleResponse(
       req,
       res,
       201,
       "success",
-      "Thêm hàng hóa thành công",
-      "/quan-ly-hang-hoa"
+      "Thêm khu vực thành công",
+      "/quan-ly-khu-vuc"
     );
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: err.message });
   }
 }
 
-async function updateProduct(req, res) {
+
+async function updateArea(req, res) {
   try {
     console.log(req.body)
     const id = req.params.id;
@@ -54,19 +95,19 @@ async function updateProduct(req, res) {
         name,
         unit
     }
-    const updatedProduct = await ProductModel.findByIdAndUpdate(
+    const updatedArea = await AreaModel.findByIdAndUpdate(
       id,
       updateFields,
       { new: true }
     );
 
-    if (!updatedProduct) {
+    if (!updatedArea) {
       handleResponse(
         req,
         res,
         404,
         "fail",
-        "Cập nhật hàng hóa thất bại",
+        "Cập nhật khu vực thất bại",
         "/quan-ly-hang-hoa"
       );
     }
@@ -76,7 +117,7 @@ async function updateProduct(req, res) {
       res,
       200,
       "success",
-      "Cập nhật hàng hóa thành công",
+      "Cập nhật khu vực thành công",
       "/quan-ly-hang-hoa"
     );
   } catch (err) {
@@ -85,7 +126,7 @@ async function updateProduct(req, res) {
   }
 }
 
-async function deleteProduct(req, res) {
+async function deleteArea(req, res) {
   try {
     const { id } = req.params;
 
@@ -95,20 +136,20 @@ async function deleteProduct(req, res) {
         res,
         404,
         "fail",
-        "Không tìm thấy hàng hóa trong cơ sở dữ liệu",
+        "Không tìm thấy khu vực trong cơ sở dữ liệu",
         "/quan-ly-hang-hoa"
       );
     }
 
-    const deletedProduct = await ProductModel.findByIdAndDelete(id);
+    const deletedArea = await AreaModel.findByIdAndDelete(id);
 
-    if (!deletedProduct) {
+    if (!deletedArea) {
       handleResponse(
         req,
         res,
         404,
         "fail",
-        "Xóa hàng hóa thất bại",
+        "Xóa khu vực thất bại",
         "/quan-ly-hang-hoa"
       );
     }
@@ -117,7 +158,7 @@ async function deleteProduct(req, res) {
       res,
       200,
       "success",
-      "Xóa hàng hóa thành công",
+      "Xóa khu vực thành công",
       "/quan-ly-hang-hoa"
     );
   } catch (err) {
@@ -126,15 +167,15 @@ async function deleteProduct(req, res) {
   }
 }
 
-async function deleteAllProducts(req, res) {
+async function deleteAllAreas(req, res) {
   try {
-    await ProductModel.deleteMany({});
+    await AreaModel.deleteMany({});
     handleResponse(
         req,
         res,
         200,
         "success",
-        "Xóa tất cả hàng hóa thành công",
+        "Xóa tất cả khu vực thành công",
         "/quan-ly-hang-hoa"
       );
   } catch (err) {
@@ -143,7 +184,13 @@ async function deleteAllProducts(req, res) {
   }
 }
 
-async function getProducts(req, res) {
+async function getArea(req, res) {
+  var areaId = req.params.id;
+  var areaData = await AreaModel.findById(areaId).populate('plantations').exec();
+  res.json(areaData);
+}
+
+async function getAreas(req, res) {
   try {
     const { draw, start = 0, length = 10, search, order, columns } = req.body;
     const searchValue = search?.value || "";
@@ -160,9 +207,9 @@ async function getProducts(req, res) {
         }
       : {};
 
-    const totalRecords = await ProductModel.countDocuments();
-    const filteredRecords = await ProductModel.countDocuments(searchQuery);
-    const products = await ProductModel.find(searchQuery)
+    const totalRecords = await AreaModel.countDocuments();
+    const filteredRecords = await AreaModel.countDocuments(searchQuery);
+    const products = await AreaModel.find(searchQuery)
       .sort({ [sortColumn]: sortDirection })
       .skip(parseInt(start, 10))
       .limit(parseInt(length, 10))
@@ -188,10 +235,11 @@ async function getProducts(req, res) {
 }
 
 module.exports = {
-  createProduct,
-  updateProduct,
-  deleteProduct,
-  deleteAllProducts,
-  getProducts,
+  createArea,
+  updateArea,
+  deleteArea,
+  deleteAllAreas,
+  getArea,
+  getAreas,
   renderPage,
 };

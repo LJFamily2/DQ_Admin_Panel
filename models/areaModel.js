@@ -5,7 +5,7 @@ const areaSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    plantation: [{
+    plantations: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Vườn"
     }],

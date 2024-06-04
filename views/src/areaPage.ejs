@@ -1,7 +1,7 @@
 <head>
-
   <!-- js -->
   <script src="/js/multipleFields.js" defer></script>
+
   <style>
     .rotate {
       transform: rotate(180deg);
@@ -9,118 +9,131 @@
     }
   </style>
 </head>
-<button
+<!-- <button
   type="button"
   class="btn btn-danger mx-2 mx-md-4 my-3"
   data-bs-toggle="modal"
   data-bs-target="#deleteAll-admin-user"
   style="width: max-content"
 >
-  Xóa tất cả hàng hóa
-</button>
+  Xóa tất cả khu vực
+</button> -->
+
 <div class="row m-0 px-2">
   <div class="col-12 col-md-9 p-0 px-md-3">
-    <div
-      class="col rounded-2 p-2"
-      style="box-shadow: 0 0 10px; max-height: 80dvh"
-    >
+    <div class="col rounded-2 p-2" style="box-shadow: 0 0 10px; max-height: 80dvh; overflow-y: auto;">
+      <h4 class="my-3">Danh sách khu vực</h4>
+      <% areas.forEach((area, index) => { %>
       <div class="areaList">
         <button
-          class="btn btn-secondary w-100 d-flex justify-content-between my-2"
+          class="btn <%= area.plantations.length === 0 ? 'btn-danger' : 'btn-secondary' %> w-100 d-flex justify-content-between my-2"
           type="button"
           data-bs-toggle="collapse"
-          data-bs-target="#area"
+          data-bs-target="#area<%= index %>"
           aria-expanded="false"
-          aria-controls="area"
+          aria-controls="area<%= index %>"
         >
-          Button with data-bs-target
-          <i class="ri-arrow-up-s-line"></i>
+          <%= area.name %> (<%= area.plantations.length %> vườn)
+          <i class="ri-arrow-up-s-line" style="transition: transform 0.3s ease-in-out"></i>
         </button>
-
-        <div class="collapse my-1" id="area">
+        <div class="collapse my-1" id="area<%= index %>">
           <div class="card card-body">
             <ol class="gap-5 h-100 m-0" style="display: flex; flex-wrap: wrap">
-              <li>khu a</li>
-              <li>khu a</li>
+              <% if (area.plantations.length === 0) { %>
+              <li class="d-block w-100 text-center">Không có vườn</li>
+              <% } else { %> <% area.plantations.forEach(plantation => { %>
+              <li><%= plantation.name %></li>
+              <% }) %> <% } %>
             </ol>
           </div>
         </div>
       </div>
+      <% }) %>
     </div>
   </div>
-  <div
-    class="col-12 col-md-3 rounded-2 my-5 m-md-0 py-3"
-    style="
-      box-shadow: 0 0 10px;
-      background: var(--background_color);
-      max-height: 80dvh;
-      overflow-y: auto;
-    "
-  >
+  <div class="col-12 col-md-3 rounded-2 my-5 m-md-0 py-3" style="box-shadow: 0 0 10px; background: var(--background_color); max-height: 80dvh; overflow-y: auto;">
     <%- include('../partials/notificationMessage.ejs') %>
-    <h4>Tạo khu vực</h4>
-    <form action="/quan-ly-hang-hoa/addProduct" method="post">
-      <div class="my-3">
-        <label for="name" class="form-label">Tên khu vực</label>
-        <input
-          type="text"
-          class="form-control"
-          id="name"
-          name="name"
-          placeholder="Nhập tên khu vực"
-        />
+    <div class="accordion" id="areaAccordion">
+      <div class="d-flex">
+        <button
+          class="btn btn-primary d-flex justify-content-between my-2"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#createArea"
+          aria-expanded="false"
+          aria-controls="createArea"
+        >
+          Tạo khu vực
+        </button>
+        <button
+          class="btn btn-secondary d-flex justify-content-between my-2 mx-2"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#updateArea"
+          aria-expanded="false"
+          aria-controls="updateArea"
+        >
+          Chỉnh sửa
+        </button>
       </div>
 
-      <div class="my-3" id="plantation-fields">
-        <label for="plantation" class="form-label">Vườn</label>
-        <div class="input_field d-flex align-items-center">
-          <input
-            type="text"
-            class="form-control"
-            name="plantation"
-            placeholder="Nhập tên vườn"
-          />
-          <i
-            class="ri-add-line fs-4 mx-1"
-            onclick="addInputField('#plantation-fields')"
-            style="cursor: pointer;"
-          ></i>
-        </div>
+      <div id="createArea" class="collapse show" aria-labelledby="createAreaHeading" data-bs-parent="#areaAccordion">
+        <form action="/quan-ly-khu-vuc/addArea" method="post">
+          <div class="my-3">
+            <label for="name" class="form-label">Tên khu vực</label>
+            <input type="text" class="form-control" id="name" name="name" placeholder="Nhập tên khu vực" />
+          </div>
+          <div class="my-3" id="plantation-fields">
+            <label for="plantation" class="form-label">Vườn</label>
+            <div class="input_field d-flex align-items-center">
+              <input type="text" class="form-control" name="plantation" placeholder="Nhập tên vườn" />
+              <i class="ri-add-line fs-4 mx-1" onclick="addInputField('#plantation-fields')" style="cursor: pointer"></i>
+            </div>
+          </div>
+          <!-- Buttons -->
+          <button type="submit" class="btn btn-primary">Thêm</button>
+          <button type="reset" class="btn btn-secondary">Làm mới</button>
+        </form>
       </div>
 
-      <!-- Buttons -->
-      <button type="submit" class="btn btn-primary">Thêm</button>
-      <button type="reset" class="btn btn-secondary">Làm mới</button>
-    </form>
+      <div id="updateArea" class="collapse" aria-labelledby="updateAreaHeading" data-bs-parent="#areaAccordion">
+        <form action="/quan-ly-khu-vuc/updateArea" method="post">
+          <div class="my-3">
+            <label for="area" class="form-label">Chọn khu vực</label>
+            <select class="form-select" id="area" name="area">
+              <option selected disabled>Chọn khu vực</option>
+              <% areas.forEach((area) => { %>
+              <option value="<%= area._id %>"><%= area.name %></option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="my-3">
+            <label for="updateName" class="form-label">Tên khu vực</label>
+            <input type="text" class="form-control" id="updateName" name="name" placeholder="Nhập tên khu vực" />
+          </div>
+          <div class="my-3">
+            <ul class="list-group"></ul>
+          </div>
+          <!-- Buttons -->
+          <button type="submit" class="btn btn-primary">Chỉnh sửa</button>
+          <button type="reset" class="btn btn-secondary">Làm mới</button>
+        </form>
+      </div>
+    </div>
   </div>
 </div>
 
 <!-- Modal for deleting all products -->
-<div
-  class="modal fade"
-  id="deleteAll-admin-user"
-  data-bs-backdrop="static"
-  data-bs-keyboard="false"
-  tabindex="-1"
-  aria-labelledby="deleteUsers"
-  aria-hidden="true"
->
+<div class="modal fade" id="deleteAll-admin-user" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteUsers" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="deleteUsers">Xóa tất cả tài khoản</h1>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-
-      <form action="/quan-ly-hang-hoa/deleteAll" method="post">
+      <form action="/quan-ly-khu-vuc/deleteAll" method="post">
         <div class="modal-body">
-          Bạn có muốn xóa <strong>tất cả</strong> thông tin người quản lý ? Hành
-          động này không thể hoàn tác.
+          Bạn có muốn xóa <strong>tất cả</strong> thông tin người quản lý? Hành động này không thể hoàn tác.
         </div>
         <div class="modal-footer">
           <button type="submit" class="btn btn-danger">Xác nhận</button>
@@ -131,7 +144,65 @@
 </div>
 
 <script>
-  $(".btn").click(function () {
-    $(this).find(".ri-arrow-up-s-line").toggleClass("rotate");
+  function showCollapse(elementId) {
+    var element = document.getElementById(elementId);
+    if (element) {
+      var bsCollapse = new bootstrap.Collapse(element, { toggle: false });
+      bsCollapse.show();
+    }
+  }
+
+  document.getElementById("area").addEventListener("change", function () {
+    var selectedAreaId = this.value;
+    fetch(`/quan-ly-khu-vuc/getArea/${selectedAreaId}`, { method: "POST" })
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById("updateName").value = data.name;
+        var previousAreaContainer = document.querySelector(".collapse.show");
+        if (previousAreaContainer) {
+          new bootstrap.Collapse(previousAreaContainer);
+        }
+        showCollapse(`area${this.selectedIndex - 1}`);
+        showCollapse("updateArea");
+
+        var list = document.querySelector(".list-group");
+        list.innerHTML = "";
+        data.plantations.forEach((plantation, index) => {
+          var listItem = document.createElement("li");
+          listItem.className = "list-group-item d-flex justify-content-between";
+          listItem.innerHTML = `
+            <span>${index + 1}. ${plantation.name}</span>
+            <div class="d-flex">
+              <i class="ri-edit-box-line mx-1" style="cursor: pointer"></i>
+              <i class="ri-delete-bin-line mx-1" style="cursor: pointer"></i>
+            </div>
+          `;
+          list.appendChild(listItem);
+        });
+      });
+  });
+
+  document.querySelectorAll(".btn").forEach(button => {
+    button.addEventListener("click", function () {
+      this.querySelector(".ri-arrow-up-s-line").classList.toggle("rotate");
+    });
+  });
+
+  function toggleClasses(element1, element2, class1, class2) {
+    element1.classList.remove(class2);
+    element1.classList.add(class1);
+    element2.classList.remove(class1);
+    element2.classList.add(class2);
+  }
+
+  var createAreaButton = document.querySelector('[data-bs-target="#createArea"]');
+  var updateAreaButton = document.querySelector('[data-bs-target="#updateArea"]');
+
+  createAreaButton.addEventListener("click", function () {
+    toggleClasses(createAreaButton, updateAreaButton, "btn-primary", "btn-secondary");
+  });
+
+  updateAreaButton.addEventListener("click", function () {
+    toggleClasses(updateAreaButton, createAreaButton, "btn-primary", "btn-secondary");
   });
 </script>
