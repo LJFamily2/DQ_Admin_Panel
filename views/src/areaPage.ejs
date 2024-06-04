@@ -1,4 +1,7 @@
 <head>
+
+  <!-- js -->
+  <script src="/js/multipleFields.js" defer></script>
   <style>
     .rotate {
       transform: rotate(180deg);
@@ -36,13 +39,10 @@
 
         <div class="collapse my-1" id="area">
           <div class="card card-body">
-            <ul
-              class="gap-5 h-100 m-0 p-0"
-              style="list-style: none; display: flex; flex-wrap: wrap"
-            >
-              <li>1. khu a</li>
-              <li>1. khu a</li>
-            </ul>
+            <ol class="gap-5 h-100 m-0" style="display: flex; flex-wrap: wrap">
+              <li>khu a</li>
+              <li>khu a</li>
+            </ol>
           </div>
         </div>
       </div>
@@ -58,28 +58,34 @@
     "
   >
     <%- include('../partials/notificationMessage.ejs') %>
-    <h4>Thêm hàng hóa</h4>
+    <h4>Tạo khu vực</h4>
     <form action="/quan-ly-hang-hoa/addProduct" method="post">
       <div class="my-3">
-        <label for="name" class="form-label">Tên</label>
+        <label for="name" class="form-label">Tên khu vực</label>
         <input
           type="text"
           class="form-control"
           id="name"
           name="name"
-          placeholder="Nhập tên"
+          placeholder="Nhập tên khu vực"
         />
       </div>
 
-      <div class="my-3">
-        <label for="unit" class="fo rm-label">Đơn vị</label>
-        <input
-          type="text"
-          class="form-control"
-          id="unit"
-          name="unit"
-          placeholder="Nhập đơn vị"
-        />
+      <div class="my-3" id="plantation-fields">
+        <label for="plantation" class="form-label">Vườn</label>
+        <div class="input_field d-flex align-items-center">
+          <input
+            type="text"
+            class="form-control"
+            name="plantation"
+            placeholder="Nhập tên vườn"
+          />
+          <i
+            class="ri-add-line fs-4 mx-1"
+            onclick="addInputField('#plantation-fields')"
+            style="cursor: pointer;"
+          ></i>
+        </div>
       </div>
 
       <!-- Buttons -->
