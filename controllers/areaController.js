@@ -36,22 +36,24 @@ async function createArea(req, res) {
     }
 
     // Ensure plantation is an array
-    let plantationArray = Array.isArray(plantation)
-      ? plantation
-      : [plantation];
+    let plantationArray = Array.isArray(plantation) ? plantation : [plantation];
 
-    plantationArray = plantationArray.filter(p => p && p.trim() !== '' )
+    // Remove empty or whitespace-only strings
+    plantationArray = plantationArray.filter((p) => p && p.trim() !== "");
 
-    const plantationPromises = plantationArray.map(async p => {
-      let plantationRecord = await PlantationModel.findOneOrCreate({ name: p });
+    // Remove duplicates
+    plantationArray = [...new Set(plantationArray)];
+
+    const plantationPromises = plantationArray.map(async (p) => {
+      const { _id } = await PlantationModel.findOneOrCreate({ name: p });
 
       // Find and update the area that currently has the plantation
       await AreaModel.findOneAndUpdate(
-        { plantations: plantationRecord._id },
-        { $pull: { plantations: plantationRecord._id } }
+        { plantations: _id },
+        { $pull: { plantations: _id } }
       );
 
-      return plantationRecord._id;
+      return _id;
     });
 
     const plantationIds = await Promise.all(plantationPromises);
@@ -85,6 +87,16 @@ async function createArea(req, res) {
     return res.status(500).json({ error: err.message });
   }
 }
+
+PlantationModel.findOneOrCreate = async function findOneOrCreate(condition) {
+  const self = this;
+  let result = await self.findOne(condition);
+  if (result) {
+    return result;
+  }
+  result = new self(condition);
+  return await result.save();
+};
 
 async function updateArea(req, res) {
   try {
