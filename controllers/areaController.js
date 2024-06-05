@@ -197,7 +197,9 @@ async function removePlantationFromArea(req, res) {
 async function deleteAreas(req, res) {
   try {
     console.log(req.body)
-    const { areaID } = req.body;
+    let { areaID } = req.body;
+    areaID = [].concat(areaID); 
+
     if (!areaID) {
       handleResponse(
         req,

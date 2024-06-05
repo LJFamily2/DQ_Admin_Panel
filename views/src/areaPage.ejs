@@ -62,7 +62,8 @@
       <% }) %>
     </div>
   </div>
-  <div class="col-12 col-md-3 rounded-2 my-5 m-md-0 py-3"
+  <div
+    class="col-12 col-md-3 rounded-2 my-5 m-md-0 py-3"
     style="
       box-shadow: 0 0 10px;
       background: var(--background_color);
@@ -195,14 +196,58 @@
         <form action="/quan-ly-khu-vuc/deleteAreas" method="post">
           <div class="my-3">
             <label for="deleteAreaField" class="form-label">Chọn khu vực</label>
-            <select class="form-control slim-select-multi" multiple id="deleteAreaField" name="areaID" >
+            <select
+              class="form-control slim-select-multi"
+              multiple
+              id="deleteAreaField"
+              name="areaID"
+            >
               <% areas.forEach((area) => { %>
               <option value="<%= area._id %>"><%= area.name %></option>
               <% }) %>
             </select>
           </div>
           <!-- Buttons -->
-          <button type="submit" class="btn btn-danger">Xóa</button>
+          <button
+            type="button"
+            class="btn btn-danger"
+            data-bs-toggle="modal"
+            data-bs-target="#deleteModalToggle"
+          >
+            Xóa
+          </button>
+          <!-- Delete confirming modal  -->
+          <div
+            class="modal fade"
+            id="deleteModalToggle"
+            aria-hidden="true"
+            aria-labelledby="exampleModalToggleLabel"
+            tabindex="-1"
+          >
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="exampleModalToggleLabel">
+                    Xác nhận xóa ?
+                  </h1>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
+                <div class="modal-body">
+                  Bạn có muốn xóa khu vực này không? Hành động này không thể hoàn tác.
+                </div>
+                <div class="modal-footer">
+                  <button type="submit" class="btn btn-success">
+                    Xác nhận
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </form>
       </div>
     </div>
@@ -232,8 +277,8 @@
       </div>
       <form action="/quan-ly-khu-vuc/deleteAll" method="post">
         <div class="modal-body">
-          Bạn có muốn xóa <strong>tất cả</strong> khu vực? Những không tin của vườn sẽ dc giữ. Hành
-          động này không thể hoàn tác.
+          Bạn có muốn xóa <strong>tất cả</strong> khu vực? Những không tin của
+          vườn sẽ dc giữ. Hành động này không thể hoàn tác.
         </div>
         <div class="modal-footer">
           <button type="submit" class="btn btn-danger">Xác nhận</button>
