@@ -1,3 +1,6 @@
+<head>
+  <script src="/js/toggleButtons.js" defer></script>
+</head>
 <div class="row m-0 mt-2">
   <!-- Profile Section -->
   <div class="col-md-6 col-12 mb-3" id="profile-section">
@@ -99,13 +102,6 @@
 
 
 <script>
-  function toggleButtons(show, selector) {
-    const buttons = document.querySelectorAll(selector);
-    buttons.forEach((button) => {
-      button.style.display = show ? "inline-block" : "none";
-    });
-  }
-
   function togglePasswordForm(show) {
     const passwordForm = document.getElementById("passwordForm");
     passwordForm.style.display = show ? "block" : "none";

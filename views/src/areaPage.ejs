@@ -2,15 +2,19 @@
   <!-- js -->
   <script src="/js/multipleFields.js"></script>
   <script src="/js/slim-select.js" defer></script>
+  <script src="/js/toggleButtons.js" defer></script>
 
   <style>
+    .hide {
+      display: none;
+    }
     .rotate {
       transform: rotate(180deg);
       transition: transform 0.3s ease-in-out;
     }
   </style>
 </head>
-<!-- <button
+<button
   type="button"
   class="btn btn-danger mx-2 mx-md-4 my-3"
   data-bs-toggle="modal"
@@ -18,7 +22,7 @@
   style="width: max-content"
 >
   Xóa tất cả khu vực
-</button> -->
+</button>
 
 <div class="row m-0 px-2">
   <div class="col-12 col-md-9 p-0 px-md-3">
@@ -58,8 +62,7 @@
       <% }) %>
     </div>
   </div>
-  <div
-    class="col-12 col-md-3 rounded-2 my-5 m-md-0 py-3"
+  <div class="col-12 col-md-3 rounded-2 my-5 m-md-0 py-3"
     style="
       box-shadow: 0 0 10px;
       background: var(--background_color);
@@ -90,8 +93,18 @@
         >
           Chỉnh sửa
         </button>
+        <button
+          class="btn btn-danger d-flex justify-content-between my-2 mx-2"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#deleteArea"
+          aria-expanded="false"
+          aria-controls="deleteArea"
+        >
+          Xóa khu vực
+        </button>
       </div>
-
+      <!-- Create Area -->
       <div
         id="createArea"
         class="collapse show"
@@ -133,10 +146,10 @@
             </div>
           </div>
           <!-- Buttons -->
-          <button type="submit" class="btn btn-success">Lưu mới</button>
+          <button type="submit" class="btn btn-success">Tạo mới</button>
         </form>
       </div>
-
+      <!-- Update Area -->
       <div
         id="updateArea"
         class="collapse"
@@ -161,16 +174,36 @@
               id="updateName"
               name="name"
               placeholder="Nhập tên khu vực"
+              onchange="toggleButtons(true, '#updateArea button')"
               disabled
             />
           </div>
+          <div class="my-3">
+            <ul class="list-group"></ul>
+          </div>
           <!-- Buttons -->
-          <button type="submit" class="btn btn-success">Lưu mới</button>
+          <button type="submit" class="btn btn-success hide">Lưu mới</button>
         </form>
-
-        <div class="my-3">
-          <ul class="list-group"></ul>
-        </div>
+      </div>
+      <!-- Delete Area -->
+      <div
+        id="deleteArea"
+        class="collapse"
+        aria-labelledby="deleteAreaHeading"
+        data-bs-parent="#areaAccordion"
+      >
+        <form action="/quan-ly-khu-vuc/deleteAreas" method="post">
+          <div class="my-3">
+            <label for="deleteAreaField" class="form-label">Chọn khu vực</label>
+            <select class="form-control slim-select-multi" multiple id="deleteAreaField" name="areaID" >
+              <% areas.forEach((area) => { %>
+              <option value="<%= area._id %>"><%= area.name %></option>
+              <% }) %>
+            </select>
+          </div>
+          <!-- Buttons -->
+          <button type="submit" class="btn btn-danger">Xóa</button>
+        </form>
       </div>
     </div>
   </div>
@@ -189,7 +222,7 @@
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="deleteUsers">Xóa tất cả tài khoản</h1>
+        <h1 class="modal-title fs-5" id="deleteUsers">Xóa tất cả khu vực</h1>
         <button
           type="button"
           class="btn-close"
@@ -199,10 +232,51 @@
       </div>
       <form action="/quan-ly-khu-vuc/deleteAll" method="post">
         <div class="modal-body">
-          Bạn có muốn xóa <strong>tất cả</strong> thông tin người quản lý? Hành
+          Bạn có muốn xóa <strong>tất cả</strong> khu vực? Những không tin của vườn sẽ dc giữ. Hành
           động này không thể hoàn tác.
         </div>
         <div class="modal-footer">
+          <button type="submit" class="btn btn-danger">Xác nhận</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Delete plantation Confirmation Modal -->
+<div
+  class="modal fade"
+  id="deleteConfirmModal"
+  tabindex="-1"
+  aria-labelledby="deleteConfirmModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteConfirmModalLabel">Xác nhận xóa?</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <form action="/quan-ly-khu-vuc/removePlantaion" method="post">
+        <input type="hidden" id="deleteAreaId" name="areaId" value="" />
+        <input type="hidden" id="deleteId" name="plantationId" value="" />
+        <div class="modal-body">
+          Bạn có muốn xóa <strong id="deleteName"></strong>? Hành động này không
+          thể hoàn tác.
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Hủy
+          </button>
           <button type="submit" class="btn btn-danger">Xác nhận</button>
         </div>
       </form>
@@ -220,39 +294,67 @@
   }
 
   document.getElementById("area").addEventListener("change", function () {
-    var selectedAreaId = this.value;
+    const selectedAreaId = this.value;
     fetch(`/quan-ly-khu-vuc/getArea/${selectedAreaId}`, { method: "POST" })
       .then((response) => response.json())
       .then((data) => {
-        var previousAreaContainer = document.querySelector(".collapse.show");
-        if (previousAreaContainer) {
+        const previousAreaContainer = document.querySelector(".collapse.show");
+        if (previousAreaContainer)
           new bootstrap.Collapse(previousAreaContainer);
-        }
+
         showCollapse(`area${this.selectedIndex - 1}`);
         showCollapse("updateArea");
 
-        document.getElementById("updateName").disabled = false;
-        document.getElementById("updateName").value = data.name;
+        const updateName = document.getElementById("updateName");
+        updateName.disabled = false;
+        updateName.value = data.name;
 
-        var list = document.querySelector(".list-group");
-        list.innerHTML = "";
-        // Create a new h6 element
-        var header = document.createElement("h6");
-        header.textContent = "Các vườn trong khu vực:";
-        list.appendChild(header);
+        const list = document.querySelector(".list-group");
+        list.innerHTML = `<h6>Các vườn trong khu vực:</h6>`;
 
-        data.plantations.forEach((plantation, index) => {
-          var listItem = document.createElement("li");
-          listItem.className = "list-group-item d-flex justify-content-between";
-          listItem.innerHTML = `
-            <span>${index + 1}. ${plantation.name}</span>
-            <div class="d-flex">
-              <i class="ri-edit-box-line mx-1" style="cursor: pointer"></i>
-              <i class="ri-delete-bin-line mx-1" style="cursor: pointer"></i>
-            </div>
-          `;
-          list.appendChild(listItem);
-          
+        if (data.plantations && data.plantations.length > 0) {
+          data.plantations.forEach((plantation, index) => {
+            if (plantation && plantation.name) {
+              list.innerHTML += `
+                <li class="list-group-item d-flex justify-content-between" data-id="${
+                  plantation._id
+                }" data-name="${plantation.name}">
+                  <span>${index + 1}. ${plantation.name}</span>
+                  <div class="d-flex">
+                    <i class="ri-edit-box-line mx-1 delete-icon" style="cursor: pointer"></i>
+                    <i class="ri-delete-bin-line mx-1" style="cursor: pointer"></i>
+                  </div>
+                </li>
+              `;
+            }
+          });
+        } else {
+          list.innerHTML += `<p>Không có vườn</p>`;
+        }
+
+        // Add event listener to the list
+        list.addEventListener("click", function (event) {
+          // Check if the clicked element is a delete icon
+          if (event.target.classList.contains("ri-delete-bin-line")) {
+            // Get the list item
+            const listItem = event.target.closest(".list-group-item");
+
+            // Get the id, name, and area id of the item to be deleted
+            const itemId = listItem.dataset.id;
+            const itemName = listItem.dataset.name;
+            const areaId = document.getElementById("area").value;
+
+            // Set the id, name, and area id in the modal
+            document.getElementById("deleteId").value = itemId;
+            document.getElementById("deleteName").textContent = itemName;
+            document.getElementById("deleteAreaId").value = areaId;
+
+            // Show the delete confirmation modal
+            var modal = new bootstrap.Modal(
+              document.getElementById("deleteConfirmModal")
+            );
+            modal.show();
+          }
         });
       });
   });

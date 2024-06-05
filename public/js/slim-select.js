@@ -1,9 +1,16 @@
-document.addEventListener('DOMContentLoaded', function () {
-  const slimSelectFields = document.querySelectorAll('.slim-select');
+document.addEventListener("DOMContentLoaded", function () {
+    function initializeSlimSelect(selector) {
+        new SlimSelect({
+            select: selector,
+            settings: {
+                searchPlaceholder: 'Tìm kiếm...',
+                searchText: 'Không có kết quả',
+                searchingText: 'Tìm kiếm',
+                placeholderText: 'Chọn khu vực',
+            }
+        });
+    }
 
-  slimSelectFields.forEach(function(field) {
-    new SlimSelect({
-      select: field,
-    });
-  }); 
+    initializeSlimSelect(".slim-select");
+    initializeSlimSelect(".slim-select-multi");
 });

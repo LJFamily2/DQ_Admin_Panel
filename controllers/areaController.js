@@ -2,6 +2,17 @@ const AreaModel = require("../models/areaModel");
 const handleResponse = require("./utils/handleResponse");
 const PlantationModel = require("../models/plantationModel");
 
+module.exports = {
+  createArea,
+  updateArea,
+  removePlantationFromArea,
+  deleteAreas,
+  deleteAllAreas,
+  getArea,
+  getAreas,
+  renderPage,
+};
+
 async function renderPage(req, res) {
   try {
     const plantations = await PlantationModel.find({});
@@ -101,13 +112,14 @@ PlantationModel.findOneOrCreate = async function findOneOrCreate(condition) {
 async function updateArea(req, res) {
   try {
     console.log(req.body);
-    const id = req.params.id;
-    const { name, unit } = req.body;
+    const { area ,name } = req.body;
+
+
+
     const updateFields = {
       name,
-      unit,
     };
-    const updatedArea = await AreaModel.findByIdAndUpdate(id, updateFields, {
+    const updatedArea = await AreaModel.findByIdAndUpdate(area, updateFields, {
       new: true,
     });
 
@@ -118,7 +130,7 @@ async function updateArea(req, res) {
         404,
         "fail",
         "Cập nhật khu vực thất bại",
-        "/quan-ly-hang-hoa"
+        "/quan-ly-khu-vuc"
       );
     }
 
@@ -128,7 +140,7 @@ async function updateArea(req, res) {
       200,
       "success",
       "Cập nhật khu vực thành công",
-      "/quan-ly-hang-hoa"
+      "/quan-ly-khu-vuc"
     );
   } catch (err) {
     console.error(err);
@@ -136,40 +148,89 @@ async function updateArea(req, res) {
   }
 }
 
-async function deleteArea(req, res) {
+async function removePlantationFromArea(req, res) {
+  const { areaId, plantationId } = req.body;
+
   try {
-    const { id } = req.params;
+    const updatedArea = await AreaModel.findByIdAndUpdate(
+      areaId,
+      { $pull: { plantations: plantationId } },
+      { new: true }
+    );
 
-    if (!id) {
+    if (!updatedArea) {
+      return handleResponse(
+        req,
+        res,
+        404,
+        "fail",
+        "Khu vực đã tồn tại",
+        "/quan-ly-khu-vuc"
+      );
+    }
+
+    if (!updatedArea.plantations.includes(plantationId)) {
+      return handleResponse(
+        req,
+        res,
+        200,
+        "success",
+        "Xóa vườn khỏi khu vực thành công",
+        "/quan-ly-khu-vuc"
+      );
+    } else {
+      return handleResponse(
+        req,
+        res,
+        404,
+        "fail",
+        "Không tìm thấy vườn trong khu vực này",
+        "/quan-ly-khu-vuc"
+      );
+    }
+  } catch (err) {
+    console.error(err);
+    return res.status(500);
+  }
+}
+
+async function deleteAreas(req, res) {
+  try {
+    console.log(req.body)
+    const { areaID } = req.body;
+    if (!areaID) {
       handleResponse(
         req,
         res,
         404,
         "fail",
-        "Không tìm thấy khu vực trong cơ sở dữ liệu",
-        "/quan-ly-hang-hoa"
+        "Không tìm thấy khu vực để xóa",
+        "/quan-ly-khu-vuc"
       );
+      return;
     }
 
-    const deletedArea = await AreaModel.findByIdAndDelete(id);
+    const deleteResults = await Promise.all(areaID.map(areaId => AreaModel.findByIdAndDelete(areaId)));
 
-    if (!deletedArea) {
+    if (deleteResults.some(result => result == null)) {
       handleResponse(
         req,
         res,
         404,
         "fail",
-        "Xóa khu vực thất bại",
-        "/quan-ly-hang-hoa"
+        "Xóa một hoặc nhiều khu vực thất bại",
+        "/quan-ly-khu-vuc"
       );
+      return;
     }
+
     handleResponse(
       req,
       res,
       200,
       "success",
       "Xóa khu vực thành công",
-      "/quan-ly-hang-hoa"
+      "/quan-ly-khu-vuc"
     );
   } catch (err) {
     console.error(err);
@@ -186,7 +247,7 @@ async function deleteAllAreas(req, res) {
       200,
       "success",
       "Xóa tất cả khu vực thành công",
-      "/quan-ly-hang-hoa"
+      "/quan-ly-khu-vuc"
     );
   } catch (err) {
     console.error(err);
@@ -246,12 +307,4 @@ async function getAreas(req, res) {
   }
 }
 
-module.exports = {
-  createArea,
-  updateArea,
-  deleteArea,
-  deleteAllAreas,
-  getArea,
-  getAreas,
-  renderPage,
-};
+
