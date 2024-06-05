@@ -133,8 +133,7 @@
             </div>
           </div>
           <!-- Buttons -->
-          <button type="submit" class="btn btn-primary">Thêm</button>
-          <button type="reset" class="btn btn-secondary">Làm mới</button>
+          <button type="submit" class="btn btn-success">Lưu mới</button>
         </form>
       </div>
 
@@ -166,12 +165,12 @@
             />
           </div>
           <!-- Buttons -->
-          <button type="submit" class="btn btn-primary">Chỉnh sửa</button>
-          <button type="reset" class="btn btn-secondary">Làm mới</button>
+          <button type="submit" class="btn btn-success">Lưu mới</button>
         </form>
-          <div class="my-3">
-            <ul class="list-group"></ul>
-          </div>
+
+        <div class="my-3">
+          <ul class="list-group"></ul>
+        </div>
       </div>
     </div>
   </div>
@@ -231,11 +230,17 @@
         }
         showCollapse(`area${this.selectedIndex - 1}`);
         showCollapse("updateArea");
-        
+
         document.getElementById("updateName").disabled = false;
-        document.getElementById("updateName").value = data.name ;
+        document.getElementById("updateName").value = data.name;
+
         var list = document.querySelector(".list-group");
         list.innerHTML = "";
+        // Create a new h6 element
+        var header = document.createElement("h6");
+        header.textContent = "Các vườn trong khu vực:";
+        list.appendChild(header);
+
         data.plantations.forEach((plantation, index) => {
           var listItem = document.createElement("li");
           listItem.className = "list-group-item d-flex justify-content-between";
@@ -247,6 +252,7 @@
             </div>
           `;
           list.appendChild(listItem);
+          
         });
       });
   });
