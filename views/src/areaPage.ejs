@@ -1,6 +1,6 @@
 <head>
   <!-- js -->
-  <script src="/js/multipleFields.js"></script>
+  <script src="/js/multipleFieldsWithDatalist.js"></script>
   <script src="/js/slim-select.js" defer></script>
   <script src="/js/toggleButtons.js" defer></script>
   <script src="/js/areaPage.js" defer></script>
@@ -134,12 +134,13 @@
               />
               <datalist id="plantations">
                 <% plantations.forEach(plantation => { %>
-                <option value="<%= plantation.name %>"><% }) %></option>
+                  <option value="<%= plantation.name %>"></option>
+                <% }) %>
               </datalist>
 
               <i
                 class="ri-add-line fs-4 mx-1"
-                onclick="addInputField('#plantation-fields')"
+                onclick="addInputField('#plantation-fields', 'plantations')"
                 style="cursor: pointer"
               ></i>
             </div>

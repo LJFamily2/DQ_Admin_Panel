@@ -1,4 +1,4 @@
-function addInputField(parentDivId) {
+function addInputField(parentDivId, dataListId) {
   // Change the add icon of the last input field to subtract
   const lastAddIcon = document.querySelector(`${parentDivId} .ri-add-line`);
   if (lastAddIcon) {
@@ -6,6 +6,9 @@ function addInputField(parentDivId) {
     lastAddIcon.classList.add("ri-subtract-line");
     lastAddIcon.setAttribute("onclick", `removeInputField(this)`);
   }
+
+  // Get the options from the existing datalist
+  const options = document.querySelector(`#${dataListId}`).innerHTML;
 
   const newInputField = document.createElement("div");
   newInputField.classList.add(
@@ -20,15 +23,14 @@ function addInputField(parentDivId) {
       id="plantation"
       class="form-control"
       name="plantation"
-      list="plantations"
+      list="${dataListId}"
       placeholder="Chọn hoặc tạo vườn"
     />
-    <datalist id="plantations">
-      <% plantations.forEach(plantation => { %>
-      <option value="<%= plantation.name %>"><% }) %></option>
+    <datalist id="${dataListId}">
+      ${options}
     </datalist>
 
-    <i class="ri-add-line fs-4 mx-1" onclick="addInputField('${parentDivId}')" style="cursor: pointer;"></i>
+    <i class="ri-add-line fs-4 mx-1" onclick="addInputField('${parentDivId}', '${dataListId}')" style="cursor: pointer;"></i>
   `;
 
   const parentDiv = document.querySelector(parentDivId);
