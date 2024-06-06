@@ -18,7 +18,12 @@ const plantationSchema = new mongoose.Schema({
     unique: true,
   },
   contactDuration: {
-    type: String,
+    startDate: {
+      type: Date,
+    },
+    endDate: {
+      type: Date,
+    }
   },
   plantationArea: {
     type: String,
@@ -51,6 +56,19 @@ const plantationSchema = new mongoose.Schema({
     },
   ],
 });
+
+plantationSchema.methods.getRemainingDays = function() {
+  // Check if endDate field is defined
+  if (this.contactDuration && this.contactDuration.endDate) {
+    const today = new Date();
+    const endDate = new Date(this.contactDuration.endDate);
+    const timeDiff = endDate - today;
+    const remainingDays = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+    return remainingDays;
+  } else {
+    return '';
+  }
+};
 
 const plantationModel = mongoose.model("Vườn", plantationSchema);
 
