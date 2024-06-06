@@ -73,9 +73,9 @@
   >
     <%- include('../partials/notificationMessage.ejs') %>
     <div class="accordion" id="areaAccordion">
-      <div class="d-flex">
+      <div class="d-flex d-flex flex-wrap gap-2" >
         <button
-          class="btn btn-primary d-flex justify-content-between my-2"
+          class="btn btn-primary"
           type="button"
           data-bs-toggle="collapse"
           data-bs-target="#createArea"
@@ -85,7 +85,7 @@
           Tạo khu vực
         </button>
         <button
-          class="btn btn-secondary d-flex justify-content-between my-2 mx-2"
+          class="btn btn-secondary"
           type="button"
           data-bs-toggle="collapse"
           data-bs-target="#updateArea"
@@ -95,7 +95,7 @@
           Chỉnh sửa
         </button>
         <button
-          class="btn btn-danger d-flex justify-content-between my-2 mx-2"
+          class="btn btn-danger"
           type="button"
           data-bs-toggle="collapse"
           data-bs-target="#deleteArea"
@@ -121,6 +121,7 @@
               id="name"
               name="name"
               placeholder="Nhập tên khu vực"
+              required
             />
           </div>
           <div class="my-3" id="plantation-fields">
@@ -241,7 +242,7 @@
                   Bạn có muốn xóa khu vực này không? Hành động này không thể hoàn tác.
                 </div>
                 <div class="modal-footer">
-                  <button type="submit" class="btn btn-success">
+                  <button type="submit" class="btn btn-danger">
                     Xác nhận
                   </button>
                 </div>
