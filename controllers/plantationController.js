@@ -51,8 +51,12 @@ async function createPlantation(req, res) {
     }
 
     // Find or create the area and manager
-    let area = await AreaModel.findOne({ name: req.body.areaID }) || await AreaModel.create({ name: req.body.areaID });
-    let manager = await ManagerModel.findOne({ name: req.body.managerID }) || await ManagerModel.create({ name: req.body.managerID });
+    let area =
+      (await AreaModel.findOne({ name: req.body.areaID })) ||
+      (await AreaModel.create({ name: req.body.areaID }));
+    let manager =
+      (await ManagerModel.findOne({ name: req.body.managerID })) ||
+      (await ManagerModel.create({ name: req.body.managerID }));
 
     // Create the new plantation
     const plantation = await PlantationModel.create({
@@ -61,7 +65,7 @@ async function createPlantation(req, res) {
       managerID: manager._id,
     });
 
-    console.log(plantation)
+    console.log(plantation);
     if (!plantation) {
       return handleResponse(
         req,
@@ -110,7 +114,6 @@ async function getPlantations(req, res) {
     });
     const managerID = managers.map((manager) => manager._id);
 
-
     // Use these ObjectId(s) in your searchQuery
     const searchQuery = searchValue
       ? {
@@ -134,23 +137,32 @@ async function getPlantations(req, res) {
       .limit(parseInt(length, 10))
       .exec();
 
-      const data = await Promise.all(
-        plantations.map(async (plantation, index) => {
-          const remainingDays = await plantation.calculateRemainingDays();
-          return {
-            no: parseInt(start, 10) + index + 1,
-            areaID: plantation.areaID ? plantation.areaID.name : "",
-            code: plantation.code ? plantation.code : "",
-            name: plantation.name ? plantation.name : "",
-            managerID: plantation.managerID ? plantation.managerID.name : "",
-            contactDuration: remainingDays ? remainingDays : "Không hợp đồng",
-            plantationArea: plantation.plantationArea ? plantation.plantationArea : "",
-            slug: plantation.slug ? plantation.slug : "",
-            id: plantation._id,
-          };
-        })
-      );
+    const data = await Promise.all(
+      plantations.map(async (plantation, index) => {
+        const remainingDays = await plantation.calculateRemainingDays();
+        return {
+          no: parseInt(start, 10) + index + 1,
+          areaID: plantation.areaID ? plantation.areaID.name : "",
+          code: plantation.code ? plantation.code : "",
+          name: plantation.name ? plantation.name : "",
+          managerID: plantation.managerID ? plantation.managerID.name : "",
+          contactDuration: remainingDays ? remainingDays : "Không hợp đồng",
+          plantationArea: plantation.plantationArea
+            ? plantation.plantationArea
+            : "",
+          slug: plantation.slug ? plantation.slug : "",
+          id: plantation._id,
+        };
+      })
+    );
 
+    // If sortColumn is 'contactDuration', sort data by 'contactDuration'
+    if (sortColumn === "contactDuration") {
+      data.sort(
+        (a, b) =>
+          sortDirection * a.contactDuration.localeCompare(b.contactDuration)
+      );
+    }
     res.json({
       draw,
       recordsTotal: totalRecords,
