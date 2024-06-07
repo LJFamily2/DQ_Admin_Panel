@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+const slug = require('mongoose-slug-generator');
+mongoose.plugin(slug);
 
 const plantationSchema = new mongoose.Schema({
   name: {
@@ -55,6 +57,10 @@ const plantationSchema = new mongoose.Schema({
       ],
     },
   ],
+  slug:{
+    type: String,
+    slug: 'name'
+  }
 });
 
 plantationSchema.methods.getRemainingDays = function() {

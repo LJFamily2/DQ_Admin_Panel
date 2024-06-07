@@ -3,6 +3,16 @@ const handleResponse = require("./utils/handleResponse");
 const deleteImageFile = require("./utils/deleteImageFile")
 const PlantationModel = require("../models/plantationModel");
 
+module.exports = {
+  createManager,
+  updateManager,
+  deleteManager,
+  deleteAllManagers,
+  getManagers,
+  renderPage,
+};
+
+
 async function renderPage(req, res) {
   try {
     const plantations = await PlantationModel.find({});
@@ -218,8 +228,8 @@ async function getManagers(req, res) {
     const data = managers.map((manager, index) => ({
       no: parseInt(start, 10) + index + 1,
       name: manager.name,
-      phone: manager.phone,
-      address: manager.address,
+      phone: manager.phone ? manager.phone : "",
+      address: manager.address ? manager.address : "",
       plantation: manager.plantation ? manager.plantation.name : "",
       frontIdentification: manager.frontIdentification,
       backIdentification: manager.backIdentification,
@@ -238,11 +248,3 @@ async function getManagers(req, res) {
   }
 }
 
-module.exports = {
-  createManager,
-  updateManager,
-  deleteManager,
-  deleteAllManagers,
-  getManagers,
-  renderPage,
-};

@@ -5,6 +5,6 @@ const plantationController = require('../../controllers/plantationController');
 
 // Render the page
 router.get("/", plantationController.renderPage);
-
+router.post('/addPlantation', plantationController.createPlantation)
 
 module.exports = router;

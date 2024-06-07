@@ -174,24 +174,31 @@
         </button>
       </div>
       <hr />
-      <!-- Create Area -->
+      <!-- Create Plantation -->
       <div
         id="createArea"
         class="collapse show"
         aria-labelledby="createAreaHeading"
         data-bs-parent="#plantationAccordion"
       >
-        <form action="/quan-ly-khu-vuc/addArea" method="post">
+        <form action="/quan-ly-vuon/addPlantation" method="post">
           <h5>Tạo vườn mới</h5>
 
           <div class="my-3">
             <label for="areaID" class="form-label">Tên khu vực</label>
-            <select class="form-control slim-select" name="areaID" id="areaID">
-              <option value="" selected disabled>Chọn khu vực</option>
+            <input
+              type="text"
+              id="areaID"
+              class="form-control"
+              name="areaID"
+              list="areas"
+              placeholder="Chọn hoặc tạo khu vực"
+            />
+            <datalist id="areas">
               <% areas.forEach(area => { %>
-              <option value="<%= area._id %>"><%= area.name %></option>
+                <option value="<%= area.name %>"></option>
               <% }) %>
-            </select>
+            </datalist>
           </div>
           
           <div class="my-3">
@@ -212,18 +219,25 @@
                 id="name"
                 class="form-control"
                 name="name"
-                placeholder="Nhập mã nhà vườn"
+                placeholder="Nhập tên"
               />
           </div>
           
           <div class="my-3">
             <label for="managerID" class="form-label">Người quản lý</label>
-            <select class="form-control slim-select" name="managerID" id="managerID">
-              <option value="" selected disabled>Chọn người quản lý</option>
-              <% areas.forEach(area => { %>
-              <option value="<%= area._id %>"><%= area.name %></option>
+            <input
+              type="text"
+              id="managerID"
+              class="form-control"
+              name="managerID"
+              list="managers"
+              placeholder="Chọn hoặc tạo người quản lý"
+            />
+            <datalist id="managers">
+              <% managers.forEach(manager => { %>
+                <option value="<%= manager.name %>"></option>
               <% }) %>
-            </select>
+            </datalist>
           </div>
 
           <div class="my-3">
