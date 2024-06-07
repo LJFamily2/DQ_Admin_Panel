@@ -31,7 +31,7 @@
       <table class="table table-striped table-bordered" id="plantations_table">
         <thead>
           <tr>
-            <% ['STT','Khu vực',"Mã vườn", 'Tên', 'Người quản lý',"Thời hạn hợp đồng","Số mẫu", "Thêm dữ liệu", 'Chỉnh sửa'].forEach(header => { %>
+            <% ['STT','Khu vực',"Mã vườn", 'Tên', 'Người quản lý',"Thời hạn hợp đồng","Số mẫu", "Dữ liệu", 'Chỉnh sửa'].forEach(header => { %>
               <th><%= header %></th>
             <% }) %>
           </tr>
@@ -244,22 +244,22 @@
             <div class="row">
               <label >Thời hạn hợp đồng</label>
               <div class="col-6 ">
-                <label for="contractDuration" >Bắt đầu</label>
+                <label for="contactDurationStart" >Bắt đầu</label>
                 <input
                   type="date"
-                  id="contractDuration"
+                  id="contactDurationStart"
                   class="form-control"
-                  name="contractDuration"
+                  name="contactDurationStart"
                   placeholder="Nhập thời hạn hợp đồng"
                 />
                 </div>
                 <div class="col-6">
-                  <label for="contractDuration">Kết thúc</label>
+                  <label for="contactDurationEnd">Kết thúc</label>
                   <input
                     type="date"
-                    id="contractDuration"
+                    id="contactDurationEnd"
                     class="form-control"
-                    name="contractDuration"
+                    name="contactDurationEnd"
                     placeholder="Nhập thời hạn hợp đồng"
                   />
                 </div>
@@ -322,14 +322,19 @@
 <script>
   const plantationColumns = [
     { data: "no", orderable: false },
+    { data: "areaID" },
+    { data: "code" },
     { data: "name" },
-    { data: "unit" },
+    { data: "managerID" },
+    { data: "contactDuration" },
+    { data: "plantationArea" },
+    { data: "slug" },
     { data: "id", orderable: false },
   ];
 
   initializeDataTable(
     "#plantations_table",
-    "/quan-ly-hang-hoa/getProducts",
+    "/quan-ly-vuon/getPlantations",
     "#staticBackdrop",
     "#deleteModalToggle",
     plantationColumns

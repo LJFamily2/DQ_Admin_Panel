@@ -1,6 +1,15 @@
 const ProductModel = require("../models/productModel");
 const handleResponse = require("./utils/handleResponse");
 
+module.exports = {
+  createProduct,
+  updateProduct,
+  deleteProduct,
+  deleteAllProducts,
+  getProducts,
+  renderPage,
+};
+
 async function renderPage(req, res) {
   try {
     const products = await ProductModel.find({});
@@ -186,12 +195,3 @@ async function getProducts(req, res) {
     res.status(500).json({ error: error.message });
   }
 }
-
-module.exports = {
-  createProduct,
-  updateProduct,
-  deleteProduct,
-  deleteAllProducts,
-  getProducts,
-  renderPage,
-};

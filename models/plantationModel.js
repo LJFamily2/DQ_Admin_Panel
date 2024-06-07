@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const slug = require('mongoose-slug-generator');
+const slug = require("mongoose-slug-generator");
 mongoose.plugin(slug);
 
 const plantationSchema = new mongoose.Schema({
@@ -19,13 +19,11 @@ const plantationSchema = new mongoose.Schema({
     type: String,
     unique: true,
   },
-  contactDuration: {
-    startDate: {
-      type: Date,
-    },
-    endDate: {
-      type: Date,
-    }
+  contactDurationStart: {
+    type: Date,
+  },
+  contactDurationEnd: {
+    type: Date,
   },
   plantationArea: {
     type: String,
@@ -57,22 +55,41 @@ const plantationSchema = new mongoose.Schema({
       ],
     },
   ],
-  slug:{
+  slug: {
     type: String,
-    slug: 'name'
-  }
+    slug: "name",
+  },
 });
 
-plantationSchema.methods.getRemainingDays = function() {
-  // Check if endDate field is defined
-  if (this.contactDuration && this.contactDuration.endDate) {
+plantationSchema.methods.calculateRemainingDays = function () {
+  if (this.contactDurationEnd) {
+    const endDate = new Date(this.contactDurationEnd);
     const today = new Date();
-    const endDate = new Date(this.contactDuration.endDate);
-    const timeDiff = endDate - today;
-    const remainingDays = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
-    return remainingDays;
+
+    let diffInTime = endDate.getTime() - today.getTime();
+    let diffInDays = diffInTime / (1000 * 3600 * 24);
+
+    let years = Math.floor(diffInDays / 365);
+    diffInDays -= years * 365;
+    let months = Math.floor(diffInDays / 30);
+    diffInDays -= months * 30;
+    let days = Math.floor(diffInDays);
+
+    let remainingDay = "";
+    if (years > 0) {
+      remainingDay += `${years} năm, `;
+    }
+    if (months > 0) {
+      remainingDay += `${months} tháng, `;
+    }
+    if (days > 0) {
+      remainingDay += `${days} ngày`;
+    }
+
+    console.log(`Year: ${years}, Month: ${months}, Day: ${days}`);
+    return remainingDay.trim();
   } else {
-    return '';
+    return "";
   }
 };
 
