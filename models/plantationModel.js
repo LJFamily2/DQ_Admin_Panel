@@ -86,7 +86,6 @@ plantationSchema.methods.calculateRemainingDays = function () {
       remainingDay += `${days} ngày`;
     }
 
-    console.log(`Year: ${years}, Month: ${months}, Day: ${days}`);
     return remainingDay.trim();
   } else {
     return "";
