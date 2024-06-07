@@ -1,13 +1,16 @@
 document.addEventListener("DOMContentLoaded", function () {
     function initializeSlimSelect(selector) {
-        new SlimSelect({
-            select: selector,
-            settings: {
-                searchPlaceholder: 'Tìm kiếm...',
-                searchText: 'Không có kết quả',
-                searchingText: 'Tìm kiếm',
-                placeholderText: 'Chọn khu vực',
-            }
+        const elements = document.querySelectorAll(selector);
+        elements.forEach(element => {
+            new SlimSelect({
+                select: element,
+                settings: {
+                    searchPlaceholder: 'Tìm kiếm...',
+                    searchText: 'Không có kết quả',
+                    searchingText: 'Tìm kiếm',
+                    placeholderText: 'Chọn khu vực',
+                }
+            });
         });
     }
 

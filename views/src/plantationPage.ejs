@@ -20,7 +20,7 @@
   data-bs-target="#deleteAll-admin-user"
   style="width: max-content"
 >
-  Xóa tất cả hàng hóa
+  Xóa tất cả vườn
 </button>
 <div class="row m-0 px-2">
   <div class="col-12 col-md-9 p-0 px-md-3">
@@ -31,8 +31,8 @@
       <table class="table table-striped table-bordered" id="plantations_table">
         <thead>
           <tr>
-            <% ['STT','Khu vực',"Mã vườn", 'Tên', 'Người quản lý',"Thời hạn hợp đồng","Số mẫu", "Thêm dữ liệu", 'Chỉnh sửa'].forEach((header, index) => { %>
-            <th><%= header %></th>
+            <% ['STT','Khu vực',"Mã vườn", 'Tên', 'Người quản lý',"Thời hạn hợp đồng","Số mẫu", "Thêm dữ liệu", 'Chỉnh sửa'].forEach(header => { %>
+              <th><%= header %></th>
             <% }) %>
           </tr>
         </thead>
@@ -157,39 +157,117 @@
     style="
       box-shadow: 0 0 10px;
       background: var(--background_color);
-      max-height: 80dvh;
-      overflow-y: auto;
     "
   >
     <%- include('../partials/notificationMessage.ejs') %>
-    <h4>Thêm hàng hóa</h4>
-    <form action="/quan-ly-hang-hoa/addProduct" method="post">
-      <div class="my-3">
-        <label for="name" class="form-label">Tên</label>
-        <input
-          type="text"
-          class="form-control"
-          id="name"
-          name="name"
-          placeholder="Nhập tên"
-        />
+    <div class="accordion" id="plantationAccordion">
+      <div class="d-flex d-flex flex-wrap gap-2">
+        <button
+          class="btn btn-primary"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#createArea"
+          aria-expanded="false"
+          aria-controls="createArea"
+        >
+          Tạo vườn 
+        </button>
       </div>
+      <hr />
+      <!-- Create Area -->
+      <div
+        id="createArea"
+        class="collapse show"
+        aria-labelledby="createAreaHeading"
+        data-bs-parent="#plantationAccordion"
+      >
+        <form action="/quan-ly-khu-vuc/addArea" method="post">
+          <h5>Tạo vườn mới</h5>
 
-      <div class="my-3">
-        <label for="unit" class="fo rm-label">Đơn vị</label>
-        <input
-          type="text"
-          class="form-control"
-          id="unit"
-          name="unit"
-          placeholder="Nhập đơn vị"
-        />
+          <div class="my-3">
+            <label for="areaID" class="form-label">Tên khu vực</label>
+            <select class="form-control slim-select" name="areaID" id="areaID">
+              <option value="" selected disabled>Chọn khu vực</option>
+              <% areas.forEach(area => { %>
+              <option value="<%= area._id %>"><%= area.name %></option>
+              <% }) %>
+            </select>
+          </div>
+          
+          <div class="my-3">
+            <label for="code" class="form-label">Mã nhà vườn</label>
+              <input
+                type="text"
+                id="code"
+                class="form-control"
+                name="code"
+                placeholder="Nhập mã nhà vườn"
+              />
+          </div>
+
+          <div class="my-3">
+            <label for="name" class="form-label">Tên vườn</label>
+              <input
+                type="text"
+                id="name"
+                class="form-control"
+                name="name"
+                placeholder="Nhập mã nhà vườn"
+              />
+          </div>
+          
+          <div class="my-3">
+            <label for="managerID" class="form-label">Người quản lý</label>
+            <select class="form-control slim-select" name="managerID" id="managerID">
+              <option value="" selected disabled>Chọn người quản lý</option>
+              <% areas.forEach(area => { %>
+              <option value="<%= area._id %>"><%= area.name %></option>
+              <% }) %>
+            </select>
+          </div>
+
+          <div class="my-3">
+            <div class="row">
+              <label >Thời hạn hợp đồng</label>
+              <div class="col-6 ">
+                <label for="contractDuration" >Bắt đầu</label>
+                <input
+                  type="date"
+                  id="contractDuration"
+                  class="form-control"
+                  name="contractDuration"
+                  placeholder="Nhập thời hạn hợp đồng"
+                />
+                </div>
+                <div class="col-6">
+                  <label for="contractDuration">Kết thúc</label>
+                  <input
+                    type="date"
+                    id="contractDuration"
+                    class="form-control"
+                    name="contractDuration"
+                    placeholder="Nhập thời hạn hợp đồng"
+                  />
+                </div>
+            </div>
+          </div>
+
+          <div class="my-3">
+            <label for="plantationArea" class="form-label">Số mẫu</label>
+              <input
+                type="text"
+                id="plantationArea"
+                class="form-control"
+                name="plantationArea"
+                placeholder="Nhập điện tích của vườn"
+              />
+          </div>
+
+          <!-- Buttons -->
+          <button type="submit" class="btn btn-success">Tạo mới</button>
+        </form>
       </div>
-
-      <!-- Buttons -->
-      <button type="submit" class="btn btn-primary">Thêm</button>
-      <button type="reset" class="btn btn-secondary">Làm mới</button>
-    </form>
+    </div>
   </div>
 </div>
 
@@ -206,7 +284,7 @@
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="deleteUsers">Xóa tất cả tài khoản</h1>
+        <h1 class="modal-title fs-5" id="deleteUsers">Xóa tất cả vườn ?</h1>
         <button
           type="button"
           class="btn-close"
@@ -217,7 +295,7 @@
 
       <form action="/quan-ly-hang-hoa/deleteAll" method="post">
         <div class="modal-body">
-          Bạn có muốn xóa <strong>tất cả</strong> thông tin người quản lý ? Hành
+          Bạn có muốn xóa <strong>tất cả</strong> thông tin vườn ? Hành
           động này không thể hoàn tác.
         </div>
         <div class="modal-footer">
