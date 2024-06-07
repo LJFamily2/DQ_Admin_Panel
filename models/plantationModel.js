@@ -92,6 +92,19 @@ plantationSchema.methods.calculateRemainingDays = function () {
   }
 };
 
+plantationSchema.methods.calculateTotalRemainingDays = function () {
+  if (this.contactDurationEnd) {
+    const endDate = new Date(this.contactDurationEnd);
+    const today = new Date();
+
+    let diffInTime = endDate.getTime() - today.getTime();
+    let diffInDays = diffInTime / (1000 * 3600 * 24);
+
+    return Math.floor(diffInDays);
+  } else {
+    return 0;
+  }
+};
 const plantationModel = mongoose.model("Vườn", plantationSchema);
 
 module.exports = plantationModel;

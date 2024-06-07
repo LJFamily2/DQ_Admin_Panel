@@ -103,66 +103,54 @@ async function getPlantations(req, res) {
     const sortColumn = columns?.[order?.[0]?.column]?.data;
     const sortDirection = order?.[0]?.dir === "asc" ? 1 : -1;
 
-    //  Find the ObjectId(s) of the area(s) that match the searchValue
-    const areas = await AreaModel.find({
-      name: { $regex: searchValue, $options: "i" },
-    });
-    const areaID = areas.map((area) => area._id);
-    //  Find the ObjectId(s) of the manager(s) that match the searchValue
-    const managers = await ManagerModel.find({
-      name: { $regex: searchValue, $options: "i" },
-    });
-    const managerID = managers.map((manager) => manager._id);
+    const [areas, managers] = await Promise.all([
+      AreaModel.find({ name: { $regex: searchValue, $options: "i" } }),
+      ManagerModel.find({ name: { $regex: searchValue, $options: "i" } })
+    ]);
 
-    // Use these ObjectId(s) in your searchQuery
     const searchQuery = searchValue
       ? {
           $or: [
             { name: { $regex: searchValue, $options: "i" } },
             { code: { $regex: searchValue, $options: "i" } },
             { plantationArea: { $regex: searchValue, $options: "i" } },
-            { areaID: { $in: areaID } },
-            { managerID: { $in: managerID } },
+            { areaID: { $in: areas.map(area => area._id) } },
+            { managerID: { $in: managers.map(manager => manager._id) } },
           ],
         }
       : {};
 
-    const totalRecords = await PlantationModel.countDocuments();
-    const filteredRecords = await PlantationModel.countDocuments(searchQuery);
-    const plantations = await PlantationModel.find(searchQuery)
-      .populate("areaID")
-      .populate("managerID")
-      .sort({ [sortColumn]: sortDirection })
-      .skip(parseInt(start, 10))
-      .limit(parseInt(length, 10))
-      .exec();
+    const [totalRecords, filteredRecords, plantations] = await Promise.all([
+      PlantationModel.countDocuments(),
+      PlantationModel.countDocuments(searchQuery),
+      PlantationModel.find(searchQuery)
+        .populate("areaID")
+        .populate("managerID")
+        .sort({ [sortColumn]: sortDirection })
+        .skip(parseInt(start, 10))
+        .limit(parseInt(length, 10))
+        .exec()
+    ]);
 
     const data = await Promise.all(
-      plantations.map(async (plantation, index) => {
-        const remainingDays = await plantation.calculateRemainingDays();
-        return {
-          no: parseInt(start, 10) + index + 1,
-          areaID: plantation.areaID ? plantation.areaID.name : "",
-          code: plantation.code ? plantation.code : "",
-          name: plantation.name ? plantation.name : "",
-          managerID: plantation.managerID ? plantation.managerID.name : "",
-          contactDuration: remainingDays ? remainingDays : "Không hợp đồng",
-          plantationArea: plantation.plantationArea
-            ? plantation.plantationArea
-            : "",
-          slug: plantation.slug ? plantation.slug : "",
-          id: plantation._id,
-        };
-      })
+      plantations.map(async (plantation, index) => ({
+        no: parseInt(start, 10) + index + 1,
+        areaID: plantation.areaID?.name || "",
+        code: plantation.code,
+        name: plantation.name,
+        managerID: plantation.managerID?.name || "",
+        contactDuration: await plantation.calculateRemainingDays() || "Không hợp đồng",
+        totalRemainingDays: await plantation.calculateTotalRemainingDays(),
+        plantationArea: plantation.plantationArea,
+        slug: plantation.slug,
+        id: plantation._id,
+      }))
     );
 
-    // If sortColumn is 'contactDuration', sort data by 'contactDuration'
     if (sortColumn === "contactDuration") {
-      data.sort(
-        (a, b) =>
-          sortDirection * a.contactDuration.localeCompare(b.contactDuration)
-      );
+      data.sort((a, b) => sortDirection * (a.totalRemainingDays - b.totalRemainingDays));
     }
+      
     res.json({
       draw,
       recordsTotal: totalRecords,
