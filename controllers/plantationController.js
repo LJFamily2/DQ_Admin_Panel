@@ -5,30 +5,11 @@ const ManagerModel = require("../models/managerModel");
 module.exports = {
   createPlantation,
   //   updateProduct,
-  //   deleteProduct,
-  //   deleteAllProducts,
+    deletePlantation,
+  //   deleteAllPlanatation,
   getPlantations,
   renderPage,
 };
-
-async function renderPage(req, res) {
-  try {
-    const plantations = await PlantationModel.find({});
-    const areas = await AreaModel.find({});
-    const managers = await ManagerModel.find({});
-    res.render("src/plantationPage", {
-      layout: "./layouts/defaultLayout",
-      title: "Quản lý vườn",
-      plantations,
-      managers,
-      areas,
-      messages: req.flash(),
-    });
-  } catch (err) {
-    console.log(err);
-    res.status(500);
-  }
-}
 
 async function createPlantation(req, res) {
   try {
@@ -88,6 +69,53 @@ async function createPlantation(req, res) {
       201,
       "success",
       "Tạo vườn mới thành công!",
+      "/quan-ly-vuon"
+    );
+  } catch (err) {
+    console.log(err);
+    res.status(500);
+  }
+}
+
+
+async function deletePlantation(req,res){
+  try {
+    const plantation = await PlantationModel.findById(req.body.id);
+    if (!plantation) {
+      return handleResponse(
+        req,
+        res,
+        404,
+        "fail",
+        "Không tìm thấy vườn cần xóa!",
+        "/quan-ly-vuon"
+      );
+    }
+    await PlantationModel.findByIdAndDelete(req.body.id);
+    return handleResponse(
+      req,
+      res,
+      200,
+      "success",
+      "Xóa vườn thành công!",
+      "/quan-ly-vuon"
+    );
+  } catch (err) {
+    console.log(err);
+    res.status(500);
+  }
+
+}
+
+async function deleteAllPlantation(req,res){
+  try {
+    await PlantationModel.deleteMany({});
+    return handleResponse(
+      req,
+      res,
+      200,
+      "success",
+      "Xóa tất cả vườn thành công!",
       "/quan-ly-vuon"
     );
   } catch (err) {
@@ -160,5 +188,23 @@ async function getPlantations(req, res) {
   } catch (error) {
     console.error("Error handling DataTable request:", error);
     res.status(500).json({ error: error.message });
+  }
+}
+async function renderPage(req, res) {
+  try {
+    const plantations = await PlantationModel.find({});
+    const areas = await AreaModel.find({});
+    const managers = await ManagerModel.find({});
+    res.render("src/plantationPage", {
+      layout: "./layouts/defaultLayout",
+      title: "Quản lý vườn",
+      plantations,
+      managers,
+      areas,
+      messages: req.flash(),
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500);
   }
 }
