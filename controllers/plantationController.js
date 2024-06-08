@@ -6,7 +6,7 @@ module.exports = {
   createPlantation,
   //   updateProduct,
     deletePlantation,
-  //   deleteAllPlanatation,
+    deleteAllPlantation,
   getPlantations,
   renderPage,
 };
@@ -62,6 +62,11 @@ async function createPlantation(req, res) {
     await AreaModel.findByIdAndUpdate(area._id, {
       $push: { plantations: plantation._id },
     });
+
+    // Add the new plantation's id to the manager
+    await ManagerModel.findByIdAndUpdate(manager._id, {
+      $push: { plantation: plantation._id },
+    })
 
     return handleResponse(
       req,
