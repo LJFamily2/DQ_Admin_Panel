@@ -3,6 +3,8 @@
   <script src="/js/datatable.js"></script>
   <!-- Slim select -->
   <script src="/js/slim-select.js" defer></script>
+  <script src="https://cdn.datatables.net/rowgroup/1.5.0/js/dataTables.rowGroup.js"></script>
+  <script src="https://cdn.datatables.net/rowgroup/1.5.0/js/rowGroup.dataTables.js"></script>
 
   <style>
     @media (max-width: 768px) {
@@ -354,7 +356,11 @@
       }
     },
     { data: "plantationArea" },
-    { data: "slug" },
+    { data: "slug",
+      render: function(data,type, row){
+        return `<a href="/quan-ly-vuon/vuon/${data}" class="text-decoration-none text-dark fs-5"><i class="ri-file-edit-line"></i></a>`
+      }
+     },
     { data: "id", orderable: false },
   ];
 
@@ -363,6 +369,7 @@
     "/quan-ly-vuon/getPlantations",
     "#staticBackdrop",
     "#deleteModalToggle",
-    plantationColumns
+    plantationColumns,
+    'areaID',
   );
 </script>

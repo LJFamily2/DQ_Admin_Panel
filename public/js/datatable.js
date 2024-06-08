@@ -1,7 +1,10 @@
-function initializeDataTable(tableId, ajaxUrl, modalUpdateTarget, modalDeleteTarget, columns) {
+function initializeDataTable(tableId, ajaxUrl, modalUpdateTarget, modalDeleteTarget, columns, rowGroup) {
   $(tableId).DataTable({
     serverSide: true,
     processing: true,
+    rowGroup: {
+      dataSrc: rowGroup,
+    },
     ajax: {
       url: ajaxUrl,
       type: "POST",
