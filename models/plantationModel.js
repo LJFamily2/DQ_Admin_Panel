@@ -65,6 +65,7 @@ plantationSchema.methods.calculateRemainingDays = function () {
   if (this.contactDurationEnd) {
     const endDate = new Date(this.contactDurationEnd);
     const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
     let diffInTime = endDate.getTime() - today.getTime();
     let diffInDays = diffInTime / (1000 * 3600 * 24);
@@ -84,6 +85,11 @@ plantationSchema.methods.calculateRemainingDays = function () {
     }
     if (days > 0) {
       remainingDay += `${days} ngày`;
+    }
+
+    // If remainingDay is empty, it means there are no remaining days
+    if (remainingDay === "") {
+      return "Hợp đồng hết hạn";
     }
 
     return remainingDay.trim();
