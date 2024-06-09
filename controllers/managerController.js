@@ -230,7 +230,7 @@ async function getManagers(req, res) {
       name: manager.name,
       phone: manager.phone ? manager.phone : "",
       address: manager.address ? manager.address : "",
-      plantation: manager.plantation ? manager.plantation.name : "",
+      plantation: manager.plantation.map(p => p.name).join(', ') || "",
       frontIdentification: manager.frontIdentification,
       backIdentification: manager.backIdentification,
       id: manager._id,

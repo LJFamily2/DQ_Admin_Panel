@@ -11,10 +11,10 @@ const managerSchema = new mongoose.Schema({
     address:{
         type: String,
     },
-    plantation:{
+    plantation:[{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Vườn"
-    },
+    }],
     frontIdentification:{
         type: String,
     },
