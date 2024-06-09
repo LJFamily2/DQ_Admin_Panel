@@ -220,7 +220,7 @@ async function getPlantations(req, res) {
 }
 async function renderPage(req, res) {
   try {
-    const plantations = await PlantationModel.find({});
+    const plantations = await PlantationModel.find({}).populate({ path: "managerID", populate: { path: "plantations" }}).exec();
     const areas = await AreaModel.find({});
     const managers = await ManagerModel.find({});
     res.render("src/plantationPage", {
