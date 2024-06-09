@@ -15,6 +15,7 @@ async function createPlantation(req, res) {
   try {
     console.log(req.body);
 
+    // Validate information
     // Check if a plantation with the same code or name already exists
     const existingPlantation = await PlantationModel.findOne({
       $or: [{ code: req.body.code }, { name: req.body.name }],
@@ -38,6 +39,7 @@ async function createPlantation(req, res) {
     let manager =
       (await ManagerModel.findOne({ name: req.body.managerID })) ||
       (await ManagerModel.create({ name: req.body.managerID }));
+    // End Validate information
 
     // Create the new plantation
     const plantation = await PlantationModel.create({
@@ -58,6 +60,7 @@ async function createPlantation(req, res) {
       );
     }
 
+    // Add information for other model
     // Add the new plantation's id to the area
     await AreaModel.findByIdAndUpdate(area._id, {
       $push: { plantations: plantation._id },
@@ -67,6 +70,7 @@ async function createPlantation(req, res) {
     await ManagerModel.findByIdAndUpdate(manager._id, {
       $push: { plantation: plantation._id },
     });
+    // End add information for other model
 
     return handleResponse(
       req,
@@ -83,15 +87,22 @@ async function createPlantation(req, res) {
 }
 
 async function deletePlantation(req, res) {
-  console.log(req.params)
-  console.log(req.body)
+  console.log(req.params);
+  console.log(req.body);
   try {
     const plantationId = req.params.id;
     const { deleteManager } = req.body;
 
     const plantation = await PlantationModel.findById(plantationId);
     if (!plantation) {
-      return handleResponse(req, res, 404, "fail", "Không tìm thấy vườn cần xóa!", "/quan-ly-vuon");
+      return handleResponse(
+        req,
+        res,
+        404,
+        "fail",
+        "Không tìm thấy vườn cần xóa!",
+        "/quan-ly-vuon"
+      );
     }
 
     if (deleteManager === "yes") {
@@ -100,7 +111,10 @@ async function deletePlantation(req, res) {
 
     await PlantationModel.findByIdAndDelete(plantationId);
 
-    const message = deleteManager === "yes" ? "Xóa vườn và người quản lý thành công!" : "Xóa vườn thành công!";
+    const message =
+      deleteManager === "yes"
+        ? "Xóa vườn và người quản lý thành công!"
+        : "Xóa vườn thành công!";
     return handleResponse(req, res, 200, "success", message, "/quan-ly-vuon");
   } catch (err) {
     console.log(err);
@@ -115,7 +129,7 @@ async function deleteAllPlantation(req, res) {
     const plantations = await PlantationModel.find({});
 
     if (deleteManager === "yes") {
-      const managerIds = plantations.map(plantation => plantation.managerID);
+      const managerIds = plantations.map((plantation) => plantation.managerID);
       await ManagerModel.deleteMany({ _id: { $in: managerIds } });
     }
 
