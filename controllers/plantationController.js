@@ -11,15 +11,30 @@ module.exports = {
   renderPage,
 };
 
+async function findOrCreate(model, name) {
+  if (name.trim() === "") {
+    return null;
+  }
+  let item = await model.findOne({ name });
+  if (!item) {
+    item = await model.create({ name });
+  }
+  return item._id;
+}
+
 async function createPlantation(req, res) {
   try {
     console.log(req.body);
 
     // Validate information
     // Check if a plantation with the same code or name already exists
-    const existingPlantation = await PlantationModel.findOne({
-      $or: [{ code: req.body.code }, { name: req.body.name }],
-    });
+    let query = { name: req.body.name };
+
+    if (req.body.code && req.body.code !== "") {
+      query.code = req.body.code;
+    }
+
+    const existingPlantation = await PlantationModel.findOne(query);
 
     if (existingPlantation) {
       return handleResponse(
@@ -33,20 +48,25 @@ async function createPlantation(req, res) {
     }
 
     // Find or create the area and manager
-    let area =
-      (await AreaModel.findOne({ name: req.body.areaID })) ||
-      (await AreaModel.create({ name: req.body.areaID }));
-    let manager =
-      (await ManagerModel.findOne({ name: req.body.managerID })) ||
-      (await ManagerModel.create({ name: req.body.managerID }));
+    let area = await findOrCreate(AreaModel, req.body.areaID);
+    let manager = await findOrCreate(ManagerModel, req.body.managerID);
     // End Validate information
 
+    // Prepare the data for the new plantation
+    let { code, ...restOfBody } = req.body;
+    let plantationData = {
+      ...restOfBody,
+      areaID: area,
+      managerID: manager,
+    };
+
+    // If the code is provided and it's not an empty string, add it to the data
+    if (code && code.trim() !== "") {
+      plantationData.code = code;
+    }
+
     // Create the new plantation
-    const plantation = await PlantationModel.create({
-      ...req.body,
-      areaID: area._id,
-      managerID: manager._id,
-    });
+    const plantation = await PlantationModel.create(plantationData);
 
     console.log(plantation);
     if (!plantation) {
@@ -62,14 +82,18 @@ async function createPlantation(req, res) {
 
     // Add information for other model
     // Add the new plantation's id to the area
-    await AreaModel.findByIdAndUpdate(area._id, {
-      $push: { plantations: plantation._id },
-    });
+    if (area) {
+      await AreaModel.findByIdAndUpdate(area._id, {
+        $push: { plantations: plantation._id },
+      });
+    }
 
     // Add the new plantation's id to the manager
-    await ManagerModel.findByIdAndUpdate(manager._id, {
-      $push: { plantations: plantation._id },
-    });
+    if (manager) {
+      await ManagerModel.findByIdAndUpdate(manager._id, {
+        $push: { plantations: plantation._id },
+      });
+    }
     // End add information for other model
 
     return handleResponse(
@@ -189,7 +213,7 @@ async function getPlantations(req, res) {
       plantations.map(async (plantation, index) => ({
         no: parseInt(start, 10) + index + 1,
         areaID: plantation.areaID?.name || "",
-        code: plantation.code,
+        code: plantation.code || "",
         name: plantation.name,
         managerID: plantation.managerID?.name || "",
         contactDuration:
@@ -220,7 +244,9 @@ async function getPlantations(req, res) {
 }
 async function renderPage(req, res) {
   try {
-    const plantations = await PlantationModel.find({}).populate({ path: "managerID", populate: { path: "plantations" }}).exec();
+    const plantations = await PlantationModel.find({})
+      .populate({ path: "managerID", populate: { path: "plantations" } })
+      .exec();
     const areas = await AreaModel.find({});
     const managers = await ManagerModel.find({});
     res.render("src/plantationPage", {

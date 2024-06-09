@@ -5,7 +5,6 @@ mongoose.plugin(slug);
 const plantationSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true,
   },
   areaID: {
     type: mongoose.Schema.Types.ObjectId,
@@ -17,7 +16,6 @@ const plantationSchema = new mongoose.Schema({
   },
   code: {
     type: String,
-    unique: true,
   },
   contactDurationStart: {
     type: Date,

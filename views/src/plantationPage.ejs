@@ -142,7 +142,7 @@
                     <br>
                     <div class="row my-3">
                       <div class="col-9 d-flex align-items-center"  >
-                        <label class="form-label m-0" for="deleteManager">Xóa luôn <strong>người quản lý (<%= plantation.managerID.name %>)</strong> của vườn?</label>
+                        <label class="form-label m-0" for="deleteManager">Xóa luôn <strong>người quản lý (<%= plantation.managerID?.name %>)</strong> của vườn?</label>
                       </div>
                       <div class="col-3 my-1">
                         <select class="form-control" name="deleteManager" id="deleteManager">
@@ -151,9 +151,9 @@
                         </select>
                       </div>
                       <div class="my-3">
-                        Vườn <strong><%= plantation.managerID.name %></strong> quản lý: 
+                        Vườn <strong><%= plantation.managerID?.name %></strong> quản lý: 
                         <ol>
-                          <% plantation.managerID.plantations.forEach(plantation => { %>
+                          <% plantation.managerID?.plantations.forEach(plantation => { %>
                             <li><%= plantation.name %></li>
                           <% }) %>
                         </ol>
@@ -242,6 +242,7 @@
                 class="form-control"
                 name="name"
                 placeholder="Nhập tên"
+                required
               />
           </div>
           
@@ -254,7 +255,6 @@
               name="managerID"
               list="managers"
               placeholder="Chọn hoặc tạo người quản lý"
-              required
             />
             <datalist id="managers">
               <% managers.forEach(manager => { %>
