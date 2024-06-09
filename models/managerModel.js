@@ -11,7 +11,7 @@ const managerSchema = new mongoose.Schema({
     address:{
         type: String,
     },
-    plantation:[{
+    plantations:[{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Vườn"
     }],

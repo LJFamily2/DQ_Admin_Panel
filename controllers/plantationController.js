@@ -68,7 +68,7 @@ async function createPlantation(req, res) {
 
     // Add the new plantation's id to the manager
     await ManagerModel.findByIdAndUpdate(manager._id, {
-      $push: { plantation: plantation._id },
+      $push: { plantations: plantation._id },
     });
     // End add information for other model
 

@@ -16,7 +16,7 @@ module.exports = {
 async function renderPage(req, res) {
   try {
     const plantations = await PlantationModel.find({});
-    const managers = await ManagerModel.find({}).populate("plantation").exec();
+    const managers = await ManagerModel.find({}).populate("plantations").exec();
     res.render("src/managerPage", {
       layout: "./layouts/defaultLayout",
       managers,
@@ -211,7 +211,7 @@ async function getManagers(req, res) {
             { name: { $regex: searchValue, $options: "i" } },
             { phone: { $regex: searchValue, $options: "i" } },
             { address: { $regex: searchValue, $options: "i" } },
-            { plantation: { $in: plantationIds } },
+            { plantations: { $in: plantationIds } },
           ],
         }
       : {};
@@ -219,7 +219,7 @@ async function getManagers(req, res) {
     const totalRecords = await ManagerModel.countDocuments();
     const filteredRecords = await ManagerModel.countDocuments(searchQuery);
     const managers = await ManagerModel.find(searchQuery)
-      .populate("plantation")
+      .populate("plantations")
       .sort({ [sortColumn]: sortDirection })
       .skip(parseInt(start, 10))
       .limit(parseInt(length, 10))
@@ -230,7 +230,7 @@ async function getManagers(req, res) {
       name: manager.name,
       phone: manager.phone ? manager.phone : "",
       address: manager.address ? manager.address : "",
-      plantation: manager.plantation.map(p => p.name).join(', ') || "",
+      plantations: manager.plantations.map(p => p.name).join(', ') || "",
       frontIdentification: manager.frontIdentification,
       backIdentification: manager.backIdentification,
       id: manager._id,
