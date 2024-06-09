@@ -5,8 +5,8 @@ const ManagerModel = require("../models/managerModel");
 module.exports = {
   createPlantation,
   //   updateProduct,
-    deletePlantation,
-    deleteAllPlantation,
+  deletePlantation,
+  deleteAllPlantation,
   getPlantations,
   renderPage,
 };
@@ -66,7 +66,7 @@ async function createPlantation(req, res) {
     // Add the new plantation's id to the manager
     await ManagerModel.findByIdAndUpdate(manager._id, {
       $push: { plantation: plantation._id },
-    })
+    });
 
     return handleResponse(
       req,
@@ -82,45 +82,51 @@ async function createPlantation(req, res) {
   }
 }
 
-
-async function deletePlantation(req,res){
+async function deletePlantation(req, res) {
+  console.log(req.params)
+  console.log(req.body)
   try {
-    const plantation = await PlantationModel.findById(req.body.id);
+    const plantationId = req.params.id;
+    const { deleteManager } = req.body;
+
+    const plantation = await PlantationModel.findById(plantationId);
     if (!plantation) {
-      return handleResponse(
-        req,
-        res,
-        404,
-        "fail",
-        "Không tìm thấy vườn cần xóa!",
-        "/quan-ly-vuon"
-      );
+      return handleResponse(req, res, 404, "fail", "Không tìm thấy vườn cần xóa!", "/quan-ly-vuon");
     }
-    await PlantationModel.findByIdAndDelete(req.body.id);
-    return handleResponse(
-      req,
-      res,
-      200,
-      "success",
-      "Xóa vườn thành công!",
-      "/quan-ly-vuon"
-    );
+
+    if (deleteManager === "yes") {
+      await ManagerModel.findByIdAndDelete(plantation.managerID);
+    }
+
+    await PlantationModel.findByIdAndDelete(plantationId);
+
+    const message = deleteManager === "yes" ? "Xóa vườn và người quản lý thành công!" : "Xóa vườn thành công!";
+    return handleResponse(req, res, 200, "success", message, "/quan-ly-vuon");
   } catch (err) {
     console.log(err);
     res.status(500);
   }
-
 }
 
-async function deleteAllPlantation(req,res){
+async function deleteAllPlantation(req, res) {
   try {
+    const { deleteManager } = req.body;
+
+    const plantations = await PlantationModel.find({});
+
+    if (deleteManager === "yes") {
+      const managerIds = plantations.map(plantation => plantation.managerID);
+      await ManagerModel.deleteMany({ _id: { $in: managerIds } });
+    }
+
     await PlantationModel.deleteMany({});
+
     return handleResponse(
       req,
       res,
       200,
       "success",
-      "Xóa tất cả vườn thành công!",
+      "Xóa tất cả vườn và người quản lý thành công!",
       "/quan-ly-vuon"
     );
   } catch (err) {
@@ -138,7 +144,7 @@ async function getPlantations(req, res) {
 
     const [areas, managers] = await Promise.all([
       AreaModel.find({ name: { $regex: searchValue, $options: "i" } }),
-      ManagerModel.find({ name: { $regex: searchValue, $options: "i" } })
+      ManagerModel.find({ name: { $regex: searchValue, $options: "i" } }),
     ]);
 
     const searchQuery = searchValue
@@ -147,8 +153,8 @@ async function getPlantations(req, res) {
             { name: { $regex: searchValue, $options: "i" } },
             { code: { $regex: searchValue, $options: "i" } },
             { plantationArea: { $regex: searchValue, $options: "i" } },
-            { areaID: { $in: areas.map(area => area._id) } },
-            { managerID: { $in: managers.map(manager => manager._id) } },
+            { areaID: { $in: areas.map((area) => area._id) } },
+            { managerID: { $in: managers.map((manager) => manager._id) } },
           ],
         }
       : {};
@@ -162,7 +168,7 @@ async function getPlantations(req, res) {
         .sort({ [sortColumn]: sortDirection })
         .skip(parseInt(start, 10))
         .limit(parseInt(length, 10))
-        .exec()
+        .exec(),
     ]);
 
     const data = await Promise.all(
@@ -172,7 +178,8 @@ async function getPlantations(req, res) {
         code: plantation.code,
         name: plantation.name,
         managerID: plantation.managerID?.name || "",
-        contactDuration: await plantation.calculateRemainingDays() || "Không hợp đồng",
+        contactDuration:
+          (await plantation.calculateRemainingDays()) || "Không hợp đồng",
         totalRemainingDays: await plantation.calculateTotalRemainingDays(),
         plantationArea: plantation.plantationArea,
         slug: plantation.slug,
@@ -181,9 +188,11 @@ async function getPlantations(req, res) {
     );
 
     if (sortColumn === "contactDuration") {
-      data.sort((a, b) => sortDirection * (a.totalRemainingDays - b.totalRemainingDays));
+      data.sort(
+        (a, b) => sortDirection * (a.totalRemainingDays - b.totalRemainingDays)
+      );
     }
-      
+
     res.json({
       draw,
       recordsTotal: totalRecords,

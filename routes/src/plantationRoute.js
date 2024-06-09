@@ -8,6 +8,6 @@ router.get("/", plantationController.renderPage);
 router.post('/addPlantation', plantationController.createPlantation)
 router.post("/getPlantations", plantationController.getPlantations)
 router.post("/delete/:id", plantationController.deletePlantation)
-router.post("/deleteAll", plantationController.deletePlantation)
+router.post("/deleteAll", plantationController.deleteAllPlantation)
 
 module.exports = router;
