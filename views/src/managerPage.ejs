@@ -29,7 +29,7 @@
         <thead>
           <tr>
             <% ['STT', 'Tên', 'Số điện thoại', 'Địa chỉ', 'Vườn quản lý', 'CCCD mặt trước', 'CCCD mặt sau', 'Chỉnh sửa'].forEach((header, index) => { %>
-              <th style="width: 12.5%;"><%= header %></th>
+              <th><%= header %></th>
             <% }) %>
         </thead>
         <tbody>
@@ -385,34 +385,34 @@
 </div>
 <script>
   const managerColumns = [
-    { data: "no", orderable: false },
-    { data: "name" },
-    { data: "phone" },
-    { data: "address" },
-    { data: "plantations" },
+    { data: "no", orderable: false, width: "5%" },
+    { data: "name", width:"20%" },
+    { data: "phone", width:"15%" },
+    { data: "address", width:"10%" },
+    { data: "plantations", width:"10%" },
     {
-      data: "frontIdentification",
+      data: "frontIdentification", width:"15%",
       orderable: false,
       render: function (data, type, row) {
         if (data) {
           return `<img src="/images/${data}" alt="Front Identification" style="max-height: 100px;" />`;
         } else {
-          return "Không có hình ảnh";
+          return "Trống";
         }
       },
     },
     {
-      data: "backIdentification",
+      data: "backIdentification" , width:"15%",
       orderable: false,
       render: function (data, type, row) {
         if (data) {
           return `<img src="/images/${data}" alt="Back Identification" style="max-height: 100px;" />`;
         } else {
-          return "Không có hình ảnh";
+          return "Trống";
         }
       },
     },
-    { data: "id", orderable: false },
+    { data: "id" , width:"10%", orderable: false },
   ];
 
   initializeDataTable(
