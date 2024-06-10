@@ -2,6 +2,7 @@ function initializeDataTable(tableId, ajaxUrl, modalUpdateTarget, modalDeleteTar
   $(tableId).DataTable({
     serverSide: true,
     processing: true,
+    responsive: true,
     rowGroup: {
       dataSrc: rowGroup,
     },

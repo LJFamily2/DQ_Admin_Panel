@@ -357,13 +357,13 @@
 </div>
 <script>
   const plantationColumns = [
-    { data: "no", orderable: false },
-    { data: "areaID" },
-    { data: "code" },
-    { data: "name" },
-    { data: "managerID" },
+    { data: "no", orderable: false, width:"5%" },
+    { data: "areaID", width:"15%" },
+    { data: "code", width:"15%" },
+    { data: "name", width:"15%" },
+    { data: "managerID", width:"10%" },
     {
-      data: "contactDuration",
+      data: "contactDuration", width:"15%",
       render: function(data, type, row) {
         // Extract the number of days from the string
         const daysMatch = data.match(/(\d+) ngày/);
@@ -388,13 +388,13 @@
         }
       }
     },
-    { data: "plantationArea" },
+    { data: "plantationArea", width:"5%" },
     { data: "slug",
       render: function(data,type, row){
         return `<a href="/quan-ly-vuon/vuon/${data}" class="text-decoration-none text-dark fs-5"><i class="ri-file-edit-line"></i></a>`
       }
      },
-    { data: "id", orderable: false },
+    { data: "id", width:"5%", orderable: false },
   ];
 
   initializeDataTable(
