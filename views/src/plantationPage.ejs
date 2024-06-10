@@ -41,133 +41,134 @@
 
         <tbody>
           <% plantations.forEach( (plantation,index) => { %>
-          <!-- Modal for updating -->
-          <div
-            class="modal fade"
-            id="staticBackdrop<%= index + 1%>"
-            data-bs-backdrop="static"
-            data-bs-keyboard="false"
-            tabindex="-1"
-            aria-labelledby="staticBackdropLabel"
-            aria-hidden="true"
-          >
+            <!-- Modal for updating -->
             <div
-              class="modal-dialog modal-dialog-centered modal-dialog-scrollable"
+              class="modal fade"
+              id="staticBackdrop<%= index + 1%>"
+              data-bs-backdrop="static"
+              data-bs-keyboard="false"
+              tabindex="-1"
+              aria-labelledby="staticBackdropLabel"
+              aria-hidden="true"
             >
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h1 class="modal-title fs-5" id="staticBackdropLabel">
-                    Cập nhật thông tin cho <%= plantation.name %>
-                  </h1>
-                  <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal"
-                    aria-label="Close"
-                  ></button>
-                </div>
-
-                <form
-                  action="/quan-ly-hang-hoa/update/<%= plantation._id %>"
-                  method="post"
-                >
-                  <div class="modal-body">
-                    <div class="my-3">
-                      <label for="name<%= index %>" class="form-label"
-                        >Tên</label
-                      >
-                      <input
-                        type="text"
-                        class="form-control"
-                        id="name<%= index %>"
-                        name="name"
-                        placeholder="Nhập tên mới"
-                        value="<%= plantation.name %>"
-                      />
-                    </div>
-
-                    <div class="my-3">
-                      <label for="unit<%= index %>" class="form-label"
-                        >Đơn vị</label
-                      >
-                      <input
-                        type="text"
-                        class="form-control"
-                        id="unit<%= index %>"
-                        name="unit"
-                        placeholder="Nhập đơn vị mới"
-                        value="<%= plantation.unit %>"
-                      />
-                    </div>
+              <div
+                class="modal-dialog modal-dialog-centered modal-dialog-scrollable"
+              >
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">
+                      Cập nhật thông tin cho <%= plantation.name %>
+                    </h1>
+                    <button
+                      type="button"
+                      class="btn-close"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"
+                    ></button>
                   </div>
-                  <div class="modal-footer">
-                    <button type="submit" class="btn btn-success">
-                      Lưu mới
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
 
-          <!-- Delete confirming modal  -->
-          <div
-            class="modal fade"
-            id="deleteModalToggle<%= index + 1 %>"
-            aria-hidden="true"
-            aria-labelledby="exampleModalToggleLabel"
-            tabindex="-1"
-          >
-            <div class="modal-dialog modal-dialog-centered">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h1 class="modal-title fs-5" id="exampleModalToggleLabel">
-                    Xóa vườn <%= plantation.name %>?
-                  </h1>
-                  <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal"
-                    aria-label="Close"
-                  ></button>
-                </div>
-                <form
-                  action="/quan-ly-vuon/delete/<%= plantation._id %>"
-                  method="post"
-                >
-                  <div class="modal-body">
-                    Bạn có muốn xóa vườn
-                    <strong><%= plantation.name %></strong>?
-                    Hành động này không thể hoàn tác.
-                    <br>
-                    <div class="row my-3">
-                      <div class="col-9 d-flex align-items-center"  >
-                        <label class="form-label m-0" for="deleteManager">Xóa luôn <strong>người quản lý (<%= plantation.managerID?.name %>)</strong> của vườn?</label>
-                      </div>
-                      <div class="col-3 my-1">
-                        <select class="form-control" name="deleteManager" id="deleteManager">
-                          <option value="no">Không</option>
-                          <option selected value="yes">Có</option>
-                        </select>
-                      </div>
+                  <form
+                    action="/quan-ly-hang-hoa/update/<%= plantation._id %>"
+                    method="post"
+                  >
+                    <div class="modal-body">
                       <div class="my-3">
-                        Vườn <strong><%= plantation.managerID?.name %></strong> quản lý: 
-                        <ol>
-                          <% plantation.managerID?.plantations.forEach(plantation => { %>
-                            <li><%= plantation.name %></li>
-                          <% }) %>
-                        </ol>
+                        <label for="name" class="form-label"
+                          >Tên</label
+                        >
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="name"
+                          name="name"
+                          placeholder="Nhập tên mới"
+                          value="<%= plantation.name %>"
+                        />
                       </div>
-                  </div>
-                  <div class="modal-footer">
-                    <button type="submit" class="btn btn-danger">
-                      Xác nhận
-                    </button>
-                  </div>
-                </form>
+
+                      <div class="my-3">
+                        <label for="unit" class="form-label"
+                          >Đơn vị</label
+                        >
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="unit"
+                          name="unit"
+                          placeholder="Nhập đơn vị mới"
+                          value="<%= plantation.unit %>"
+                        />
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="submit" class="btn btn-success">
+                        Lưu mới
+                      </button>
+                    </div>
+                  </form>
+                </div>
               </div>
             </div>
-          </div>
+
+            <!-- Delete confirming modal  -->
+            <div
+              class="modal fade"
+              id="deleteModalToggle"
+              aria-hidden="true"
+              aria-labelledby="exampleModalToggleLabel"
+              tabindex="-1"
+            >
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalToggleLabel">
+                      Xóa vườn <%= plantation.name %>?
+                    </h1>
+                    <button
+                      type="button"
+                      class="btn-close"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"
+                    ></button>
+                  </div>
+                  <form
+                    action="/quan-ly-vuon/delete/<%= plantation._id %>"
+                    method="post"
+                  >
+                    <div class="modal-body">
+                      Bạn có muốn xóa vườn
+                      <strong><%= plantation.name %></strong>?
+                      Hành động này không thể hoàn tác.
+                      <br>
+                      <div class="row my-3">
+                        <div class="col-9 d-flex align-items-center"  >
+                          <label class="form-label m-0" for="deleteManager">Xóa luôn <strong>người quản lý (<%= plantation.managerID?.name %>)</strong> của vườn?</label>
+                        </div>
+                        <div class="col-3 my-1">
+                          <select class="form-control" name="deleteManager" id="deleteManager">
+                            <option value="no">Không</option>
+                            <option selected value="yes">Có</option>
+                          </select>
+                        </div>
+                        <div class="my-3">
+                          Vườn <strong><%= plantation.managerID?.name %></strong> quản lý: 
+                          <ol>
+                            <% plantation.managerID?.plantations.forEach(plantation => { %>
+                              <li><%= plantation.name %></li>
+                            <% }) %>
+                          </ol>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="submit" class="btn btn-danger">
+                        Xác nhận
+                      </button>
+                    </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
           <% }) %>
         </tbody>
       </table>
