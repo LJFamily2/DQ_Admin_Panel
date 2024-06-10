@@ -2,9 +2,10 @@ const PlantationModel = require("../models/plantationModel");
 const handleResponse = require("./utils/handleResponse");
 const AreaModel = require("../models/areaModel");
 const ManagerModel = require("../models/managerModel");
+
 module.exports = {
   createPlantation,
-  //   updateProduct,
+  updatePlantation,
   deletePlantation,
   deleteAllPlantation,
   getPlantations,
@@ -109,6 +110,45 @@ async function createPlantation(req, res) {
     res.status(500);
   }
 }
+
+async function updatePlantation(req, res) {
+  const { id } = req.params;
+  const {
+    areaID,
+    managerID,
+  } = req.body;
+
+  try {
+    // Find or create the area and manager
+    let area = await findOrCreate(AreaModel, areaID);
+    let manager = await findOrCreate(ManagerModel, managerID);
+
+
+    // Update the plantation with the new information
+    const updateFields = {
+      ...req.body,
+      areaID: area,
+      managerID: manager,
+    };
+
+    // Save the updated plantation
+    const plantation = await PlantationModel.findByIdAndUpdate(
+      id,
+      updateFields,
+      { new: true }
+    );
+
+    if(!plantation){
+      return handleResponse(req, res, 404, "fail", "Không tìm thấy vườn!", "/quan-ly-vuon");
+    }
+
+    // Return the updated plantation
+    handleResponse(req, res,200, "success", "Thay đổi thông tin thành công", "/quan-ly-vuon");
+  } catch (error) {
+    console.error(error);
+    handleResponse(res, 500, false, "Internal Server Error");
+  }
+};
 
 async function deletePlantation(req, res) {
   console.log(req.params);
@@ -246,6 +286,7 @@ async function renderPage(req, res) {
   try {
     const plantations = await PlantationModel.find({})
       .populate({ path: "managerID", populate: { path: "plantations" } })
+      .populate("areaID")
       .exec();
     const areas = await AreaModel.find({});
     const managers = await ManagerModel.find({});
@@ -262,3 +303,4 @@ async function renderPage(req, res) {
     res.status(500);
   }
 }
+

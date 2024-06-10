@@ -67,45 +67,118 @@
                     ></button>
                   </div>
 
-                  <form
-                    action="/quan-ly-hang-hoa/update/<%= plantation._id %>"
-                    method="post"
-                  >
-                    <div class="modal-body">
-                      <div class="my-3">
-                        <label for="name" class="form-label"
-                          >Tên</label
-                        >
-                        <input
-                          type="text"
-                          class="form-control"
-                          id="name"
-                          name="name"
-                          placeholder="Nhập tên mới"
-                          value="<%= plantation.name %>"
-                        />
-                      </div>
+                  <form action="/quan-ly-vuon/update/<%= plantation._id %>" method="post">
+                  <div class="modal-body">
 
-                      <div class="my-3">
-                        <label for="unit" class="form-label"
-                          >Đơn vị</label
-                        >
+                      <div >
+                        <label for="areaID<%= index + 1 %>" class="form-label">Tên khu vực</label>
                         <input
                           type="text"
+                          id="areaID<%= index + 1 %>"
                           class="form-control"
-                          id="unit"
-                          name="unit"
-                          placeholder="Nhập đơn vị mới"
-                          value="<%= plantation.unit %>"
+                          name="areaID"
+                          list="areas"
+                          placeholder="Chọn hoặc tạo khu vực"
+                          value="<%= plantation.areaID.name %>"
+                          required
                         />
+                        <datalist id="areas">
+                          <% areas.forEach(area => { %>
+                            <option value="<%= area.name %>"></option>
+                          <% }) %>
+                        </datalist>
+                      </div>
+                      
+                      <div class="my-3">
+                        <label for="code<%= index + 1 %>" class="form-label">Mã nhà vườn</label>
+                          <input
+                            type="text"
+                            id="code<%= index + 1 %>"
+                            class="form-control"
+                            name="code"
+                            placeholder="Nhập mã nhà vườn"
+                            value="<%= plantation.code %>"
+
+                          />
+                      </div>
+            
+                      <div class="my-3">
+                        <label for="name<%= index + 1 %>" class="form-label">Tên vườn</label>
+                          <input
+                            type="text"
+                            id="name<%= index + 1 %>"
+                            class="form-control"
+                            name="name"
+                            placeholder="Nhập tên"
+                            value="<%= plantation.name %>"
+                            required
+                          />
+                      </div>
+                      
+                      <div class="my-3">
+                        <label for="managerID<%= index + 1 %>" class="form-label">Người quản lý</label>
+                        <input
+                          type="text"
+                          id="managerID<%= index + 1 %>"
+                          class="form-control"
+                          name="managerID"
+                          list="managers"
+                          placeholder="Chọn hoặc tạo người quản lý"
+                          value="<%= plantation.managerID?.name %>"
+                        />
+                        <datalist id="managers">
+                          <% managers.forEach(manager => { %>
+                            <option value="<%= manager.name %>"></option>
+                          <% }) %>
+                        </datalist>
+                      </div>
+            
+                      <div class="my-3">
+                        <div class="row">
+                          <label >Thời hạn hợp đồng</label>
+                          <div class="col-6 ">
+                            <label for="contactDurationStart<%= index + 1 %>" >Bắt đầu</label>
+                            <input
+                              type="date"
+                              id="contactDurationStart<%= index + 1 %>"
+                              class="form-control"
+                              name="contactDurationStart"
+                              placeholder="Nhập thời hạn hợp đồng"
+                              value="<%= plantation.contactDurationStart %>"
+                              onchange="document.getElementById('contactDurationEnd').min = this.value;"
+                            />
+                            </div>
+                            <div class="col-6">
+                              <label for="contactDurationEnd<%= index + 1 %>">Kết thúc</label>
+                              <input
+                                type="date"
+                                id="contactDurationEnd<%= index + 1 %>"
+                                class="form-control"
+                                name="contactDurationEnd"
+                                placeholder="Nhập thời hạn hợp đồng"
+                                value="<%= plantation.contactDurationEnd %>"
+                              />
+                            </div>
+                        </div>
+                      </div>
+            
+                      <div >
+                        <label for="plantationArea<%= index + 1 %>" class="form-label">Số mẫu</label>
+                          <input
+                            type="text"
+                            id="plantationArea<%= index + 1 %>"
+                            class="form-control"
+                            name="plantationArea"
+                            placeholder="Nhập điện tích của vườn"
+                            value="<%= plantation.plantationArea %>"
+                          />
                       </div>
                     </div>
-                    <div class="modal-footer">
-                      <button type="submit" class="btn btn-success">
-                        Lưu mới
-                      </button>
-                    </div>
-                  </form>
+                  <div class="modal-footer">
+                    <!-- Buttons -->
+                  <button type="submit" class="btn btn-success">Lưu mới</button>
+                </div>
+              </form>
                 </div>
               </div>
             </div>
