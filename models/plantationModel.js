@@ -18,10 +18,10 @@ const plantationSchema = new mongoose.Schema({
     type: String,
   },
   contactDurationStart: {
-    type: Date,
+    type: String,
   },
   contactDurationEnd: {
-    type: Date,
+    type: String,
   },
   plantationArea: {
     type: String,

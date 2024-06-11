@@ -113,16 +113,45 @@ async function createPlantation(req, res) {
 
 async function updatePlantation(req, res) {
   const { id } = req.params;
-  const {
-    areaID,
-    managerID,
-  } = req.body;
+  const { newArea, newManager, deleteManager } = req.body;
+
+  console.log(req.body);
 
   try {
-    // Find or create the area and manager
-    let area = await findOrCreate(AreaModel, areaID);
-    let manager = await findOrCreate(ManagerModel, managerID);
+    // Get the plantation first
+    const plantation = await PlantationModel.findById(id);
+    if (!plantation) {
+      return handleResponse(
+        req,
+        res,
+        404,
+        "fail",
+        "Không tìm thấy vườn!",
+        "/quan-ly-vuon"
+      );
+    }
 
+    // Delete the manager
+    if (deleteManager === "yes") {
+      await ManagerModel.findByIdAndDelete(plantation.managerID);
+    }
+
+    // Find or create the area and manager
+    let area = await findOrCreate(AreaModel, newArea);
+    let manager = await findOrCreate(ManagerModel, newManager);
+
+    // If the area has changed, update the areas
+    if (String(plantation.areaID) !== String(area._id)) {
+      // Remove the plantation from the old area
+      await AreaModel.findByIdAndUpdate(plantation.areaID, {
+        $pull: { plantations: plantation._id },
+      });
+
+      // Add the plantation to the new area
+      await AreaModel.findByIdAndUpdate(area._id, {
+        $push: { plantations: plantation._id },
+      });
+    }
 
     // Update the plantation with the new information
     const updateFields = {
@@ -132,23 +161,47 @@ async function updatePlantation(req, res) {
     };
 
     // Save the updated plantation
-    const plantation = await PlantationModel.findByIdAndUpdate(
+    const updatedPlantation = await PlantationModel.findByIdAndUpdate(
       id,
       updateFields,
       { new: true }
     );
 
-    if(!plantation){
-      return handleResponse(req, res, 404, "fail", "Không tìm thấy vườn!", "/quan-ly-vuon");
+    if (!updatedPlantation) {
+      return handleResponse(
+        req,
+        res,
+        404,
+        "fail",
+        "Không tìm thấy vườn!",
+        "/quan-ly-vuon"
+      );
+    }
+
+    // linked the new manager to the plantation
+    if (newManager) {
+      const managerData = await ManagerModel.findById(manager);
+      if(!managerData.plantations.includes(updatedPlantation._id)){
+        await ManagerModel.findByIdAndUpdate(manager, {
+          $push: { plantations: updatedPlantation._id },
+        });
+      }
     }
 
     // Return the updated plantation
-    handleResponse(req, res,200, "success", "Thay đổi thông tin thành công", "/quan-ly-vuon");
+    handleResponse(
+      req,
+      res,
+      200,
+      "success",
+      "Thay đổi thông tin thành công",
+      "/quan-ly-vuon"
+    );
   } catch (error) {
     console.error(error);
     handleResponse(res, 500, false, "Internal Server Error");
   }
-};
+}
 
 async function deletePlantation(req, res) {
   console.log(req.params);
@@ -303,4 +356,3 @@ async function renderPage(req, res) {
     res.status(500);
   }
 }
-
