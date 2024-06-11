@@ -2,6 +2,7 @@ const PlantationModel = require("../models/plantationModel");
 const handleResponse = require("./utils/handleResponse");
 const AreaModel = require("../models/areaModel");
 const ManagerModel = require("../models/managerModel");
+const trimStringFields = require("./utils/trimStringFields")
 
 module.exports = {
   createPlantation,
@@ -13,7 +14,7 @@ module.exports = {
 };
 
 async function findOrCreate(model, name) {
-  if (name.trim() === "") {
+  if (!name || name.trim() === "") {
     return null;
   }
   let item = await model.findOne({ name });
@@ -25,6 +26,8 @@ async function findOrCreate(model, name) {
 
 async function createPlantation(req, res) {
   try {
+    // Trim all string fields
+    req.body = trimStringFields(req.body);
     console.log(req.body);
 
     // Validate information
@@ -54,17 +57,11 @@ async function createPlantation(req, res) {
     // End Validate information
 
     // Prepare the data for the new plantation
-    let { code, ...restOfBody } = req.body;
     let plantationData = {
-      ...restOfBody,
+      ...req.body,
       areaID: area,
       managerID: manager,
     };
-
-    // If the code is provided and it's not an empty string, add it to the data
-    if (code && code.trim() !== "") {
-      plantationData.code = code;
-    }
 
     // Create the new plantation
     const plantation = await PlantationModel.create(plantationData);
@@ -112,8 +109,8 @@ async function createPlantation(req, res) {
 }
 
 async function updatePlantation(req, res) {
+  req.body = trimStringFields(req.body);
   const { id } = req.params;
-  const { newArea, newManager, deleteManager } = req.body;
 
   console.log(req.body);
 
@@ -132,13 +129,13 @@ async function updatePlantation(req, res) {
     }
 
     // Delete the manager
-    if (deleteManager === "yes") {
+    if (req.body.deleteManager === "yes") {
       await ManagerModel.findByIdAndDelete(plantation.managerID);
     }
 
     // Find or create the area and manager
-    let area = await findOrCreate(AreaModel, newArea);
-    let manager = await findOrCreate(ManagerModel, newManager);
+    let area = await findOrCreate(AreaModel, req.body.newArea);
+    let manager = await findOrCreate(ManagerModel, req.body.newManager);
 
     // If the area has changed, update the areas
     if (String(plantation.areaID) !== String(area._id)) {
@@ -179,7 +176,7 @@ async function updatePlantation(req, res) {
     }
 
     // linked the new manager to the plantation
-    if (newManager) {
+    if (req.body.newManager) {
       const managerData = await ManagerModel.findById(manager);
       if(!managerData.plantations.includes(updatedPlantation._id)){
         await ManagerModel.findByIdAndUpdate(manager, {
@@ -312,7 +309,7 @@ async function getPlantations(req, res) {
         contactDuration:
           (await plantation.calculateRemainingDays()) || "Không hợp đồng",
         totalRemainingDays: await plantation.calculateTotalRemainingDays(),
-        plantationArea: plantation.plantationArea,
+        plantationArea: plantation.plantationArea || "",
         slug: plantation.slug,
         id: plantation._id,
       }))
