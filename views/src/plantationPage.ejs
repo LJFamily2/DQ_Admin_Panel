@@ -186,7 +186,7 @@
             <!-- Delete confirming modal  -->
             <div
               class="modal fade"
-              id="deleteModalToggle"
+              id="deleteModalToggle<%= index + 1 %>"
               aria-hidden="true"
               aria-labelledby="exampleModalToggleLabel"
               tabindex="-1"
@@ -329,10 +329,10 @@
               id="managerID"
               class="form-control"
               name="managerID"
-              list="managers"
+              list="create-managers"
               placeholder="Chọn hoặc tạo người quản lý"
             />
-            <datalist id="managers">
+            <datalist id="create-managers">
               <% managers.forEach(manager => { %>
                 <option value="<%= manager.name %>"></option>
               <% }) %>
