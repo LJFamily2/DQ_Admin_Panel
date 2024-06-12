@@ -1,6 +1,17 @@
 const UserModel = require("../models/userAccountModel");
 const bcrypt = require("bcrypt");
 const handleResponse = require("./utils/handleResponse");
+const trimStringFields = require('./utils/trimStringFields')
+
+module.exports = {
+  createUser,
+  getUsers,
+  updateUser,
+  deleteUser,
+  logOut,
+  renderPage,
+  deleteAllUsers,
+};
 
 async function renderPage(req, res) {
   try {
@@ -17,13 +28,14 @@ async function renderPage(req, res) {
 }
 
 async function createUser(req, res) {
+  console.log(req.body)
+  req.body = trimStringFields(req.body);
   try {
-    const { username, password,role } = req.body;
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
     const user = await UserModel.create({
-      username,
+      username: req.body.username,
       password: hashedPassword,
-      role
+      role: req.body.role,
     });
     if (!user) {
       handleResponse(
@@ -35,6 +47,9 @@ async function createUser(req, res) {
         "/quan-ly-tai-khoan"
       );
     }
+
+    console.log(user)
+
     handleResponse(
       req,
       res,
@@ -88,8 +103,9 @@ async function getUsers(req, res) {
 }
 
 async function updateUser(req, res) {
+  console.log(req.body)
+  req.body = trimStringFields(req.body);
   try {
-    const user = await UserModel.findById(req.params.id);
     if (!user) {
       return handleResponse(
         req,
@@ -100,12 +116,30 @@ async function updateUser(req, res) {
         "/quan-ly-tai-khoan"
       );
     }
-    user.username = req.body.username || user.username;
-    user.role = req.body.role || user.role;
+
+    const updateFields = {
+      username: req.body.username,
+      role: req.body.role,
+      password: req.body.password,
+    };
     if (req.body.password) {
-      user.password = await bcrypt.hash(req.body.password, 10);
+      updateFields.password = await bcrypt.hash(req.body.password, 10);
     }
-    await user.save();
+
+    const newUser = await UserModel.findByIdAndUpdate(req.params.id, updateFields, {new:true})
+
+    if (!newUser) {
+      return handleResponse(
+        req,
+        res,
+        404,
+        "fail",
+        "Cập nhập tài khoản thất bại",
+        "/quan-ly-tai-khoan"
+      );
+    }
+
+    console.log(newUser)
 
     handleResponse(
       req,
@@ -175,13 +209,3 @@ function logOut(req, res) {
   req.logout();
   res.redirect("/dang-nhap");
 }
-
-module.exports = {
-  createUser,
-  getUsers,
-  updateUser,
-  deleteUser,
-  logOut,
-  renderPage,
-  deleteAllUsers,
-};

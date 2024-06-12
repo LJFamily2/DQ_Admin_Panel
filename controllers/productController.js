@@ -1,5 +1,6 @@
 const ProductModel = require("../models/productModel");
 const handleResponse = require("./utils/handleResponse");
+const trimStringFields = require('./utils/trimStringFields')
 
 module.exports = {
   createProduct,
@@ -25,11 +26,12 @@ async function renderPage(req, res) {
 }
 
 async function createProduct(req, res) {
-  try {
-    console.log(req.body)
-    const { name, unit } = req.body;
+  console.log(req.body)
+  req.body = trimStringFields(req.body);
 
-    const newProduct = await ProductModel.create({ name, unit });
+  try {
+
+    const newProduct = await ProductModel.create({ name:req.body.name, unit: req.body.unit });
     if (!newProduct) {
       handleResponse(
         req,
@@ -40,6 +42,8 @@ async function createProduct(req, res) {
         "/quan-ly-hang-hoa"
       );
     }
+
+    console.log(newProduct)
     handleResponse(
       req,
       res,
@@ -55,13 +59,13 @@ async function createProduct(req, res) {
 }
 
 async function updateProduct(req, res) {
+  console.log(req.body)
+  req.body = trimStringFields(req.body);
+  const id = req.params.id;
   try {
-    console.log(req.body)
-    const id = req.params.id;
-    const { name, unit } = req.body;
     const updateFields ={
-        name,
-        unit
+        name: req.body.name,
+        unit: req.body.unit
     }
     const updatedProduct = await ProductModel.findByIdAndUpdate(
       id,
@@ -79,6 +83,8 @@ async function updateProduct(req, res) {
         "/quan-ly-hang-hoa"
       );
     }
+
+    console.log(updatedProduct)
 
     handleResponse(
       req,
