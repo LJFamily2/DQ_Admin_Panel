@@ -20,7 +20,7 @@
   data-bs-target="#deleteAll-admin-user"
   style="width: max-content"
 >
-  Xóa tất cả người quản lý
+  Xóa tất cả dữ liệu
 </button>
 <div class="row m-0 px-2">
   <div class="col-12 col-md-9 p-0 px-md-3">
@@ -34,7 +34,7 @@
             -webkit-user-select: none;
           "
         >
-          Khu vực:
+          <strong>Mã vườn:</strong> <%= plantation.code ? plantation.code : "Trống" %>
         </div>
         <div
           class="item rounded-1 p-2"
@@ -44,7 +44,17 @@
             -webkit-user-select: none;
           "
         >
-          Người quản lý:
+          <strong>Khu vực:</strong> <%= plantation.areaID?.name %>
+        </div>
+        <div
+          class="item rounded-1 p-2"
+          style="
+            box-shadow: 0 0 4px;
+            user-select: none;
+            -webkit-user-select: none;
+          "
+        >
+          <strong>Người quản lý:</strong> <%= plantation.managerID?.name ? plantation.managerID?.name : "Trống" %>
         </div>
         <div
           class="item rounded-1 p-2"
@@ -52,7 +62,7 @@
           data-bs-target="#contactDurationModal"
           data-bs-toggle="modal"
         >
-          Thời hạn hợp đồng:
+          <strong>Thời hạn hợp đồng:</strong> <%= plantation.calculateContranctDuration() %>
         </div>
         <div
           class="item rounded-1 p-2"
@@ -62,7 +72,7 @@
             -webkit-user-select: none;
           "
         >
-          Số mẫu:
+          <strong>Số mẫu:</strong> <%= plantation.plantationArea ? plantation.plantationArea : "Trống" %>
         </div>
         <div class="item rounded-1">
           <i
@@ -158,19 +168,20 @@
         ></button>
       </div>
       <div class="modal-body">
-        <% if(plantation.contactDurationStart && plantation.contactDurationEnd){ %>
+        <% if(plantation.contactDurationStart && plantation.contactDurationEnd){
+        %>
 
         <div class="row">
           <div class="col-6">
             <label class="form-label">Ngày bắt đầu</label>
             <div class="form-control" style="background: rgb(222, 222, 222)">
-                <%= plantation.contactDurationStart %>
+              <%= plantation.contactDurationStart %>
             </div>
           </div>
           <div class="col-6">
             <label class="form-label">Ngày kết thúc</label>
             <div class="form-control" style="background: rgb(222, 222, 222)">
-                <%= plantation.contactDurationEnd %>
+              <%= plantation.contactDurationEnd %>
             </div>
           </div>
         </div>
@@ -185,33 +196,31 @@
           <div class="col-6">
             <label class="form-label">Thời hạn còn lại</label>
             <% if(plantation.calculateTotalRemainingDays() < 30){ %>
-              <div class="form-control text-danger" style="background: rgb(222, 222, 222)">
-                <%= plantation.calculateRemainingDays() %>
-              </div>
+            <div
+              class="form-control text-danger"
+              style="background: rgb(222, 222, 222)"
+            >
+              <%= plantation.calculateRemainingDays() %>
+            </div>
             <% } else { %>
-              <div class="form-control text-success" style="background: rgb(222, 222, 222)">
-                <%= plantation.calculateRemainingDays() %>
-              </div>
+            <div
+              class="form-control text-success"
+              style="background: rgb(222, 222, 222)"
+            >
+              <%= plantation.calculateRemainingDays() %>
+            </div>
             <% } %>
           </div>
         </div>
 
-        <% } else { %>
-          Không có hợp đồng!
-        <% } %>
-
+        <% } else { %> Không có hợp đồng! <% } %>
       </div>
     </div>
   </div>
 </div>
 
 <!-- Modal for updating plantation information -->
-<div
-  class="modal fade"
-  id="updateModal"
-  tabindex="-1"
-  aria-hidden="true"
->
+<div class="modal fade" id="updateModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
@@ -229,9 +238,7 @@
       <form action="/quan-ly-vuon/update/<%= plantation._id %>" method="post">
         <div class="modal-body">
           <div>
-            <label for="areaID" class="form-label"
-              >Tên khu vực</label
-            >
+            <label for="areaID" class="form-label">Tên khu vực</label>
             <input
               type="text"
               id="areaID"
@@ -250,9 +257,7 @@
           </div>
 
           <div class="my-3">
-            <label for="code" class="form-label"
-              >Mã nhà vườn</label
-            >
+            <label for="code" class="form-label">Mã nhà vườn</label>
             <input
               type="text"
               id="code"
@@ -264,9 +269,7 @@
           </div>
 
           <div class="my-3">
-            <label for="name" class="form-label"
-              >Tên vườn</label
-            >
+            <label for="name" class="form-label">Tên vườn</label>
             <input
               type="text"
               id="name"
@@ -279,9 +282,7 @@
           </div>
 
           <div class="my-3">
-            <label for="managerID" class="form-label"
-              >Người quản lý</label
-            >
+            <label for="managerID" class="form-label">Người quản lý</label>
             <input
               type="text"
               id="managerID"
@@ -299,10 +300,7 @@
             </datalist>
             <!-- ask to delete manager ID  -->
             <% if(plantation.managerID?.name){ %>
-            <div
-              class="deleteManager w-100"
-              style="display: none"
-            >
+            <div class="deleteManager w-100" style="display: none">
               <div class="row mt-3">
                 <div class="col-9 d-flex align-items-center">
                   <label class="form-label m-0" for="uManager"
@@ -330,9 +328,7 @@
             <div class="row">
               <label>Thời hạn hợp đồng</label>
               <div class="col-6">
-                <label for="contactDurationStart"
-                  >Bắt đầu</label
-                >
+                <label for="contactDurationStart">Bắt đầu</label>
                 <input
                   type="date"
                   id="contactDurationStart"
@@ -358,9 +354,7 @@
           </div>
 
           <div>
-            <label for="plantationArea" class="form-label"
-              >Số mẫu</label
-            >
+            <label for="plantationArea" class="form-label">Số mẫu</label>
             <input
               type="text"
               id="plantationArea"
