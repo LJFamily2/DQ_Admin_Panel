@@ -23,18 +23,37 @@
   Xóa tất cả người quản lý
 </button>
 <div class="row m-0 px-2">
-  <div class="col-12 col-md-9 p-0 px-md-3" >
-    <div class="col">
-        ;ladsk jf;lkajs dl;kf jas;ldkjf l;kasdj f;klasd jfl;kasd jf l;kasdh jkl;f fjasdkl/ fjlk;sdfaf j;k,lasdckj; fasedrk;jl
+  <div class="col-12 col-md-9 p-0 px-md-3">
+    <div class="col mb-5">
+      <div class="item-lists gap-3 d-flex flex-wrap">
+        <div class="item rounded-1 p-2" style="box-shadow: 0 0 4px">
+          Khu vực:
+        </div>
+        <div class="item rounded-1 p-2" style="box-shadow: 0 0 4px">
+          Người quản lý:
+        </div>
+        <div class="item rounded-1 p-2" style="box-shadow: 0 0 4px">
+          Thời hạn hợp đồng:
+        </div>
+        <div class="item rounded-1 p-2" style="box-shadow: 0 0 4px">
+          Số mẫu:
+        </div>
+        <div class="item rounded-1">
+          <i class="ri-settings-3-line fs-3" style="cursor: pointer"></i>
+        </div>
+      </div>
     </div>
-    <div class="col rounded-2 p-2 overflow-auto " style="box-shadow: 0 0 10px; max-height: 80dvh;">
-        <table></table>
+    <div
+      class="col rounded-2 p-2 overflow-auto"
+      style="box-shadow: 0 0 4px; max-height: 80dvh"
+    >
+      <table></table>
     </div>
   </div>
   <div
-    class="col-12 col-md-3 rounded-2 my-5 m-md-0 py-3 "
+    class="col-12 col-md-3 rounded-2 my-5 m-md-0 py-3"
     style="
-      box-shadow: 0 0 10px;
+      box-shadow: 0 0 4px;
       background: var(--background_color);
       max-height: 80dvh;
       overflow-y: auto;
@@ -81,13 +100,14 @@
         />
       </div>
 
-
       <!-- Buttons -->
       <button type="submit" class="btn btn-primary">Thêm</button>
       <button type="reset" class="btn btn-secondary">Làm mới</button>
     </form>
   </div>
 </div>
+
+
 
 <!-- Modal for deleting all managers -->
 <div
@@ -125,41 +145,43 @@
 </div>
 <script>
   const managerColumns = [
-    { data: "no", orderable: false, width: "5%" },
-    { data: "name", width:"20%" },
-    { data: "phone", width:"15%" },
-    { data: "address", width:"10%" },
-    { data: "plantations", width:"10%" },
+    { data: 'no', orderable: false, width: '5%' },
+    { data: 'name', width: '20%' },
+    { data: 'phone', width: '15%' },
+    { data: 'address', width: '10%' },
+    { data: 'plantations', width: '10%' },
     {
-      data: "frontIdentification", width:"15%",
+      data: 'frontIdentification',
+      width: '15%',
       orderable: false,
       render: function (data, type, row) {
         if (data) {
           return `<img src="/images/${data}" alt="Front Identification" style="max-height: 100px;" />`;
         } else {
-          return "Trống";
+          return 'Trống';
         }
       },
     },
     {
-      data: "backIdentification" , width:"15%",
+      data: 'backIdentification',
+      width: '15%',
       orderable: false,
       render: function (data, type, row) {
         if (data) {
           return `<img src="/images/${data}" alt="Back Identification" style="max-height: 100px;" />`;
         } else {
-          return "Trống";
+          return 'Trống';
         }
       },
     },
-    { data: "id" , width:"10%", orderable: false },
+    { data: 'id', width: '10%', orderable: false },
   ];
 
   initializeDataTable(
-    "#managers_table",
-    "/quan-ly-nguoi-quan-ly/getManagers",
-    "#staticBackdrop",
-    "#deleteModalToggle",
-    managerColumns
+    '#managers_table',
+    '/quan-ly-nguoi-quan-ly/getManagers',
+    '#staticBackdrop',
+    '#deleteModalToggle',
+    managerColumns,
   );
 </script>
