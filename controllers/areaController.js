@@ -1,6 +1,7 @@
 const AreaModel = require("../models/areaModel");
 const handleResponse = require("./utils/handleResponse");
 const PlantationModel = require("../models/plantationModel");
+const trimStringFields = require('./utils/trimStringFields')
 
 module.exports = {
   createArea,
@@ -25,15 +26,15 @@ async function renderPage(req, res) {
       messages: req.flash(),
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500);
   }
 }
 
 async function createArea(req, res) {
   try {
-    const { name, plantation } = req.body;
+    req.body = trimStringFields(req.body);
 
-    let checkExist = await AreaModel.findOne({ name: name });
+    let checkExist = await AreaModel.findOne({ name: req.body.name });
 
     if (checkExist) {
       return handleResponse(
@@ -47,7 +48,7 @@ async function createArea(req, res) {
     }
 
     // Ensure plantation is an array
-    let plantationArray = Array.isArray(plantation) ? plantation : [plantation];
+    let plantationArray = Array.isArray(req.body.plantation) ? req.body.plantation : [req.body.plantation];
 
     // Remove empty or whitespace-only strings
     plantationArray = plantationArray.filter((p) => p && p.trim() !== "");
@@ -70,7 +71,7 @@ async function createArea(req, res) {
     const plantationIds = await Promise.all(plantationPromises);
 
     const newArea = await AreaModel.create({
-      name,
+      name: req.body.name,
       plantations: plantationIds,
     });
 
@@ -85,6 +86,8 @@ async function createArea(req, res) {
       );
     }
 
+    console.log(newArea)
+
     return handleResponse(
       req,
       res,
@@ -95,7 +98,7 @@ async function createArea(req, res) {
     );
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ error: err.message });
+    return res.status(500);
   }
 }
 
@@ -111,15 +114,13 @@ PlantationModel.findOneOrCreate = async function findOneOrCreate(condition) {
 
 async function updateArea(req, res) {
   try {
+    req.body = trimStringFields(req.body)
     console.log(req.body);
-    const { area ,name } = req.body;
-
-
 
     const updateFields = {
-      name,
+      name:req.body.name,
     };
-    const updatedArea = await AreaModel.findByIdAndUpdate(area, updateFields, {
+    const updatedArea = await AreaModel.findByIdAndUpdate(req.body.area, updateFields, {
       new: true,
     });
 
@@ -144,7 +145,7 @@ async function updateArea(req, res) {
     );
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: err.message });
+    res.status(500);
   }
 }
 
@@ -236,7 +237,7 @@ async function deleteAreas(req, res) {
     );
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: err.message });
+    res.status(500);
   }
 }
 
@@ -253,7 +254,7 @@ async function deleteAllAreas(req, res) {
     );
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: err.message });
+    res.status(500);
   }
 }
 
