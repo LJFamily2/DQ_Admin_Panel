@@ -455,7 +455,7 @@
     { data: "areaID", width:"15%" },
     { data: "code", width:"15%" },
     { data: "name", width:"15%" },
-    { data: "managerID", width:"10%" },
+    { data: "managerID", width:"15%" },
     {
       data: "contactDuration", width:"15%",
       render: function(data, type, row) {
@@ -482,8 +482,8 @@
         }
       }
     },
-    { data: "plantationArea", width:"5%" },
-    { data: "slug",
+    { data: "plantationArea", width:"10%" },
+    { data: "slug", width: "5%",
       render: function(data,type, row){
         return `<a href="/quan-ly-vuon/vuon/${data}" class="text-decoration-none text-dark fs-5"><i class="ri-file-edit-line"></i></a>`
       }
