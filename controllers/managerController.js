@@ -2,6 +2,7 @@ const ManagerModel = require("../models/managerModel");
 const handleResponse = require("./utils/handleResponse");
 const deleteImageFile = require("./utils/deleteImageFile")
 const PlantationModel = require("../models/plantationModel");
+const trimStringFields = require('./utils/trimStringFields')
 
 module.exports = {
   createManager,
@@ -32,6 +33,8 @@ async function renderPage(req, res) {
 async function createManager(req, res) {
   console.log("Form data:", req.body);
   console.log("Files:", req.files);
+  console.log(req.body)
+  req.body = trimStringFields(req.body)
   try {
     const frontIdentification = req.files["frontIdentification"]
       ? req.files["frontIdentification"][0].filename
@@ -74,6 +77,7 @@ async function createManager(req, res) {
 
 async function updateManager(req, res) {
   console.log(req.body);
+  req.body = trimStringFields(req.body)
 
   try {
     const { id } = req.params;
@@ -86,9 +90,7 @@ async function updateManager(req, res) {
 
     // Update basic fields
     const updateFields = {
-      name: req.body.name,
-      phone: req.body.phone,
-      address: req.body.address,
+      ...req.body,
       plantation: req.body.plantation || null,
     };
 
@@ -128,6 +130,7 @@ async function updateManager(req, res) {
       req.flash("rejected", "Manager update failed!");
       return res.redirect("/quan-ly-nguoi-quan-ly");
     }
+    console.log(updatedManager)
 
     req.flash("accepted", "Cập nhật người quản lý thành công");
     res.redirect("/quan-ly-nguoi-quan-ly");
