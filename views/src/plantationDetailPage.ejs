@@ -26,20 +26,51 @@
   <div class="col-12 col-md-9 p-0 px-md-3">
     <div class="col mb-5">
       <div class="item-lists gap-3 d-flex flex-wrap">
-        <div class="item rounded-1 p-2" style="box-shadow: 0 0 4px">
+        <div
+          class="item rounded-1 p-2"
+          style="
+            box-shadow: 0 0 4px;
+            user-select: none;
+            -webkit-user-select: none;
+          "
+        >
           Khu vực:
         </div>
-        <div class="item rounded-1 p-2" style="box-shadow: 0 0 4px">
+        <div
+          class="item rounded-1 p-2"
+          style="
+            box-shadow: 0 0 4px;
+            user-select: none;
+            -webkit-user-select: none;
+          "
+        >
           Người quản lý:
         </div>
-        <div class="item rounded-1 p-2" style="box-shadow: 0 0 4px">
+        <div
+          class="item rounded-1 p-2"
+          style="box-shadow: 0 0 4px; cursor: pointer"
+          data-bs-target="#contactDurationModal"
+          data-bs-toggle="modal"
+        >
           Thời hạn hợp đồng:
         </div>
-        <div class="item rounded-1 p-2" style="box-shadow: 0 0 4px">
+        <div
+          class="item rounded-1 p-2"
+          style="
+            box-shadow: 0 0 4px;
+            user-select: none;
+            -webkit-user-select: none;
+          "
+        >
           Số mẫu:
         </div>
         <div class="item rounded-1">
-          <i class="ri-settings-3-line fs-3" style="cursor: pointer"></i>
+          <i
+            class="ri-settings-3-line fs-3"
+            style="cursor: pointer"
+            data-bs-target="#updateModal"
+            data-bs-toggle="modal"
+          ></i>
         </div>
       </div>
     </div>
@@ -107,7 +138,247 @@
   </div>
 </div>
 
+<!-- Modal for contact duration -->
+<div
+  class="modal fade"
+  id="contactDurationModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Thông tin hợp đồng</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <% if(plantation.contactDurationStart && plantation.contactDurationEnd){ %>
 
+        <div class="row">
+          <div class="col-6">
+            <label class="form-label">Ngày bắt đầu</label>
+            <div class="form-control" style="background: rgb(222, 222, 222)">
+                <%= plantation.contactDurationStart %>
+            </div>
+          </div>
+          <div class="col-6">
+            <label class="form-label">Ngày kết thúc</label>
+            <div class="form-control" style="background: rgb(222, 222, 222)">
+                <%= plantation.contactDurationEnd %>
+            </div>
+          </div>
+        </div>
+
+        <div class="row my-3">
+          <div class="col-6">
+            <label class="form-label">Thời hạn của hợp đồng</label>
+            <div class="form-control" style="background: rgb(222, 222, 222)">
+              <%= plantation.calculateContranctDuration() %>
+            </div>
+          </div>
+          <div class="col-6">
+            <label class="form-label">Thời hạn còn lại</label>
+            <% if(plantation.calculateTotalRemainingDays() < 30){ %>
+              <div class="form-control text-danger" style="background: rgb(222, 222, 222)">
+                <%= plantation.calculateRemainingDays() %>
+              </div>
+            <% } else { %>
+              <div class="form-control text-success" style="background: rgb(222, 222, 222)">
+                <%= plantation.calculateRemainingDays() %>
+              </div>
+            <% } %>
+          </div>
+        </div>
+
+        <% } else { %>
+          Không có hợp đồng!
+        <% } %>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for updating plantation information -->
+<div
+  class="modal fade"
+  id="updateModal"
+  tabindex="-1"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="staticBackdropLabel">
+          Cập nhật thông tin cho <%= plantation.name %>
+        </h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+
+      <form action="/quan-ly-vuon/update/<%= plantation._id %>" method="post">
+        <div class="modal-body">
+          <div>
+            <label for="areaID" class="form-label"
+              >Tên khu vực</label
+            >
+            <input
+              type="text"
+              id="areaID"
+              class="form-control"
+              name="newArea"
+              list="areas"
+              placeholder="Chọn hoặc tạo khu vực"
+              value="<%= plantation.areaID.name %>"
+              required
+            />
+            <datalist id="areas">
+              <% areas.forEach(area => { %>
+              <option value="<%= area.name %>"></option>
+              <% }) %>
+            </datalist>
+          </div>
+
+          <div class="my-3">
+            <label for="code" class="form-label"
+              >Mã nhà vườn</label
+            >
+            <input
+              type="text"
+              id="code"
+              class="form-control"
+              name="code"
+              placeholder="Nhập mã nhà vườn"
+              value="<%= plantation.code %>"
+            />
+          </div>
+
+          <div class="my-3">
+            <label for="name" class="form-label"
+              >Tên vườn</label
+            >
+            <input
+              type="text"
+              id="name"
+              class="form-control"
+              name="name"
+              placeholder="Nhập tên"
+              value="<%= plantation.name %>"
+              required
+            />
+          </div>
+
+          <div class="my-3">
+            <label for="managerID" class="form-label"
+              >Người quản lý</label
+            >
+            <input
+              type="text"
+              id="managerID"
+              class="form-control"
+              name="newManager"
+              list="managers"
+              placeholder="Chọn hoặc tạo người quản lý"
+              value="<%= plantation.managerID?.name %>"
+              oninput="toggleButtons(true, '.deleteManager')"
+            />
+            <datalist id="managers">
+              <% managers.forEach(manager => { %>
+              <option value="<%= manager.name %>"></option>
+              <% }) %>
+            </datalist>
+            <!-- ask to delete manager ID  -->
+            <% if(plantation.managerID?.name){ %>
+            <div
+              class="deleteManager w-100"
+              style="display: none"
+            >
+              <div class="row mt-3">
+                <div class="col-9 d-flex align-items-center">
+                  <label class="form-label m-0" for="uManager"
+                    >Xóa luôn quản lý cũ
+                    <strong><%= plantation.managerID?.name %></strong> của
+                    vườn?</label
+                  >
+                </div>
+                <div class="col-3">
+                  <select
+                    class="form-control"
+                    name="deleteManager"
+                    id="uManager"
+                  >
+                    <option selected value="no">Không</option>
+                    <option value="yes">Có</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <% } %>
+          </div>
+
+          <div class="my-3">
+            <div class="row">
+              <label>Thời hạn hợp đồng</label>
+              <div class="col-6">
+                <label for="contactDurationStart"
+                  >Bắt đầu</label
+                >
+                <input
+                  type="date"
+                  id="contactDurationStart"
+                  class="form-control"
+                  name="contactDurationStart"
+                  placeholder="Nhập thời hạn hợp đồng"
+                  value="<%= plantation.contactDurationStart %>"
+                  onchange="document.getElementById('contactDurationEnd').min = this.value;"
+                />
+              </div>
+              <div class="col-6">
+                <label for="contactDurationEnd">Kết thúc</label>
+                <input
+                  type="date"
+                  id="contactDurationEnd"
+                  class="form-control"
+                  name="contactDurationEnd"
+                  placeholder="Nhập thời hạn hợp đồng"
+                  value="<%= plantation.contactDurationEnd %>"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <label for="plantationArea" class="form-label"
+              >Số mẫu</label
+            >
+            <input
+              type="text"
+              id="plantationArea"
+              class="form-control"
+              name="plantationArea"
+              placeholder="Nhập điện tích của vườn"
+              value="<%= plantation.plantationArea %>"
+            />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <!-- Buttons -->
+          <button type="submit" class="btn btn-success">Lưu mới</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 
 <!-- Modal for deleting all managers -->
 <div

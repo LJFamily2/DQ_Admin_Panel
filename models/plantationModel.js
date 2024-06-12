@@ -96,6 +96,35 @@ plantationSchema.methods.calculateRemainingDays = function () {
   }
 };
 
+plantationSchema.methods.calculateContranctDuration = function() {
+  if(this.contactDurationStart && this.contactDurationEnd){
+    const startDate = new Date(this.contactDurationStart);
+    const endDate = new Date(this.contactDurationEnd);
+
+    let diffInTime = endDate.getTime() - startDate.getTime();
+    let diffInDays = diffInTime / (1000 * 3600 * 24);
+
+    let years = Math.floor(diffInDays / 365);
+    diffInDays -= years * 365;
+    let months = Math.floor(diffInDays / 30);
+    diffInDays -= months * 30;
+    let days = Math.floor(diffInDays);
+
+    let contractDuration = "";
+    if (years > 0) {
+      contractDuration += `${years} năm, `;
+    }
+    if (months > 0) {
+      contractDuration += `${months} tháng, `;
+    }
+    if (days > 0) {
+      contractDuration += `${days} ngày`;
+    }
+
+    return contractDuration.trim();
+  }
+}
+
 plantationSchema.methods.calculateTotalRemainingDays = function () {
   if (this.contactDurationEnd) {
     const endDate = new Date(this.contactDurationEnd);

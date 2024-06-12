@@ -366,6 +366,8 @@ async function renderDetailPage(req, res) {
       .populate("areaID")
       .populate("managerID")
       .exec();
+    const areas = await AreaModel.find({});
+    const managers = await ManagerModel.find({});
     if (!plantation) {
       handleResponse(
         req,
@@ -381,6 +383,8 @@ async function renderDetailPage(req, res) {
       layout: "./layouts/defaultLayout",
       title: "Chi tiết vườn",
       plantation,
+      areas, 
+      managers,
       messages: req.flash(),
     });
   }
