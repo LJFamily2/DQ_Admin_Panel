@@ -1,0 +1,165 @@
+<head>
+  <!-- js -->
+  <script src="/js/datatable.js"></script>
+  <!-- Slim select -->
+  <script src="/js/slim-select.js" defer></script>
+
+  <style>
+    @media (max-width: 768px) {
+      table {
+        min-width: 1200px;
+      }
+    }
+  </style>
+</head>
+
+<button
+  type="button"
+  class="btn btn-danger mx-2 mx-md-4 my-3"
+  data-bs-toggle="modal"
+  data-bs-target="#deleteAll-admin-user"
+  style="width: max-content"
+>
+  Xóa tất cả người quản lý
+</button>
+<div class="row m-0 px-2">
+  <div class="col-12 col-md-9 p-0 px-md-3" >
+    <div class="col">
+        ;ladsk jf;lkajs dl;kf jas;ldkjf l;kasdj f;klasd jfl;kasd jf l;kasdh jkl;f fjasdkl/ fjlk;sdfaf j;k,lasdckj; fasedrk;jl
+    </div>
+    <div class="col rounded-2 p-2 overflow-auto " style="box-shadow: 0 0 10px; max-height: 80dvh;">
+        <table></table>
+    </div>
+  </div>
+  <div
+    class="col-12 col-md-3 rounded-2 my-5 m-md-0 py-3 "
+    style="
+      box-shadow: 0 0 10px;
+      background: var(--background_color);
+      max-height: 80dvh;
+      overflow-y: auto;
+    "
+  >
+    <%- include('../partials/notificationMessage.ejs') %>
+    <h4>Thêm người quản lý</h4>
+    <form
+      action="/quan-ly-nguoi-quan-ly/addManger"
+      method="post"
+      enctype="multipart/form-data"
+    >
+      <div class="my-3">
+        <label for="name" class="form-label">Tên</label>
+        <input
+          type="text"
+          class="form-control"
+          id="name"
+          name="name"
+          placeholder="Nhập tên"
+        />
+      </div>
+
+      <div class="my-3">
+        <label for="phone" class="form-label">Số điện thoại</label>
+        <input
+          type="text"
+          class="form-control"
+          id="phone"
+          name="phone"
+          placeholder="Nhập số điện thoại"
+          maxlength="12"
+        />
+      </div>
+
+      <div class="my-3">
+        <label for="address" class="form-label">Địa chỉ</label>
+        <input
+          type="text"
+          class="form-control"
+          id="address"
+          name="address"
+          placeholder="Nhập địa chỉ"
+        />
+      </div>
+
+
+      <!-- Buttons -->
+      <button type="submit" class="btn btn-primary">Thêm</button>
+      <button type="reset" class="btn btn-secondary">Làm mới</button>
+    </form>
+  </div>
+</div>
+
+<!-- Modal for deleting all managers -->
+<div
+  class="modal fade"
+  id="deleteAll-admin-user"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="deleteUsers"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="deleteUsers">Xóa tất cả tài khoản</h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+
+      <form action="/quan-ly-nguoi-quan-ly/deleteAll" method="post">
+        <div class="modal-body">
+          Bạn có muốn xóa <strong>tất cả</strong> thông tin người quản lý ? Hành
+          động này không thể hoàn tác.
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-danger">Xác nhận</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<script>
+  const managerColumns = [
+    { data: "no", orderable: false, width: "5%" },
+    { data: "name", width:"20%" },
+    { data: "phone", width:"15%" },
+    { data: "address", width:"10%" },
+    { data: "plantations", width:"10%" },
+    {
+      data: "frontIdentification", width:"15%",
+      orderable: false,
+      render: function (data, type, row) {
+        if (data) {
+          return `<img src="/images/${data}" alt="Front Identification" style="max-height: 100px;" />`;
+        } else {
+          return "Trống";
+        }
+      },
+    },
+    {
+      data: "backIdentification" , width:"15%",
+      orderable: false,
+      render: function (data, type, row) {
+        if (data) {
+          return `<img src="/images/${data}" alt="Back Identification" style="max-height: 100px;" />`;
+        } else {
+          return "Trống";
+        }
+      },
+    },
+    { data: "id" , width:"10%", orderable: false },
+  ];
+
+  initializeDataTable(
+    "#managers_table",
+    "/quan-ly-nguoi-quan-ly/getManagers",
+    "#staticBackdrop",
+    "#deleteModalToggle",
+    managerColumns
+  );
+</script>

@@ -5,12 +5,16 @@ const ManagerModel = require("../models/managerModel");
 const trimStringFields = require("./utils/trimStringFields")
 
 module.exports = {
+  // Main page
   createPlantation,
   updatePlantation,
   deletePlantation,
   deleteAllPlantation,
   getPlantations,
   renderPage,
+
+  // Detail page
+  renderDetailPage,
 };
 
 async function findOrCreate(model, name) {
@@ -349,6 +353,38 @@ async function renderPage(req, res) {
       messages: req.flash(),
     });
   } catch (err) {
+    console.log(err);
+    res.status(500);
+  }
+}
+
+async function renderDetailPage(req, res) {
+  try {
+    const { slug } = req.params;
+    const plantation = await PlantationModel
+      .findOne({ slug })
+      .populate("areaID")
+      .populate("managerID")
+      .exec();
+    if (!plantation) {
+      handleResponse(
+        req,
+        res,
+        404,
+        "fail",
+        "Không tìm thấy vườn!",
+        "/quan-ly-vuon"
+      );
+      return res.status(404);
+    }
+    res.render("src/plantationDetailPage", {
+      layout: "./layouts/defaultLayout",
+      title: "Chi tiết vườn",
+      plantation,
+      messages: req.flash(),
+    });
+  }
+  catch (err) {
     console.log(err);
     res.status(500);
   }
