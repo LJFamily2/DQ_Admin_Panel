@@ -5,6 +5,13 @@
   <script src="/js/slim-select.js" defer></script>
 
   <style>
+    .updateButton{
+      transition: all 200ms linear;
+    }
+    .rotate{
+      transform: rotate(180deg);
+      transition: all 200ms linear;
+    }
     @media (max-width: 768px) {
       table {
         min-width: 1200px;
@@ -75,12 +82,14 @@
           <strong>Số mẫu:</strong> <%= plantation.plantationArea ? plantation.plantationArea : "Trống" %>
         </div>
         <div class="item rounded-1">
-          <i
-            class="ri-settings-3-line fs-3"
-            style="cursor: pointer"
-            data-bs-target="#updateModal"
-            data-bs-toggle="modal"
-          ></i>
+          <div class="updateButton" onclick="rotate('settingBtn')" id="settingBtn">
+            <i
+              class="ri-settings-3-line fs-3"
+              style="cursor: pointer"
+              data-bs-target="#updateModal"
+              data-bs-toggle="modal"
+            ></i>
+          </div>
         </div>
       </div>
     </div>
@@ -449,4 +458,8 @@
     '#deleteModalToggle',
     managerColumns,
   );
+
+  function rotate(id) {
+    document.getElementById(id).classList.toggle('rotate');
+  }
 </script>
