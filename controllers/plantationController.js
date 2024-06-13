@@ -2,6 +2,7 @@ const PlantationModel = require("../models/plantationModel");
 const handleResponse = require("./utils/handleResponse");
 const AreaModel = require("../models/areaModel");
 const ManagerModel = require("../models/managerModel");
+const ProductModel = require("../models/productModel");
 const trimStringFields = require("./utils/trimStringFields")
 
 module.exports = {
@@ -367,6 +368,7 @@ async function renderDetailPage(req, res) {
       .populate("managerID")
       .exec();
     const areas = await AreaModel.find({});
+    const products = await ProductModel.find({});
     const managers = await ManagerModel.find({});
     if (!plantation) {
       handleResponse(
@@ -384,6 +386,7 @@ async function renderDetailPage(req, res) {
       title: `Chi tiết vườn ${plantation.name}`,
       plantation,
       areas, 
+      products,
       managers,
       messages: req.flash(),
     });

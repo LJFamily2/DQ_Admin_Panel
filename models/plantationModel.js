@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const slug = require("mongoose-slug-generator");
+const mongoose = require('mongoose');
+const slug = require('mongoose-slug-generator');
 mongoose.plugin(slug);
 
 const plantationSchema = new mongoose.Schema({
@@ -8,11 +8,11 @@ const plantationSchema = new mongoose.Schema({
   },
   areaID: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Khu Vực",
+    ref: 'Khu Vực',
   },
   managerID: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Người Quản Lý",
+    ref: 'Người Quản Lý',
   },
   code: {
     type: String,
@@ -38,15 +38,12 @@ const plantationSchema = new mongoose.Schema({
         {
           product: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "Hàng hóa",
+            ref: 'Hàng hóa',
           },
           quantity: {
             type: Number,
           },
           percentage: {
-            type: Number,
-          },
-          total: {
             type: Number,
           },
         },
@@ -55,7 +52,7 @@ const plantationSchema = new mongoose.Schema({
   ],
   slug: {
     type: String,
-    slug: "name",
+    slug: 'name',
   },
 });
 
@@ -74,7 +71,7 @@ plantationSchema.methods.calculateRemainingDays = function () {
     diffInDays -= months * 30;
     let days = Math.floor(diffInDays);
 
-    let remainingDay = "";
+    let remainingDay = '';
     if (years > 0) {
       remainingDay += `${years} năm, `;
     }
@@ -86,18 +83,18 @@ plantationSchema.methods.calculateRemainingDays = function () {
     }
 
     // If remainingDay is empty, it means there are no remaining days
-    if (remainingDay === "") {
-      return "Hợp đồng hết hạn";
+    if (remainingDay === '') {
+      return 'Hợp đồng hết hạn';
     }
 
     return remainingDay.trim();
   } else {
-    return "";
+    return '';
   }
 };
 
-plantationSchema.methods.calculateContranctDuration = function() {
-  if(this.contactDurationStart && this.contactDurationEnd){
+plantationSchema.methods.calculateContranctDuration = function () {
+  if (this.contactDurationStart && this.contactDurationEnd) {
     const startDate = new Date(this.contactDurationStart);
     const endDate = new Date(this.contactDurationEnd);
 
@@ -110,7 +107,7 @@ plantationSchema.methods.calculateContranctDuration = function() {
     diffInDays -= months * 30;
     let days = Math.floor(diffInDays);
 
-    let contractDuration = "";
+    let contractDuration = '';
     if (years > 0) {
       contractDuration += `${years} năm, `;
     }
@@ -123,7 +120,7 @@ plantationSchema.methods.calculateContranctDuration = function() {
 
     return contractDuration.trim();
   }
-}
+};
 
 plantationSchema.methods.calculateTotalRemainingDays = function () {
   if (this.contactDurationEnd) {
@@ -138,6 +135,6 @@ plantationSchema.methods.calculateTotalRemainingDays = function () {
     return 0;
   }
 };
-const plantationModel = mongoose.model("Vườn", plantationSchema);
+const plantationModel = mongoose.model('Vườn', plantationSchema);
 
 module.exports = plantationModel;
