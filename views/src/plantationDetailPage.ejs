@@ -69,11 +69,11 @@
           <strong>Hợp đồng còn: </strong>
           <% if(plantation.calculateTotalRemainingDays() < 30){ %>
           <p class="text-danger m-0 mx-1">
-             <%= plantation.calculateRemainingDays() %>
+            <%= plantation.calculateRemainingDays() %>
           </p>
           <% } else { %>
           <p class="text-success m-0 mx-1">
-             <%= plantation.calculateRemainingDays() %>
+            <%= plantation.calculateRemainingDays() %>
           </p>
           <% } %>
         </div>
@@ -121,44 +121,80 @@
     "
   >
     <%- include('../partials/notificationMessage.ejs') %>
-    <h4>Thêm người quản lý</h4>
+    <h4>Thêm dữ liệu</h4>
     <form
       action="/quan-ly-nguoi-quan-ly/addManger"
       method="post"
       enctype="multipart/form-data"
     >
       <div class="my-3">
-        <label for="name" class="form-label">Tên</label>
-        <input
-          type="text"
-          class="form-control"
-          id="name"
-          name="name"
-          placeholder="Nhập tên"
-        />
+        <label for="date" class="form-label">Ngày nhập</label>
+        <input type="date" class="form-control" id="date" name="date" />
+      </div>
+
+      <div class="productLists my-3">
+        <div class="productList">
+          <div class="my-3">
+            <label for="product" class="form-label">Hàng hóa</label>
+            <select class="form-control" name="product" id="product">
+              <% products.forEach(product => { %>
+              <option value="<%= product._id %>"><%= product.name %></option>
+              <% }) %>
+            </select>
+          </div>
+
+          <div class="row my-3">
+            <div class="col-6">
+              <label for="quantity" class="form-label">Số lượng</label>
+              <input
+                type="number"
+                class="form-control"
+                id="quantity"
+                name="quantity"
+                placeholder="Nhập số lượng"
+              />
+            </div>
+            <div class="col-6">
+              <label for="percentage" class="form-label">Hàm lượng</label>
+              <input
+                type="number"
+                class="form-control"
+                id="percentage"
+                name="percentage"
+                placeholder="Nhập hàm lượng"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="btnController">
+        <button
+          type="button"
+          class="btn btn-light"
+          onclick="addInputField('.productLists')"
+        >
+          Thêm
+        </button>
+        <button
+          type="button"
+          class="btn btn-danger mx-2"
+          onclick="removeInputField('.productLists')"
+        >
+          Xóa
+        </button>
       </div>
 
       <div class="my-3">
-        <label for="phone" class="form-label">Số điện thoại</label>
-        <input
-          type="text"
+        <label for="note" class="form-label">Ghi chú</label>
+        <textarea
+          type="number"
           class="form-control"
-          id="phone"
-          name="phone"
-          placeholder="Nhập số điện thoại"
-          maxlength="12"
-        />
-      </div>
-
-      <div class="my-3">
-        <label for="address" class="form-label">Địa chỉ</label>
-        <input
-          type="text"
-          class="form-control"
-          id="address"
-          name="address"
-          placeholder="Nhập địa chỉ"
-        />
+          rows="3"
+          id="note"
+          name="note"
+          placeholder="Ghi chú"
+        ></textarea>
       </div>
 
       <!-- Buttons -->
@@ -470,7 +506,46 @@
     managerColumns,
   );
 
-  function rotate(id) {
-    document.getElementById(id).classList.toggle('rotate');
+  const deleteButton = document.querySelector('.btnController .btn-danger');
+  function addInputField(selector) {
+    // Get the productLists div
+    const productLists = document.querySelector(selector);
+  
+    // Get the first .productList div within productLists
+    const firstProductList = productLists.querySelector('.productList');
+  
+    // Clone the first .productList div
+    const clonedProductList = firstProductList.cloneNode(true);
+  
+    // Append the cloned div to the productLists div
+    productLists.appendChild(clonedProductList);
+  
+    // If there is more than one .productList div, show the delete button
+    if (productLists.querySelectorAll('.productList').length > 1) {
+      deleteButton.style.display = 'inline';
+    }
+  }
+
+  function removeInputField(selector) {
+    // Get the productLists div
+    const productLists = document.querySelector(selector);
+
+    // Get all .row divs
+    const rows = productLists.querySelectorAll('.productList');
+
+    // Get the last .row div
+    const lastRow = rows[rows.length - 1];
+
+    // Remove the last .row div
+    if (lastRow) {
+      lastRow.remove();
+    } else {
+      console.log('No .row div to remove in ' + selector);
+    }
+
+    // If there is only one .row div, hide the delete button
+    if (rows.length <= 2) {
+      deleteButton.style.display = 'none';
+    }
   }
 </script>
