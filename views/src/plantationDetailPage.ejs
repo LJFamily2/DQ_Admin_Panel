@@ -5,10 +5,10 @@
   <script src="/js/slim-select.js" defer></script>
 
   <style>
-    .updateButton{
+    .updateButton {
       transition: all 200ms linear;
     }
-    .rotate{
+    .rotate {
       transform: rotate(180deg);
       transition: all 200ms linear;
     }
@@ -36,7 +36,8 @@
             -webkit-user-select: none;
           "
         >
-          <strong>Mã vườn:</strong> <%= plantation.code ? plantation.code : "Trống" %>
+          <strong>Mã vườn:</strong> <%= plantation.code ? plantation.code :
+          "Trống" %>
         </div>
         <div
           class="item rounded-1 p-2"
@@ -56,15 +57,25 @@
             -webkit-user-select: none;
           "
         >
-          <strong>Người quản lý:</strong> <%= plantation.managerID?.name ? plantation.managerID?.name : "Trống" %>
+          <strong>Người quản lý:</strong> <%= plantation.managerID?.name ?
+          plantation.managerID?.name : "Trống" %>
         </div>
         <div
-          class="item rounded-1 p-2"
+          class="item rounded-1 p-2 d-flex"
           style="box-shadow: 0 0 4px; cursor: pointer"
           data-bs-target="#contactDurationModal"
           data-bs-toggle="modal"
         >
-          <strong>Thời hạn hợp đồng:</strong> <%= plantation.calculateContranctDuration() %>
+          <strong>Hợp đồng còn: </strong>
+          <% if(plantation.calculateTotalRemainingDays() < 30){ %>
+          <p class="text-danger m-0 mx-1">
+             <%= plantation.calculateRemainingDays() %>
+          </p>
+          <% } else { %>
+          <p class="text-success m-0 mx-1">
+             <%= plantation.calculateRemainingDays() %>
+          </p>
+          <% } %>
         </div>
         <div
           class="item rounded-1 p-2"
@@ -74,10 +85,15 @@
             -webkit-user-select: none;
           "
         >
-          <strong>Số mẫu:</strong> <%= plantation.plantationArea ? plantation.plantationArea : "Trống" %>
+          <strong>Số mẫu:</strong> <%= plantation.plantationArea ?
+          plantation.plantationArea : "Trống" %>
         </div>
-        <div class="item rounded-1">
-          <div class="updateButton" onclick="rotate('settingBtn')" id="settingBtn">
+        <div class="item rounded-1 d-flex align-items-center">
+          <div
+            class="updateButton"
+            onclick="rotate('settingBtn')"
+            id="settingBtn"
+          >
             <i
               class="ri-settings-3-line fs-3"
               style="cursor: pointer"

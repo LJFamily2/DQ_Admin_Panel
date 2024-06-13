@@ -381,7 +381,7 @@ async function renderDetailPage(req, res) {
     }
     res.render("src/plantationDetailPage", {
       layout: "./layouts/defaultLayout",
-      title: "Chi tiết vườn",
+      title: `Chi tiết vườn ${plantation.name}`,
       plantation,
       areas, 
       managers,
