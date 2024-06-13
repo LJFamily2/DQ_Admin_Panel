@@ -1,57 +1,88 @@
 <head>
   <script src="/js/activeLink.js" defer></script>
+
+  <style>
+    .nav-link:hover {
+      background-color: rgba(0, 0, 0, 0.3);
+    }
+  </style>
 </head>
-<nav class="min-vh-100 d-none d-md-flex flex-column flex-shrink-0 p-3 bg-light" style="width: 230px;">
-    <span class="fs-4">Công Ty TNHH Đăng Quang</span>
-  <hr>
+<nav
+  class="min-vh-100 d-none d-md-flex flex-column flex-shrink-0 p-3 bg-light"
+  style="width: 230px"
+>
+  <span class="fs-4">Công Ty TNHH Đăng Quang</span>
+  <hr />
   <ul class="nav nav-pills flex-column mb-auto">
     <li class="nav-item">
-      <a href="#" class="nav-link link-dark" >
-        <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"></use></svg>
+      <a href="#" class="nav-link link-dark d-flex justify-content-between">
         Truy Vấn
+        <i class="ri-search-line"></i>
       </a>
     </li>
     <li>
-      <a href="/quan-ly-khu-vuc" class="nav-link link-dark">
-        <svg class="bi me-2" width="16" height="16"><use xlink:href="#speedometer2"></use></svg>
+      <a
+        href="/quan-ly-khu-vuc"
+        class="nav-link link-dark d-flex justify-content-between"
+      >
         Khu Vực
+        <i class="ri-map-pin-line"></i>
       </a>
     </li>
     <li>
-      <a href="/quan-ly-vuon" class="nav-link link-dark">
-        <svg class="bi me-2" width="16" height="16"><use xlink:href="#speedometer2"></use></svg>
+      <a
+        href="/quan-ly-vuon"
+        class="nav-link link-dark d-flex justify-content-between"
+      >
         Vườn
+        <i class="ri-tree-line"></i>
       </a>
     </li>
     <li>
-      <a href="/quan-ly-nguoi-quan-ly" class="nav-link link-dark">
-        <svg class="bi me-2" width="16" height="16"><use xlink:href="#table"></use></svg>
+      <a
+        href="/quan-ly-nguoi-quan-ly"
+        class="nav-link link-dark d-flex justify-content-between"
+      >
         Người Quản Lý
+        <i class="ri-user-3-line"></i>
       </a>
     </li>
     <li>
-      <a href="/quan-ly-hang-hoa" class="nav-link link-dark">
-        <svg class="bi me-2" width="16" height="16"><use xlink:href="#table"></use></svg>
+      <a
+        href="/quan-ly-hang-hoa"
+        class="nav-link link-dark d-flex justify-content-between"
+      >
         Hàng hóa
+        <i class="ri-instance-line"></i>
       </a>
     </li>
     <li>
-      <a href="/quan-ly-tai-khoan" class="nav-link link-dark" >
-        <svg class="bi me-2" width="16" height="16"><use xlink:href="#grid"></use></svg>
+      <a
+        href="/quan-ly-tai-khoan"
+        class="nav-link link-dark d-flex justify-content-between"
+      >
         Quản Lý Tài Khoản
+        <i class="ri-account-circle-line"></i>
       </a>
     </li>
     <li>
-      <a href="#" class="nav-link link-dark">
-        <svg class="bi me-2" width="16" height="16"><use xlink:href="#people-circle"></use></svg>
+      <a href="#" class="nav-link link-dark d-flex justify-content-between">
         Xuất Dữ Liệu
+        <i class="ri-export-line"></i>
       </a>
     </li>
   </ul>
-  <hr>
-  <div class="logOut d-flex justify-content-center">
-    <form action="" method="post" style="cursor: pointer;">
-      <button type="submit" class="fs-6 border-0" style="background: none;">Đăng xuất</button>
+  <hr />
+  <div class="logOut">
+    <form
+      action=""
+      method="post"
+      style="cursor: pointer"
+      class="d-flex justify-content-between"
+    >
+      <button type="submit" class="fs-6 border-0" style="background: none">
+        Đăng xuất
+      </button>
       <i class="ri-logout-box-r-line"></i>
     </form>
   </div>
