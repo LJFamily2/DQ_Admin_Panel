@@ -450,6 +450,11 @@
   </div>
 </div>
 <script>
+  function getDays(data, pattern, multiplier) {
+    const match = data.match(pattern);
+    return match ? parseInt(match[1]) * multiplier : 0;
+  }
+
   const plantationColumns = [
     { data: "no", orderable: false, width:"5%" },
     { data: "areaID", width:"15%" },
@@ -459,27 +464,10 @@
     {
       data: "contactDuration", width:"15%",
       render: function(data, type, row) {
-        // Extract the number of days from the string
-        const daysMatch = data.match(/(\d+) ngày/);
-        let remainingDays = 0;
-        if (daysMatch) {
-          remainingDays += parseInt(daysMatch[1]);
-        }
-        const monthsMatch = data.match(/(\d+) tháng,/);
-        if (monthsMatch) {
-          remainingDays += parseInt(monthsMatch[1]) * 30;
-        }
-        const yearsMatch = data.match(/(\d+) năm,/);
-        if (yearsMatch) {
-          remainingDays += parseInt(yearsMatch[1]) * 365;
-        }
-    
         // If remaining days is less than 30, return red text, otherwise green
-        if (remainingDays < 30) {
-          return `<span class="text-danger">${data}</span>`;
-        } else {
-          return `<span class="text-success">${data}</span>`;
-        }
+        return row.totalRemainingDays < 30 
+          ? `<span class="text-danger">${data}</span>` 
+          : `<span class="text-success">${data}</span>`;
       }
     },
     { data: "plantationArea", width:"10%" },
