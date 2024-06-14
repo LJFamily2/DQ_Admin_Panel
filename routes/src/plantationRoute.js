@@ -13,5 +13,7 @@ router.post("/deleteAll", plantationController.deleteAllPlantation)
 
 // Plantation detail
 router.get("/vuon/:slug", plantationController.renderDetailPage)
+router.post("/vuon/:slug/addData", plantationController.addData)
+router.post("/:slug/getDatas", plantationController.getDatas)
 
 module.exports = router;

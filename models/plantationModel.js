@@ -34,20 +34,26 @@ const plantationSchema = new mongoose.Schema({
       notes: {
         type: String,
       },
-      products: [
-        {
-          product: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Hàng hóa',
-          },
-          quantity: {
-            type: Number,
-          },
-          percentage: {
-            type: Number,
-          },
+      products: {
+        dryRubber: {
+          type: String,
         },
-      ],
+        dryQuantity: {
+          type: Number,
+        },
+        dryPercentage: {
+          type: Number,
+        },
+        mixedRubber:{
+          type: String,
+        },
+        mixedQuantity:{
+          type: Number,
+        },
+        mixedPercentage:{
+          type: Number,
+        },
+      },
     },
   ],
   slug: {
