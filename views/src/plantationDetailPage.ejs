@@ -15,6 +15,15 @@
   </style>
 </head>
 
+<!-- breadcrumb -->
+<nav aria-label="breadcrumb" class="mx-2 mx-md-4">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/quan-ly-vuon">Vườn</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><%= plantation.name %></li>
+  </ol>
+</nav>
+
+<!-- Delete all button -->
 <button
   type="button"
   class="btn btn-danger mx-2 mx-md-4 my-3"
@@ -152,6 +161,7 @@
                 id="quantity"
                 name="quantity"
                 placeholder="Nhập số lượng"
+                min="0"
               />
             </div>
             <div class="col-6">
@@ -162,6 +172,7 @@
                 id="percentage"
                 name="percentage"
                 placeholder="Nhập hàm lượng"
+                min="0"
               />
             </div>
           </div>
@@ -506,20 +517,27 @@
     managerColumns,
   );
 
+  // Rotate the icon
+  const rotate = id => {
+    const element = document.getElementById(id);
+    element.classList.toggle('rotate');
+  };
+
+  // Toggle buttons
   const deleteButton = document.querySelector('.btnController .btn-danger');
   function addInputField(selector) {
     // Get the productLists div
     const productLists = document.querySelector(selector);
-  
+
     // Get the first .productList div within productLists
     const firstProductList = productLists.querySelector('.productList');
-  
+
     // Clone the first .productList div
     const clonedProductList = firstProductList.cloneNode(true);
-  
+
     // Append the cloned div to the productLists div
     productLists.appendChild(clonedProductList);
-  
+
     // If there is more than one .productList div, show the delete button
     if (productLists.querySelectorAll('.productList').length > 1) {
       deleteButton.style.display = 'inline';
