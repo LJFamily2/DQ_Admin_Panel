@@ -468,57 +468,58 @@ async function getDatas(req, res) {
   try {
     const { slug } = req.params;
     const { draw, search, order, columns } = req.body;
-    const searchValue = search?.value || '';
-    const sortColumn = columns?.[order[0]?.column]?.data;
-    const sortDirection = order[0]?.dir === 'asc' ? 1 : -1;
+    const searchValue = search?.value?.toLowerCase() || '';
+    const sortColumnIndex = order?.[0]?.column;
+    const sortColumn = columns?.[sortColumnIndex]?.data;
+    const sortDirection = order?.[0]?.dir === 'asc' ? 1 : -1;
 
     const plantation = await PlantationModel.findOne({ slug });
 
     if (!plantation) {
-      return res.status(404).json({ error: 'Plantation not found' });
+      handleResponse(req,res, 404, "fail", "Không tìm thấy vườn!", req.headers.referer);
     }
 
-    // Adjusted search query for date field to handle partial matches
+    // Filter data based on search value
     let filteredData = plantation.data.filter(
       item =>
-        item.date
-          .toLocaleDateString()
-          .toLowerCase()
-          .includes(searchValue.toLowerCase()) ||
-        (item.notes &&
-          item.notes.toLowerCase().includes(searchValue.toLowerCase())),
+        item.date.toLocaleDateString().toLowerCase().includes(searchValue) ||
+        (item.notes && item.notes.toLowerCase().includes(searchValue)),
     );
 
-    if (sortColumn === 'date') {
+    // Sort the filtered data if a sort column is specified
+    if (sortColumn) {
       filteredData.sort((a, b) => {
-        const dateA = new Date(a.date);
-        const dateB = new Date(b.date);
-        return sortDirection * (dateA - dateB);
+        let aValue =
+          sortColumn === 'date' ? new Date(a.date) : a[sortColumn] || '';
+        let bValue =
+          sortColumn === 'date' ? new Date(b.date) : b[sortColumn] || '';
+
+        return (aValue < bValue ? -1 : aValue > bValue ? 1 : 0) * sortDirection;
       });
     }
 
+    // Map the data to the required format
     const data = filteredData.map((record, index) => ({
       no: index + 1,
       date: record.date.toLocaleDateString(),
       dryQuantity: record.products?.dryQuantity || '',
       dryPercentage: record.products?.dryPercentage || '',
-      dryTotal: '', 
+      dryTotal: '',
       mixedQuantity: record.products?.mixedQuantity || '',
       mixedPercentage: record.products?.mixedPercentage || '',
-      mixedTotal: '', 
+      mixedTotal: '',
       notes: record.notes || '',
       id: record._id,
     }));
 
-    const responseData = {
+    res.json({
       draw,
       recordsTotal: plantation.data.length,
       recordsFiltered: data.length,
       data,
-    };
-
-    res.json(responseData);
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.log(error)
+    res.status(500)
   }
 }
