@@ -536,17 +536,15 @@ async function getDatas(req, res) {
 
     // Sorting logic
     filteredData.sort((a, b) => {
-      // Always sort by date first
-      const dateA = new Date(a.date);
-      const dateB = new Date(b.date);
-      const dateComparison = (dateB - dateA) * sortDirection;
-
+      // Sort by date if requested, default to no sorting on date
       if (sortColumn === 'date') {
-        return dateComparison;
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+        return (dateA - dateB) * sortDirection;
       }
 
-      // Secondary sorting if a different sort column is specified
-      if (sortColumn && sortColumn !== 'date') {
+      // Handle sorting based on the sortColumn if specified
+      if (sortColumn) {
         const aValue = a[sortColumn]?.toString().toLowerCase() || '';
         const bValue = b[sortColumn]?.toString().toLowerCase() || '';
 
@@ -561,12 +559,11 @@ async function getDatas(req, res) {
         }
 
         // Default sorting
-        const columnComparison = (aValue < bValue ? -1 : aValue > bValue ? 1 : 0) * sortDirection;
-        return dateComparison !== 0 ? dateComparison : columnComparison;
+        return (aValue < bValue ? -1 : aValue > bValue ? 1 : 0) * sortDirection;
       }
 
-      // Return the date comparison result
-      return dateComparison;
+      // No specific sorting requested, maintain the order
+      return 0;
     });
 
     // Calculate total records and filtered records
@@ -606,5 +603,7 @@ async function getDatas(req, res) {
     res.status(500).json({ error: error.message });
   }
 }
+
+
 
 
