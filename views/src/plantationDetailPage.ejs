@@ -136,10 +136,18 @@
           <tr>
             <th>Số lượng</th>
             <th>Hàm lượng</th>
-            <th>Tổng</th>
+            <% if(plantation.data?.length > 0){ %>
+              <th style="background: yellow">Tổng</th>
+            <% }else{ %>
+              <th>Tổng</th>
+            <% } %>
             <th>Số lượng</th>
             <th>Hàm lượng</th>
-            <th>Tổng</th>
+            <% if(plantation.data?.length > 0){ %>
+              <th style="background: yellow">Tổng</th>
+            <% }else{ %>
+              <th>Tổng</th>
+            <% } %>
           </tr>
         </thead>
         <tbody></tbody>
@@ -547,10 +555,22 @@
     { data: 'date' },
     { data: 'dryQuantity', orderable: false },
     { data: 'dryPercentage', orderable: false },
-    { data: 'dryTotal', orderable: false },
+    {
+      data: 'dryTotal',
+      orderable: false,
+      createdCell: function (td, cellData, rowData, row, col) {
+        $(td).css('background-color', 'yellow');
+      },
+    },
     { data: 'mixedQuantity', orderable: false },
     { data: 'mixedPercentage', orderable: false },
-    { data: 'mixedTotal', orderable: false },
+    {
+      data: 'mixedTotal',
+      orderable: false,
+      createdCell: function (td, cellData, rowData, row, col) {
+        $(td).css('background-color', 'yellow');
+      },
+    },
     { data: 'notes', orderable: false },
     { data: 'id', orderable: false },
   ];

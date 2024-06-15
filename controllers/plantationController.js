@@ -414,6 +414,7 @@ async function addData(req, res) {
       );
     }
 
+    // Extract data from request body
     const {
       date,
       note,
@@ -425,22 +426,33 @@ async function addData(req, res) {
       mixedPercentage,
     } = req.body;
 
+    // Convert numeric fields from Vietnamese format to standard JavaScript format
+    const formattedDryQuantity = parseFloat(dryQuantity.replace(',', '.'));
+    const formattedDryPercentage = parseFloat(dryPercentage.replace(',', '.'));
+    const formattedMixedQuantity = parseFloat(mixedQuantity.replace(',', '.'));
+    const formattedMixedPercentage = parseFloat(
+      mixedPercentage.replace(',', '.'),
+    );
+
+    // Create new data object with formatted numbers
     const newData = {
       date,
       notes: note,
       products: {
         dryRubber,
-        dryQuantity,
-        dryPercentage,
+        dryQuantity: formattedDryQuantity,
+        dryPercentage: formattedDryPercentage,
         mixedRubber,
-        mixedQuantity,
-        mixedPercentage,
+        mixedQuantity: formattedMixedQuantity,
+        mixedPercentage: formattedMixedPercentage,
       },
     };
 
+    // Push new data to plantation array and save
     plantation.data.push(newData);
-    const inputData = await plantation.save();
-    if (!inputData) {
+    const savedPlantation = await plantation.save();
+
+    if (!savedPlantation) {
       return handleResponse(
         req,
         res,
@@ -450,6 +462,8 @@ async function addData(req, res) {
         req.headers.referer,
       );
     }
+
+    // Successful response
     return handleResponse(
       req,
       res,
@@ -459,9 +473,22 @@ async function addData(req, res) {
       req.headers.referer,
     );
   } catch (error) {
-    console.log(error);
-    res.status(500);
+    console.error('Error adding data:', error);
+    return res
+      .status(500)
+      .json({ error: 'Đã xảy ra lỗi khi thêm thông tin mới!' });
   }
+}
+
+// Function to format number for display
+function formatNumberForDisplay(number) {
+  if (isNaN(number) || number === null || number === undefined) {
+    return ''; // Return empty string if the number is invalid
+  }
+  const formatted = number.toFixed(2);
+  const [integerPart, decimalPart] = formatted.split('.');
+  const integerWithCommas = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  return `${integerWithCommas},${decimalPart}`;
 }
 
 async function getDatas(req, res) {
@@ -486,43 +513,50 @@ async function getDatas(req, res) {
       );
     }
 
-    // Filter data based on search value
+    // Filter and sort data
     let filteredData = plantation.data.filter(
       item =>
         item.date.toLocaleDateString().toLowerCase().includes(searchValue) ||
         (item.notes && item.notes.toLowerCase().includes(searchValue)),
     );
 
-    // Sort the filtered data if a sort column is specified
     if (sortColumn) {
       filteredData.sort((a, b) => {
-        let aValue =
+        const aValue =
           sortColumn === 'date' ? new Date(a.date) : a[sortColumn] || '';
-        let bValue =
+        const bValue =
           sortColumn === 'date' ? new Date(b.date) : b[sortColumn] || '';
-
         return (aValue < bValue ? -1 : aValue > bValue ? 1 : 0) * sortDirection;
       });
     }
 
-    // Map the data to the required format and calculate totals
+    // Map data to the required format
     const data = filteredData.map((record, index) => ({
       no: index + 1,
       date: record.date.toLocaleDateString(),
-      dryQuantity: record.products?.dryQuantity || '',
-      dryPercentage: record.products?.dryPercentage || '',
-      dryTotal:
+      dryQuantity: formatNumberForDisplay(record.products?.dryQuantity || 0),
+      dryPercentage: formatNumberForDisplay(
+        record.products?.dryPercentage || 0,
+      ),
+      dryTotal: formatNumberForDisplay(
         (record.products?.dryQuantity * record.products?.dryPercentage) / 100 ||
-        '',
-      mixedQuantity: record.products?.mixedQuantity || '',
-      mixedPercentage: record.products?.mixedPercentage || '',
-      mixedTotal:
+          0,
+      ),
+      mixedQuantity: formatNumberForDisplay(
+        record.products?.mixedQuantity || 0,
+      ),
+      mixedPercentage: formatNumberForDisplay(
+        record.products?.mixedPercentage || 0,
+      ),
+      mixedTotal: formatNumberForDisplay(
         (record.products?.mixedQuantity * record.products?.mixedPercentage) /
-          100 || '',
+          100 || 0,
+      ),
       notes: record.notes || '',
       id: record._id,
     }));
 
+    // Respond with formatted data
     res.json({
       draw,
       recordsTotal: plantation.data.length,
@@ -534,3 +568,4 @@ async function getDatas(req, res) {
     res.status(500).json({ error: error.message });
   }
 }
+
