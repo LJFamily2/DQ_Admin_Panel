@@ -494,7 +494,7 @@ function formatNumberForDisplay(number) {
 async function getDatas(req, res) {
   try {
     const { slug } = req.params;
-    const { draw, start = 0, length = 10, search, order, columns } = req.body;
+    const { draw, start = 0, length = 10, search, order, columns, startDate, endDate } = req.body;
     const searchValue = search?.value?.toLowerCase() || '';
     const sortColumn = columns?.[order?.[0]?.column]?.data;
     const sortDirection = order?.[0]?.dir === 'asc' ? 1 : -1;
@@ -513,51 +513,40 @@ async function getDatas(req, res) {
       );
     }
 
-    // Filter and sort data within the plantation details
+    // Convert startDate and endDate to Date objects if they exist
+    const startDateObj = startDate ? new Date(startDate) : null;
+    const endDateObj = endDate ? new Date(endDate) : null;
+
+    // Filter data within the plantation details
     let filteredData = plantation.data.filter(item => {
+      // Check if the item date is within the specified range
+      const itemDate = new Date(item.date);
+      if (startDateObj && itemDate < startDateObj) return false;
+      if (endDateObj && itemDate > endDateObj) return false;
+
       // Check if any column contains the search value
       for (let column of columns) {
-        const columnValue = item[column.data];
-
-        // Handle specific columns for searching
-        if (columnValue !== undefined && columnValue !== null) {
-          const valueString = columnValue.toString().toLowerCase();
-
-          if (valueString.includes(searchValue)) {
-            return true;
-          }
+        const columnValue = item[column.data]?.toString().toLowerCase();
+        if (columnValue && columnValue.includes(searchValue)) {
+          return true;
         }
       }
-
-      // Additional check for specific fields
-      if (
-        (item.products?.dryQuantity || 0).toString().toLowerCase().includes(searchValue) ||
-        (item.products?.dryPercentage || 0).toString().toLowerCase().includes(searchValue) ||
-        (item.products?.mixedQuantity || 0).toString().toLowerCase().includes(searchValue) ||
-        (item.products?.mixedPercentage || 0).toString().toLowerCase().includes(searchValue) ||
-        (
-          ((item.products?.dryQuantity || 0) * (item.products?.dryPercentage || 0) / 100).toString().toLowerCase().includes(searchValue)
-        ) ||
-        (
-          ((item.products?.mixedQuantity || 0) * (item.products?.mixedPercentage || 0) / 100).toString().toLowerCase().includes(searchValue)
-        )
-      ) {
-        return true;
-      }
-
       return false;
     });
 
-    // Always sort by date in ascending order first
+    // Sorting logic
     filteredData.sort((a, b) => {
+      // Always sort by date first
       const dateA = new Date(a.date);
       const dateB = new Date(b.date);
-      return dateB - dateA;
-    });
+      const dateComparison = (dateB - dateA) * sortDirection;
 
-    // Apply sorting if a sort column other than 'date' is specified
-    if (sortColumn && sortColumn !== 'date') {
-      filteredData.sort((a, b) => {
+      if (sortColumn === 'date') {
+        return dateComparison;
+      }
+
+      // Secondary sorting if a different sort column is specified
+      if (sortColumn && sortColumn !== 'date') {
         const aValue = a[sortColumn]?.toString().toLowerCase() || '';
         const bValue = b[sortColumn]?.toString().toLowerCase() || '';
 
@@ -572,9 +561,13 @@ async function getDatas(req, res) {
         }
 
         // Default sorting
-        return (aValue < bValue ? -1 : aValue > bValue ? 1 : 0) * sortDirection;
-      });
-    }
+        const columnComparison = (aValue < bValue ? -1 : aValue > bValue ? 1 : 0) * sortDirection;
+        return dateComparison !== 0 ? dateComparison : columnComparison;
+      }
+
+      // Return the date comparison result
+      return dateComparison;
+    });
 
     // Calculate total records and filtered records
     const recordsTotal = plantation.data.length;
@@ -613,3 +606,5 @@ async function getDatas(req, res) {
     res.status(500).json({ error: error.message });
   }
 }
+
+

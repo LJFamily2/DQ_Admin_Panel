@@ -123,6 +123,20 @@
       class="col rounded-2 p-2 overflow-auto"
       style="box-shadow: 0 0 4px; max-height: 80dvh"
     >
+      <div class="row">
+        <div class="col col-md-3">
+          <label for="startDate" class="form-label">Bắt đầu:</label>
+          <input type="date" id="startDate" class="form-control" />
+        </div>
+        <div class="col col-md-3">
+          <label for="endDate" class="form-label">Kết thúc:</label>
+          <input type="date" id="endDate" class="form-control" />
+        </div>
+        <div class="col col-md-2">
+          <button id="filterButton" class="btn btn-primary">Lọc</button>
+          <button id="clearFilterButton" class="btn btn-secondary">Bỏ lọc</button>
+        </div>
+      </div>
       <table class="table table-striped table-bordered" id="plantations_table">
         <thead>
           <tr>
@@ -137,16 +151,16 @@
             <th>Số lượng</th>
             <th>Hàm lượng</th>
             <% if(plantation.data?.length > 0){ %>
-              <th style="background: yellow">Tổng</th>
+            <th style="background: yellow">Tổng</th>
             <% }else{ %>
-              <th>Tổng</th>
+            <th>Tổng</th>
             <% } %>
             <th>Số lượng</th>
             <th>Hàm lượng</th>
             <% if(plantation.data?.length > 0){ %>
-              <th style="background: yellow">Tổng</th>
+            <th style="background: yellow">Tổng</th>
             <% }else{ %>
-              <th>Tổng</th>
+            <th>Tổng</th>
             <% } %>
           </tr>
         </thead>
@@ -580,6 +594,10 @@
     '#deleteModalToggle',
     dataColumns,
     'date',
+    '#filterButton', // Added filter button ID
+    '#startDate', // Added start date input ID
+    '#endDate', // Added end date input ID
+    '#clearFilterButton',
   );
   // Rotate the icon
   const rotate = id => {

@@ -5,8 +5,12 @@ function initializeDataTable(
   modalDeleteTarget,
   columns,
   rowGroup,
+  filterButtonId,
+  startDateId,
+  endDateId,
+  clearFilterButton,
 ) {
-  $(tableId).DataTable({
+  const table = $(tableId).DataTable({
     serverSide: true,
     processing: true,
     responsive: true,
@@ -16,6 +20,12 @@ function initializeDataTable(
     ajax: {
       url: ajaxUrl,
       type: 'POST',
+      data: function (d) {
+        // Return modified data object with startDate and endDate
+        d.startDate = $(startDateId).val();
+        d.endDate = $(endDateId).val();
+        return d; // Ensure to return the modified data object
+      },
     },
     language: {
       emptyTable: 'Không có dữ liệu',
@@ -59,5 +69,19 @@ function initializeDataTable(
       }
       return column;
     }),
+  });
+
+  // Filter button click handler
+  $(filterButtonId).on('click', function () {
+    table.ajax.reload();
+  });
+
+  // Clear filter button click handler
+  $(clearFilterButton).on('click', function () {
+    // Clear the date inputs
+    $(startDateId).val('');
+    $(endDateId).val('');
+    // Reset the DataTable to show all data
+    table.search('').draw();
   });
 }
