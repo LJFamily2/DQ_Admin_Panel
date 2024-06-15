@@ -494,12 +494,12 @@ function formatNumberForDisplay(number) {
 async function getDatas(req, res) {
   try {
     const { slug } = req.params;
-    const { draw, search, order, columns } = req.body;
+    const { draw, start = 0, length = 10, search, order, columns } = req.body;
     const searchValue = search?.value?.toLowerCase() || '';
-    const sortColumnIndex = order?.[0]?.column;
-    const sortColumn = columns?.[sortColumnIndex]?.data;
+    const sortColumn = columns?.[order?.[0]?.column]?.data;
     const sortDirection = order?.[0]?.dir === 'asc' ? 1 : -1;
 
+    // Fetch the plantation document
     const plantation = await PlantationModel.findOne({ slug });
 
     if (!plantation) {
@@ -509,48 +509,93 @@ async function getDatas(req, res) {
         404,
         'fail',
         'Không tìm thấy vườn!',
-        req.headers.referer,
+        req.headers.referer
       );
     }
 
-    // Filter and sort data
-    let filteredData = plantation.data.filter(
-      item =>
-        item.date.toLocaleDateString().toLowerCase().includes(searchValue) ||
-        (item.notes && item.notes.toLowerCase().includes(searchValue)),
-    );
+    // Filter and sort data within the plantation details
+    let filteredData = plantation.data.filter(item => {
+      // Check if any column contains the search value
+      for (let column of columns) {
+        const columnValue = item[column.data];
 
-    if (sortColumn) {
+        // Handle specific columns for searching
+        if (columnValue !== undefined && columnValue !== null) {
+          const valueString = columnValue.toString().toLowerCase();
+
+          if (valueString.includes(searchValue)) {
+            return true;
+          }
+        }
+      }
+
+      // Additional check for specific fields
+      if (
+        (item.products?.dryQuantity || 0).toString().toLowerCase().includes(searchValue) ||
+        (item.products?.dryPercentage || 0).toString().toLowerCase().includes(searchValue) ||
+        (item.products?.mixedQuantity || 0).toString().toLowerCase().includes(searchValue) ||
+        (item.products?.mixedPercentage || 0).toString().toLowerCase().includes(searchValue) ||
+        (
+          ((item.products?.dryQuantity || 0) * (item.products?.dryPercentage || 0) / 100).toString().toLowerCase().includes(searchValue)
+        ) ||
+        (
+          ((item.products?.mixedQuantity || 0) * (item.products?.mixedPercentage || 0) / 100).toString().toLowerCase().includes(searchValue)
+        )
+      ) {
+        return true;
+      }
+
+      return false;
+    });
+
+    // Always sort by date in ascending order first
+    filteredData.sort((a, b) => {
+      const dateA = new Date(a.date);
+      const dateB = new Date(b.date);
+      return dateB - dateA;
+    });
+
+    // Apply sorting if a sort column other than 'date' is specified
+    if (sortColumn && sortColumn !== 'date') {
       filteredData.sort((a, b) => {
-        const aValue =
-          sortColumn === 'date' ? new Date(a.date) : a[sortColumn] || '';
-        const bValue =
-          sortColumn === 'date' ? new Date(b.date) : b[sortColumn] || '';
+        const aValue = a[sortColumn]?.toString().toLowerCase() || '';
+        const bValue = b[sortColumn]?.toString().toLowerCase() || '';
+
+        // Custom sorting for dryTotal and mixedTotal
+        if (sortColumn === 'dryTotal' || sortColumn === 'mixedTotal') {
+          const aValueNumeric =
+            (a.products?.dryQuantity * a.products?.dryPercentage) / 100 || 0;
+          const bValueNumeric =
+            (b.products?.dryQuantity * b.products?.dryPercentage) / 100 || 0;
+
+          return (aValueNumeric - bValueNumeric) * sortDirection;
+        }
+
+        // Default sorting
         return (aValue < bValue ? -1 : aValue > bValue ? 1 : 0) * sortDirection;
       });
     }
 
-    // Map data to the required format
-    const data = filteredData.map((record, index) => ({
-      no: index + 1,
+    // Calculate total records and filtered records
+    const recordsTotal = plantation.data.length;
+    const recordsFiltered = filteredData.length;
+
+    // Paginate the filtered data
+    const paginatedData = filteredData.slice(start, start + length);
+
+    // Map data to the required format for response
+    const data = paginatedData.map((record, index) => ({
+      no: parseInt(start, 10) + index + 1,
       date: record.date.toLocaleDateString(),
       dryQuantity: formatNumberForDisplay(record.products?.dryQuantity || 0),
-      dryPercentage: formatNumberForDisplay(
-        record.products?.dryPercentage || 0,
-      ),
+      dryPercentage: formatNumberForDisplay(record.products?.dryPercentage || 0),
       dryTotal: formatNumberForDisplay(
-        (record.products?.dryQuantity * record.products?.dryPercentage) / 100 ||
-          0,
+        (record.products?.dryQuantity * record.products?.dryPercentage) / 100 || 0
       ),
-      mixedQuantity: formatNumberForDisplay(
-        record.products?.mixedQuantity || 0,
-      ),
-      mixedPercentage: formatNumberForDisplay(
-        record.products?.mixedPercentage || 0,
-      ),
+      mixedQuantity: formatNumberForDisplay(record.products?.mixedQuantity || 0),
+      mixedPercentage: formatNumberForDisplay(record.products?.mixedPercentage || 0),
       mixedTotal: formatNumberForDisplay(
-        (record.products?.mixedQuantity * record.products?.mixedPercentage) /
-          100 || 0,
+        (record.products?.mixedQuantity * record.products?.mixedPercentage) / 100 || 0
       ),
       notes: record.notes || '',
       id: record._id,
@@ -559,13 +604,12 @@ async function getDatas(req, res) {
     // Respond with formatted data
     res.json({
       draw,
-      recordsTotal: plantation.data.length,
-      recordsFiltered: data.length,
+      recordsTotal,
+      recordsFiltered,
       data,
     });
   } catch (error) {
-    console.log(error);
+    console.error('Error in getDatas:', error);
     res.status(500).json({ error: error.message });
   }
 }
-
