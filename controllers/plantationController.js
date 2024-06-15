@@ -476,7 +476,14 @@ async function getDatas(req, res) {
     const plantation = await PlantationModel.findOne({ slug });
 
     if (!plantation) {
-      handleResponse(req,res, 404, "fail", "Không tìm thấy vườn!", req.headers.referer);
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Không tìm thấy vườn!',
+        req.headers.referer,
+      );
     }
 
     // Filter data based on search value
@@ -498,16 +505,20 @@ async function getDatas(req, res) {
       });
     }
 
-    // Map the data to the required format
+    // Map the data to the required format and calculate totals
     const data = filteredData.map((record, index) => ({
       no: index + 1,
       date: record.date.toLocaleDateString(),
       dryQuantity: record.products?.dryQuantity || '',
       dryPercentage: record.products?.dryPercentage || '',
-      dryTotal: '',
+      dryTotal:
+        (record.products?.dryQuantity * record.products?.dryPercentage) / 100 ||
+        '',
       mixedQuantity: record.products?.mixedQuantity || '',
       mixedPercentage: record.products?.mixedPercentage || '',
-      mixedTotal: '',
+      mixedTotal:
+        (record.products?.mixedQuantity * record.products?.mixedPercentage) /
+          100 || '',
       notes: record.notes || '',
       id: record._id,
     }));
@@ -519,7 +530,7 @@ async function getDatas(req, res) {
       data,
     });
   } catch (error) {
-    console.log(error)
-    res.status(500)
+    console.log(error);
+    res.status(500).json({ error: error.message });
   }
 }

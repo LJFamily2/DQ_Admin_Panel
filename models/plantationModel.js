@@ -44,13 +44,13 @@ const plantationSchema = new mongoose.Schema({
         dryPercentage: {
           type: Number,
         },
-        mixedRubber:{
+        mixedRubber: {
           type: String,
         },
-        mixedQuantity:{
+        mixedQuantity: {
           type: Number,
         },
-        mixedPercentage:{
+        mixedPercentage: {
           type: Number,
         },
       },
@@ -141,6 +141,7 @@ plantationSchema.methods.calculateTotalRemainingDays = function () {
     return 0;
   }
 };
+
 const plantationModel = mongoose.model('Vườn', plantationSchema);
 
 module.exports = plantationModel;
