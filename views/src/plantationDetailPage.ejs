@@ -1,12 +1,13 @@
 <head>
   <!-- js -->
   <script src="/js/datatable.js"></script>
+  <script src="/js/inputFieldRestriction.js" defer></script>
   <!-- Slim select -->
   <script src="/js/slim-select.js" defer></script>
   <script src="/js/slim-select.js" defer></script>
   <script src="https://cdn.datatables.net/rowgroup/1.5.0/js/dataTables.rowGroup.js"></script>
   <script src="https://cdn.datatables.net/rowgroup/1.5.0/js/rowGroup.dataTables.js"></script>
-  
+
   <style>
     .updateButton {
       transition: all 200ms linear;
@@ -178,27 +179,26 @@
               value="Mủ quy khô"
               hidden
             />
-            <div class="col-6">
+            <div class="col col-md-6">
               <label for="dryQuantity" class="form-label">Số lượng</label>
               <input
-                type="number"
+                type="text"
                 class="form-control"
                 id="dryQuantity"
                 name="dryQuantity"
-                placeholder="Nhập số lượng"
-                min="0"
+                placeholder="1234,34"
+                oninput="handleQuantityInput(this)"
               />
             </div>
-            <div class="col-6">
+            <div class="col col-md-6">
               <label for="dryPercentage" class="form-label">Hàm lượng</label>
               <input
                 type="text"
                 class="form-control"
                 id="dryPercentage"
                 name="dryPercentage"
-                placeholder="Nhập hàm lượng"
-                maxlength="3"
-                oninput="this.value = this.value.replace(/\D/g, ''); if (this.value > 100) this.value = 100;"
+                placeholder="23,04"
+                oninput="handlePercentageInput(this)"
               />
             </div>
           </div>
@@ -219,12 +219,13 @@
             <div class="col-6">
               <label for="mixedQuantity" class="form-label">Số lượng</label>
               <input
-                type="number"
+                type="text"
                 class="form-control"
                 id="mixedQuantity"
                 name="mixedQuantity"
-                placeholder="Nhập số lượng"
+                placeholder="1234,34"
                 min="0"
+                oninput="handleQuantityInput(this)"
               />
             </div>
             <div class="col-6">
@@ -235,8 +236,8 @@
                 id="mixedPercentage"
                 name="mixedPercentage"
                 placeholder="Nhập hàm lượng"
-                maxlength="3"
-                oninput="this.value = this.value.replace(/\D/g, ''); if (this.value > 100) this.value = 100;"
+                maxlength="23.04"
+                oninput="handlePercentageInput(this)"
               />
             </div>
           </div>
@@ -264,12 +265,11 @@
       <div class="my-3">
         <label for="note" class="form-label">Ghi chú</label>
         <textarea
-          type="number"
+          type="text"
           class="form-control"
           rows="3"
           id="note"
           name="note"
-          placeholder="Ghi chú"
         ></textarea>
       </div>
 
@@ -543,25 +543,25 @@
 
 <script>
   let dataColumns = [
-    { data: 'no', orderable:false },
+    { data: 'no', orderable: false },
     { data: 'date' },
-    { data: 'dryQuantity', orderable:false  },
-    { data: 'dryPercentage', orderable:false  },
-    { data: 'dryTotal', orderable:false  }, 
-    { data: 'mixedQuantity', orderable:false  },
-    { data: 'mixedPercentage',orderable:false  },
-    { data: 'mixedTotal', orderable:false  }, 
-    { data: 'notes', orderable:false },
+    { data: 'dryQuantity', orderable: false },
+    { data: 'dryPercentage', orderable: false },
+    { data: 'dryTotal', orderable: false },
+    { data: 'mixedQuantity', orderable: false },
+    { data: 'mixedPercentage', orderable: false },
+    { data: 'mixedTotal', orderable: false },
+    { data: 'notes', orderable: false },
     { data: 'id', orderable: false },
   ];
-  
+
   initializeDataTable(
     '#plantations_table',
     '/quan-ly-vuon/<%= plantation.slug %>/getDatas',
     '#staticBackdrop',
     '#deleteModalToggle',
     dataColumns,
-    'date'
+    'date',
   );
   // Rotate the icon
   const rotate = id => {
