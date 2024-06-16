@@ -1,10 +1,13 @@
 <head>
   <!-- js -->
+  <script src="/js/datatable.js"></script>
   <script src="/js/inputFieldRestriction.js" defer></script>
   <script src="/js/newInput.js" defer></script>
   <!-- Slim select -->
   <script src="/js/slim-select.js" defer></script>
-
+  <script src="/js/slim-select.js" defer></script>
+  <script src="https://cdn.datatables.net/rowgroup/1.5.0/js/dataTables.rowGroup.js"></script>
+  <script src="https://cdn.datatables.net/rowgroup/1.5.0/js/rowGroup.dataTables.js"></script>
 
   <style>
     .updateButton {
@@ -940,7 +943,35 @@
 </div>
 
 <script>
+  let dataColumns = [
+    { data: 'no', orderable: false, width: '2%' },
+    { data: 'date', width: '9%',},
+    { data: 'dryQuantity', orderable: false },
+    { data: 'dryPercentage', orderable: false, width: '6%' },
+    {
+      data: 'dryTotal',
+      createdCell: function (td, cellData, rowData, row, col) {
+        $(td).css('background-color', 'yellow');
+      },
+    },
+    { data: 'mixedQuantity', orderable: false },
+    { data: 'notes', orderable: false, width: '10%' },
+    { data: 'id', orderable: false, width: '5%' },
+  ];
 
+  initializeDataTable(
+    '#plantations_table',
+    '/quan-ly-vuon/<%= plantation.slug %>/getDatas',
+    '#staticBackdrop',
+    '#deleteModalToggle',
+    dataColumns,
+    'date',
+    '#filterButton',
+    '#startDate',
+    '#endDate',
+    '#clearFilterButton',
+    true,
+  );
   // Rotate the icon
   const rotate = id => {
     const element = document.getElementById(id);
