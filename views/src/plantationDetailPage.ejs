@@ -262,12 +262,18 @@
                   <div class="modal-body">
                     <div class="my-3">
                       <label for="date" class="form-label">Ngày nhập</label>
-                      <input type="date" class="form-control" id="date" name="date" value="<%= data.date.toISOString().slice(0,10) %>" onchange="newInput(this)" />
-                      
+                      <input
+                        type="date"
+                        class="form-control"
+                        id="date"
+                        name="date"
+                        value="<%= data.date.toISOString().slice(0,10) %>"
+                        onchange="newInput(this)"
+                      />
                     </div>
-              
+
                     <hr />
-              
+
                     <div class="productLists my-3">
                       <div class="productList">
                         <div class="row my-3">
@@ -280,20 +286,24 @@
                             hidden
                           />
                           <div class="col col-md-6">
-                            <label for="dryQuantity" class="form-label">Số lượng</label>
+                            <label for="dryQuantity" class="form-label"
+                              >Số lượng</label
+                            >
                             <input
                               type="text"
                               class="form-control"
                               id="dryQuantity"
                               name="dryQuantity"
-                              placeholder="1234,34" 
+                              placeholder="1234,34"
                               value="<%= data.products.dryQuantity %>"
                               oninput="handleQuantityInput(this)"
                               onchange="newInput(this)"
                             />
                           </div>
                           <div class="col col-md-6">
-                            <label for="dryPercentage" class="form-label">Hàm lượng</label>
+                            <label for="dryPercentage" class="form-label"
+                              >Hàm lượng</label
+                            >
                             <input
                               type="text"
                               class="form-control"
@@ -307,9 +317,9 @@
                           </div>
                         </div>
                       </div>
-              
+
                       <hr />
-              
+
                       <div class="productList">
                         <div class="row my-3">
                           <label class="form-label">Mủ tạp</label>
@@ -321,7 +331,9 @@
                             hidden
                           />
                           <div class="col-6">
-                            <label for="mixedQuantity" class="form-label">Số lượng</label>
+                            <label for="mixedQuantity" class="form-label"
+                              >Số lượng</label
+                            >
                             <input
                               type="text"
                               class="form-control"
@@ -335,7 +347,9 @@
                             />
                           </div>
                           <div class="col-6">
-                            <label for="mixedPercentage" class="form-label">Hàm lượng</label>
+                            <label for="mixedPercentage" class="form-label"
+                              >Hàm lượng</label
+                            >
                             <input
                               type="text"
                               class="form-control"
@@ -352,7 +366,7 @@
                         <hr />
                       </div>
                     </div>
-              
+
                     <!-- <div class="btnController">
                       <button
                         type="button"
@@ -369,7 +383,7 @@
                         Xóa
                       </button>
                     </div> -->
-              
+
                     <div class="my-3">
                       <label for="note" class="form-label">Ghi chú</label>
                       <textarea
@@ -377,20 +391,22 @@
                         class="form-control"
                         rows="3"
                         id="note"
-                        name="note"
-                        value="<%= data.note %>"
+                        name="notes"
                         onchange="newInput(this)"
-                      ></textarea>
+                      >
+<%= data.notes %></textarea
+                      >
                     </div>
-              
                   </div>
                   <div class="modal-footer">
                     <!-- Buttons -->
-                    <button type="submit" class="btn btn-success">
-                      Lưu mới
-                    </button>
-                    <button type="reset" class="btn btn-secondary" onclick="resetInput()">
-                      Làm lại
+                    <button type="submit" class="btn btn-success">Lưu</button>
+                    <button
+                      type="reset"
+                      class="btn btn-secondary"
+                      onclick="resetInput()"
+                    >
+                      Reset
                     </button>
                   </div>
                 </form>
@@ -410,7 +426,7 @@
               <div class="modal-content">
                 <div class="modal-header">
                   <h1 class="modal-title fs-5" id="exampleModalToggleLabel">
-                    Xóa thông tin
+                    Xóa dữ liệu?
                   </h1>
                   <button
                     type="button"
@@ -424,15 +440,107 @@
                   method="post"
                 >
                   <div class="modal-body">
-                    Bạn có muốn xóa vườn
-                    <strong><%= plantation.name %></strong>? Hành động này không
-                    thể hoàn tác.
-                    <br />
-                    <div class="modal-footer">
-                      <button type="submit" class="btn btn-danger">
-                        Xác nhận
-                      </button>
+                    Bạn có muốn xóa dữ liệu? Hành động này không thể hoàn tác.
+                    <div class="my-3">
+                      <label for="date" class="form-label">Ngày nhập</label>
+                      <input
+                        type="date"
+                        class="form-control"
+                        value="<%= data.date.toISOString().slice(0,10) %>"
+                        disabled
+                      />
                     </div>
+
+                    <hr />
+
+                    <div class="productLists my-3">
+                      <div class="productList">
+                        <div class="row my-3">
+                          <label class="form-label">Mủ Quy Khô</label>
+                          <input
+                            type="text"
+                            class="form-control"
+                            name="dryRubber"
+                            value="Mủ quy khô"
+                            hidden
+                          />
+                          <div class="col col-md-6">
+                            <label for="dryQuantity" class="form-label"
+                              >Số lượng</label
+                            >
+                            <input
+                              type="text"
+                              class="form-control"
+                              value="<%= data.products.dryQuantity %>"
+                              disabled
+                            />
+                          </div>
+                          <div class="col col-md-6">
+                            <label for="dryPercentage" class="form-label"
+                              >Hàm lượng</label
+                            >
+                            <input
+                              type="text"
+                              class="form-control"
+                              value="<%= data.products.dryPercentage %>"
+                              disabled
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <hr />
+                      <div class="productList">
+                        <div class="row my-3">
+                          <label class="form-label">Mủ tạp</label>
+                          <input
+                            type="text"
+                            class="form-control"
+                            name="mixedRubber"
+                            value="Mủ tạp"
+                            hidden
+                          />
+                          <div class="col-6">
+                            <label for="mixedQuantity" class="form-label"
+                              >Số lượng</label
+                            >
+                            <input
+                              type="text"
+                              class="form-control"
+                              value="<%= data.products.mixedQuantity %>"
+                              disabled
+                            />
+                          </div>
+                          <div class="col-6">
+                            <label for="mixedPercentage" class="form-label"
+                              >Hàm lượng</label
+                            >
+                            <input
+                              type="text"
+                              class="form-control"
+                              value="<%= data.products.mixedPercentage %>"
+                              disabled
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <hr>
+                    <div class="my-3">
+                      <label for="note" class="form-label">Ghi chú</label>
+                      <textarea
+                        type="text"
+                        class="form-control"
+                        rows="3"
+                        disabled
+                      >
+                        <%= data.notes %></textarea
+                      >
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="submit" class="btn btn-danger">
+                      Xác nhận
+                    </button>
                   </div>
                 </form>
               </div>
@@ -842,10 +950,10 @@
 
 <script>
   let dataColumns = [
-    { data: 'no', orderable: false },
-    { data: 'date' },
+    { data: 'no', orderable: false, width: '2%' },
+    { data: 'date', width: '9%' },
     { data: 'dryQuantity', orderable: false },
-    { data: 'dryPercentage', orderable: false },
+    { data: 'dryPercentage', orderable: false, width: '6%' },
     {
       data: 'dryTotal',
       createdCell: function (td, cellData, rowData, row, col) {
@@ -853,15 +961,15 @@
       },
     },
     { data: 'mixedQuantity', orderable: false },
-    { data: 'mixedPercentage', orderable: false },
+    { data: 'mixedPercentage', orderable: false, width: '6%' },
     {
       data: 'mixedTotal',
       createdCell: function (td, cellData, rowData, row, col) {
         $(td).css('background-color', 'yellow');
       },
     },
-    { data: 'notes', orderable: false },
-    { data: 'id', orderable: false },
+    { data: 'notes', orderable: false, width: '10%' },
+    { data: 'id', orderable: false, width: '5%' },
   ];
 
   initializeDataTable(
@@ -871,9 +979,9 @@
     '#deleteModalToggle',
     dataColumns,
     'date',
-    '#filterButton', // Added filter button ID
-    '#startDate', // Added start date input ID
-    '#endDate', // Added end date input ID
+    '#filterButton',
+    '#startDate',
+    '#endDate',
     '#clearFilterButton',
   );
   // Rotate the icon

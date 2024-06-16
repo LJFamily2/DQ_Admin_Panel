@@ -4,7 +4,6 @@ const AreaModel = require('../models/areaModel');
 const ManagerModel = require('../models/managerModel');
 const ProductModel = require('../models/productModel');
 const trimStringFields = require('./utils/trimStringFields');
-const { default: mongoose } = require('mongoose');
 
 module.exports = {
   // Main page
@@ -19,6 +18,8 @@ module.exports = {
   renderDetailPage,
   addData,
   getDatas,
+  updateData,
+  deleteData
 };
 
 async function findOrCreate(model, name) {
@@ -494,7 +495,16 @@ function formatNumberForDisplay(number) {
 async function getDatas(req, res) {
   try {
     const { slug } = req.params;
-    const { draw, start = 0, length = 10, search, order, columns, startDate, endDate } = req.body;
+    const {
+      draw,
+      start = 0,
+      length = 10,
+      search,
+      order,
+      columns,
+      startDate,
+      endDate,
+    } = req.body;
     const searchValue = search?.value?.toLowerCase() || '';
     const sortColumn = columns?.[order?.[0]?.column]?.data;
     const sortDirection = order?.[0]?.dir === 'asc' ? 1 : -1;
@@ -509,7 +519,7 @@ async function getDatas(req, res) {
         404,
         'fail',
         'Không tìm thấy vườn!',
-        req.headers.referer
+        req.headers.referer,
       );
     }
 
@@ -578,14 +588,22 @@ async function getDatas(req, res) {
       no: parseInt(start, 10) + index + 1,
       date: record.date.toLocaleDateString(),
       dryQuantity: formatNumberForDisplay(record.products?.dryQuantity || 0),
-      dryPercentage: formatNumberForDisplay(record.products?.dryPercentage || 0),
-      dryTotal: formatNumberForDisplay(
-        (record.products?.dryQuantity * record.products?.dryPercentage) / 100 || 0
+      dryPercentage: formatNumberForDisplay(
+        record.products?.dryPercentage || 0,
       ),
-      mixedQuantity: formatNumberForDisplay(record.products?.mixedQuantity || 0),
-      mixedPercentage: formatNumberForDisplay(record.products?.mixedPercentage || 0),
+      dryTotal: formatNumberForDisplay(
+        (record.products?.dryQuantity * record.products?.dryPercentage) / 100 ||
+          0,
+      ),
+      mixedQuantity: formatNumberForDisplay(
+        record.products?.mixedQuantity || 0,
+      ),
+      mixedPercentage: formatNumberForDisplay(
+        record.products?.mixedPercentage || 0,
+      ),
       mixedTotal: formatNumberForDisplay(
-        (record.products?.mixedQuantity * record.products?.mixedPercentage) / 100 || 0
+        (record.products?.mixedQuantity * record.products?.mixedPercentage) /
+          100 || 0,
       ),
       notes: record.notes || '',
       id: record._id,
@@ -604,6 +622,106 @@ async function getDatas(req, res) {
   }
 }
 
+async function updateData(req, res) {
+  req.body = trimStringFields(req.body);
+  try {
+    const { slug, id } = req.params;
+    const plantation = await PlantationModel.findOne({ slug });
+    if (!plantation) {
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Không tìm thấy vườn!',
+        req.headers.referer,
+      );
+    }
+    const data = plantation.data.id(id);
+    if (!data) {
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Không tìm thấy thông tin!',
+        req.headers.referer,
+      );
+    }
 
+    console.log(req.body);
+    const updateFields = {
+      notes: req.body.notes,
+      ...req.body,
+      'products.dryQuantity': parseFloat(
+        req.body.dryQuantity.replace(',', '.'),
+      ),
+      'products.dryPercentage': parseFloat(
+        req.body.dryPercentage.replace(',', '.'),
+      ),
+      'products.mixedQuantity': parseFloat(
+        req.body.mixedQuantity.replace(',', '.'),
+      ),
+      'products.mixedPercentage': parseFloat(
+        req.body.mixedPercentage.replace(',', '.'),
+      ),
+    };
+    console.log(updateFields);
+    data.set(updateFields);
 
+    const savedData = await plantation.save();
+    if (!savedData) {
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Cập nhật thông tin thất bại!',
+        req.headers.referer,
+      );
+    }
+    return handleResponse(
+      req,
+      res,
+      200,
+      'success',
+      'Cập nhật thông tin thành công!',
+      req.headers.referer,
+    );
+  } catch (err) {
+    console.log(err);
+    res.status(500);
+  }
+}
 
+async function deleteData(req, res) {
+  try {
+    const { slug, id } = req.params;
+    const plantation = await PlantationModel.findOneAndUpdate(
+      { slug },
+      { $pull: { data: { _id: id } } },
+      { new: true }
+    );
+    if (!plantation) {
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Không tìm thấy vườn!',
+        req.headers.referer,
+      );
+    }
+    return handleResponse(
+      req,
+      res,
+      200,
+      'success',
+      'Xóa thông tin thành công!',
+      req.headers.referer,
+    );
+  } catch (err) {
+    console.log(err);
+    res.status(500);
+  }
+}

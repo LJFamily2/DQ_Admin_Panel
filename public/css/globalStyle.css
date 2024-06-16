@@ -8,3 +8,7 @@
     --background_color: #CAF4FF;
 }
 
+table td{
+    word-break: break-all;
+  }
+
