@@ -5,7 +5,7 @@ mongoose.plugin(slug);
 const productSchema = new mongoose.Schema({
   name: {
     type: String,
-  },
+},
   quantity: {
     type: Number,
   },
