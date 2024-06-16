@@ -2,6 +2,28 @@ const mongoose = require('mongoose');
 const slug = require('mongoose-slug-generator');
 mongoose.plugin(slug);
 
+const productSchema = new mongoose.Schema({
+  name: {
+    type: String,
+  },
+  quantity: {
+    type: Number,
+  },
+  percentage: {
+    type: Number,
+  },
+});
+
+const dataSchema = new mongoose.Schema({
+  date: {
+    type: Date,
+  },
+  notes: {
+    type: String,
+  },
+  products: [productSchema],
+});
+
 const plantationSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -26,38 +48,13 @@ const plantationSchema = new mongoose.Schema({
   plantationArea: {
     type: String,
   },
-  data: [
-    {
-      date: {
-        type: Date,
-      },
-      notes: {
-        type: String,
-      },
-      products: {
-        dryRubber: {
-          type: String,
-        },
-        dryQuantity: {
-          type: Number,
-        },
-        dryPercentage: {
-          type: Number,
-        },
-        mixedRubber: {
-          type: String,
-        },
-        mixedQuantity: {
-          type: Number,
-        },
-      },
-    },
-  ],
+  data: [dataSchema],
   slug: {
     type: String,
     slug: 'name',
   },
 });
+
 
 plantationSchema.methods.calculateRemainingDays = function () {
   if (this.contactDurationEnd) {
