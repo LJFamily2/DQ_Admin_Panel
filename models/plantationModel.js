@@ -50,9 +50,6 @@ const plantationSchema = new mongoose.Schema({
         mixedQuantity: {
           type: Number,
         },
-        mixedPercentage: {
-          type: Number,
-        },
       },
     },
   ],

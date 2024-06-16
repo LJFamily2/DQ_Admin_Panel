@@ -16,35 +16,34 @@ function initializeDataTable(
   };
 
   if (plantationDetailPageRender) {
-rowGroupOptions.endRender = function (rows, group) {
-  var dryTotal = rows
-    .data()
-    .pluck('dryTotal')
-    .reduce(function (a, b) {
-      b = b.replace(/\./g, '').replace(',', '.');
-      return a + parseFloat(b);
-    }, 0);
+    rowGroupOptions.endRender = function (rows, group) {
+      var dryTotal = rows
+        .data()
+        .pluck('dryTotal')
+        .reduce(function (a, b) {
+          b = b.replace(/\./g, '').replace(',', '.');
+          return a + parseFloat(b);
+        }, 0);
 
-  var mixedTotal = rows
-    .data()
-    .pluck('mixedTotal')
-    .reduce(function (a, b) {
-      b = b.replace(/\./g, '').replace(',', '.');
-      return a + parseFloat(b);
-    }, 0);
+      var mixedQuantity = rows
+        .data()
+        .pluck('mixedQuantity')
+        .reduce(function (a, b) {
+          b = b.replace(/\./g, '').replace(',', '.');
+          return a + parseFloat(b);
+        }, 0);
 
-  // Create a number formatter.
-  var formatter = new Intl.NumberFormat('vi-VN', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  });
+      // Create a number formatter.
+      var formatter = new Intl.NumberFormat('vi-VN', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
 
-  // Format the totals.
-  dryTotal = formatter.format(dryTotal);
-  mixedTotal = formatter.format(mixedTotal);
+      // Format the totals.
+      dryTotal = formatter.format(dryTotal);
 
-  return `(Mủ quy khô: ${dryTotal} kg, Mủ tạp: ${mixedTotal}kg)`;
-};
+      return `<span class="float-end">(Mủ quy khô: ${dryTotal} kg, Mủ tạp: ${mixedQuantity}kg)</span>`;
+    };
   }
   const table = $(tableId).DataTable({
     serverSide: true,

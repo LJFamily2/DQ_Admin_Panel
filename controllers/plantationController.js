@@ -424,16 +424,13 @@ async function addData(req, res) {
       dryPercentage,
       mixedRubber,
       mixedQuantity,
-      mixedPercentage,
     } = req.body;
 
     // Convert numeric fields from Vietnamese format to standard JavaScript format
     const formattedDryQuantity = parseFloat(dryQuantity.replace(',', '.'));
     const formattedDryPercentage = parseFloat(dryPercentage.replace(',', '.'));
     const formattedMixedQuantity = parseFloat(mixedQuantity.replace(',', '.'));
-    const formattedMixedPercentage = parseFloat(
-      mixedPercentage.replace(',', '.'),
-    );
+
 
     // Create new data object with formatted numbers
     const newData = {
@@ -445,7 +442,6 @@ async function addData(req, res) {
         dryPercentage: formattedDryPercentage,
         mixedRubber,
         mixedQuantity: formattedMixedQuantity,
-        mixedPercentage: formattedMixedPercentage,
       },
     };
 
@@ -599,13 +595,6 @@ async function getDatas(req, res) {
       mixedQuantity: formatNumberForDisplay(
         record.products?.mixedQuantity || 0,
       ),
-      mixedPercentage: formatNumberForDisplay(
-        record.products?.mixedPercentage || 0,
-      ),
-      mixedTotal: formatNumberForDisplay(
-        (record.products?.mixedQuantity * record.products?.mixedPercentage) /
-          100 || 0,
-      ),
       notes: record.notes || '',
       id: record._id,
     }));
@@ -662,9 +651,6 @@ async function updateData(req, res) {
       ),
       'products.mixedQuantity': parseFloat(
         req.body.mixedQuantity.replace(',', '.'),
-      ),
-      'products.mixedPercentage': parseFloat(
-        req.body.mixedPercentage.replace(',', '.'),
       ),
     };
     console.log(updateFields);
