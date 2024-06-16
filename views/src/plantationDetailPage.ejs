@@ -204,7 +204,7 @@
         <thead>
           <tr>
             <th rowspan="2">STT</th>
-            <th rowspan="2">Ngày nhập</th>
+            <th rowspan="2" class="d-none">Ngày nhập</th>
             <th colspan="3">Mủ quy khô</th>
             <th colspan="3">Mủ tạp</th>
             <th rowspan="2">Ghi chú</th>
@@ -951,7 +951,7 @@
 <script>
   let dataColumns = [
     { data: 'no', orderable: false, width: '2%' },
-    { data: 'date', width: '9%' },
+    { data: 'date', width: '9%', visible: false },
     { data: 'dryQuantity', orderable: false },
     { data: 'dryPercentage', orderable: false, width: '6%' },
     {
