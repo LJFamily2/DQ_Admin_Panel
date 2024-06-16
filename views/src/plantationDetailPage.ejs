@@ -2,6 +2,7 @@
   <!-- js -->
   <script src="/js/datatable.js"></script>
   <script src="/js/inputFieldRestriction.js" defer></script>
+  <script src="/js/newInput.js" defer></script>
   <!-- Slim select -->
   <script src="/js/slim-select.js" defer></script>
   <script src="/js/slim-select.js" defer></script>
@@ -120,28 +121,50 @@
       </div>
     </div>
     <div class="col rounded-2 p-2 overflow-auto" style="box-shadow: 0 0 4px">
-      <div class="row dateSelection" >
-
-        <div class="dateSelectionSelector rounded-2 mx-3 my-2 " style=" box-shadow: 0 0 4px; width: fit-content; cursor: pointer; " onclick="
-          let container = document.querySelector('.dateSelectionContainer');
-          container.style.display ='inline';
-          container.style.width ='fit-content';
-          container.style.transition = 'all 200ms linear';
-          this.style.display = 'none'
-          ">
-
-          <h5 class="m-0 p-1">Lọc kết quả</h5>
+      <div class="row dateSelection">
+        <div
+          class="dateSelectionSelector rounded-2 mx-3 my-2 pt-2 px-2"
+          style="box-shadow: 0 0 4px; width: fit-content; cursor: pointer"
+          onclick="
+              let container = document.querySelector('.dateSelectionContainer');
+              container.style.opacity = '1';
+              container.style.maxWidth ='1000px';
+              container.style.maxHeight ='1000px';
+              container.style.transition = 'all 200ms linear';
+              this.style.opacity = '0';
+              this.style.display = 'none'
+              "
+        >
+          <h5>Lọc kết quả</h5>
         </div>
 
-        <div class="col col-md-6 dateSelectionContainer rounded-2 mx-3 my-2 p-2" style="box-shadow: 0 0 4px ; display: none; width: 0;" >
+        <div
+          class="col col-md-6 dateSelectionContainer rounded-2 mx-3 my-2 p-2"
+          style="
+            box-shadow: 0 0 4px;
+            opacity: 0;
+            max-width: 0;
+            max-height: 0;
+            transition: all 200ms linear;
+          "
+        >
           <div class="d-flex justify-content-between">
             <h5>Lọc kết quả</h5>
-            <i class="ri-close-line fs-5" style="cursor: pointer;" onclick="
-            let container = document.querySelector('.dateSelectionContainer');
-            let selector = document.querySelector('.dateSelectionSelector');
-            container.style.display = 'none';
-            selector.style.display = 'inline'
-            "></i>
+            <i
+              class="ri-close-line fs-5"
+              style="cursor: pointer"
+              onclick="
+                  let container = document.querySelector('.dateSelectionContainer');
+                  let selector = document.querySelector('.dateSelectionSelector');
+                  container.style.maxWidth = '0';
+                  container.style.maxHeight = '0';
+                  container.style.opacity = '0';
+                  setTimeout(() => {
+                      selector.style.display = 'inline';
+                      selector.style.opacity = '1';
+                  }, 200);
+                  "
+            ></i>
           </div>
 
           <div class="row">
@@ -156,8 +179,19 @@
           </div>
 
           <div class="col my-2 d-flex align-items-end">
-            <button id="filterButton" class="btn btn-primary" onclick="document.getElementById('clearFilterButton').style.display = 'inline'"><i class="ri-menu-search-fill"></i></button>
-            <button id="clearFilterButton" class="btn btn-secondary mx-2" style="display: none;" onclick="this.style.display ='none'">
+            <button
+              id="filterButton"
+              class="btn btn-primary"
+              onclick="document.getElementById('clearFilterButton').style.display = 'inline'"
+            >
+              <i class="ri-menu-search-fill"></i>
+            </button>
+            <button
+              id="clearFilterButton"
+              class="btn btn-secondary mx-2"
+              style="display: none"
+              onclick="this.style.display ='none'"
+            >
               <i class="ri-calendar-close-line"></i>
             </button>
           </div>
@@ -193,7 +227,219 @@
             <% } %>
           </tr>
         </thead>
-        <tbody></tbody>
+        <tbody>
+          <% plantation.data.forEach( (data,index) => { %>
+          <!-- Modal for updating -->
+          <div
+            class="modal fade"
+            id="staticBackdrop<%= index + 1%>"
+            data-bs-backdrop="static"
+            data-bs-keyboard="false"
+            tabindex="-1"
+            aria-labelledby="staticBackdropLabel"
+            aria-hidden="true"
+          >
+            <div
+              class="modal-dialog modal-dialog-centered modal-dialog-scrollable"
+            >
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="staticBackdropLabel">
+                    Cập nhật thông tin
+                  </h1>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
+
+                <form
+                  action="/quan-ly-vuon/vuon/<%= plantation.slug %>/update/<%= data._id %>"
+                  method="post"
+                >
+                  <div class="modal-body">
+                    <div class="my-3">
+                      <label for="date" class="form-label">Ngày nhập</label>
+                      <input type="date" class="form-control" id="date" name="date" value="<%= data.date.toISOString().slice(0,10) %>" onchange="newInput(this)" />
+                      
+                    </div>
+              
+                    <hr />
+              
+                    <div class="productLists my-3">
+                      <div class="productList">
+                        <div class="row my-3">
+                          <label class="form-label">Mủ Quy Khô</label>
+                          <input
+                            type="text"
+                            class="form-control"
+                            name="dryRubber"
+                            value="Mủ quy khô"
+                            hidden
+                          />
+                          <div class="col col-md-6">
+                            <label for="dryQuantity" class="form-label">Số lượng</label>
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="dryQuantity"
+                              name="dryQuantity"
+                              placeholder="1234,34" 
+                              value="<%= data.products.dryQuantity %>"
+                              oninput="handleQuantityInput(this)"
+                              onchange="newInput(this)"
+                            />
+                          </div>
+                          <div class="col col-md-6">
+                            <label for="dryPercentage" class="form-label">Hàm lượng</label>
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="dryPercentage"
+                              name="dryPercentage"
+                              placeholder="23,04"
+                              value="<%= data.products.dryPercentage %>"
+                              oninput="handlePercentageInput(this)"
+                              onchange="newInput(this)"
+                            />
+                          </div>
+                        </div>
+                      </div>
+              
+                      <hr />
+              
+                      <div class="productList">
+                        <div class="row my-3">
+                          <label class="form-label">Mủ tạp</label>
+                          <input
+                            type="text"
+                            class="form-control"
+                            name="mixedRubber"
+                            value="Mủ tạp"
+                            hidden
+                          />
+                          <div class="col-6">
+                            <label for="mixedQuantity" class="form-label">Số lượng</label>
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="mixedQuantity"
+                              name="mixedQuantity"
+                              placeholder="1234,34"
+                              min="0"
+                              value="<%= data.products.mixedQuantity %>"
+                              oninput="handleQuantityInput(this)"
+                              onchange="newInput(this)"
+                            />
+                          </div>
+                          <div class="col-6">
+                            <label for="mixedPercentage" class="form-label">Hàm lượng</label>
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="mixedPercentage"
+                              name="mixedPercentage"
+                              placeholder="Nhập hàm lượng"
+                              maxlength="23.04"
+                              value="<%= data.products.mixedPercentage %>"
+                              oninput="handlePercentageInput(this)"
+                              onchange="newInput(this)"
+                            />
+                          </div>
+                        </div>
+                        <hr />
+                      </div>
+                    </div>
+              
+                    <!-- <div class="btnController">
+                      <button
+                        type="button"
+                        class="btn btn-light"
+                        onclick="addInputField('.productLists')"
+                      >
+                        Thêm
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-danger mx-2"
+                        onclick="removeInputField('.productLists')"
+                      >
+                        Xóa
+                      </button>
+                    </div> -->
+              
+                    <div class="my-3">
+                      <label for="note" class="form-label">Ghi chú</label>
+                      <textarea
+                        type="text"
+                        class="form-control"
+                        rows="3"
+                        id="note"
+                        name="note"
+                        value="<%= data.note %>"
+                        onchange="newInput(this)"
+                      ></textarea>
+                    </div>
+              
+                  </div>
+                  <div class="modal-footer">
+                    <!-- Buttons -->
+                    <button type="submit" class="btn btn-success">
+                      Lưu mới
+                    </button>
+                    <button type="reset" class="btn btn-secondary" onclick="resetInput()">
+                      Làm lại
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <!-- Delete confirming modal  -->
+          <div
+            class="modal fade"
+            id="deleteModalToggle<%= index + 1 %>"
+            aria-hidden="true"
+            aria-labelledby="exampleModalToggleLabel"
+            tabindex="-1"
+          >
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="exampleModalToggleLabel">
+                    Xóa thông tin
+                  </h1>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
+                <form
+                  action="/quan-ly-vuon/vuon/<%= plantation.slug %>/delete/<%= data._id %>"
+                  method="post"
+                >
+                  <div class="modal-body">
+                    Bạn có muốn xóa vườn
+                    <strong><%= plantation.name %></strong>? Hành động này không
+                    thể hoàn tác.
+                    <br />
+                    <div class="modal-footer">
+                      <button type="submit" class="btn btn-danger">
+                        Xác nhận
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+          <% }) %>
+        </tbody>
       </table>
     </div>
   </div>
