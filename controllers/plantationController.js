@@ -486,10 +486,11 @@ function formatNumberForDisplay(number) {
   if (isNaN(number) || number === null || number === undefined) {
     return ''; // Return empty string if the number is invalid
   }
-  const formatted = number.toFixed(2);
-  const [integerPart, decimalPart] = formatted.split('.');
-  const integerWithCommas = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-  return `${integerWithCommas},${decimalPart}`;
+  var formatter = new Intl.NumberFormat('vi-VN', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+  return formatter.format(number);
 }
 
 async function getDatas(req, res) {
