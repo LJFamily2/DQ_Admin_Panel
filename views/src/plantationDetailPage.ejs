@@ -124,7 +124,7 @@
         <thead>
           <tr>
             <th rowspan="2">STT</th>
-            <!-- <th rowspan="2">Ngày nhập</th> -->
+            <th rowspan="2">Ngày nhập</th>
             <% products.forEach(product =>{ %>
               <% if(new RegExp("Mủ quy khô", "i").test(product.name)){ %>
                 <th colspan="3"><%= product.name %></th>
@@ -149,58 +149,22 @@
         </thead>
         <tbody>
           <% plantation.data.forEach((data, index) => { %>
-            <% 
-            let currentGroupDate = '';
-            let columnTotals = new Array(maxProductColumns * 3).fill(0); // Initialize column totals
-            plantation.data.sort((a, b) => new Date(a.date) - new Date(b.date)).forEach((data, index) => { 
-              const date = new Date(data.date).toISOString().slice(0, 10).split('-').reverse().join('-');
-              if (date !== currentGroupDate) {
-                if (currentGroupDate !== '') {
-                  // Output a row with the totals for the previous group
-            %>
-                  <tr>
-                    <td colspan="2"><strong>Total for <%= currentGroupDate %></strong></td>
-                    <% for(let i = 0; i < maxProductColumns; i++) { %>
-                      <td><%= columnTotals[i*3] %></td>
-                      <% if(new RegExp("Mủ quy khô", "i").test(products[i].name)) { %>
-                        <td><%= columnTotals[i*3+1] %></td>
-                        <td><%= columnTotals[i*3+2] %></td>
-                      <% } %>
-                    <% } %>
-                    <td></td>
-                    <td></td>
-                  </tr>
-            <%
-                }
-                currentGroupDate = date;
-                columnTotals = new Array(maxProductColumns * 3).fill(0); // Reset column totals for the new group
-                // Output a group header row
-            %>
-                <tr>
-                  <td colspan="100%"><strong><%= date %></strong></td>
-                </tr>
-            <%
-              }
-              // Output the rest of the row as before
-            %>
-              <tr>
-                <!-- Index -->
-                <td><%= index + 1 %></td>
-            
-                <!-- Products -->
-                <% for(let i = 0; i < maxProductColumns; i++) { 
-                  const product = data.products[i];
-                  if(product) {
-                    const isMuQuyKho = new RegExp("Mủ quy khô", "i").test(product.product.name);
-                    const quantity = product.quantity || 0;
-                    const percentage = product.percentage || 0;
-                    const total = isMuQuyKho ? quantity * percentage / 100 : 0;
-                    columnTotals[i*3] += quantity; // Add to column total
-                    if(isMuQuyKho) {
-                      columnTotals[i*3+1] += percentage; // Add to column total
-                      columnTotals[i*3+2] += total; // Add to column total
-                    }
-                %>
+            <tr>
+              <!-- Index -->
+              <td><%= index + 1 %></td>
+          
+              <!-- Date -->
+              <td><%= new Date(data.date).toISOString().slice(0, 10).split('-').reverse().join('-') %></td>
+          
+              <!-- Products -->
+              <% for(let i = 0; i < maxProductColumns; i++) { 
+                const product = data.products[i];
+                if(product) {
+                  const isMuQuyKho = new RegExp("Mủ quy khô", "i").test(product.product.name);
+                  const quantity = product.quantity || 0;
+                  const percentage = product.percentage || 0;
+                  const total = isMuQuyKho ? quantity * percentage / 100 : 0;
+                  %>
                   <td><%= quantity %></td>
                   <% if(isMuQuyKho) { %>
                     <td><%= percentage %></td>
@@ -209,31 +173,17 @@
                 <% } else { %>
                   <td></td>
                 <% } %>
-                <% } %>
-            
-                <!-- Notes -->
-                <td><%= data.notes %></td>
-            
-                <!-- Edit link -->
-                <td>
-                  <a href="/quan-ly-vuon/vuon/<%= plantation.slug %>/editData/<%= data._id %>" class="btn btn-warning">
-                    Chỉnh sửa
-                  </a>
-                </td>
-              </tr>
-            <% }) %>
-            <!-- Output a row with the totals for the last group -->
-            <tr>
-              <td colspan="2"><strong>Total for <%= currentGroupDate %></strong></td>
-              <% for(let i = 0; i < maxProductColumns; i++) { %>
-                <td><%= columnTotals[i*3] %></td>
-                <% if(new RegExp("Mủ quy khô", "i").test(products[i].name)) { %>
-                  <td><%= columnTotals[i*3+1] %></td>
-                  <td><%= columnTotals[i*3+2] %></td>
-                <% } %>
               <% } %>
-              <td></td>
-              <td></td>
+          
+              <!-- Notes -->
+              <td><%= data.notes %></td>
+          
+              <!-- Edit link -->
+              <td>
+                <a href="/quan-ly-vuon/vuon/<%= plantation.slug %>/editData/<%= data._id %>" class="btn btn-warning">
+                  Chỉnh sửa
+                </a>
+              </td>
             </tr>
           <% }) %>
         </tbody>
