@@ -3,9 +3,10 @@ const slug = require('mongoose-slug-generator');
 mongoose.plugin(slug);
 
 const productSchema = new mongoose.Schema({
-  name: {
-    type: String,
-},
+  product: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Hàng hóa'
+  },
   quantity: {
     type: Number,
   },
@@ -54,7 +55,6 @@ const plantationSchema = new mongoose.Schema({
     slug: 'name',
   },
 });
-
 
 plantationSchema.methods.calculateRemainingDays = function () {
   if (this.contactDurationEnd) {

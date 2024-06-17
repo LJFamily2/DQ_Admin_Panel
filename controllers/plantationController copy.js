@@ -401,7 +401,7 @@ async function renderDetailPage(req, res) {
 
 async function addData(req, res) {
   req.body = trimStringFields(req.body);
-  console.log(req.body)
+
   try {
     const plantation = await PlantationModel.findOne({ slug: req.params.slug });
     if (!plantation) {
@@ -415,23 +415,34 @@ async function addData(req, res) {
       );
     }
 
+    // Extract data from request body
+    const {
+      date,
+      note,
+      dryRubber,
+      dryQuantity,
+      dryPercentage,
+      mixedRubber,
+      mixedQuantity,
+    } = req.body;
 
-    // Initialize an array to hold the products data
-    const products = [];
+    // Convert numeric fields from Vietnamese format to standard JavaScript format
+    const formattedDryQuantity = parseFloat(dryQuantity.replace(',', '.'));
+    const formattedDryPercentage = parseFloat(dryPercentage.replace(',', '.'));
+    const formattedMixedQuantity = parseFloat(mixedQuantity.replace(',', '.'));
 
-    // Loop through req.body.products to extract products data
-    for (let productData of req.body.products) {
-      const product = productData.name;
-      const quantity = parseFloat(productData.quantity.replace(',', '.'));
-      const percentage = parseFloat(productData.percentage.replace(',', '.'));
-      products.push({ product, quantity, percentage });
-    }
 
     // Create new data object with formatted numbers
     const newData = {
-      date: req.body.date,
-      notes: req.body.notes,
-      products,
+      date,
+      notes: note,
+      products: {
+        dryRubber,
+        dryQuantity: formattedDryQuantity,
+        dryPercentage: formattedDryPercentage,
+        mixedRubber,
+        mixedQuantity: formattedMixedQuantity,
+      },
     };
 
     // Push new data to plantation array and save

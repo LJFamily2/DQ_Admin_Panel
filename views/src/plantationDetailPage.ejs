@@ -1,6 +1,6 @@
 <head>
   <!-- js -->
-  <script src="/js/datatable.js"></script>
+  <script src="/js/inputFieldRestriction.js"></script>
   <!-- Slim select -->
   <script src="/js/slim-select.js" defer></script>
 
@@ -131,83 +131,65 @@
   >
     <%- include('../partials/notificationMessage.ejs') %>
     <h4>Thêm dữ liệu</h4>
-    <form
-      action="/quan-ly-nguoi-quan-ly/addManger"
-      method="post"
-      enctype="multipart/form-data"
-    >
+    <form action="/quan-ly-vuon/vuon/<%= plantation.slug %>/addData" method="post">
       <div class="my-3">
         <label for="date" class="form-label">Ngày nhập</label>
         <input type="date" class="form-control" id="date" name="date" />
       </div>
-
-      <div class="productLists my-3">
-        <div class="productList">
-          <div class="my-3">
-            <label for="product" class="form-label">Hàng hóa</label>
-            <select class="form-control" name="product" id="product">
-              <% products.forEach(product => { %>
-              <option value="<%= product._id %>"><%= product.name %></option>
-              <% }) %>
-            </select>
-          </div>
-
-          <div class="row my-3">
-            <div class="col-6">
-              <label for="quantity" class="form-label">Số lượng</label>
+    
+      <hr />
+    
+      <% products.forEach((product, index) => { %>
+        <div class="productLists my-3">
+          <div class="productList">
+            <div class="row my-3">
+              <label class="form-label"><%= product.name %></label>
               <input
-                type="number"
+                type="text"
                 class="form-control"
-                id="quantity"
-                name="quantity"
-                placeholder="Nhập số lượng"
-                min="0"
+                name="products[<%= index %>][name]"
+                value="<%= product._id %>"
+                hidden
               />
-            </div>
-            <div class="col-6">
-              <label for="percentage" class="form-label">Hàm lượng</label>
-              <input
-                type="number"
-                class="form-control"
-                id="percentage"
-                name="percentage"
-                placeholder="Nhập hàm lượng"
-                min="0"
-              />
+              <div class="col col-md-6">
+                <label class="form-label">Số lượng</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  name="products[<%= index %>][quantity]"
+                  placeholder="1234,34"
+                  oninput="handleQuantityInput(this)"
+                />
+              </div>
+              <div class="col col-md-6">
+                <label class="form-label">Hàm lượng</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  name="products[<%= index %>][percentage]"
+                  placeholder="23,04"
+                  oninput="handlePercentageInput(this)"
+                />
+              </div>
             </div>
           </div>
+    
+          <hr />
+    
         </div>
-      </div>
-
-      <div class="btnController">
-        <button
-          type="button"
-          class="btn btn-light"
-          onclick="addInputField('.productLists')"
-        >
-          Thêm
-        </button>
-        <button
-          type="button"
-          class="btn btn-danger mx-2"
-          onclick="removeInputField('.productLists')"
-        >
-          Xóa
-        </button>
-      </div>
-
+      <% }) %>
+    
       <div class="my-3">
         <label for="note" class="form-label">Ghi chú</label>
         <textarea
-          type="number"
+          type="text"
           class="form-control"
           rows="3"
           id="note"
-          name="note"
-          placeholder="Ghi chú"
+          name="notes"
         ></textarea>
       </div>
-
+    
       <!-- Buttons -->
       <button type="submit" class="btn btn-primary">Thêm</button>
       <button type="reset" class="btn btn-secondary">Làm mới</button>
@@ -476,47 +458,6 @@
   </div>
 </div>
 <script>
-  const managerColumns = [
-    { data: 'no', orderable: false, width: '5%' },
-    { data: 'name', width: '20%' },
-    { data: 'phone', width: '15%' },
-    { data: 'address', width: '10%' },
-    { data: 'plantations', width: '10%' },
-    {
-      data: 'frontIdentification',
-      width: '15%',
-      orderable: false,
-      render: function (data, type, row) {
-        if (data) {
-          return `<img src="/images/${data}" alt="Front Identification" style="max-height: 100px;" />`;
-        } else {
-          return 'Trống';
-        }
-      },
-    },
-    {
-      data: 'backIdentification',
-      width: '15%',
-      orderable: false,
-      render: function (data, type, row) {
-        if (data) {
-          return `<img src="/images/${data}" alt="Back Identification" style="max-height: 100px;" />`;
-        } else {
-          return 'Trống';
-        }
-      },
-    },
-    { data: 'id', width: '10%', orderable: false },
-  ];
-
-  initializeDataTable(
-    '#managers_table',
-    '/quan-ly-nguoi-quan-ly/getManagers',
-    '#staticBackdrop',
-    '#deleteModalToggle',
-    managerColumns,
-  );
-
   // Rotate the icon
   const rotate = id => {
     const element = document.getElementById(id);
@@ -525,24 +466,39 @@
 
   // Toggle buttons
   const deleteButton = document.querySelector('.btnController .btn-danger');
-  function addInputField(selector) {
-    // Get the productLists div
-    const productLists = document.querySelector(selector);
+  let inputFieldIndex = 0; // Global counter
 
-    // Get the first .productList div within productLists
-    const firstProductList = productLists.querySelector('.productList');
+function addInputField(selector) {
+  // Get the productLists div
+  const productLists = document.querySelector(selector);
 
-    // Clone the first .productList div
-    const clonedProductList = firstProductList.cloneNode(true);
+  // Get the first .productList div within productLists
+  const firstProductList = productLists.querySelector('.productList');
 
-    // Append the cloned div to the productLists div
-    productLists.appendChild(clonedProductList);
+  // Clone the first .productList div
+  const clonedProductList = firstProductList.cloneNode(true);
 
-    // If there is more than one .productList div, show the delete button
-    if (productLists.querySelectorAll('.productList').length > 1) {
-      deleteButton.style.display = 'inline';
+  // Update the id and for attributes of the cloned elements
+  clonedProductList.querySelectorAll('label, input, select').forEach(element => {
+    if (element.id) {
+      element.id = element.id + inputFieldIndex;
     }
+    if (element.tagName === 'LABEL' && element.htmlFor) {
+      element.htmlFor = element.htmlFor + inputFieldIndex;
+    }
+  });
+
+  // Append the cloned div to the productLists div
+  productLists.appendChild(clonedProductList);
+
+  // If there is more than one .productList div, show the delete button
+  if (productLists.querySelectorAll('.productList').length > 1) {
+    deleteButton.style.display = 'inline';
   }
+
+  // Increment the global counter
+  inputFieldIndex++;
+}
 
   function removeInputField(selector) {
     // Get the productLists div
