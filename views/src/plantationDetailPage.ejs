@@ -19,7 +19,9 @@
 <nav aria-label="breadcrumb" class="mx-2 mx-md-4">
   <ol class="breadcrumb">
     <li class="breadcrumb-item"><a href="/quan-ly-vuon">Vườn</a></li>
-    <li class="breadcrumb-item active" aria-current="page"><%= plantation.name %></li>
+    <li class="breadcrumb-item active" aria-current="page">
+      <%= plantation.name %>
+    </li>
   </ol>
 </nav>
 
@@ -114,10 +116,42 @@
       </div>
     </div>
     <div
-      class="col rounded-2 p-2 overflow-auto"
-      style="box-shadow: 0 0 4px; max-height: 80dvh"
+      class="col rounded-2 p-2"
+      style="box-shadow: 0 0 4px;"
     >
-      <table></table>
+      <table class="table table-striped table-bordered">
+        <thead>
+          <tr>
+            <th>Ngày nhập</th>
+            <% products.forEach(product =>{ %>
+              <% if(new RegExp("Mủ quy khô", "i").test(product.name)){ %>
+                <th colspan="3"><%= product.name %></th>
+              <% }else{ %>
+                <th colspan="1"><%= product.name %></th>
+              <% } %>
+            <% }) %>
+            <th>Ghi chú</th>
+            <th>Chỉnh sửa</th>
+          </tr>
+          <tr>
+            <th></th>
+            <% products.forEach(product =>{ %>
+              <% if(new RegExp("Mủ quy khô", "i").test(product.name)){ %>
+                <th>Số lượng</th>
+                <th>Hàm lượng</th>
+                <th>Tổng</th>
+              <% }else{ %>
+                <th>Số lượng</th>
+              <% } %>
+            <% }) %>
+            <th></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+      </table>
     </div>
   </div>
   <div
@@ -125,60 +159,72 @@
     style="
       box-shadow: 0 0 4px;
       background: var(--background_color);
-      max-height: 80dvh;
-      overflow-y: auto;
     "
   >
     <%- include('../partials/notificationMessage.ejs') %>
     <h4>Thêm dữ liệu</h4>
-    <form action="/quan-ly-vuon/vuon/<%= plantation.slug %>/addData" method="post">
+    <form
+      action="/quan-ly-vuon/vuon/<%= plantation.slug %>/addData"
+      method="post"
+    >
       <div class="my-3">
         <label for="date" class="form-label">Ngày nhập</label>
         <input type="date" class="form-control" id="date" name="date" />
       </div>
-    
+
       <hr />
-    
+
       <% products.forEach((product, index) => { %>
-        <div class="productLists my-3">
-          <div class="productList">
-            <div class="row my-3">
-              <label class="form-label"><%= product.name %></label>
+      <div class="productLists my-3">
+        <div class="productList">
+          <div class="row my-3">
+            <label class="form-label"><%= product.name %></label>
+            <input
+              type="text"
+              class="form-control"
+              name="products[<%= index %>][name]"
+              value="<%= product._id %>"
+              hidden
+            />
+            <% if(new RegExp("Mủ quy khô", "i").test(product.name)){ %>
+            <div class="col col-md-6">
+              <label class="form-label">Số lượng</label>
               <input
                 type="text"
                 class="form-control"
-                name="products[<%= index %>][name]"
-                value="<%= product._id %>"
-                hidden
+                name="products[<%= index %>][quantity]"
+                placeholder="1234,34"
+                oninput="handleQuantityInput(this)"
               />
-              <div class="col col-md-6">
-                <label class="form-label">Số lượng</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  name="products[<%= index %>][quantity]"
-                  placeholder="1234,34"
-                  oninput="handleQuantityInput(this)"
-                />
-              </div>
-              <div class="col col-md-6">
-                <label class="form-label">Hàm lượng</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  name="products[<%= index %>][percentage]"
-                  placeholder="23,04"
-                  oninput="handlePercentageInput(this)"
-                />
-              </div>
             </div>
+            <div class="col col-md-6">
+              <label class="form-label">Hàm lượng</label>
+              <input
+                type="text"
+                class="form-control"
+                name="products[<%= index %>][percentage]"
+                placeholder="23,04"
+                oninput="handlePercentageInput(this)"
+              />
+            </div>
+            <% }else{ %>
+            <div class="col">
+              <label class="form-label">Số lượng</label>
+              <input
+                type="text"
+                class="form-control"
+                name="products[<%= index %>][quantity]"
+                placeholder="1234,34"
+                oninput="handleQuantityInput(this)"
+              />
+            </div>
+            <% } %>
           </div>
-    
-          <hr />
-    
         </div>
+        <hr />
+      </div>
       <% }) %>
-    
+
       <div class="my-3">
         <label for="note" class="form-label">Ghi chú</label>
         <textarea
@@ -189,7 +235,7 @@
           name="notes"
         ></textarea>
       </div>
-    
+
       <!-- Buttons -->
       <button type="submit" class="btn btn-primary">Thêm</button>
       <button type="reset" class="btn btn-secondary">Làm mới</button>
@@ -468,37 +514,39 @@
   const deleteButton = document.querySelector('.btnController .btn-danger');
   let inputFieldIndex = 0; // Global counter
 
-function addInputField(selector) {
-  // Get the productLists div
-  const productLists = document.querySelector(selector);
+  function addInputField(selector) {
+    // Get the productLists div
+    const productLists = document.querySelector(selector);
 
-  // Get the first .productList div within productLists
-  const firstProductList = productLists.querySelector('.productList');
+    // Get the first .productList div within productLists
+    const firstProductList = productLists.querySelector('.productList');
 
-  // Clone the first .productList div
-  const clonedProductList = firstProductList.cloneNode(true);
+    // Clone the first .productList div
+    const clonedProductList = firstProductList.cloneNode(true);
 
-  // Update the id and for attributes of the cloned elements
-  clonedProductList.querySelectorAll('label, input, select').forEach(element => {
-    if (element.id) {
-      element.id = element.id + inputFieldIndex;
+    // Update the id and for attributes of the cloned elements
+    clonedProductList
+      .querySelectorAll('label, input, select')
+      .forEach(element => {
+        if (element.id) {
+          element.id = element.id + inputFieldIndex;
+        }
+        if (element.tagName === 'LABEL' && element.htmlFor) {
+          element.htmlFor = element.htmlFor + inputFieldIndex;
+        }
+      });
+
+    // Append the cloned div to the productLists div
+    productLists.appendChild(clonedProductList);
+
+    // If there is more than one .productList div, show the delete button
+    if (productLists.querySelectorAll('.productList').length > 1) {
+      deleteButton.style.display = 'inline';
     }
-    if (element.tagName === 'LABEL' && element.htmlFor) {
-      element.htmlFor = element.htmlFor + inputFieldIndex;
-    }
-  });
 
-  // Append the cloned div to the productLists div
-  productLists.appendChild(clonedProductList);
-
-  // If there is more than one .productList div, show the delete button
-  if (productLists.querySelectorAll('.productList').length > 1) {
-    deleteButton.style.display = 'inline';
+    // Increment the global counter
+    inputFieldIndex++;
   }
-
-  // Increment the global counter
-  inputFieldIndex++;
-}
 
   function removeInputField(selector) {
     // Get the productLists div

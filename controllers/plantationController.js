@@ -423,7 +423,10 @@ async function addData(req, res) {
     for (let productData of req.body.products) {
       const product = productData.name;
       const quantity = parseFloat(productData.quantity.replace(',', '.'));
-      const percentage = parseFloat(productData.percentage.replace(',', '.'));
+      let percentage;
+      if(productData.percentage){
+        percentage = parseFloat(productData.percentage.replace(',', '.'));
+      }
       products.push({ product, quantity, percentage });
     }
 
