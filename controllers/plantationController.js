@@ -19,7 +19,7 @@ module.exports = {
   addData,
   getDatas,
   updateData,
-  deleteData
+  deleteData,
 };
 
 async function findOrCreate(model, name) {
@@ -369,10 +369,20 @@ async function renderDetailPage(req, res) {
     const plantation = await PlantationModel.findOne({ slug })
       .populate('areaID')
       .populate('managerID')
+      .populate({
+        path: 'data',
+        populate: {
+          path: 'products.product',
+          model: 'Hàng hóa',
+        },
+      })
       .exec();
     const areas = await AreaModel.find({});
     const products = await ProductModel.find({});
     const managers = await ManagerModel.find({});
+
+    const maxProductColumns = plantation.data.reduce((max, data) => Math.max(max, data.products.length), 0);
+    
     if (!plantation) {
       handleResponse(
         req,
@@ -391,6 +401,7 @@ async function renderDetailPage(req, res) {
       areas,
       products,
       managers,
+      maxProductColumns,
       messages: req.flash(),
     });
   } catch (err) {
@@ -401,7 +412,7 @@ async function renderDetailPage(req, res) {
 
 async function addData(req, res) {
   req.body = trimStringFields(req.body);
-  console.log(req.body)
+  console.log(req.body);
   try {
     const plantation = await PlantationModel.findOne({ slug: req.params.slug });
     if (!plantation) {
@@ -415,7 +426,6 @@ async function addData(req, res) {
       );
     }
 
-
     // Initialize an array to hold the products data
     const products = [];
 
@@ -424,10 +434,14 @@ async function addData(req, res) {
       const product = productData.name;
       const quantity = parseFloat(productData.quantity.replace(',', '.'));
       let percentage;
-      if(productData.percentage){
+      if (productData.percentage) {
         percentage = parseFloat(productData.percentage.replace(',', '.'));
       }
-      products.push({ product, quantity, percentage });
+      products.push({
+        product,
+        quantity: quantity || 0,
+        percentage: percentage || 0,
+      });
     }
 
     // Create new data object with formatted numbers
@@ -476,7 +490,7 @@ function formatNumberForDisplay(number) {
   }
   var formatter = new Intl.NumberFormat('vi-VN', {
     minimumFractionDigits: 2,
-    maximumFractionDigits: 2
+    maximumFractionDigits: 2,
   });
   return formatter.format(number);
 }
@@ -679,7 +693,7 @@ async function deleteData(req, res) {
     const plantation = await PlantationModel.findOneAndUpdate(
       { slug },
       { $pull: { data: { _id: id } } },
-      { new: true }
+      { new: true },
     );
     if (!plantation) {
       return handleResponse(
