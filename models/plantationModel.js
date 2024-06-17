@@ -2,29 +2,6 @@ const mongoose = require('mongoose');
 const slug = require('mongoose-slug-generator');
 mongoose.plugin(slug);
 
-const productSchema = new mongoose.Schema({
-  product: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Hàng hóa'
-  },
-  quantity: {
-    type: Number,
-  },
-  percentage: {
-    type: Number,
-  },
-});
-
-const dataSchema = new mongoose.Schema({
-  date: {
-    type: Date,
-  },
-  notes: {
-    type: String,
-  },
-  products: [productSchema],
-});
-
 const plantationSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -49,7 +26,33 @@ const plantationSchema = new mongoose.Schema({
   plantationArea: {
     type: String,
   },
-  data: [dataSchema],
+  data: [
+    {
+      date: {
+        type: Date,
+      },
+      notes: {
+        type: String,
+      },
+      products: {
+        dryRubber: {
+          type: String,
+        },
+        dryQuantity: {
+          type: Number,
+        },
+        dryPercentage: {
+          type: Number,
+        },
+        mixedRubber: {
+          type: String,
+        },
+        mixedQuantity: {
+          type: Number,
+        },
+      },
+    },
+  ],
   slug: {
     type: String,
     slug: 'name',

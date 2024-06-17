@@ -1,30 +1,30 @@
-const mongoose = require("mongoose");
-const Vườn = require("./plantationModel")
+const mongoose = require('mongoose');
+const Vườn = require('./plantationModel copy');
 
 const managerSchema = new mongoose.Schema({
-    name: {
-        type: String,
+  name: {
+    type: String,
+  },
+  phone: {
+    type: String,
+  },
+  address: {
+    type: String,
+  },
+  plantations: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Vườn',
     },
-    phone:{
-        type: String,
-    },
-    address:{
-        type: String,
-    },
-    plantations:[{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Vườn"
-    }],
-    frontIdentification:{
-        type: String,
-    },
-    backIdentification:{
-        type: String,
-    },
+  ],
+  frontIdentification: {
+    type: String,
+  },
+  backIdentification: {
+    type: String,
+  },
 });
 
-
-const managerModel = mongoose.model("Người Quản Lý", managerSchema);
-
+const managerModel = mongoose.model('Người Quản Lý', managerSchema);
 
 module.exports = managerModel;

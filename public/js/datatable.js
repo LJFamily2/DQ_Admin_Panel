@@ -46,6 +46,11 @@ function initializeDataTable(
     };
   }
   const table = $(tableId).DataTable({
+    layout: {
+      bottomStart: {
+          buttons: [ 'csv', 'excel', ]
+      }
+    },
     serverSide: true,
     processing: true,
     responsive: true,
