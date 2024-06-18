@@ -326,7 +326,7 @@
                             value="Mủ tạp"
                             hidden
                           />
-                          <div class="col-6">
+                          <div class="col-12">
                             <label for="mixedQuantity" class="form-label"
                               >Số lượng</label
                             >
@@ -339,22 +339,6 @@
                               min="0"
                               value="<%= data.products.mixedQuantity %>"
                               oninput="handleQuantityInput(this)"
-                              onchange="newInput(this)"
-                            />
-                          </div>
-                          <div class="col-6">
-                            <label for="mixedPercentage" class="form-label"
-                              >Hàm lượng</label
-                            >
-                            <input
-                              type="text"
-                              class="form-control"
-                              id="mixedPercentage"
-                              name="mixedPercentage"
-                              placeholder="Nhập hàm lượng"
-                              maxlength="23.04"
-                              value="<%= data.products.mixedPercentage %>"
-                              oninput="handlePercentageInput(this)"
                               onchange="newInput(this)"
                             />
                           </div>
@@ -495,7 +479,7 @@
                             value="Mủ tạp"
                             hidden
                           />
-                          <div class="col-6">
+                          <div class="col-12">
                             <label for="mixedQuantity" class="form-label"
                               >Số lượng</label
                             >
@@ -503,17 +487,6 @@
                               type="text"
                               class="form-control"
                               value="<%= data.products.mixedQuantity %>"
-                              disabled
-                            />
-                          </div>
-                          <div class="col-6">
-                            <label for="mixedPercentage" class="form-label"
-                              >Hàm lượng</label
-                            >
-                            <input
-                              type="text"
-                              class="form-control"
-                              value="<%= data.products.mixedPercentage %>"
                               disabled
                             />
                           </div>
@@ -619,7 +592,7 @@
               value="Mủ tạp"
               hidden
             />
-            <div class="col-6">
+            <div class="col-12">
               <label for="mixedQuantity" class="form-label">Số lượng</label>
               <input
                 type="text"
@@ -629,18 +602,6 @@
                 placeholder="1234,34"
                 min="0"
                 oninput="handleQuantityInput(this)"
-              />
-            </div>
-            <div class="col-6">
-              <label for="mixedPercentage" class="form-label">Hàm lượng</label>
-              <input
-                type="text"
-                class="form-control"
-                id="mixedPercentage"
-                name="mixedPercentage"
-                placeholder="Nhập hàm lượng"
-                maxlength="23.04"
-                oninput="handlePercentageInput(this)"
               />
             </div>
           </div>

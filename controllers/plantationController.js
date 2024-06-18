@@ -78,7 +78,7 @@ async function createPlantation(req, res) {
     console.log(plantation);
     if (!plantation) {
       return handleResponse(
-      req,
+        req,
         res,
         404,
         'fail',
@@ -501,11 +501,16 @@ async function getDatas(req, res) {
       startDate,
       endDate,
     } = req.body;
-    const searchValue = search?.value?.toLowerCase() || '';
-    const sortColumn = columns?.[order?.[0]?.column]?.data;
-    const sortDirection = order?.[0]?.dir === 'asc' ? 1 : -1;
+    const searchValue =
+      (search && search.value && search.value.toLowerCase()) || '';
+    const sortColumn =
+      columns &&
+      order &&
+      order[0] &&
+      columns[order[0].column] &&
+      columns[order[0].column].data;
+    const sortDirection = order && order[0] && order[0].dir === 'asc' ? 1 : -1;
 
-    // Fetch the plantation document
     const plantation = await PlantationModel.findOne({ slug });
 
     if (!plantation) {
@@ -519,90 +524,121 @@ async function getDatas(req, res) {
       );
     }
 
-    // Convert startDate and endDate to Date objects if they exist
     const startDateObj = startDate ? new Date(startDate) : null;
     const endDateObj = endDate ? new Date(endDate) : null;
 
-    // Filter data within the plantation details
     let filteredData = plantation.data.filter(item => {
-      // Check if the item date is within the specified range
       const itemDate = new Date(item.date);
       if (startDateObj && itemDate < startDateObj) return false;
       if (endDateObj && itemDate > endDateObj) return false;
 
-      // Check if any column contains the search value
+      const date = new Date(item.date);
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = date.getFullYear();
+      const formattedDate = `${day}/${month}/${year}`;
+
+      if (
+        formattedDate.includes(searchValue) ||
+        (item.notes && item.notes.toLowerCase().includes(searchValue))
+      ) {
+        return true;
+      }
+
       for (let column of columns) {
-        const columnValue = item[column.data]?.toString().toLowerCase();
+        let columnValue;
+        if (
+          column.data === 'dryQuantity' ||
+          column.data === 'dryPercentage' ||
+          column.data === 'mixedQuantity'
+        ) {
+          columnValue = item.products[column.data]?.toString().toLowerCase();
+        } else if (column.data === 'dryTotal') {
+          const dryQuantity = item.products?.dryQuantity
+            ? parseFloat(item.products.dryQuantity.toString().replace(',', '.'))
+            : 0;
+          const dryPercentage = item.products?.dryPercentage
+            ? parseFloat(
+                item.products.dryPercentage.toString().replace(',', '.'),
+              )
+            : 0;
+          const dryTotal = (dryQuantity * dryPercentage) / 100 || 0;
+          columnValue = dryTotal.toString().replace('.', ',').toLowerCase();
+        } else {
+          columnValue = item[column.data]?.toString().toLowerCase();
+        }
         if (columnValue && columnValue.includes(searchValue)) {
           return true;
         }
       }
+
       return false;
     });
 
-    // Sorting logic
     filteredData.sort((a, b) => {
-      // Sort by date if requested, default to no sorting on date
       if (sortColumn === 'date') {
-        const dateA = new Date(a.date);
-        const dateB = new Date(b.date);
-        return (dateA - dateB) * sortDirection;
+        return (new Date(a.date) - new Date(b.date)) * sortDirection;
       }
 
-      // Handle sorting based on the sortColumn if specified
       if (sortColumn) {
-        const aValue = a[sortColumn]?.toString().toLowerCase() || '';
-        const bValue = b[sortColumn]?.toString().toLowerCase() || '';
+        const aValue =
+          (a[sortColumn] && a[sortColumn].toString().toLowerCase()) || '';
+        const bValue =
+          (b[sortColumn] && b[sortColumn].toString().toLowerCase()) || '';
 
-        // Custom sorting for dryTotal and mixedTotal
         if (sortColumn === 'dryTotal' || sortColumn === 'mixedTotal') {
           const aValueNumeric =
-            (a.products?.dryQuantity * a.products?.dryPercentage) / 100 || 0;
+            (a.products &&
+              a.products.dryQuantity &&
+              a.products.dryPercentage &&
+              (a.products.dryQuantity * a.products.dryPercentage) / 100) ||
+            0;
           const bValueNumeric =
-            (b.products?.dryQuantity * b.products?.dryPercentage) / 100 || 0;
+            (b.products &&
+              b.products.dryQuantity &&
+              b.products.dryPercentage &&
+              (b.products.dryQuantity * b.products.dryPercentage) / 100) ||
+            0;
 
           return (aValueNumeric - bValueNumeric) * sortDirection;
         }
 
-        // Default sorting
         return (aValue < bValue ? -1 : aValue > bValue ? 1 : 0) * sortDirection;
       }
 
-      // No specific sorting requested, maintain the order
       return 0;
     });
 
-    // Calculate total records and filtered records
-    const recordsTotal = plantation.data.length;
-    const recordsFiltered = filteredData.length;
-
-    // Paginate the filtered data
     const paginatedData = filteredData.slice(start, start + length);
 
-    // Map data to the required format for response
     const data = paginatedData.map((record, index) => ({
       no: parseInt(start, 10) + index + 1,
       date: record.date.toLocaleDateString(),
-      dryQuantity: formatNumberForDisplay(record.products?.dryQuantity || 0),
+      dryQuantity: formatNumberForDisplay(
+        (record.products && record.products.dryQuantity) || 0,
+      ),
       dryPercentage: formatNumberForDisplay(
-        record.products?.dryPercentage || 0,
+        (record.products && record.products.dryPercentage) || 0,
       ),
       dryTotal: formatNumberForDisplay(
-        (record.products?.dryQuantity * record.products?.dryPercentage) / 100 ||
+        (record.products &&
+          record.products.dryQuantity &&
+          record.products.dryPercentage &&
+          (record.products.dryQuantity * record.products.dryPercentage) /
+            100) ||
           0,
       ),
       mixedQuantity: formatNumberForDisplay(
-        record.products?.mixedQuantity || 0,
+        (record.products && record.products.mixedQuantity) || 0,
       ),
       notes: record.notes || '',
       id: record._id,
     }));
 
-    // Respond with formatted data
     res.json({
       draw,
-      recordsTotal,
-      recordsFiltered,
+      recordsTotal: plantation.data.length,
+      recordsFiltered: filteredData.length,
       data,
     });
   } catch (error) {
