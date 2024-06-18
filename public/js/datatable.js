@@ -48,20 +48,26 @@ function initializeDataTable(
     };
   }
 
-  let layoutOption;
+
+  let domOption =
+    "<'row m-0'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
+    "<'row'<'col-sm-12'tr>>" +
+    "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>";
+
   if (exportsOption === true) {
-    layoutOption = {
-      bottomStart: {
-        buttons: [
-          { extend: 'csv', className: 'btn btn-secondary' },
-          { extend: 'excel', className: 'btn btn-secondary' },
-        ],
-      },
-    };
+    domOption =
+      "<'row m-0 p-0 py-2'<'col-sm-12 col-md-6 d-flex align-items-center'B><'col-sm-12 col-md-6 d-flex justify-content-end'f>>" +
+      "<'row m-0 p-0'<'col-sm-12 p-0'tr>>" +
+      "<'row m-0 p-0 py-2'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7 d-flex justify-content-end'p>>";
   }
 
+
   const table = $(tableId).DataTable({
-    layout: layoutOption,
+    dom: domOption,
+    buttons: exportsOption ? [
+      { extend: 'csv', className: 'btn btn-secondary' },
+      { extend: 'excel', className: 'btn btn-secondary' },
+    ] : [],
     serverSide: true,
     processing: true,
     responsive: true,
