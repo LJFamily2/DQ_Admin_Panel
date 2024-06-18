@@ -15,6 +15,7 @@ const routes = [
     {path: "/quan-ly-hang-hoa", route: productRoute},
     {path: "/quan-ly-khu-vuc", route: areaRoute},
     {path: "/quan-ly-vuon", route: plantationRoute},
+    // {path: "/truy-van"},
 ]
 
 module.exports = routes;
