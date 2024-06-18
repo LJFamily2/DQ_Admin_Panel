@@ -41,6 +41,7 @@ function initializeDataTable(
 
       // Format the totals.
       dryTotal = formatter.format(dryTotal);
+      mixedQuantity = formatter.format(mixedQuantity);
 
       return `<span class="float-end">(Mủ quy khô: ${dryTotal} kg, Mủ tạp: ${mixedQuantity}kg)</span>`;
     };
@@ -48,8 +49,8 @@ function initializeDataTable(
   const table = $(tableId).DataTable({
     layout: {
       bottomStart: {
-          buttons: [ 'csv', 'excel', ]
-      }
+        buttons: ['csv', 'excel'],
+      },
     },
     serverSide: true,
     processing: true,
