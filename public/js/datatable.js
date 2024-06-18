@@ -10,6 +10,7 @@ function initializeDataTable(
   endDateId,
   clearFilterButton,
   plantationDetailPageRender,
+  exportsOption,
 ) {
   const rowGroupOptions = {
     dataSrc: rowGroup,
@@ -46,12 +47,21 @@ function initializeDataTable(
       return `<span class="float-end">(Mủ quy khô: ${dryTotal} kg, Mủ tạp: ${mixedQuantity}kg)</span>`;
     };
   }
-  const table = $(tableId).DataTable({
-    layout: {
+
+  let layoutOption;
+  if (exportsOption === true) {
+    layoutOption = {
       bottomStart: {
-        buttons: ['csv', 'excel'],
+        buttons: [
+          { extend: 'csv', className: 'btn btn-secondary' },
+          { extend: 'excel', className: 'btn btn-secondary' },
+        ],
       },
-    },
+    };
+  }
+
+  const table = $(tableId).DataTable({
+    layout: layoutOption,
     serverSide: true,
     processing: true,
     responsive: true,
