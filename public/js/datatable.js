@@ -64,8 +64,8 @@ function initializeDataTable(
     dom: domOption,
     buttons: exportsOption
       ? [
-          { extend: 'csv', className: 'btn btn-secondary' },
-          { extend: 'excel', className: 'btn btn-secondary' },
+          { extend: 'csv', title: 'NHẬP MỦ NGUYÊN LIỆU CỬ ',  className: 'btn btn-secondary' },
+          { extend: 'excel', title: 'NHẬP MỦ NGUYÊN LIỆU CỬ ',  className: 'btn btn-secondary' },
         ]
       : [],
     serverSide: true,
