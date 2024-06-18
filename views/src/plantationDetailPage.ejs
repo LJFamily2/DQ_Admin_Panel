@@ -215,11 +215,7 @@
           <tr>
             <th>Số lượng</th>
             <th>Hàm lượng</th>
-            <% if(plantation.data?.length > 0){ %>
-            <th style="background: yellow">Tổng</th>
-            <% }else{ %>
             <th>Tổng</th>
-            <% } %>
             <th>Số lượng</th>
           </tr>
         </thead>
@@ -493,7 +489,7 @@
                         </div>
                       </div>
                     </div>
-                    <hr>
+                    <hr />
                     <div class="my-3">
                       <label for="note" class="form-label">Ghi chú</label>
                       <textarea
@@ -908,15 +904,10 @@
 <script>
   let dataColumns = [
     { data: 'no', orderable: false, width: '2%' },
-    { data: 'date', width: '9%',},
+    { data: 'date', width: '9%' },
     { data: 'dryQuantity', orderable: false },
     { data: 'dryPercentage', orderable: false, width: '6%' },
-    {
-      data: 'dryTotal',
-      createdCell: function (td, cellData, rowData, row, col) {
-        $(td).css('background-color', 'yellow');
-      },
-    },
+    { data: 'dryTotal'},
     { data: 'mixedQuantity', orderable: false },
     { data: 'notes', orderable: false, width: '10%' },
     { data: 'id', orderable: false, width: '5%' },
@@ -934,7 +925,7 @@
     '#endDate',
     '#clearFilterButton',
     true,
-    true
+    true,
   );
   // Rotate the icon
   const rotate = id => {

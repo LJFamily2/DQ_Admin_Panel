@@ -48,7 +48,6 @@ function initializeDataTable(
     };
   }
 
-
   let domOption =
     "<'row m-0'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
     "<'row'<'col-sm-12'tr>>" +
@@ -61,16 +60,18 @@ function initializeDataTable(
       "<'row m-0 p-0 py-2'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7 d-flex justify-content-end'p>>";
   }
 
-
   const table = $(tableId).DataTable({
     dom: domOption,
-    buttons: exportsOption ? [
-      { extend: 'csv', className: 'btn btn-secondary' },
-      { extend: 'excel', className: 'btn btn-secondary' },
-    ] : [],
+    buttons: exportsOption
+      ? [
+          { extend: 'csv', className: 'btn btn-secondary' },
+          { extend: 'excel', className: 'btn btn-secondary' },
+        ]
+      : [],
     serverSide: true,
     processing: true,
     responsive: true,
+    pagingType: 'first_last_numbers',
     rowGroup: rowGroupOptions,
     ajax: {
       url: ajaxUrl,
