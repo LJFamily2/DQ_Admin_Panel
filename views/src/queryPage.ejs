@@ -25,16 +25,19 @@
   <div class="col col-md p-0 rounded-2" style="box-shadow: 0 0 10px 1px">
     <%- include('../partials/dateSelection.ejs') %>
 
-    <div class="row m-0 ">
-      <div class="mb-3">
-        <label for="dryPrice" class="form-label">Mủ quy khô</label>
-        <input type="text" class="form-control" id="dryPrice" oninput="handleQuantityInput(this)"  />
+    <div class="row mx-3 my-2">
+      <div class="col-6 p-2 rounded-2" style="box-shadow: 0 0 4px">
+        <h5>Dự đoán giá mủ</h5>
+        <div class="form-floating mb-3">
+          <input type="text" class="form-control form-control-sm" id="dryPrice" placeholder="Mủ quy khô" oninput="handleQuantityInput(this)"  />
+          <label for="dryPrice">Mủ quy khô</label>
+        </div>
+        <div class="form-floating mb-3">
+          <input type="text" class="form-control form-control-sm" id="mixedPrice" placeholder="Mủ tạp" oninput="handleQuantityInput(this)" />
+          <label for="mixedPrice">Mủ tạp</label>
+        </div>
+        <button class="btn btn-primary" id="inputPrice">Nhập</button>
       </div>
-      <div class="mb-3">
-        <label for="mixedPrice" class="form-label">Mủ tạp</label>
-        <input type="text" class="form-control" id="mixedPrice" oninput="handleQuantityInput(this)" />
-      </div>
-      <button class="btn btn-primary" id="inputPrice">Nhập</button>
     </div>
 
     <hr class="m-0" />
@@ -68,16 +71,16 @@
 <script>
   let queryColumns = [
     { data: 'no', orderable: false },
-    { data: 'area', visible: false },
-    { data: 'plantation' },
-    { data: 'dryQuantity' },
-    { data: 'dryPrice', orderable: false },
-    { data: 'dryTotal', orderable: false },
-    { data: 'mixedQuantity' },
-    { data: 'mixedPrice', orderable: false },
-    { data: 'mixedTotal', orderable: false },
-    { data: 'notes', orderable: false },
-    { data: 'totalMoney' },
+    { data: 'area', visible: false,  },
+    { data: 'plantation', width:"5%" },
+    { data: 'dryQuantity', width:"10%" },
+    { data: 'dryPrice', orderable: false, width:"7%" },
+    { data: 'dryTotal', orderable: false,width:"15%" },
+    { data: 'mixedQuantity',width:"10%" },
+    { data: 'mixedPrice', orderable: false, width:"7%" },
+    { data: 'mixedTotal', orderable: false, width:"15%" },
+    { data: 'notes', orderable: false, width:"15%" },
+    { data: 'totalMoney', width:"16%" },
     { data: 'id', orderable: false },
   ];
   initializeDataTable(

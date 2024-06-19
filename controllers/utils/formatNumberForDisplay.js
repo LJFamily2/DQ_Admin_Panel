@@ -3,8 +3,8 @@ function formatNumberForDisplay(number) {
     return ''; // Return empty string if the number is invalid
   }
   var formatter = new Intl.NumberFormat('vi-VN', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
+    minimumFractionDigits: 3,
+    maximumFractionDigits: 3,
   });
   return formatter.format(number);
 }
