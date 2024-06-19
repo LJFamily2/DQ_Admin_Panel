@@ -1,5 +1,6 @@
 const AreaModel = require('../models/areaModel');
-const formatNumberForDisplay = require("./utils/formatNumberForDisplay")
+const formatNumberForDisplay = require('./utils/formatNumberForDisplay');
+const PlantationModel = require('../models/plantationModel');
 
 async function renderPage(req, res) {
   try {
@@ -25,81 +26,74 @@ async function getQuery(req, res) {
       startDate,
       endDate,
     } = req.body;
+
     const searchValue = search?.value || '';
-    const sortColumn = columns?.[order?.[0]?.column]?.data || 'area';
+    const sortColumn = columns?.[order?.[0]?.column]?.data || 'name';
     const sortDirection = order?.[0]?.dir === 'asc' ? 1 : -1;
 
     const filter = {};
 
-    // Apply search filter if there is a search value
     if (searchValue) {
-      filter['$or'] = [
+      filter.$or = [
         { name: new RegExp(searchValue, 'i') },
-        { 'plantations.name': new RegExp(searchValue, 'i') },
+        { code: new RegExp(searchValue, 'i') },
       ];
     }
 
-    console.log(startDate)
-    console.log(endDate)
-
-    // Apply date range filter if both startDate and endDate are provided
     if (startDate && endDate) {
-      filter['plantations.data.date'] = {
+      filter['data.date'] = {
         $gte: new Date(startDate),
         $lte: new Date(endDate),
       };
     }
 
-    const [totalRecords, filteredRecords, areas] = await Promise.all([
-      AreaModel.countDocuments(),
-      AreaModel.countDocuments(filter),
-      AreaModel.find(filter)
-        .populate({
-          path: 'plantations',
-          populate: {
-            path: 'data',
-            match: {
-              date: {
-                $gte: new Date(startDate),
-                $lte: new Date(endDate),
-              },
-            },
-          },
-        })
-        .sort({ [sortColumn]: sortDirection })
-        .skip(parseInt(start, 10))
-        .limit(parseInt(length, 10))
-        .exec(),
+    const countQuery = PlantationModel.countDocuments(filter);
+    const findQuery = PlantationModel.find(filter)
+      .populate('areaID')
+      .sort({ [sortColumn]: sortDirection })
+      .skip(parseInt(start, 10))
+      .limit(parseInt(length, 10))
+      .exec();
+
+    const [totalRecords, filteredRecords, plantations] = await Promise.all([
+      PlantationModel.countDocuments(),
+      countQuery,
+      findQuery,
     ]);
 
-    const data = areas.map((area, index) => {
+    console.log('Plantations found:', plantations); // Debugging
+
+    const data = plantations.map((plantation, index) => {
       let dryQuantityTotal = 0;
       let mixedQuantityTotal = 0;
       let notes = [];
 
-      area.plantations.forEach(plantation => {
-        plantation.data.forEach(dataItem => {
+      plantation.data.forEach(dataItem => {
+        if (
+          dataItem.date >= new Date(startDate) &&
+          dataItem.date <= new Date(endDate)
+        ) {
           dryQuantityTotal +=
             (dataItem.products.dryQuantity * dataItem.products.dryPercentage) /
             100;
           mixedQuantityTotal += dataItem.products.mixedQuantity;
           if (dataItem.notes) notes.push(dataItem.notes);
-        });
+        }
       });
 
       return {
         no: parseInt(start, 10) + index + 1,
-        area: area.name,
-        plantation: area.plantations.map(p => p.name).join(', '),
-        dryQuantity: formatNumberForDisplay(dryQuantityTotal) ,
+        area: plantation.areaID.name,
+        plantation: plantation.name,
+        dryQuantity: formatNumberForDisplay(dryQuantityTotal),
         dryPrice: '',
         dryTotal: '', // Future feature
-        mixedQuantity: formatNumberForDisplay(mixedQuantityTotal) ,
+        mixedQuantity: formatNumberForDisplay(mixedQuantityTotal),
         mixedPrice: '',
         mixedTotal: '', // Future feature
         notes: notes.join(', '),
         totalMoney: '',
-        id: area._id,
+        id: plantation._id,
       };
     });
 
@@ -114,6 +108,7 @@ async function getQuery(req, res) {
     res.status(500).send('Internal Server Error');
   }
 }
+
 
 module.exports = {
   renderPage,
