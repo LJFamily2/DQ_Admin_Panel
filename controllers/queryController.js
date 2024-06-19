@@ -95,6 +95,7 @@ async function getQuery(req, res) {
         mixedPrice: '',
         mixedTotal: '', // Future feature
         notes: notes.join(', '),
+        totalMoney: '',
         id: area._id,
       };
     });
