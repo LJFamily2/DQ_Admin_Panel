@@ -49,9 +49,9 @@ function initializeDataTable(
   }
 
   let domOption =
-    "<'row m-0'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
-    "<'row'<'col-sm-12'tr>>" +
-    "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>";
+    "<'row m-0 p-0 py-2'<'col-sm-12 col-md-6 d-flex align-items-center'B><'col-sm-12 col-md-6 d-flex justify-content-end'f>>" +
+    "<'row m-0 p-0'<'col-sm-12 p-0'tr>>" +
+    "<'row m-0 p-0 py-2'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7 d-flex justify-content-end'p>>";
 
   if (exportsOption === true) {
     domOption =
@@ -64,8 +64,16 @@ function initializeDataTable(
     dom: domOption,
     buttons: exportsOption
       ? [
-          { extend: 'csv', title: 'NHẬP MỦ NGUYÊN LIỆU CỬ ',  className: 'btn btn-secondary' },
-          { extend: 'excel', title: 'NHẬP MỦ NGUYÊN LIỆU CỬ ',  className: 'btn btn-secondary' },
+          {
+            extend: 'csv',
+            title: 'NHẬP MỦ NGUYÊN LIỆU CỬ ',
+            className: 'btn btn-secondary',
+          },
+          {
+            extend: 'excel',
+            title: 'NHẬP MỦ NGUYÊN LIỆU CỬ ',
+            className: 'btn btn-secondary',
+          },
         ]
       : [],
     serverSide: true,

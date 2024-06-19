@@ -39,6 +39,9 @@ async function getQuery(req, res) {
       ];
     }
 
+    console.log(startDate)
+    console.log(endDate)
+
     // Apply date range filter if both startDate and endDate are provided
     if (startDate && endDate) {
       filter['plantations.data.date'] = {
