@@ -1,0 +1,76 @@
+<div class="row m-0 p-0 dateSelection">
+    <div
+      class="dateSelectionSelector rounded-2 m-3 p-2"
+      style="box-shadow: 0 0 4px; width: fit-content; cursor: pointer"
+      data-bs-toggle="modal"
+      data-bs-target="#staticBackdrop"
+    >
+      <strong>Ngày: </strong><span> Hôm nay</span>
+    </div>
+
+    <div
+      class="modal fade dateSelectionContainer rounded-2 mx-3 my-2 p-2"
+      id="staticBackdrop"
+      data-bs-backdrop="static"
+      data-bs-keyboard="false"
+      tabindex="-1"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5>Lọc kết quả</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col">
+                <label for="startDate" class="form-label">Bắt đầu:</label>
+                <input
+                  type="date"
+                  id="startDate"
+                  class="form-control"
+                  onchange="updateDateDisplay()"
+                />
+              </div>
+              <div class="col">
+                <label for="endDate" class="form-label">Kết thúc:</label>
+                <input
+                  type="date"
+                  id="endDate"
+                  class="form-control"
+                  onchange="updateDateDisplay()"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <div class="col my-2 d-flex align-items-end">
+              <button
+                id="filterButton"
+                class="btn btn-primary"
+                data-bs-dismiss="modal"
+                onclick="document.getElementById('clearFilterButton').style.display = 'inline'"
+              >
+                <i class="ri-menu-search-fill"></i>
+              </button>
+              <button
+                id="clearFilterButton"
+                class="btn btn-secondary mx-2"
+                style="display: none"
+                data-bs-dismiss="modal"
+                onclick="this.style.display ='none', document.querySelector('.dateSelectionSelector span').textContent = 'Hôm nay'"
+              >
+                <i class="ri-calendar-close-line"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
