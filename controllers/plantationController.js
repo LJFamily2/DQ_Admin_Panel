@@ -4,6 +4,7 @@ const AreaModel = require('../models/areaModel');
 const ManagerModel = require('../models/managerModel');
 const ProductModel = require('../models/productModel');
 const trimStringFields = require('./utils/trimStringFields');
+const formatNumberForDisplay = require("./utils/formatNumberForDisplay")
 
 module.exports = {
   // Main page
@@ -476,17 +477,6 @@ async function addData(req, res) {
   }
 }
 
-// Function to format number for display
-function formatNumberForDisplay(number) {
-  if (isNaN(number) || number === null || number === undefined) {
-    return ''; // Return empty string if the number is invalid
-  }
-  var formatter = new Intl.NumberFormat('vi-VN', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
-  return formatter.format(number);
-}
 
 async function getDatas(req, res) {
   try {

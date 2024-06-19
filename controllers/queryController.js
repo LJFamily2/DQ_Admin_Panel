@@ -1,4 +1,5 @@
 const AreaModel = require('../models/areaModel');
+const formatNumberForDisplay = require("./utils/formatNumberForDisplay")
 
 async function renderPage(req, res) {
   try {
@@ -14,7 +15,16 @@ async function renderPage(req, res) {
 
 async function getQuery(req, res) {
   try {
-    const { draw, start = 0, length = 10, search, order, columns, startDate, endDate } = req.body;
+    const {
+      draw,
+      start = 0,
+      length = 10,
+      search,
+      order,
+      columns,
+      startDate,
+      endDate,
+    } = req.body;
     const searchValue = search?.value || '';
     const sortColumn = columns?.[order?.[0]?.column]?.data || 'area';
     const sortDirection = order?.[0]?.dir === 'asc' ? 1 : -1;
@@ -24,7 +34,7 @@ async function getQuery(req, res) {
     // Apply search filter if there is a search value
     if (searchValue) {
       filter['$or'] = [
-        { 'name': new RegExp(searchValue, 'i') },
+        { name: new RegExp(searchValue, 'i') },
         { 'plantations.name': new RegExp(searchValue, 'i') },
       ];
     }
@@ -66,7 +76,9 @@ async function getQuery(req, res) {
 
       area.plantations.forEach(plantation => {
         plantation.data.forEach(dataItem => {
-          dryQuantityTotal += dataItem.products.dryQuantity;
+          dryQuantityTotal +=
+            (dataItem.products.dryQuantity * dataItem.products.dryPercentage) /
+            100;
           mixedQuantityTotal += dataItem.products.mixedQuantity;
           if (dataItem.notes) notes.push(dataItem.notes);
         });
@@ -76,12 +88,12 @@ async function getQuery(req, res) {
         no: parseInt(start, 10) + index + 1,
         area: area.name,
         plantation: area.plantations.map(p => p.name).join(', '),
-        dryQuantity: dryQuantityTotal,
+        dryQuantity: formatNumberForDisplay(dryQuantityTotal) ,
         dryPrice: '',
         dryTotal: '', // Future feature
-        mixedQuantity: mixedQuantityTotal,
+        mixedQuantity: formatNumberForDisplay(mixedQuantityTotal) ,
         mixedPrice: '',
-        mixedTotal: '', // Corrected from 'mixiedTotal'
+        mixedTotal: '', // Future feature
         notes: notes.join(', '),
         id: area._id,
       };
