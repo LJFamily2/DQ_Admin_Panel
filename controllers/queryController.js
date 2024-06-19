@@ -25,6 +25,8 @@ async function getQuery(req, res) {
       columns,
       startDate: reqStartDate,
       endDate: reqEndDate,
+      dryPrice, 
+      mixedPrice,
     } = req.body;
 
     const searchValue = search?.value || '';
@@ -35,6 +37,9 @@ async function getQuery(req, res) {
     const today = new Date();
     const startDate = reqStartDate || today.toISOString().split('T')[0];
     const endDate = reqEndDate || today.toISOString().split('T')[0];
+
+    console.log(reqStartDate)
+    console.log(reqEndDate)
 
     const filter = {};
 
@@ -50,18 +55,15 @@ async function getQuery(req, res) {
       $lte: new Date(endDate),
     };
 
-    const countQuery = PlantationModel.countDocuments(filter);
-    const findQuery = PlantationModel.find(filter)
-      .populate('areaID')
-      .sort({ [sortColumn]: sortDirection })
-      .skip(parseInt(start, 10))
-      .limit(parseInt(length, 10))
-      .exec();
-
     const [totalRecords, filteredRecords, plantations] = await Promise.all([
       PlantationModel.countDocuments(),
-      countQuery,
-      findQuery,
+      PlantationModel.countDocuments(filter),
+      PlantationModel.find(filter)
+        .populate('areaID')
+        .sort({ [sortColumn]: sortDirection })
+        .skip(parseInt(start, 10))
+        .limit(parseInt(length, 10))
+        .exec(),
     ]);
 
     const data = plantations.map((plantation, index) => {
@@ -82,18 +84,24 @@ async function getQuery(req, res) {
         }
       });
 
+      // Calculate dry and mixed totals based on frontend input prices
+      const dryPriceValue = parseFloat(dryPrice.toString().replace(',','.')) || 0;   
+      const mixedPriceValue = parseFloat(mixedPrice.toString().replace(',','.')) || 0; 
+      const dryTotalValue = dryQuantityTotal * dryPriceValue;
+      const mixedTotalValue = mixedQuantityTotal * mixedPriceValue;
+      const totalMoneyValue =  dryTotalValue + mixedTotalValue;
       return {
         no: parseInt(start, 10) + index + 1,
         area: plantation.areaID.name,
         plantation: plantation.name,
         dryQuantity: formatNumberForDisplay(dryQuantityTotal),
-        dryPrice: '',
-        dryTotal: '', // Future feature
+        dryPrice: formatNumberForDisplay(dryPriceValue), 
+        dryTotal: formatNumberForDisplay(dryTotalValue), 
         mixedQuantity: formatNumberForDisplay(mixedQuantityTotal),
-        mixedPrice: '',
-        mixedTotal: '', // Future feature
+        mixedPrice: formatNumberForDisplay(mixedPriceValue),
+        mixedTotal: formatNumberForDisplay(mixedTotalValue),
         notes: notes.join(', '),
-        totalMoney: '',
+        totalMoney: formatNumberForDisplay(totalMoneyValue), 
         id: plantation._id,
       };
     });
@@ -109,6 +117,7 @@ async function getQuery(req, res) {
     res.status(500).send('Internal Server Error');
   }
 }
+
 
 module.exports = {
   renderPage,

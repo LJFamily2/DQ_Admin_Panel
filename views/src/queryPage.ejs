@@ -5,6 +5,8 @@
   <script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.html5.min.js"></script>
   <script src="https://cdn.datatables.net/rowgroup/1.5.0/js/dataTables.rowGroup.js"></script>
   <script src="/js/datatable.js"></script>
+  <script src="/js/inputFieldRestriction.js" defer></script>
+
   <!-- Slim select -->
   <script src="/js/slim-select.js" defer></script>
 
@@ -21,8 +23,19 @@
 
 <div class="row m-0 px-2">
   <div class="col col-md p-0 rounded-2" style="box-shadow: 0 0 10px 1px">
+    <%- include('../partials/dateSelection.ejs') %>
 
-    <%- include('../partials/dateSelection') %>
+    <div class="row">
+      <div class="mb-3">
+        <label for="dryPrice" class="form-label">Mủ quy khô</label>
+        <input type="text" class="form-control" id="dryPrice" oninput="handleQuantityInput(this)"  />
+      </div>
+      <div class="mb-3">
+        <label for="mixedPrice" class="form-label">Mủ tạp</label>
+        <input type="text" class="form-control" id="mixedPrice" oninput="handleQuantityInput(this)" />
+      </div>
+      <button class="btn btn-primary" id="inputPrice">Nhập</button>
+    </div>
 
     <hr class="m-0" />
 
@@ -54,18 +67,18 @@
 
 <script>
   let queryColumns = [
-    { data: 'no' },
+    { data: 'no', orderable: false },
     { data: 'area', visible: false },
     { data: 'plantation' },
     { data: 'dryQuantity' },
-    { data: 'dryPrice' },
-    { data: 'dryTotal' },
+    { data: 'dryPrice', orderable: false },
+    { data: 'dryTotal', orderable: false },
     { data: 'mixedQuantity' },
-    { data: 'mixedPrice' },
-    { data: 'mixedTotal' },
-    { data: 'notes' },
+    { data: 'mixedPrice', orderable: false },
+    { data: 'mixedTotal', orderable: false },
+    { data: 'notes', orderable: false },
     { data: 'totalMoney' },
-    { data: 'id' },
+    { data: 'id', orderable: false },
   ];
   initializeDataTable(
     '#query_table',
@@ -80,13 +93,16 @@
     '#clearFilterButton',
     false,
     true,
+    '#inputPrice', 
+    '#dryPrice', 
+    '#mixedPrice',
   );
 
   function updateDateDisplay() {
     let startDate = document.getElementById('startDate').value;
     let endDate = document.getElementById('endDate').value;
     let dateDisplay = document.querySelector('.dateSelectionSelector span');
-  
+
     if (startDate || endDate) {
       startDate = startDate.split('-').reverse().join('-');
       endDate = endDate.split('-').reverse().join('-');
