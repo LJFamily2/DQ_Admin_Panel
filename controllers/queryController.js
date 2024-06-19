@@ -23,13 +23,18 @@ async function getQuery(req, res) {
       search,
       order,
       columns,
-      startDate,
-      endDate,
+      startDate: reqStartDate,
+      endDate: reqEndDate,
     } = req.body;
 
     const searchValue = search?.value || '';
     const sortColumn = columns?.[order?.[0]?.column]?.data || 'name';
     const sortDirection = order?.[0]?.dir === 'asc' ? 1 : -1;
+
+    // Default to today's date if startDate and endDate are not provided
+    const today = new Date();
+    const startDate = reqStartDate || today.toISOString().split('T')[0];
+    const endDate = reqEndDate || today.toISOString().split('T')[0];
 
     const filter = {};
 
@@ -40,12 +45,10 @@ async function getQuery(req, res) {
       ];
     }
 
-    if (startDate && endDate) {
-      filter['data.date'] = {
-        $gte: new Date(startDate),
-        $lte: new Date(endDate),
-      };
-    }
+    filter['data.date'] = {
+      $gte: new Date(startDate),
+      $lte: new Date(endDate),
+    };
 
     const countQuery = PlantationModel.countDocuments(filter);
     const findQuery = PlantationModel.find(filter)
@@ -60,8 +63,6 @@ async function getQuery(req, res) {
       countQuery,
       findQuery,
     ]);
-
-    console.log('Plantations found:', plantations); // Debugging
 
     const data = plantations.map((plantation, index) => {
       let dryQuantityTotal = 0;
@@ -108,7 +109,6 @@ async function getQuery(req, res) {
     res.status(500).send('Internal Server Error');
   }
 }
-
 
 module.exports = {
   renderPage,
