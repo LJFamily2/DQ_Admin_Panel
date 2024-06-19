@@ -26,17 +26,31 @@
     <%- include('../partials/dateSelection.ejs') %>
 
     <div class="row mx-3 my-2">
-      <div class="col-6 p-2 rounded-2" style="box-shadow: 0 0 4px">
-        <h5>Dự đoán giá mủ</h5>
-        <div class="form-floating mb-3">
-          <input type="text" class="form-control form-control-sm" id="dryPrice" placeholder="Mủ quy khô" oninput="handleQuantityInput(this)"  />
+      <h5 class="p-0">Dự đoán tổng tiền</h5>
+      <div class="col-6 p-0 d-flex">
+        <div class="">
           <label for="dryPrice">Mủ quy khô</label>
+          <input
+            type="text"
+            class="form-control form-control-sm"
+            id="dryPrice"
+            placeholder="99000"
+            oninput="handleQuantityInput(this)"
+          />
         </div>
-        <div class="form-floating mb-3">
-          <input type="text" class="form-control form-control-sm" id="mixedPrice" placeholder="Mủ tạp" oninput="handleQuantityInput(this)" />
+        <div class="mx-2">
           <label for="mixedPrice">Mủ tạp</label>
+          <input
+            type="text"
+            class="form-control form-control-sm"
+            id="mixedPrice"
+            placeholder="19000"
+            oninput="handleQuantityInput(this)"
+          />
         </div>
-        <button class="btn btn-primary" id="inputPrice">Nhập</button>
+        <div class="mx-2 d-flex align-items-end">
+          <button class="btn btn-primary" id="inputPrice">Nhập</button>
+        </div>
       </div>
     </div>
 
@@ -64,6 +78,7 @@
         </tr>
       </thead>
       <tbody></tbody>
+      <tfoot></tfoot>
     </table>
   </div>
 </div>
@@ -71,17 +86,19 @@
 <script>
   let queryColumns = [
     { data: 'no', orderable: false },
-    { data: 'area', visible: false,  },
-    { data: 'plantation', width:"5%" },
-    { data: 'dryQuantity', width:"10%" },
-    { data: 'dryPrice', orderable: false, width:"7%" },
-    { data: 'dryTotal', orderable: false,width:"15%" },
-    { data: 'mixedQuantity',width:"10%" },
-    { data: 'mixedPrice', orderable: false, width:"7%" },
-    { data: 'mixedTotal', orderable: false, width:"15%" },
-    { data: 'notes', orderable: false, width:"15%" },
-    { data: 'totalMoney', width:"16%" },
-    { data: 'id', orderable: false },
+    { data: 'area', visible: false },
+    { data: 'plantation', width: '5%' },
+    { data: 'dryQuantity', width: '10%' },
+    { data: 'dryPrice', orderable: false, width: '7%' },
+    { data: 'dryTotal', orderable: false, width: '15%' },
+    { data: 'mixedQuantity', width: '10%' },
+    { data: 'mixedPrice', orderable: false, width: '7%' },
+    { data: 'mixedTotal', orderable: false, width: '15%' },
+    { data: 'notes', orderable: false, width: '15%' },
+    { data: 'totalMoney', width: '16%' },
+    { data: 'slug', orderable: false, 
+      
+     },
   ];
   initializeDataTable(
     '#query_table',
@@ -96,8 +113,8 @@
     '#clearFilterButton',
     false,
     true,
-    '#inputPrice', 
-    '#dryPrice', 
+    '#inputPrice',
+    '#dryPrice',
     '#mixedPrice',
   );
 

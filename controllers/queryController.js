@@ -102,7 +102,7 @@ async function getQuery(req, res) {
         mixedTotal: formatNumberForDisplay(mixedTotalValue),
         notes: notes.join(', '),
         totalMoney: formatNumberForDisplay(totalMoneyValue), 
-        id: plantation._id,
+        slug: plantation.slug,
       };
     });
 
