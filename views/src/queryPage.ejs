@@ -96,9 +96,13 @@
     { data: 'mixedTotal', orderable: false, width: '15%' },
     { data: 'notes', orderable: false, width: '15%' },
     { data: 'totalMoney', width: '16%' },
-    { data: 'slug', orderable: false, 
-      
-     },
+    {
+      data: 'slug',
+      orderable: false,
+      render: function (data, type, row) {
+        return `<a href="/quan-ly-vuon/vuon/${data}" class="text-decoration-none text-dark fs-5"><i class="ri-file-edit-line"></i></a>`;
+      },
+    },
   ];
   initializeDataTable(
     '#query_table',
