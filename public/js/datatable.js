@@ -117,6 +117,7 @@ function initializeDataTable(
     language: {
       emptyTable: 'Không có dữ liệu',
       loadingRecords: 'Đang tải...',
+      zeroRecords:"Không có dữ liệu",
       paginate: {
         first: 'Đầu',
         last: 'Cuối',
