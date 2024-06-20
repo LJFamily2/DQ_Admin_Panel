@@ -8,7 +8,6 @@ const dataSchema = new mongoose.Schema({
         dryPercentage: Number,
         mixedQuantity: Number,
         sellQuantity: Number,
-        sellPercentage: Number,
     },
 });
 
