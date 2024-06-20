@@ -13,6 +13,6 @@ const dataSchema = new mongoose.Schema({
     sell: String,
 });
 
-const dataModel = mongoose.model('Vườn', dataSchema);
+const dataModel = mongoose.model('Dữ liệu', dataSchema);
 
 module.exports = dataModel;
