@@ -55,7 +55,7 @@ const plantationSchema = new mongoose.Schema({
   ],
   slug: {
     type: String,
-    slug: 'name',
+    slug: 'code',
   },
 });
 

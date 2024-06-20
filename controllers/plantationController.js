@@ -42,10 +42,10 @@ async function createPlantation(req, res) {
 
     // Validate information
     // Check if a plantation with the same code or name already exists
-    let query = { name: req.body.name };
+    let query = { name: req.body.code };
 
-    if (req.body.code && req.body.code !== '') {
-      query.code = req.body.code;
+    if (req.body.name && req.body.name !== '') {
+      query.name = req.body.name;
     }
 
     const existingPlantation = await PlantationModel.findOne(query);
@@ -314,7 +314,7 @@ async function getPlantations(req, res) {
         no: parseInt(start, 10) + index + 1,
         areaID: plantation.areaID?.name || '',
         code: plantation.code || '',
-        name: plantation.name,
+        name: plantation.name || '',
         managerID: plantation.managerID?.name || '',
         contactDuration:
           (await plantation.calculateRemainingDays()) || 'Không hợp đồng',
