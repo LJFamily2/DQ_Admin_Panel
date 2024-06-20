@@ -21,32 +21,19 @@ function initializeDataTable(
   };
 
   if (plantationDetailPageRender) {
-    rowGroupOptions.endRender = function (rows, group) {
-      var dryTotal = rows
-        .data()
-        .pluck('dryTotal')
-        .reduce(function (a, b) {
-          b = b.replace(/\./g, '').replace(',', '.');
-          return a + parseFloat(b);
-        }, 0);
+    const sumColumn = (rows, columnName) => rows
+      .data()
+      .pluck(columnName)
+      .reduce((a, b) => a + parseFloat(b.replace(/\./g, '').replace(',', '.')), 0);
 
-      var mixedQuantity = rows
-        .data()
-        .pluck('mixedQuantity')
-        .reduce(function (a, b) {
-          b = b.replace(/\./g, '').replace(',', '.');
-          return a + parseFloat(b);
-        }, 0);
+    const formatter = new Intl.NumberFormat('vi-VN', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
 
-      // Create a number formatter.
-      var formatter = new Intl.NumberFormat('vi-VN', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      });
-
-      // Format the totals.
-      dryTotal = formatter.format(dryTotal);
-      mixedQuantity = formatter.format(mixedQuantity);
+    rowGroupOptions.endRender = function (rows) {
+      const dryTotal = formatter.format(sumColumn(rows, 'dryTotal'));
+      const mixedQuantity = formatter.format(sumColumn(rows, 'mixedQuantity'));
 
       return `<span class="float-end">(Mủ quy khô: ${dryTotal} kg, Mủ tạp: ${mixedQuantity}kg)</span>`;
     };
@@ -55,89 +42,33 @@ function initializeDataTable(
   let footerCallbackOptions = {};
 
   if (queryPage) {
+    const intVal = i => {
+      if (typeof i === 'string') {
+        i = i.replace(/\./g, '').replace(',', '.');
+        return parseFloat(i);
+      }
+      return typeof i === 'number' ? i : 0;
+    };
+
+    const totalColumn = (api, colIndex) => api
+      .column(colIndex, { search: 'applied' })
+      .data()
+      .reduce((acc, val) => acc + intVal(val), 0);
+
+    const customFormatter = num => new Intl.NumberFormat('vi-VN', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(num);
+
     footerCallbackOptions = {
-      footerCallback: function (row, data, start, end, display) {
-        let api = this.api();
-
-        // Function to format numbers
-        const intVal = function (i) {
-          if (typeof i === 'string') {
-            // Replace commas with periods and remove any existing periods
-            i = i.replace(/\./g, '').replace(',', '.');
-
-            // Parse the resulting string into a float
-            return parseFloat(i);
-          } else if (typeof i === 'number') {
-            return i;
-          } else {
-            return 0;
-          }
-        };
-
-        // Total calculations (example columns)
-        const totalDryQuantity = api
-          .column(3, { search: 'applied' })
-          .data()
-          .reduce((acc, val) => {
-            const parsedVal = intVal(val);
-            console.log(`Dry Quantity Value: ${val} -> Parsed: ${parsedVal}`);
-            return acc + parsedVal;
-          }, 0);
-
-        const totalDryTotal = api
-          .column(5, { search: 'applied' })
-          .data()
-          .reduce((acc, val) => {
-            const parsedVal = intVal(val);
-            console.log(`Dry Total Value: ${val} -> Parsed: ${parsedVal}`);
-            return acc + parsedVal;
-          }, 0);
-
-        const totalMixedQuantity = api
-          .column(6, { search: 'applied' })
-          .data()
-          .reduce((acc, val) => {
-            const parsedVal = intVal(val);
-            console.log(`Mixed Quantity Value: ${val} -> Parsed: ${parsedVal}`);
-            return acc + parsedVal;
-          }, 0);
-
-        const totalMixedTotal = api
-          .column(8, { search: 'applied' })
-          .data()
-          .reduce((acc, val) => {
-            const parsedVal = intVal(val);
-            console.log(`Mixed Total Value: ${val} -> Parsed: ${parsedVal}`);
-            return acc + parsedVal;
-          }, 0);
-
-        // Custom number formatter for Vietnamese locale
-        const customFormatter = function (num) {
-          const formatted = new Intl.NumberFormat('vi-VN', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          }).format(num);
-
-          return formatted;
-        };
-
-        // Format the totals
-        const dryQuantityFormatted = customFormatter(totalDryQuantity);
-        const dryTotalFormatted = customFormatter(totalDryTotal);
-        const mixedQuantityFormatted = customFormatter(totalMixedQuantity);
-        const mixedTotalFormatted = customFormatter(totalMixedTotal);
-
-        // Update footer with formatted values
-        $(api.column(3).footer()).html(
-          `<strong>${dryQuantityFormatted}</strong>`,
-        );
-        $(api.column(5).footer()).html(`<strong>${dryTotalFormatted}</strong>`);
-        $(api.column(6).footer()).html(
-          `<strong>${mixedQuantityFormatted}</strong>`,
-        );
-        $(api.column(8).footer()).html(
-          `<strong>${mixedTotalFormatted}</strong>`,
-        );
+      footerCallback: function () {
+        const api = this.api();
+        const columns = [3, 5, 6, 8, 10];
+        columns.forEach(colIndex => {
+          const total = totalColumn(api, colIndex);
+          const formatted = customFormatter(total);
+          $(api.column(colIndex).footer()).html(`<strong>${formatted}</strong>`);
+        });
       },
     };
   }
