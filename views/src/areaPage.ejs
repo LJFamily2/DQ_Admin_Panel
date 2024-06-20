@@ -53,7 +53,7 @@
               <% if (area.plantations.length === 0) { %>
               <li class="d-block w-100 text-center">Không có vườn</li>
               <% } else { %> <% area.plantations.forEach(plantation => { %>
-              <li><%= plantation.name %></li>
+              <li><%=  plantation.code || plantation.name %></li>
               <% }) %> <% } %>
             </ol>
           </div>
