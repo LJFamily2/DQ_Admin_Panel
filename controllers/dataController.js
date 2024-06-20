@@ -1,8 +1,9 @@
-const trimStringFields = require('./utils/trimStringFields')
-const handleResponse = require("./utils/handleResponse");
+const trimStringFields = require('./utils/trimStringFields');
+const handleResponse = require('./utils/handleResponse');
 const DataModel = require('../models/dataModel');
 module.exports = {
   renderPage,
+  createData,
 };
 
 async function renderPage(req, res) {
@@ -19,20 +20,41 @@ async function renderPage(req, res) {
   }
 }
 
-async function createData(req,res){
-  req.body = trimStringFields(req.body)
-  try{
-    console.log(req.body)
+async function createData(req, res) {
+  req.body = trimStringFields(req.body);
+  try {
+    console.log(req.body);
+    products = {
+      dryQuantity: parseFloat(req.body.dryQuantity.replace(',', '.')),
+      dryPercentage: parseFloat(req.body.dryPercentage.replace(',', '.')),
+      mixedQuantity: parseFloat(req.body.mixedQuantity.replace(',', '.')),
+      sellQuantity: parseFloat(req.body.sellQuantity.replace(',', '.')),
+    };
     const newData = await DataModel.create({
-      ...req.body
+      ...req.body,
+      products: products,
     });
-    if(!newData){
-      handleResponse(req,res,404,'fail','Tạo dữ liệu thất bại','/du-lieu')
-    }else{
-      handleResponse(req,res,200,'success','Tạo dữ liệu thành công','/du-lieu')
+    if (!newData) {
+      handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Tạo dữ liệu thất bại',
+        req.headers.referer,
+      );
+    } else {
+      handleResponse(
+        req,
+        res,
+        200,
+        'success',
+        'Tạo dữ liệu thành công',
+        req.headers.referer,
+      );
     }
-  }catch(error){
-    console.log(error)
+  } catch (error) {
+    console.log(error);
     res.status(500);
   }
 }

@@ -3,5 +3,5 @@ const router = express.Router();
 const dataController = require('../../controllers/dataController')
 
 router.get('/',dataController.renderPage)
-router.post('/createData')
+router.post('/createData', dataController.createData)
 module.exports = router;
