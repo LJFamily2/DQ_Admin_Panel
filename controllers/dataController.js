@@ -16,3 +16,13 @@ async function renderPage(req, res) {
     res.status(500).json({ error: err.message });
   }
 }
+
+async function createData(req,res){
+  
+  try{
+
+  }catch(error){
+    console.log(error)
+    res.status(500);
+  }
+}
