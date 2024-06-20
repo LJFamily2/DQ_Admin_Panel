@@ -22,7 +22,168 @@
 </head>
 
 <div class="row m-0 px-2">
+  <div class="col-12 col-md-9 p-0 px-md-3" >
+    <div class="col rounded-2 p-2 overflow-auto " style="box-shadow: 0 0 10px; max-height: 80dvh;">
+      <table class="table table-striped table-bordered" id="products_table" >
+        <thead>
+          <tr>
+            <% ['STT', 'Tên', 'Đơn vị', 'Chỉnh sửa'].forEach((header, index) => { %>
+              <th><%= header %></th>
+            <% }) %>
+        </thead>
+        <tbody>
+          <% datas.forEach( (data,index) => { %>
+          <!-- Modal for updating -->
+          <div
+            class="modal fade"
+            id="staticBackdrop<%= index + 1%>"
+            data-bs-backdrop="static"
+            data-bs-keyboard="false"
+            tabindex="-1"
+            aria-labelledby="staticBackdropLabel"
+            aria-hidden="true"
+          >
+            <div
+              class="modal-dialog modal-dialog-centered modal-dialog-scrollable"
+            >
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="staticBackdropLabel">
+                    Cập nhật thông tin cho <%= data.name %>
+                  </h1>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
 
+                <form
+                  action="/quan-ly-hang-hoa/update/<%= data._id %>"
+                  method="post"
+                >
+                  <div class="modal-body">
+                    <div class="my-3">
+                      <label for="name<%= index %>" class="form-label">Tên</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="name<%= index %>"
+                        name="name"
+                        placeholder="Nhập tên mới"
+                        value="<%= data.name %>"
+                      />
+                    </div>
+              
+                    <div class="my-3">
+                      <label for="unit<%= index %>" class="form-label">Đơn vị</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="unit<%= index %>"
+                        name="unit"
+                        placeholder="Nhập đơn vị mới"
+                        value="<%= data.unit %>"
+                      />
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">
+                      Lưu mới
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <!-- Delete confirming modal  -->
+          <div
+            class="modal fade"
+            id="deleteModalToggle<%= index + 1 %>"
+            aria-hidden="true"
+            aria-labelledby="exampleModalToggleLabel"
+            tabindex="-1"
+          >
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="exampleModalToggleLabel">
+                    Xóa <%= data.name %>
+                  </h1>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
+                <form
+                  action="/quan-ly-hang-hoa/delete/<%= data._id %>"
+                  method="post"
+                >
+                  <div class="modal-body">
+                    Bạn có muốn xóa
+                    <strong><%= data.name %></strong> ? Hành động này không
+                    thể hoàn tác.
+                  </div>
+                  <div class="modal-footer">
+                    <button type="submit" class="btn btn-danger">
+                      Xác nhận
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div
+class="col-12 col-md-3 rounded-2 my-5 m-md-0 py-3 "
+    style="
+      box-shadow: 0 0 10px;
+      background: var(--background_color);
+      max-height: 80dvh;
+      overflow-y: auto;
+    "
+  >
+    <%- include('../partials/notificationMessage.ejs') %>
+    <h4>Thêm hàng hóa</h4>
+    <form
+      action="/quan-ly-hang-hoa/addProduct"
+      method="post"
+    >
+      <div class="my-3">
+        <label for="name" class="form-label">Tên</label>
+        <input
+          type="text"
+          class="form-control"
+          id="name"
+          name="name"
+          placeholder="Nhập tên"
+        />
+      </div>
+
+      <div class="my-3">
+        <label for="unit" class="fo rm-label">Đơn vị</label>
+        <input
+          type="text"
+          class="form-control"
+          id="unit"
+          name="unit"
+          placeholder="Nhập đơn vị"
+        />
+      </div>
+
+      <!-- Buttons -->
+      <button type="submit" class="btn btn-primary">Thêm</button>
+      <button type="reset" class="btn btn-secondary">Làm mới</button>
+    </form>
+  </div>
 </div>
 
 <script>
