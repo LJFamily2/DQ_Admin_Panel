@@ -100,7 +100,7 @@ async function getQuery(req, res) {
       return {
         no: parseInt(start, 10) + index + 1,
         area: plantation.areaID.name,
-        plantation: plantation.name || plantation.code,
+        plantation: plantation.code || plantation.name ,
         dryQuantity: formatNumberForDisplay(dryQuantityTotal),
         dryPrice: Math.floor(dryPriceValue).toLocaleString('vi-VN'), 
         dryTotal: dryTotalValue, 
