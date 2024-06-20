@@ -14,6 +14,7 @@ function initializeDataTable(
   inputPrice,
   dryPriceID,
   mixedPriceID,
+  queryPage,
 ) {
   const rowGroupOptions = {
     dataSrc: rowGroup,
@@ -91,14 +92,14 @@ function initializeDataTable(
         // always initialize the date range
         d.startDate = $(startDateId).val();
         d.endDate = $(endDateId).val();
-        
+
         // if inputPrice is true, then pass the dryPrice and mixedPrice to the server
         if (inputPrice) {
           d.dryPrice = $(dryPriceID).val();
           d.mixedPrice = $(mixedPriceID).val();
         }
 
-        return d; 
+        return d;
       },
     },
     language: {
@@ -143,6 +144,87 @@ function initializeDataTable(
       }
       return column;
     }),
+    footerCallback: function (row, data, start, end, display) {
+      let api = this.api();
+
+      // Function to format numbers
+      const intVal = function (i) {
+        if (typeof i === 'string') {
+          // Replace commas with periods and remove any existing periods
+          i = i.replace(/\./g, '').replace(',', '.');
+
+          // Parse the resulting string into a float
+          return parseFloat(i);
+        } else if (typeof i === 'number') {
+          return i;
+        } else {
+          return 0;
+        }
+      };
+
+      // Total calculations (example columns)
+      const totalDryQuantity = api
+        .column(3, { search: 'applied' })
+        .data()
+        .reduce((acc, val) => {
+          const parsedVal = intVal(val);
+          console.log(`Dry Quantity Value: ${val} -> Parsed: ${parsedVal}`);
+          return acc + parsedVal;
+        }, 0);
+
+      const totalDryTotal = api
+        .column(5, { search: 'applied' })
+        .data()
+        .reduce((acc, val) => {
+          const parsedVal = intVal(val);
+          console.log(`Dry Total Value: ${val} -> Parsed: ${parsedVal}`);
+          return acc + parsedVal;
+        }, 0);
+
+      const totalMixedQuantity = api
+        .column(6, { search: 'applied' })
+        .data()
+        .reduce((acc, val) => {
+          const parsedVal = intVal(val);
+          console.log(`Mixed Quantity Value: ${val} -> Parsed: ${parsedVal}`);
+          return acc + parsedVal;
+        }, 0);
+
+      const totalMixedTotal = api
+        .column(8, { search: 'applied' })
+        .data()
+        .reduce((acc, val) => {
+          const parsedVal = intVal(val);
+          console.log(`Mixed Total Value: ${val} -> Parsed: ${parsedVal}`);
+          return acc + parsedVal;
+        }, 0);
+
+      // Custom number formatter for Vietnamese locale
+      const customFormatter = function (num) {
+        const formatted = new Intl.NumberFormat('vi-VN', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }).format(num);
+
+        return formatted;
+      };
+
+      // Format the totals
+      const dryQuantityFormatted = customFormatter(totalDryQuantity);
+      const dryTotalFormatted = customFormatter(totalDryTotal);
+      const mixedQuantityFormatted = customFormatter(totalMixedQuantity);
+      const mixedTotalFormatted = customFormatter(totalMixedTotal);
+
+      // Update footer with formatted values
+      $(api.column(3).footer()).html(
+        `<strong>${dryQuantityFormatted}</strong>`,
+      );
+      $(api.column(5).footer()).html(`<strong>${dryTotalFormatted}</strong>`);
+      $(api.column(6).footer()).html(
+        `<strong>${mixedQuantityFormatted}</strong>`,
+      );
+      $(api.column(8).footer()).html(`<strong>${mixedTotalFormatted}</strong>`);
+    },
   });
 
   // Filter button click handler
