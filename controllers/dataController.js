@@ -6,7 +6,7 @@ module.exports = {
 async function renderPage(req, res) {
   try {
     const datas = await DataModel.find({});
-    res.render('src/managerPage', {
+    res.render('src/dataPage', {
       layout: './layouts/defaultLayout',
       datas,
       messages: req.flash(),
