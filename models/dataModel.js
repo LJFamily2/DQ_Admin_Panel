@@ -7,10 +7,10 @@ const dataSchema = new mongoose.Schema({
         dryQuantity: Number,
         dryPercentage: Number,
         mixedQuantity: Number,
-        sellQuantity: Number,
     },
 });
 
 const dataModel = mongoose.model('Dữ liệu', dataSchema);
 
 module.exports = dataModel;
+ 

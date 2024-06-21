@@ -3,10 +3,9 @@
   <script src="https://cdn.datatables.net/buttons/3.0.2/js/dataTables.buttons.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.html5.min.js"></script>
-  <script src="https://cdn.datatables.net/rowgroup/1.5.0/js/dataTables.rowGroup.js"></script>
   <script src="/js/datatable.js"></script>
   <script src="/js/inputFieldRestriction.js" defer></script>
-
+  
   <!-- Slim select -->
   <script src="/js/slim-select.js" defer></script>
 
@@ -22,15 +21,29 @@
 </head>
 
 <div class="row m-0 px-2">
-  <div class="col-12 col-md-9 p-0 px-md-3" >
-    <div class="col rounded-2 p-2 overflow-auto " style="box-shadow: 0 0 10px; max-height: 80dvh;">
-      <table class="table table-striped table-bordered" id="products_table" >
+  <div class="col-12 col-md-9 p-0 px-md-3">
+    <div
+      class="col rounded-2 p-2 overflow-auto"
+      style="box-shadow: 0 0 10px; max-height: 80dvh"
+    >
+      <table class="table table-striped table-bordered" id="table">
         <thead>
           <tr>
-            <% ['STT', 'Tên', 'Đơn vị', 'Chỉnh sửa'].forEach((header, index) => { %>
-              <th><%= header %></th>
-            <% }) %>
+            <th rowspan="2">STT</th>
+            <th rowspan="2">Ngày</th>
+            <th colspan="3">Mủ quy khô</th>
+            <th>Mủ tạp</th>
+            <th rowspan="2">Ghi chú</th>
+            <th rowspan="2">Chỉnh sửa</th>
+          </tr>
+          <tr>
+            <th>SL</th>
+            <th>Hàm lượng</th>
+            <th>Tổng</th>
+            <th>SL</th>
+          </tr>
         </thead>
+
         <tbody>
           <% datas.forEach( (data,index) => { %>
           <!-- Modal for updating -->
@@ -49,7 +62,7 @@
               <div class="modal-content">
                 <div class="modal-header">
                   <h1 class="modal-title fs-5" id="staticBackdropLabel">
-                    Cập nhật thông tin cho <%= data.name %>
+                    Cập nhật thông tin cho <%= data.date.toLocaleDateString() %>
                   </h1>
                   <button
                     type="button"
@@ -60,37 +73,110 @@
                 </div>
 
                 <form
-                  action="/quan-ly-hang-hoa/update/<%= data._id %>"
+                  action="/quan-ly-du-lieu/update/<%= data._id %>"
                   method="post"
                 >
                   <div class="modal-body">
                     <div class="my-3">
-                      <label for="name<%= index %>" class="form-label">Tên</label>
+                      <label for="date" class="form-label">Ngày nhập</label>
                       <input
-                        type="text"
+                        type="date"
                         class="form-control"
-                        id="name<%= index %>"
-                        name="name"
-                        placeholder="Nhập tên mới"
-                        value="<%= data.name %>"
+                        id="date"
+                        name="date"
+                        value="<%= data.date.toISOString().slice(0,10) %>"
+                        onchange="newInput(this)"
                       />
                     </div>
-              
+
+                    <hr />
+
+                    <div class="productLists my-3">
+                      <div class="productList">
+                        <div class="row my-3">
+                          <label class="form-label">Mủ Quy Khô</label>
+                          <div class="col col-md-6">
+                            <label for="dryQuantity" class="form-label"
+                              >Số lượng</label
+                            >
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="dryQuantity"
+                              name="dryQuantity"
+                              placeholder="1234,34"
+                              value="<%= data.products.dryQuantity %>"
+                              oninput="handleQuantityInput(this)"
+                              onchange="newInput(this)"
+                            />
+                          </div>
+                          <div class="col col-md-6">
+                            <label for="dryPercentage" class="form-label"
+                              >Hàm lượng</label
+                            >
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="dryPercentage"
+                              name="dryPercentage"
+                              placeholder="23,04"
+                              value="<%= data.products.dryPercentage %>"
+                              oninput="handlePercentageInput(this)"
+                              onchange="newInput(this)"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <hr />
+
+                      <div class="productList">
+                        <div class="row my-3">
+                          <label class="form-label">Mủ tạp</label>
+                          <div class="col-12">
+                            <label for="mixedQuantity" class="form-label"
+                              >Số lượng</label
+                            >
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="mixedQuantity"
+                              name="mixedQuantity"
+                              placeholder="1234,34"
+                              min="0"
+                              value="<%= data.products.mixedQuantity %>"
+                              oninput="handleQuantityInput(this)"
+                              onchange="newInput(this)"
+                            />
+                          </div>
+                        </div>
+                        <hr />
+                      </div>
+                    </div>
+
                     <div class="my-3">
-                      <label for="unit<%= index %>" class="form-label">Đơn vị</label>
-                      <input
+                      <label for="note" class="form-label">Ghi chú</label>
+                      <textarea
                         type="text"
                         class="form-control"
-                        id="unit<%= index %>"
-                        name="unit"
-                        placeholder="Nhập đơn vị mới"
-                        value="<%= data.unit %>"
-                      />
+                        rows="3"
+                        id="note"
+                        name="notes"
+                        onchange="newInput(this)"
+                      >
+<%= data.notes %></textarea
+                      >
                     </div>
                   </div>
                   <div class="modal-footer">
-                    <button type="submit" class="btn btn-success">
-                      Lưu mới
+                    <!-- Buttons -->
+                    <button type="submit" class="btn btn-success">Lưu</button>
+                    <button
+                      type="reset"
+                      class="btn btn-secondary"
+                      onclick="resetInput()"
+                    >
+                      Reset
                     </button>
                   </div>
                 </form>
@@ -110,7 +196,7 @@
               <div class="modal-content">
                 <div class="modal-header">
                   <h1 class="modal-title fs-5" id="exampleModalToggleLabel">
-                    Xóa <%= data.name %>
+                    Xóa dữ liệu <%= data.date.toLocaleDateString() %>
                   </h1>
                   <button
                     type="button"
@@ -120,13 +206,13 @@
                   ></button>
                 </div>
                 <form
-                  action="/quan-ly-hang-hoa/delete/<%= data._id %>"
+                  action="/quan-ly-du-lieu/delete/<%= data._id %>"
                   method="post"
                 >
                   <div class="modal-body">
                     Bạn có muốn xóa
-                    <strong><%= data.name %></strong> ? Hành động này không
-                    thể hoàn tác.
+                    <strong><%= data.date.toLocaleDateString() %></strong> ? Hành động này không thể
+                    hoàn tác.
                   </div>
                   <div class="modal-footer">
                     <button type="submit" class="btn btn-danger">
@@ -143,7 +229,7 @@
     </div>
   </div>
   <div
-class="col-12 col-md-3 rounded-2 my-5 m-md-0 py-3 "
+    class="col-12 col-md-3 rounded-2 my-5 m-md-0 py-3"
     style="
       box-shadow: 0 0 10px;
       background: var(--background_color);
@@ -153,10 +239,7 @@ class="col-12 col-md-3 rounded-2 my-5 m-md-0 py-3 "
   >
     <%- include('../partials/notificationMessage.ejs') %>
     <h4>Thêm dữ liệu</h4>
-    <form
-      action="/quan-ly-du-lieu/createData"
-      method="post"
-    >
+    <form action="/quan-ly-du-lieu/createData" method="post">
       <div class="my-3">
         <label for="date" class="form-label">Ngày nhập</label>
         <input type="date" class="form-control" id="date" name="date" />
@@ -227,24 +310,6 @@ class="col-12 col-md-3 rounded-2 my-5 m-md-0 py-3 "
           </div>
           <hr />
         </div>
-        <div class="productList">
-          <div class="row my-3">
-            <label class="form-label">Bán ngoài</label>
-            <div class="col-12">
-              <label for="sellQuantity" class="form-label">Số lượng</label>
-              <input
-                type="text"
-                class="form-control"
-                id="sellQuantity"
-                name="sellQuantity"
-                placeholder="1234,34"
-                min="0"
-                oninput="handleQuantityInput(this)"
-              />
-            </div>
-          </div>
-          <hr />
-        </div>
       </div>
 
       <div class="my-3">
@@ -266,5 +331,23 @@ class="col-12 col-md-3 rounded-2 my-5 m-md-0 py-3 "
 </div>
 
 <script>
+  let columns = [
+    { data: 'no', orderable: false },
+    { data: 'date' },
+    { data: 'dryQuantity', orderable: false },
+    { data: 'dryPercentage', orderable: false },
+    { data: 'dryTotal', orderable: false },
+    { data: 'mixedQuantity', orderable: false },
+    { data: 'notes', orderable: false },
+    { data: 'id', orderable: false },
+  ];
 
+  initializeDataTable(
+    '#table',
+    '/quan-ly-du-lieu/getDatas',
+    '#staticBackdrop',
+    '#deleteModalToggle',
+    columns,
+    false,
+  );
 </script>
