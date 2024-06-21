@@ -26,6 +26,9 @@
       class="col rounded-2 p-2 overflow-auto"
       style="box-shadow: 0 0 10px; max-height: 80dvh"
     >
+    <div class="row m-0">
+      <%- include('../partials/dateSelection.ejs') %>
+    </div>
       <table class="table table-striped table-bordered" id="table">
         <thead>
           <tr>
@@ -349,5 +352,9 @@
     '#deleteModalToggle',
     columns,
     false,
+    '#filterButton',
+    '#startDate',
+    '#endDate',
+    '#clearFilterButton',
   );
 </script>

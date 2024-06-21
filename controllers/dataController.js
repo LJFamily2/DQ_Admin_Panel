@@ -28,17 +28,27 @@ async function renderPage(req, res) {
 async function createData(req, res) {
   req.body = trimStringFields(req.body);
   try {
-
-    let date = await DataModel.findOne({date: req.body.date});
-    if(date){
-      handleResponse(req,res, 404, "fail", "Đã có dữ liệu ngày này. Hãy chọn ngày khác!", req.headers.referer)
+    let date = await DataModel.findOne({ date: req.body.date });
+    if (date) {
+      handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Đã có dữ liệu ngày này. Hãy chọn ngày khác!',
+        req.headers.referer,
+      );
     }
-    
+
     console.log(req.body);
     products = {
       dryQuantity: parseFloat((req.body.dryQuantity || '0').replace(',', '.')),
-      dryPercentage: parseFloat((req.body.dryPercentage || '0').replace(',', '.')),
-      mixedQuantity: parseFloat((req.body.mixedQuantity || '0').replace(',', '.')),
+      dryPercentage: parseFloat(
+        (req.body.dryPercentage || '0').replace(',', '.'),
+      ),
+      mixedQuantity: parseFloat(
+        (req.body.mixedQuantity || '0').replace(',', '.'),
+      ),
     };
     const newData = await DataModel.create({
       ...req.body,
@@ -71,45 +81,72 @@ async function createData(req, res) {
 
 async function getDatas(req, res) {
   try {
-    const { draw, start = 0, length = 10, search, order, columns } = req.body;
+    const { draw, start = 0, length = 10, search, order, columns, startDate, endDate } = req.body;
 
-    const searchValue = search?.value || '';
-    const sortColumnIndex = order?.[0]?.column || 0;
-    const sortColumn = columns?.[sortColumnIndex]?.data || 'date';
-    const sortDirection = order?.[0]?.dir === 'asc' ? 1 : -1;
+    const searchValue = search?.value?.toLowerCase() || '';
+    const sortColumnIndex = order?.[0]?.column;
+    let sortColumn = columns?.[sortColumnIndex]?.data;
+    let sortDirection = order?.[0]?.dir === 'asc' ? 1 : -1;
 
     const filter = {};
 
-    if (searchValue) {
-      filter.$or = [
-        { 'products.dryQuantity': new RegExp(searchValue, 'i') },
-        { 'products.dryPercentage': new RegExp(searchValue, 'i') },
-        { 'products.mixedQuantity': new RegExp(searchValue, 'i') },
-        { notes: new RegExp(searchValue, 'i') },
-      ];
+    if (startDate && endDate) {
+      filter.date = {
+        $gte: new Date(startDate),
+        $lte: new Date(endDate),
+      };
     }
 
-    const totalRecords = await DataModel.countDocuments();
-    const filteredRecords = await DataModel.countDocuments(filter);
+    const totalRecords = await DataModel.countDocuments(filter);
 
-    const data = await DataModel.find(filter)
-      .sort({ [sortColumn]: sortDirection })
-      .skip(parseInt(start))
-      .limit(parseInt(length))
-      .exec();
+    let data = await DataModel.find(filter);
 
-    const formattedData = data.map((item, index) => ({
-      no: parseInt(start, 10) + index + 1,
-      date: item.date.toLocaleDateString(),
-      dryQuantity: formatNumberForDisplay(item.products.dryQuantity),
-      dryPercentage: formatNumberForDisplay(item.products.dryPercentage),
-      dryTotal: formatNumberForDisplay(
-        (item.products.dryQuantity * item.products.dryPercentage) / 100,
-      ),
-      mixedQuantity: formatNumberForDisplay(item.products.mixedQuantity),
-      notes: item.notes || '',
-      id: item._id,
-    }));
+    if (searchValue) {
+      const searchColumns = ['dryQuantity', 'dryPercentage', 'mixedQuantity'];
+      data = data.filter(item => {
+        const itemDate = new Date(item.date);
+        const formattedDate = `${itemDate.getDate().toString().padStart(2, '0')}/${(itemDate.getMonth() + 1).toString().padStart(2, '0')}/${itemDate.getFullYear()}`;
+        return (
+          formattedDate.includes(searchValue) ||
+          (item.notes && item.notes.toLowerCase().includes(searchValue)) ||
+          columns.some(column => {
+            let columnValue;
+            if (searchColumns.includes(column.data)) {
+              columnValue = item.products[column.data]?.toString().toLowerCase();
+            } else if (column.data === 'dryTotal') {
+              const dryQuantity = parseFloat(item.products?.dryQuantity || 0);
+              const dryPercentage = parseFloat(item.products?.dryPercentage || 0);
+              const dryTotal = (dryQuantity * dryPercentage) / 100 || 0;
+              columnValue = dryTotal.toString().replace('.', ',').toLowerCase();
+            } else {
+              columnValue = item[column.data]?.toString().toLowerCase();
+            }
+            return columnValue && columnValue.includes(searchValue);
+          })
+        );
+      });
+    }
+
+    data.sort((a, b) => {
+      const valueA = (sortColumn === 'date' ? new Date(a.date) : a.products[sortColumn]) || '';
+      const valueB = (sortColumn === 'date' ? new Date(b.date) : b.products[sortColumn]) || '';
+      return (valueA < valueB ? -sortDirection : (valueA > valueB ? sortDirection : 0));
+    });
+
+    const filteredRecords = data.length;
+
+    const formattedData = data
+      .slice(start, start + length)
+      .map((item, index) => ({
+        no: parseInt(start, 10) + index + 1,
+        date: new Date(item.date).toLocaleDateString(),
+        dryQuantity: formatNumberForDisplay(item.products.dryQuantity),
+        dryPercentage: formatNumberForDisplay(item.products.dryPercentage),
+        dryTotal: formatNumberForDisplay((item.products.dryQuantity * item.products.dryPercentage) / 100),
+        mixedQuantity: formatNumberForDisplay(item.products.mixedQuantity),
+        notes: item.notes || '',
+        id: item._id,
+      }));
 
     res.json({
       draw,
@@ -122,6 +159,8 @@ async function getDatas(req, res) {
     res.status(500).send('Internal Server Error');
   }
 }
+
+
 
 async function updateData(req, res) {
   const { id } = req.params;
