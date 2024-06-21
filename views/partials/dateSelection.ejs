@@ -34,7 +34,7 @@
               type="date"
               id="startDate"
               class="form-control"
-              onchange="updateDateDisplay()"
+              onchange="document.getElementById('endDate').min = this.value;updateDateDisplay(); "
             />
           </div>
           <div class="col">
