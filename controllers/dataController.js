@@ -2,7 +2,7 @@ const trimStringFields = require('./utils/trimStringFields');
 const handleResponse = require('./utils/handleResponse');
 const formatNumberForDisplay = require('./utils/formatNumberForDisplay');
 const DataModel = require('../models/dataModel');
-
+const {getTotal} = require('./utils/getTotal')
 module.exports = {
   renderPage,
   createData,
@@ -10,28 +10,18 @@ module.exports = {
   updateData,
 };
 
-async function getDryTotal(){
-  try{
-    const datas = await DataModel.find();
-    let dryTotal = datas.reduce((total, data) =>{
-      return total + (data.products.dryQuantity * data.products.dryPercentage) / 100;
-    }, 0)
-    return dryTotal;
-  }catch(err){
-    console.log(err);
-    return "";
-  }
-}
 
 async function renderPage(req, res) {
   try {
-    let dryTotal = await getDryTotal();
+    let dryTotal = await getTotal('dry');
+    let mixedTotal = await getTotal('mixed');
     console.log(dryTotal)
     const datas = await DataModel.find({});
     res.render('src/dataPage', {
       layout: './layouts/defaultLayout',
       datas,
       dryTotal,
+      mixedTotal,
       messages: req.flash(),
       title: 'Dữ liệu',
     });
