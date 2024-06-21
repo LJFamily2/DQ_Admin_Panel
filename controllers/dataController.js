@@ -10,12 +10,28 @@ module.exports = {
   updateData,
 };
 
+async function getDryTotal(){
+  try{
+    const datas = await DataModel.find();
+    let dryTotal = datas.reduce((total, data) =>{
+      return total + (data.products.dryQuantity * data.products.dryPercentage) / 100;
+    }, 0)
+    return dryTotal;
+  }catch(err){
+    console.log(err);
+    return "";
+  }
+}
+
 async function renderPage(req, res) {
   try {
+    let dryTotal = await getDryTotal();
+    console.log(dryTotal)
     const datas = await DataModel.find({});
     res.render('src/dataPage', {
       layout: './layouts/defaultLayout',
       datas,
+      dryTotal,
       messages: req.flash(),
       title: 'Dữ liệu',
     });
