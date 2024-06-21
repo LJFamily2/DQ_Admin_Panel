@@ -30,7 +30,7 @@ async function createData(req, res) {
   try {
     let date = await DataModel.findOne({ date: req.body.date });
     if (date) {
-      handleResponse(
+      return handleResponse(
         req,
         res,
         404,
