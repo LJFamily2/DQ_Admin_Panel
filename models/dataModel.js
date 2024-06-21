@@ -8,6 +8,8 @@ const dataSchema = new mongoose.Schema({
         dryPercentage: Number,
         mixedQuantity: Number,
     },
+    dryTotal: Number, 
+    mixedQuantityTotal: Number, 
 });
 
 const dataModel = mongoose.model('Dữ liệu', dataSchema);
