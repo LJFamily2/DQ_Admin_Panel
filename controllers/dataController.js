@@ -9,7 +9,7 @@ module.exports = {
   createData,
   getDatas,
   updateData,
-  deleteData
+  deleteData,
 };
 
 async function renderPage(req, res) {
@@ -32,6 +32,30 @@ async function renderPage(req, res) {
     console.log(err);
     res.status(500);
   }
+}
+
+function calculateTotalDryRubber(product) {
+  return parseFloat(
+    ((product.dryQuantity * product.dryPercentage) / 100).toFixed(2),
+  );
+}
+async function updateProductTotal(data, operation) {
+  const totalDryRubber = calculateTotalDryRubber(data.products);
+  const updateData = {
+    $inc: {
+      dryRubber: operation === 'add' ? totalDryRubber : -totalDryRubber,
+      mixedQuantity:
+        operation === 'add'
+          ? data.products.mixedQuantity
+          : -data.products.mixedQuantity,
+    },
+  };
+
+  const total = await ProductTotalModel.findOneAndUpdate({}, updateData, {
+    new: true,
+    upsert: true,
+  });
+  return total;
 }
 
 async function createData(req, res) {
@@ -74,25 +98,11 @@ async function createData(req, res) {
       );
     }
 
-    let totalDryRubber = parseFloat(
-      (
-        (newData.products.dryQuantity * newData.products.dryPercentage) /
-        100
-      ).toFixed(2),
-    );
+    const totalDryRubber = calculateTotalDryRubber(products);
 
     console.log(totalDryRubber);
 
-    const total = await ProductTotalModel.findOneAndUpdate(
-      {},
-      {
-        $inc: {
-          dryRubber: totalDryRubber,
-          mixedQuantity: newData.products.mixedQuantity,
-        },
-      },
-      { new: true, upsert: true },
-    );
+    const total = await updateProductTotal({ products }, 'add');
 
     if (!total) {
       handleResponse(
@@ -230,19 +240,24 @@ async function getDatas(req, res) {
 
 async function updateData(req, res) {
   const { id } = req.params;
+
   try {
     console.log(req.body);
 
-    // Convert quantities and percentages to float and replace commas with dots
+    const {
+      dryQuantity = null,
+      dryPercentage = null,
+      mixedQuantity = null,
+    } = req.body;
     const products = {
-      dryQuantity: req.body.dryQuantity
-        ? parseFloat(req.body.dryQuantity.replace(',', '.'))
+      dryQuantity: dryQuantity
+        ? parseFloat(dryQuantity.replace(',', '.'))
         : null,
-      dryPercentage: req.body.dryPercentage
-        ? parseFloat(req.body.dryPercentage.replace(',', '.'))
+      dryPercentage: dryPercentage
+        ? parseFloat(dryPercentage.replace(',', '.'))
         : null,
-      mixedQuantity: req.body.mixedQuantity
-        ? parseFloat(req.body.mixedQuantity.replace(',', '.'))
+      mixedQuantity: mixedQuantity
+        ? parseFloat(mixedQuantity.replace(',', '.'))
         : null,
     };
 
@@ -277,64 +292,51 @@ async function updateData(req, res) {
       return; // Exit if newData is not found
     }
 
-    // Calculate the differences and the new total dry rubber difference in one step
-    const dryQuantityDiff =
-      newData.products.dryQuantity - (oldData.products.dryQuantity || 0);
-    const mixedQuantityDiff =
-      newData.products.mixedQuantity - (oldData.products.mixedQuantity || 0);
-    const dryPercentageDiff =
-      newData.products.dryPercentage - (oldData.products.dryPercentage || 0);
-    const newTotalDryRubberDiff =
-      parseFloat(
-        (
-          (newData.products.dryQuantity * newData.products.dryPercentage) /
-          100
-        ).toFixed(2),
-      ) -
-      parseFloat(
-        (
-          (oldData.products.dryQuantity * oldData.products.dryPercentage) /
-          100
-        ).toFixed(2),
+    // Destructuring for cleaner access to product properties
+    const {
+      dryQuantity: newDryQuantity,
+      dryPercentage: newDryPercentage,
+      mixedQuantity: newMixedQuantity,
+    } = newData.products;
+    const {
+      dryQuantity: oldDryQuantity = 0,
+      dryPercentage: oldDryPercentage = 0,
+      mixedQuantity: oldMixedQuantity = 0,
+    } = oldData.products || {};
+
+    // Calculate differences in one step using nullish coalescing operator
+    const dryQuantityDiff = newDryQuantity - oldDryQuantity;
+    const mixedQuantityDiff = newMixedQuantity - oldMixedQuantity;
+    const dryPercentageDiff = newDryPercentage - oldDryPercentage;
+
+    console.log(dryQuantityDiff, mixedQuantityDiff, dryPercentageDiff);
+
+    const updateData = { $inc: { mixedQuantity: mixedQuantityDiff } };
+
+    // Update dryRubber if there's a difference in dry quantity or percentage
+    if (dryQuantityDiff !== 0 || dryPercentageDiff !== 0) {
+      const newTotalDryRubberDiff =
+        parseFloat(((newDryQuantity * newDryPercentage) / 100).toFixed(2)) -
+        parseFloat(((oldDryQuantity * oldDryPercentage) / 100).toFixed(2));
+      updateData.$inc.dryRubber = newTotalDryRubberDiff;
+    }
+
+    // Perform the update
+    const total = await ProductTotalModel.findOneAndUpdate({}, updateData, {
+      new: true,
+      upsert: true,
+    });
+
+    if (!total) {
+      handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Cập nhật thông tin thất bại',
+        req.headers.referer,
       );
-
-    console.log(
-      dryQuantityDiff,
-      mixedQuantityDiff,
-      dryPercentageDiff,
-      newTotalDryRubberDiff,
-    );
-
-    // Proceed with update if there is a difference
-    if (
-      dryQuantityDiff !== 0 ||
-      mixedQuantityDiff !== 0 ||
-      dryPercentageDiff !== 0
-    ) {
-      const updateData = { $inc: { mixedQuantity: mixedQuantityDiff } };
-
-      // Update dryRubber if there's a difference in dry quantity or percentage
-      if (dryQuantityDiff !== 0 || dryPercentageDiff !== 0) {
-        updateData.$inc.dryRubber = newTotalDryRubberDiff;
-      }
-
-      // Perform the update
-      const total = await ProductTotalModel.findOneAndUpdate({}, updateData, {
-        new: true,
-        upsert: true,
-      });
-
-      if (!total) {
-        handleResponse(
-          req,
-          res,
-          404,
-          'fail',
-          'Cập nhật thông tin thất bại',
-          req.headers.referer,
-        );
-        return;
-      }
+      return;
     }
 
     handleResponse(
@@ -351,6 +353,45 @@ async function updateData(req, res) {
   }
 }
 
-async function deleteData(req,res){
-  
+async function deleteData(req, res) {
+  try {
+    const { id } = req.params;
+
+    // Find the data to be deleted
+    const data = await DataModel.findByIdAndDelete(id);
+
+    if (!data) {
+      handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Xóa dữ liệu thất bại',
+        req.headers.referer,
+      );
+      return;
+    }
+
+    // Calculate the total dry rubber to be subtracted
+    const totalDryRubber = calculateTotalDryRubber(data.products);
+
+    // Update the ProductTotal document efficiently
+    await updateProductTotal({ products: data.products }, 'subtract'); // Pass data.products directly
+
+    console.log(
+      `Deleted data with ${totalDryRubber} dry rubber and ${data.products.mixedQuantity} mixed quantity.`,
+    ); // Informative message
+
+    handleResponse(
+      req,
+      res,
+      200,
+      'success',
+      'Xóa dữ liệu thành công',
+      req.headers.referer,
+    );
+  } catch (err) {
+    console.error(err);
+    res.status(500);
+  }
 }
