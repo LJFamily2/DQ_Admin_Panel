@@ -2,7 +2,8 @@ const trimStringFields = require('./utils/trimStringFields');
 const handleResponse = require('./utils/handleResponse');
 const formatNumberForDisplay = require('./utils/formatNumberForDisplay');
 const DataModel = require('../models/dataModel');
-const {getTotal} = require('./utils/getTotal')
+const ProductTotalModel = require('../models/productTotalModel');
+const { getTotal } = require('./utils/getTotal');
 module.exports = {
   renderPage,
   createData,
@@ -10,17 +11,18 @@ module.exports = {
   updateData,
 };
 
-
 async function renderPage(req, res) {
   try {
     let dryTotal = formatNumberForDisplay(await getTotal('dry'));
-    let  mixedTotal = formatNumberForDisplay(await getTotal('mixed')) ;
-    console.log(dryTotal)
+    let mixedTotal = formatNumberForDisplay(await getTotal('mixed'));
+    console.log(dryTotal);
+    const total = await ProductTotalModel.find({});
     const datas = await DataModel.find({});
     res.render('src/dataPage', {
       layout: './layouts/defaultLayout',
       datas,
       dryTotal,
+      total,
       mixedTotal,
       messages: req.flash(),
       title: 'Dữ liệu',
@@ -69,16 +71,47 @@ async function createData(req, res) {
         'Tạo dữ liệu thất bại',
         req.headers.referer,
       );
-    } else {
+    }
+
+    let totalDryRubber = parseFloat(
+      (
+        (newData.products.dryQuantity * newData.products.dryPercentage) /
+        100
+      ).toFixed(2),
+    );
+
+    console.log(totalDryRubber)
+
+    const total = await ProductTotalModel.findOneAndUpdate(
+      {},
+      {
+        $inc: {
+          dryRubber: totalDryRubber,
+          mixedQuantity: newData.products.mixedQuantity,
+        },
+      },
+      { new: true, upsert: true },
+    );
+
+    if (!total) {
       handleResponse(
         req,
         res,
-        200,
-        'success',
-        'Tạo dữ liệu thành công',
+        404,
+        'fail',
+        'Tạo dữ liệu thất bại',
         req.headers.referer,
       );
     }
+
+    handleResponse(
+      req,
+      res,
+      200,
+      'success',
+      'Tạo dữ liệu thành công',
+      req.headers.referer,
+    );
   } catch (error) {
     console.log(error);
     res.status(500);
@@ -87,7 +120,16 @@ async function createData(req, res) {
 
 async function getDatas(req, res) {
   try {
-    const { draw, start = 0, length = 10, search, order, columns, startDate, endDate } = req.body;
+    const {
+      draw,
+      start = 0,
+      length = 10,
+      search,
+      order,
+      columns,
+      startDate,
+      endDate,
+    } = req.body;
 
     const searchValue = search?.value?.toLowerCase() || '';
     const sortColumnIndex = order?.[0]?.column;
@@ -111,17 +153,26 @@ async function getDatas(req, res) {
       const searchColumns = ['dryQuantity', 'dryPercentage', 'mixedQuantity'];
       data = data.filter(item => {
         const itemDate = new Date(item.date);
-        const formattedDate = `${itemDate.getDate().toString().padStart(2, '0')}/${(itemDate.getMonth() + 1).toString().padStart(2, '0')}/${itemDate.getFullYear()}`;
+        const formattedDate = `${itemDate
+          .getDate()
+          .toString()
+          .padStart(2, '0')}/${(itemDate.getMonth() + 1)
+          .toString()
+          .padStart(2, '0')}/${itemDate.getFullYear()}`;
         return (
           formattedDate.includes(searchValue) ||
           (item.notes && item.notes.toLowerCase().includes(searchValue)) ||
           columns.some(column => {
             let columnValue;
             if (searchColumns.includes(column.data)) {
-              columnValue = item.products[column.data]?.toString().toLowerCase();
+              columnValue = item.products[column.data]
+                ?.toString()
+                .toLowerCase();
             } else if (column.data === 'dryTotal') {
               const dryQuantity = parseFloat(item.products?.dryQuantity || 0);
-              const dryPercentage = parseFloat(item.products?.dryPercentage || 0);
+              const dryPercentage = parseFloat(
+                item.products?.dryPercentage || 0,
+              );
               const dryTotal = (dryQuantity * dryPercentage) / 100 || 0;
               columnValue = dryTotal.toString().replace('.', ',').toLowerCase();
             } else {
@@ -134,9 +185,17 @@ async function getDatas(req, res) {
     }
 
     data.sort((a, b) => {
-      const valueA = (sortColumn === 'date' ? new Date(a.date) : a.products[sortColumn]) || '';
-      const valueB = (sortColumn === 'date' ? new Date(b.date) : b.products[sortColumn]) || '';
-      return (valueA < valueB ? -sortDirection : (valueA > valueB ? sortDirection : 0));
+      const valueA =
+        (sortColumn === 'date' ? new Date(a.date) : a.products[sortColumn]) ||
+        '';
+      const valueB =
+        (sortColumn === 'date' ? new Date(b.date) : b.products[sortColumn]) ||
+        '';
+      return valueA < valueB
+        ? -sortDirection
+        : valueA > valueB
+        ? sortDirection
+        : 0;
     });
 
     const filteredRecords = data.length;
@@ -148,7 +207,9 @@ async function getDatas(req, res) {
         date: new Date(item.date).toLocaleDateString(),
         dryQuantity: formatNumberForDisplay(item.products.dryQuantity),
         dryPercentage: formatNumberForDisplay(item.products.dryPercentage),
-        dryTotal: formatNumberForDisplay((item.products.dryQuantity * item.products.dryPercentage) / 100),
+        dryTotal: formatNumberForDisplay(
+          (item.products.dryQuantity * item.products.dryPercentage) / 100,
+        ),
         mixedQuantity: formatNumberForDisplay(item.products.mixedQuantity),
         notes: item.notes || '',
         id: item._id,
@@ -166,13 +227,12 @@ async function getDatas(req, res) {
   }
 }
 
-
-
 async function updateData(req, res) {
   const { id } = req.params;
   try {
     console.log(req.body);
 
+    // Convert quantities and percentages to float and replace commas with dots
     const products = {
       dryQuantity: req.body.dryQuantity
         ? parseFloat(req.body.dryQuantity.replace(',', '.'))
@@ -185,7 +245,8 @@ async function updateData(req, res) {
         : null,
     };
 
-    updateFields = {
+    // Prepare the fields to be updated
+    const updateFields = {
       ...req.body,
       notes: req.body.notes,
       products,
@@ -193,6 +254,10 @@ async function updateData(req, res) {
 
     console.log(updateFields);
 
+    // Retrieve the old data before updating
+    const oldData = await DataModel.findById(id);
+
+    // Update the data with new values
     const newData = await DataModel.findByIdAndUpdate(
       id,
       { $set: updateFields },
@@ -208,7 +273,28 @@ async function updateData(req, res) {
         'Cập nhật thông tin thất bại',
         req.headers.referer,
       );
+      return; // Exit if newData is not found
     }
+
+    // Calculate the differences
+    const dryQuantityDiff =
+      newData.products.dryQuantity - (oldData.products.dryQuantity || 0);
+    const mixedQuantityDiff =
+      newData.products.mixedQuantity - (oldData.products.mixedQuantity || 0);
+    const totalDryRubberDiff = dryQuantityDiff * newData.products.dryPercentage;
+
+    // Update the ProductTotalModel with the differences
+    const total = await ProductTotalModel.findOneAndUpdate(
+      {},
+      {
+        $inc: {
+          dryRubber: totalDryRubberDiff,
+          mixedQuantity: mixedQuantityDiff,
+        },
+      },
+      { new: true, upsert: true },
+    );
+
     handleResponse(
       req,
       res,
