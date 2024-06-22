@@ -13,8 +13,8 @@ module.exports = {
 
 async function renderPage(req, res) {
   try {
-    let dryTotal = await getTotal('dry');
-    let mixedTotal = await getTotal('mixed');
+    let dryTotal = formatNumberForDisplay(await getTotal('dry'));
+    let  mixedTotal = formatNumberForDisplay(await getTotal('mixed')) ;
     console.log(dryTotal)
     const datas = await DataModel.find({});
     res.render('src/dataPage', {

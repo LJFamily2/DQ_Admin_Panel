@@ -1,3 +1,5 @@
+const DataModel = require('../../models/dataModel');
+
 async function getTotal(productType){
   try{
     const datas = await DataModel.find();
@@ -15,4 +17,4 @@ async function getTotal(productType){
   }
 }
 
-module.exports = getTotal;
+module.exports = {getTotal};
