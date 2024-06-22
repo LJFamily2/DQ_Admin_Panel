@@ -134,8 +134,8 @@ function initializeDataTable(
           },
         ]
       : [],
-    serverSide: true,
-    processing: true,
+    // serverSide: true,
+    // processing: true,
     responsive: true,
     pagingType: 'first_last_numbers',
     rowGroup: rowGroupOptions,

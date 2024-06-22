@@ -1,6 +1,6 @@
-const ProductModel = require("../models/productModel");
-const handleResponse = require("./utils/handleResponse");
-const trimStringFields = require('./utils/trimStringFields')
+const ProductModel = require('../models/productModel');
+const handleResponse = require('./utils/handleResponse');
+const trimStringFields = require('./utils/trimStringFields');
 
 module.exports = {
   createProduct,
@@ -14,9 +14,9 @@ module.exports = {
 async function renderPage(req, res) {
   try {
     const products = await ProductModel.find({});
-    res.render("src/productPage", {
-      layout: "./layouts/defaultLayout",
-      title: "Quản lý hàng hóa",
+    res.render('src/productPage', {
+      layout: './layouts/defaultLayout',
+      title: 'Quản lý hàng hóa',
       products,
       messages: req.flash(),
     });
@@ -26,31 +26,32 @@ async function renderPage(req, res) {
 }
 
 async function createProduct(req, res) {
-  console.log(req.body)
+  console.log(req.body);
   req.body = trimStringFields(req.body);
 
   try {
-
-    const newProduct = await ProductModel.create({ name:req.body.name, unit: req.body.unit });
+    const newProduct = await ProductModel.create({
+      ...req.body,
+    });
     if (!newProduct) {
       handleResponse(
         req,
         res,
         404,
-        "fail",
-        "Thêm hàng hóa thất bại",
-        "/quan-ly-hang-hoa"
+        'fail',
+        'Thêm hàng hóa thất bại',
+        '/quan-ly-hang-hoa',
       );
     }
 
-    console.log(newProduct)
+    console.log(newProduct);
     handleResponse(
       req,
       res,
       201,
-      "success",
-      "Thêm hàng hóa thành công",
-      "/quan-ly-hang-hoa"
+      'success',
+      'Thêm hàng hóa thành công',
+      '/quan-ly-hang-hoa',
     );
   } catch (err) {
     console.error(err);
@@ -59,18 +60,18 @@ async function createProduct(req, res) {
 }
 
 async function updateProduct(req, res) {
-  console.log(req.body)
+  console.log(req.body);
   req.body = trimStringFields(req.body);
   const id = req.params.id;
   try {
-    const updateFields ={
-        name: req.body.name,
-        unit: req.body.unit
-    }
+    const updateFields = {
+      name: req.body.name,
+      unit: req.body.unit,
+    };
     const updatedProduct = await ProductModel.findByIdAndUpdate(
       id,
       updateFields,
-      { new: true }
+      { new: true },
     );
 
     if (!updatedProduct) {
@@ -78,21 +79,21 @@ async function updateProduct(req, res) {
         req,
         res,
         404,
-        "fail",
-        "Cập nhật hàng hóa thất bại",
-        "/quan-ly-hang-hoa"
+        'fail',
+        'Cập nhật hàng hóa thất bại',
+        '/quan-ly-hang-hoa',
       );
     }
 
-    console.log(updatedProduct)
+    console.log(updatedProduct);
 
     handleResponse(
       req,
       res,
       200,
-      "success",
-      "Cập nhật hàng hóa thành công",
-      "/quan-ly-hang-hoa"
+      'success',
+      'Cập nhật hàng hóa thành công',
+      '/quan-ly-hang-hoa',
     );
   } catch (err) {
     console.error(err);
@@ -109,9 +110,9 @@ async function deleteProduct(req, res) {
         req,
         res,
         404,
-        "fail",
-        "Không tìm thấy hàng hóa trong cơ sở dữ liệu",
-        "/quan-ly-hang-hoa"
+        'fail',
+        'Không tìm thấy hàng hóa trong cơ sở dữ liệu',
+        '/quan-ly-hang-hoa',
       );
     }
 
@@ -122,18 +123,18 @@ async function deleteProduct(req, res) {
         req,
         res,
         404,
-        "fail",
-        "Xóa hàng hóa thất bại",
-        "/quan-ly-hang-hoa"
+        'fail',
+        'Xóa hàng hóa thất bại',
+        '/quan-ly-hang-hoa',
       );
     }
     handleResponse(
       req,
       res,
       200,
-      "success",
-      "Xóa hàng hóa thành công",
-      "/quan-ly-hang-hoa"
+      'success',
+      'Xóa hàng hóa thành công',
+      '/quan-ly-hang-hoa',
     );
   } catch (err) {
     console.error(err);
@@ -145,13 +146,13 @@ async function deleteAllProducts(req, res) {
   try {
     await ProductModel.deleteMany({});
     handleResponse(
-        req,
-        res,
-        200,
-        "success",
-        "Xóa tất cả hàng hóa thành công",
-        "/quan-ly-hang-hoa"
-      );
+      req,
+      res,
+      200,
+      'success',
+      'Xóa tất cả hàng hóa thành công',
+      '/quan-ly-hang-hoa',
+    );
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message });
@@ -161,16 +162,18 @@ async function deleteAllProducts(req, res) {
 async function getProducts(req, res) {
   try {
     const { draw, start = 0, length = 10, search, order, columns } = req.body;
-    const searchValue = search?.value || "";
+    const searchValue = search?.value || '';
     const sortColumn = columns?.[order?.[0]?.column]?.data;
-    const sortDirection = order?.[0]?.dir === "asc" ? 1 : -1;
+    const sortDirection = order?.[0]?.dir === 'asc' ? 1 : -1;
 
     // Use these ObjectId(s) in your searchQuery
     const searchQuery = searchValue
       ? {
           $or: [
-            { name: { $regex: searchValue, $options: "i" } },
-            { unit: { $regex: searchValue, $options: "i" } },
+            { date: { $regex: searchValue, $options: 'i' } },
+            { quantity: { $regex: searchValue, $options: 'i' } },
+            { dryRubberUsed: { $regex: searchValue, $options: 'i' } },
+            { notes: { $regex: searchValue, $options: 'i' } },
           ],
         }
       : {};
@@ -185,8 +188,10 @@ async function getProducts(req, res) {
 
     const data = products.map((product, index) => ({
       no: parseInt(start, 10) + index + 1,
-      name: product.name,
-      unit: product.unit,
+      date: product.date.toLocaleDateString(),
+      dryRubberUsed: product.dryRubberUsed,
+      quantity: product.quantity || 0,
+      notes: product.notes || '',
       id: product._id,
     }));
 
@@ -197,7 +202,7 @@ async function getProducts(req, res) {
       data,
     });
   } catch (error) {
-    console.error("Error handling DataTable request:", error);
+    console.error('Error handling DataTable request:', error);
     res.status(500).json({ error: error.message });
   }
 }

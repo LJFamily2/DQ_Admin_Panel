@@ -1,6 +1,7 @@
 <head>
   <!-- js -->
   <script src="/js/datatable.js"></script>
+  <script src="/js/inputFieldRestriction.js" defer></script>
   <!-- Slim select -->
   <script src="/js/slim-select.js" defer></script>
 </head>
@@ -15,15 +16,23 @@
   Xóa tất cả hàng hóa
 </button>
 <div class="row m-0 px-2">
-  <div class="col-12 col-md-9 p-0 px-md-3" >
-    <div class="col rounded-2 p-2 overflow-auto " style="box-shadow: 0 0 10px; max-height: 80dvh;">
-      <table class="table table-striped table-bordered" id="products_table" >
+  <div class="col-12 col-md-9 p-0 px-md-3">
+    <div
+      class="col rounded-2 p-2 overflow-auto"
+      style="box-shadow: 0 0 10px; max-height: 80dvh"
+    >
+      <table class="table table-striped table-bordered" id="products_table">
         <thead>
           <tr>
-            <% ['STT', 'Tên', 'Đơn vị', 'Chỉnh sửa'].forEach((header, index) => { %>
-              <th><%= header %></th>
-            <% }) %>
+            <th>STT</th>
+            <th>Ngày chạy lò</th>
+            <th>Quy khô sử dụng</th>
+            <th>Thành phẩm</th>
+            <th>Ghi chú </th>
+            <th>Chỉnh sửa</th>
+          </tr>
         </thead>
+
         <tbody>
           <% products.forEach( (product,index) => { %>
           <!-- Modal for updating -->
@@ -58,7 +67,9 @@
                 >
                   <div class="modal-body">
                     <div class="my-3">
-                      <label for="name<%= index %>" class="form-label">Tên</label>
+                      <label for="name<%= index %>" class="form-label"
+                        >Tên</label
+                      >
                       <input
                         type="text"
                         class="form-control"
@@ -68,9 +79,11 @@
                         value="<%= product.name %>"
                       />
                     </div>
-              
+
                     <div class="my-3">
-                      <label for="unit<%= index %>" class="form-label">Đơn vị</label>
+                      <label for="unit<%= index %>" class="form-label"
+                        >Đơn vị</label
+                      >
                       <input
                         type="text"
                         class="form-control"
@@ -136,7 +149,7 @@
     </div>
   </div>
   <div
-class="col-12 col-md-3 rounded-2 my-5 m-md-0 py-3 "
+    class="col-12 col-md-3 rounded-2 my-5 m-md-0 py-3"
     style="
       box-shadow: 0 0 10px;
       background: var(--background_color);
@@ -146,30 +159,51 @@ class="col-12 col-md-3 rounded-2 my-5 m-md-0 py-3 "
   >
     <%- include('../partials/notificationMessage.ejs') %>
     <h4>Thêm hàng hóa</h4>
-    <form
-      action="/quan-ly-hang-hoa/addProduct"
-      method="post"
-    >
+    <form action="/quan-ly-hang-hoa/addProduct" method="post">
       <div class="my-3">
-        <label for="name" class="form-label">Tên</label>
+        <label for="date" class="form-label">Ngày chạy lò</label>
         <input
-          type="text"
+          type="date"
           class="form-control"
-          id="name"
-          name="name"
+          id="date"
+          name="date"
           placeholder="Nhập tên"
         />
       </div>
 
       <div class="my-3">
-        <label for="unit" class="fo rm-label">Đơn vị</label>
+        <label for="dryRubberUsed" class="form-label">Quy khô sử dụng</label>
         <input
           type="text"
           class="form-control"
-          id="unit"
-          name="unit"
-          placeholder="Nhập đơn vị"
+          id="dryRubberUsed"
+          name="dryRubberUsed"
+          placeholder="123,45"
+          oninput="handleQuantityInput(this)"
         />
+      </div>
+
+      <div class="my-3">
+        <label for="quantity" class="form-label">Thành phẩm</label>
+        <input
+          type="text"
+          class="form-control"
+          id="quantity"
+          name="quantity"
+          placeholder="123,45"
+          oninput="handleQuantityInput(this)"
+        />
+      </div>
+
+      <div class="my-3">
+        <label for="notes" class="form-label">Ghi chú</label>
+        <textarea
+          type="text"
+          class="form-control"
+          rows="3"
+          id="notes"
+          name="notes"
+        ></textarea>
       </div>
 
       <!-- Buttons -->
@@ -215,17 +249,19 @@ class="col-12 col-md-3 rounded-2 my-5 m-md-0 py-3 "
 </div>
 <script>
   const productColumns = [
-    { data: "no", orderable: false },
-    { data: "name"},
-    { data: "unit"},
-    { data: "id", orderable: false },
+    { data: 'no', orderable: false },
+    { data: 'date' },
+    { data: 'dryRubberUsed', orderable: false },
+    { data: 'quantity', orderable: false },
+    { data: 'notes', orderable: false },
+    { data: 'id', orderable: false },
   ];
 
   initializeDataTable(
-    "#products_table",
-    "/quan-ly-hang-hoa/getProducts",
-    "#staticBackdrop",
-    "#deleteModalToggle",
-    productColumns
+    '#products_table',
+    '/quan-ly-hang-hoa/getProducts',
+    '#staticBackdrop',
+    '#deleteModalToggle',
+    productColumns,
   );
 </script>
