@@ -9,6 +9,7 @@ module.exports = {
   createData,
   getDatas,
   updateData,
+  deleteData
 };
 
 async function renderPage(req, res) {
@@ -80,7 +81,7 @@ async function createData(req, res) {
       ).toFixed(2),
     );
 
-    console.log(totalDryRubber)
+    console.log(totalDryRubber);
 
     const total = await ProductTotalModel.findOneAndUpdate(
       {},
@@ -276,24 +277,65 @@ async function updateData(req, res) {
       return; // Exit if newData is not found
     }
 
-    // Calculate the differences
+    // Calculate the differences and the new total dry rubber difference in one step
     const dryQuantityDiff =
       newData.products.dryQuantity - (oldData.products.dryQuantity || 0);
     const mixedQuantityDiff =
       newData.products.mixedQuantity - (oldData.products.mixedQuantity || 0);
-    const totalDryRubberDiff = dryQuantityDiff * newData.products.dryPercentage;
+    const dryPercentageDiff =
+      newData.products.dryPercentage - (oldData.products.dryPercentage || 0);
+    const newTotalDryRubberDiff =
+      parseFloat(
+        (
+          (newData.products.dryQuantity * newData.products.dryPercentage) /
+          100
+        ).toFixed(2),
+      ) -
+      parseFloat(
+        (
+          (oldData.products.dryQuantity * oldData.products.dryPercentage) /
+          100
+        ).toFixed(2),
+      );
 
-    // Update the ProductTotalModel with the differences
-    const total = await ProductTotalModel.findOneAndUpdate(
-      {},
-      {
-        $inc: {
-          dryRubber: totalDryRubberDiff,
-          mixedQuantity: mixedQuantityDiff,
-        },
-      },
-      { new: true, upsert: true },
+    console.log(
+      dryQuantityDiff,
+      mixedQuantityDiff,
+      dryPercentageDiff,
+      newTotalDryRubberDiff,
     );
+
+    // Proceed with update if there is a difference
+    if (
+      dryQuantityDiff !== 0 ||
+      mixedQuantityDiff !== 0 ||
+      dryPercentageDiff !== 0
+    ) {
+      const updateData = { $inc: { mixedQuantity: mixedQuantityDiff } };
+
+      // Update dryRubber if there's a difference in dry quantity or percentage
+      if (dryQuantityDiff !== 0 || dryPercentageDiff !== 0) {
+        updateData.$inc.dryRubber = newTotalDryRubberDiff;
+      }
+
+      // Perform the update
+      const total = await ProductTotalModel.findOneAndUpdate({}, updateData, {
+        new: true,
+        upsert: true,
+      });
+
+      if (!total) {
+        handleResponse(
+          req,
+          res,
+          404,
+          'fail',
+          'Cập nhật thông tin thất bại',
+          req.headers.referer,
+        );
+        return;
+      }
+    }
 
     handleResponse(
       req,
@@ -307,4 +349,8 @@ async function updateData(req, res) {
     console.error(err);
     res.status(500);
   }
+}
+
+async function deleteData(req,res){
+  
 }
