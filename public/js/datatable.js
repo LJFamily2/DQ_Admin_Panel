@@ -14,17 +14,22 @@ function initializeDataTable(
   inputPrice,
   dryPriceID,
   mixedPriceID,
-  queryPage,
+  queryPageFooter,
+  dataPageFooter,
 ) {
   const rowGroupOptions = {
     dataSrc: rowGroup,
   };
 
   if (plantationDetailPageRender) {
-    const sumColumn = (rows, columnName) => rows
-      .data()
-      .pluck(columnName)
-      .reduce((a, b) => a + parseFloat(b.replace(/\./g, '').replace(',', '.')), 0);
+    const sumColumn = (rows, columnName) =>
+      rows
+        .data()
+        .pluck(columnName)
+        .reduce(
+          (a, b) => a + parseFloat(b.replace(/\./g, '').replace(',', '.')),
+          0,
+        );
 
     const formatter = new Intl.NumberFormat('vi-VN', {
       minimumFractionDigits: 2,
@@ -41,7 +46,7 @@ function initializeDataTable(
 
   let footerCallbackOptions = {};
 
-  if (queryPage) {
+  if (queryPageFooter) {
     const intVal = i => {
       if (typeof i === 'string') {
         i = i.replace(/\./g, '').replace(',', '.');
@@ -50,15 +55,17 @@ function initializeDataTable(
       return typeof i === 'number' ? i : 0;
     };
 
-    const totalColumn = (api, colIndex) => api
-      .column(colIndex, { search: 'applied' })
-      .data()
-      .reduce((acc, val) => acc + intVal(val), 0);
+    const totalColumn = (api, colIndex) =>
+      api
+        .column(colIndex, { search: 'applied' })
+        .data()
+        .reduce((acc, val) => acc + intVal(val), 0);
 
-    const customFormatter = num => new Intl.NumberFormat('vi-VN', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(num);
+    const customFormatter = num =>
+      new Intl.NumberFormat('vi-VN', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(num);
 
     footerCallbackOptions = {
       footerCallback: function () {
@@ -67,12 +74,47 @@ function initializeDataTable(
         columns.forEach(colIndex => {
           const total = totalColumn(api, colIndex);
           const formatted = customFormatter(total);
-          $(api.column(colIndex).footer()).html(`<strong>${formatted}</strong>`);
+          $(api.column(colIndex).footer()).html(
+            `<strong>${formatted}</strong>`,
+          );
         });
       },
     };
   }
+  if (dataPageFooter) {
+    const intVal = i => {
+      if (typeof i === 'string') {
+        i = i.replace(/\./g, '').replace(',', '.');
+        return parseFloat(i);
+      }
+      return typeof i === 'number' ? i : 0;
+    };
+    const totalColumn = (api, colIndex) =>
+      api
+        .column(colIndex, { search: 'applied' })
+        .data()
+        .reduce((acc, val) => acc + intVal(val), 0);
 
+    const customFormatter = num =>
+      new Intl.NumberFormat('vi-VN', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(num);
+
+    footerCallbackOptions = {
+      footerCallback: function () {
+        const api = this.api();
+        const columns = [2, 4, 5];
+        columns.forEach(colIndex => {
+          const total = totalColumn(api, colIndex);
+          const formatted = customFormatter(total);
+          $(api.column(colIndex).footer()).html(
+            `<strong>${formatted}</strong>`,
+          );
+        });
+      },
+    };
+  }
   const tableOptions = {
     dom:
       "<'row m-0 p-0 py-2'<'col-sm-12 col-md-6 d-flex align-items-center'B><'col-sm-12 col-md-6 d-flex justify-content-end'f>>" +
@@ -117,7 +159,7 @@ function initializeDataTable(
     language: {
       emptyTable: 'Không có dữ liệu',
       loadingRecords: 'Đang tải...',
-      zeroRecords:"Không có dữ liệu",
+      zeroRecords: 'Không có dữ liệu',
       paginate: {
         first: 'Đầu',
         last: 'Cuối',
