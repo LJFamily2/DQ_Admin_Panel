@@ -23,9 +23,7 @@
 
 <div class="row m-0 px-2">
   <div class="col col-md p-0 rounded-2" style="box-shadow: 0 0 10px 1px">
-    <div class="row m-0">
-      <%- include('../partials/dateSelection.ejs') %>
-    </div>
+    <div class="row m-0"><%- include('../partials/dateSelection.ejs') %></div>
     <div class="row m-3">
       <h5 class="p-0">Dự đoán tổng tiền</h5>
       <div class="col-6 p-0 d-flex">
@@ -111,7 +109,7 @@
   let queryColumns = [
     { data: 'no', orderable: false },
     { data: 'area', visible: false },
-    { data: 'plantation', width: '5%' },
+    { data: 'plantation', width: '5%',visible: false },
     { data: 'dryQuantity', width: '10%' },
     { data: 'dryPrice', orderable: false, width: '7%' },
     { data: 'dryTotal', orderable: false, width: '15%' },
@@ -120,17 +118,11 @@
     { data: 'mixedTotal', orderable: false, width: '15%' },
     { data: 'notes', orderable: false, width: '15%' },
     { data: 'totalMoney', width: '16%' },
-    {
-      data: 'slug',
-      orderable: false,
-      render: function (data, type, row) {
-        return `<a href="/quan-ly-vuon/vuon/${data}" class="text-decoration-none text-dark fs-5"><i class="ri-file-edit-line"></i></a>`;
-      },
-    },
+    { data: 'id'},
   ];
   initializeDataTable(
     '#query_table',
-    '/truy-van/getQuery',
+    '/truy-van/getDataTotal',
     '#staticBackdrop',
     '#deleteModalToggle',
     queryColumns,
