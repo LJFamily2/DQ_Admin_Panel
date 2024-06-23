@@ -4,6 +4,7 @@ const formatNumberForDisplay = require('./utils/formatNumberForDisplay');
 const DataModel = require('../models/dataModel');
 const ProductTotalModel = require('../models/productTotalModel');
 const { getTotal } = require('./utils/getTotal');
+
 module.exports = {
   renderPage,
   createData,

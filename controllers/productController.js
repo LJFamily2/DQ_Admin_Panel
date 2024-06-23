@@ -1,6 +1,7 @@
 const ProductModel = require('../models/productModel');
 const handleResponse = require('./utils/handleResponse');
 const trimStringFields = require('./utils/trimStringFields');
+const ProductTotalModel = require('../models/productTotalModel');
 
 module.exports = {
   createProduct,
@@ -30,11 +31,20 @@ async function createProduct(req, res) {
   req.body = trimStringFields(req.body);
 
   try {
+    // Ensure quantity and dryRubberUsed are defined, else default to "0"
+    let quantityStr = req.body.quantity ? req.body.quantity.replace(",", ".") : "0";
+    let dryRubberUsedStr = req.body.dryRubberUsed ? req.body.dryRubberUsed.replace(",", ".") : "0";
+
+    let quantity = parseFloat(quantityStr);
+    let dryRubberUsed = parseFloat(dryRubberUsedStr);
+    
     const newProduct = await ProductModel.create({
       ...req.body,
+      quantity: quantity,
+      dryRubberUsed: dryRubberUsed,
     });
     if (!newProduct) {
-      handleResponse(
+      return handleResponse(
         req,
         res,
         404,
@@ -45,6 +55,31 @@ async function createProduct(req, res) {
     }
 
     console.log(newProduct);
+
+    let updateData = {};
+    if (dryRubberUsed > 0) {
+      updateData.$inc = { ...updateData.$inc, dryRubber: -dryRubberUsed };
+    }
+    if (quantity > 0) {
+      updateData.$inc = { ...updateData.$inc, product: quantity };
+    }
+
+    const total = await ProductTotalModel.findOneAndUpdate({}, updateData, {
+      new: true,
+      upsert: true,
+    });
+
+    if (!total) {
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Cập nhật dữ liệu tổng thất bại',
+        '/quan-ly-hang-hoa',
+      );
+    }
+
     handleResponse(
       req,
       res,
@@ -62,12 +97,18 @@ async function createProduct(req, res) {
 async function updateProduct(req, res) {
   console.log(req.body);
   req.body = trimStringFields(req.body);
-  const id = req.params.id;
   try {
+    const {id} =req.params;
+    
     const updateFields = {
-      name: req.body.name,
-      unit: req.body.unit,
+      date: req.body.date,
+      dryRubberUsed: req.body.dryRubberUsed,
+      quantity: req.body.quantity,
+      notes: req.body.notes,
     };
+    
+    const oldData = await ProductModel.findById(id);
+    
     const updatedProduct = await ProductModel.findByIdAndUpdate(
       id,
       updateFields,
@@ -75,7 +116,7 @@ async function updateProduct(req, res) {
     );
 
     if (!updatedProduct) {
-      handleResponse(
+      return handleResponse(
         req,
         res,
         404,
@@ -86,6 +127,36 @@ async function updateProduct(req, res) {
     }
 
     console.log(updatedProduct);
+
+
+    let updateData = {};
+
+    let dryRubberUsedDiff = updatedProduct.dryRubberUsed - oldData.dryRubberUsed
+    let quantityDiff = updatedProduct.quantity - oldData.quantity
+    console.log(updatedProduct.dryRubberUsed)
+    console.log(oldData.dryRubberUsed)
+    console.log(dryRubberUsedDiff , quantityDiff)
+  
+    if (dryRubberUsedDiff !== 0) {
+      updateData.$inc = { ...updateData.$inc, dryRubber: -dryRubberUsedDiff };
+    }
+    if (quantityDiff !== 0) {
+      updateData.$inc = { ...updateData.$inc, product: quantityDiff };
+    }
+
+
+    const total = await ProductTotalModel.findOneAndUpdate({}, updateData, {new:true, upsert: true})
+
+    if (!total) {
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Cập nhật dữ liệu tổng thất bại',
+        '/quan-ly-hang-hoa',
+      );
+    }
 
     handleResponse(
       req,
@@ -128,6 +199,30 @@ async function deleteProduct(req, res) {
         '/quan-ly-hang-hoa',
       );
     }
+
+    let updateData = {};
+    if (deletedProduct.dryRubberUsed > 0) {
+      updateData.$inc = { ...updateData.$inc, dryRubber: deletedProduct.dryRubberUsed };
+    }
+    if (deletedProduct.quantity > 0) {
+      updateData.$inc = { ...updateData.$inc, product: -deletedProduct.quantity };
+    }
+
+    const total = await ProductTotalModel.findOneAndUpdate
+      ({}, updateData, {new:true, upsert: true})
+
+    if(!total){
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Cập nhật dữ liệu tổng thất bại',
+        '/quan-ly-hang-hoa',
+      );
+    }
+    
+
     handleResponse(
       req,
       res,
@@ -138,7 +233,7 @@ async function deleteProduct(req, res) {
     );
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: err.message });
+    res.status(500);
   }
 }
 

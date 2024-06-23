@@ -28,7 +28,7 @@
             <th>Ngày chạy lò</th>
             <th>Quy khô sử dụng</th>
             <th>Thành phẩm</th>
-            <th>Ghi chú </th>
+            <th>Ghi chú</th>
             <th>Chỉnh sửa</th>
           </tr>
         </thead>
@@ -51,7 +51,7 @@
               <div class="modal-content">
                 <div class="modal-header">
                   <h1 class="modal-title fs-5" id="staticBackdropLabel">
-                    Cập nhật thông tin cho <%= product.name %>
+                    Cập nhật thông tin <%= product.date.toLocaleDateString() %>
                   </h1>
                   <button
                     type="button"
@@ -67,37 +67,67 @@
                 >
                   <div class="modal-body">
                     <div class="my-3">
-                      <label for="name<%= index %>" class="form-label"
-                        >Tên</label
-                      >
+                      <label for="date" class="form-label">Ngày chạy lò</label>
                       <input
-                        type="text"
+                        type="date"
                         class="form-control"
-                        id="name<%= index %>"
-                        name="name"
-                        placeholder="Nhập tên mới"
-                        value="<%= product.name %>"
+                        id="date"
+                        name="date"
+                        placeholder="Nhập tên"
+                        value="<%= product.date.toISOString().slice(0,10)  %>"
                       />
                     </div>
 
                     <div class="my-3">
-                      <label for="unit<%= index %>" class="form-label"
-                        >Đơn vị</label
+                      <label for="dryRubberUsed" class="form-label"
+                        >Quy khô sử dụng</label
                       >
                       <input
                         type="text"
                         class="form-control"
-                        id="unit<%= index %>"
-                        name="unit"
-                        placeholder="Nhập đơn vị mới"
-                        value="<%= product.unit %>"
+                        id="dryRubberUsed"
+                        name="dryRubberUsed"
+                        placeholder="123,45"
+                        value="<%= product.dryRubberUsed %>"
+                        oninput="handleQuantityInput(this)"
                       />
                     </div>
-                  </div>
-                  <div class="modal-footer">
-                    <button type="submit" class="btn btn-success">
-                      Lưu mới
-                    </button>
+
+                    <div class="my-3">
+                      <label for="quantity" class="form-label"
+                        >Thành phẩm</label
+                      >
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="quantity"
+                        name="quantity"
+                        placeholder="123,45"
+                        oninput="handleQuantityInput(this)"
+                        value="<%= product.quantity %>"
+                      />
+                    </div>
+
+                    <div class="my-3">
+                      <label for="notes" class="form-label">Ghi chú</label>
+                      <textarea
+                        type="text"
+                        class="form-control"
+                        rows="3"
+                        id="notes"
+                        name="notes"
+                      > <%= product.notes %> </textarea>
+                    </div>
+
+                    <div class="modal-footer">
+                      <!-- Buttons -->
+                      <button type="submit" class="btn btn-primary">
+                        Thêm
+                      </button>
+                      <button type="reset" class="btn btn-secondary">
+                        Làm mới
+                      </button>
+                    </div>
                   </div>
                 </form>
               </div>
