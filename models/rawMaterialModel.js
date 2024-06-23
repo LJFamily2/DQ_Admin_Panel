@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const dataSchema = new mongoose.Schema({
+const rawMaterialSchema = new mongoose.Schema({
     date: Date,
     notes: String,
     products: {
@@ -10,7 +10,7 @@ const dataSchema = new mongoose.Schema({
     },
 });
 
-const dataModel = mongoose.model('Dữ liệu', dataSchema);
+const rawMaterialModel = mongoose.model('Dữ liệu', rawMaterialSchema);
 
-module.exports = dataModel;
+module.exports = rawMaterialModel;
  

@@ -1,9 +1,8 @@
 const trimStringFields = require('./utils/trimStringFields');
 const handleResponse = require('./utils/handleResponse');
 const formatNumberForDisplay = require('./utils/formatNumberForDisplay');
-const DataModel = require('../models/dataModel');
+const RawMaterialModel = require('../models/rawMaterialModel');
 const ProductTotalModel = require('../models/productTotalModel');
-const { getTotal } = require('./utils/getTotal');
 
 module.exports = {
   renderPage,
@@ -15,17 +14,13 @@ module.exports = {
 
 async function renderPage(req, res) {
   try {
-    let dryTotal = formatNumberForDisplay(await getTotal('dry'));
-    let mixedTotal = formatNumberForDisplay(await getTotal('mixed'));
     console.log(dryTotal);
     const total = await ProductTotalModel.find({});
-    const datas = await DataModel.find({});
+    const datas = await RawMaterialModel.find({});
     res.render('src/dataPage', {
       layout: './layouts/defaultLayout',
       datas,
-      dryTotal,
       total,
-      mixedTotal,
       messages: req.flash(),
       title: 'Dữ liệu',
     });
@@ -62,7 +57,7 @@ async function updateProductTotal(data, operation) {
 async function createData(req, res) {
   req.body = trimStringFields(req.body);
   try {
-    let date = await DataModel.findOne({ date: req.body.date });
+    let date = await RawMaterialModel.findOne({ date: req.body.date });
     if (date) {
       return handleResponse(
         req,
@@ -84,7 +79,7 @@ async function createData(req, res) {
         (req.body.mixedQuantity || '0').replace(',', '.'),
       ),
     };
-    const newData = await DataModel.create({
+    const newData = await RawMaterialModel.create({
       ...req.body,
       products: products,
     });
@@ -157,9 +152,9 @@ async function getDatas(req, res) {
       };
     }
 
-    const totalRecords = await DataModel.countDocuments(filter);
+    const totalRecords = await RawMaterialModel.countDocuments(filter);
 
-    let data = await DataModel.find(filter);
+    let data = await RawMaterialModel.find(filter);
 
     if (searchValue) {
       const searchColumns = ['dryQuantity', 'dryPercentage', 'mixedQuantity'];
@@ -272,10 +267,10 @@ async function updateData(req, res) {
     console.log(updateFields);
 
     // Retrieve the old data before updating
-    const oldData = await DataModel.findById(id);
+    const oldData = await RawMaterialModel.findById(id);
 
     // Update the data with new values
-    const newData = await DataModel.findByIdAndUpdate(
+    const newData = await RawMaterialModel.findByIdAndUpdate(
       id,
       { $set: updateFields },
       { new: true },
@@ -359,7 +354,7 @@ async function deleteData(req, res) {
     const { id } = req.params;
 
     // Find the data to be deleted
-    const data = await DataModel.findByIdAndDelete(id);
+    const data = await RawMaterialModel.findByIdAndDelete(id);
 
     if (!data) {
       handleResponse(

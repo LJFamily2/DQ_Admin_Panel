@@ -1,7 +1,7 @@
 const AreaModel = require('../models/areaModel');
 const formatNumberForDisplay = require('./utils/formatNumberForDisplay');
 const PlantationModel = require('../models/plantationModel');
-const DataModel = require('../models/dataModel');
+const RawMaterialModel = require('../models/rawMaterialModel');
 
 async function renderPage(req, res) {
   try {
