@@ -1,13 +1,15 @@
 const mongoose = require('mongoose');
 
 const saleSchema = new mongoose.Schema({
-    productUsed: {
-        type: Number,
-        default: 0
-    },
+    code: String,
     products:[{
         name: String, 
         quantity: Number,
+        price: Number,
+    }],
+    date: Date, 
+    contract: [{
+        image: String,
     }]
 });
 
