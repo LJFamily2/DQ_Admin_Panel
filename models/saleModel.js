@@ -8,9 +8,6 @@ const saleSchema = new mongoose.Schema({
         price: Number,
     }],
     date: Date, 
-    contract: [{
-        image: String,
-    }],
     status: {
         type: String,
         enum: ["active", "closed"]
