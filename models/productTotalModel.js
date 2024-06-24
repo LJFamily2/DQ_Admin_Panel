@@ -12,7 +12,11 @@ const productTotalSchema = new mongoose.Schema({
     product:{
         type:Number,
         default: 0
-    }
+    }, 
+    income:{
+        type:Number,
+        default: 0
+    },
 });
 
 const productTotalModel = mongoose.model('Dữ liệu Tổng', productTotalSchema);

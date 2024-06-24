@@ -14,7 +14,7 @@ const saleSchema = new mongoose.Schema({
     status: {
         type: String,
         enum: ["active", "closed"]
-    } 
+    }
 });
 
 const saleModel = mongoose.model('Dữ liệu bán mủ', saleSchema);
