@@ -7,6 +7,7 @@ module.exports = {
   renderPage,
   createData,
   getDatas,
+  updateData,
 };
 
 async function renderPage(req, res) {
@@ -127,10 +128,10 @@ async function getDatas(req, res) {
     const data = products.map((product, index) => ({
       no: parseInt(start, 10) + index + 1,
       date: product.date.toLocaleDateString(),
-      code: product.code || "",
-      products: "",
+      code: product.code || '',
+      products: '',
       notes: product.notes || '',
-      total: (product.quantity * product.price) || 0,
+      total: product.quantity * product.price || 0,
       status: product.status,
       id: product._id,
     }));
@@ -143,6 +144,20 @@ async function getDatas(req, res) {
     });
   } catch (error) {
     console.error('Error handling DataTable request:', error);
+    res.status(500);
+  }
+}
+
+async function updateData(req, res) {
+  try {
+     const {id} = req.params;
+
+    const updateField = {
+      ...req.body,
+    };
+
+  } catch (err) {
+    console.log(err);
     res.status(500);
   }
 }

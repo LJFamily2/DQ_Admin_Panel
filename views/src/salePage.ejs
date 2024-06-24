@@ -85,6 +85,7 @@
                         id="date<%= index %>"
                         name="date"
                         required
+                        value="<%= sale.date.toISOString().slice(0,10)  %>"
                       />
                     </div>
 
@@ -99,12 +100,16 @@
                         name="code"
                         placeholder="NPUE-3984"
                         required
+                        value="<%= sale.code %>"
                       />
                     </div>
 
-                    <hr />
 
-                    <div class="productLists<%= index %>  my-3" >
+
+                    <hr />
+                    <% sale.products.forEach((element, index) => { %>
+
+                    <div class="productLists<%= index %> my-3">
                       <div class="productList<%= index %>">
                         <div class="row my-3">
                           <div class="row m-0 p-0">
@@ -119,9 +124,11 @@
                                 class="form-control"
                                 placeholder="Mủ cao su"
                                 required
+                                value="<%= element.name %>"
                               />
                             </div>
                           </div>
+
                           <div class="row my-3 m-0 p-0">
                             <div class="col col-md-6">
                               <label
@@ -136,6 +143,7 @@
                                 name="quantity"
                                 placeholder="1234,34"
                                 oninput="handleQuantityInput(this)"
+                                value="<%= element.quantity %>"
                               />
                             </div>
                             <div class="col col-md-6">
@@ -149,14 +157,17 @@
                                 name="price"
                                 placeholder="20000"
                                 oninput="handleQuantityInput(this)"
+                                value="<%= element.price %>"
                               />
                             </div>
                           </div>
                         </div>
                       </div>
 
-                      <hr />
                     </div>
+                    <hr />
+
+                    <% }) %>
 
                     <div class="btnController my-3">
                       <button
@@ -176,15 +187,34 @@
                     </div>
 
                     <div class="my-3">
-                      <label for="notes<%= index %>" class="form-label">Ghi chú</label>
+                      <label for="notes<%= index %>" class="form-label"
+                        >Ghi chú</label
+                      >
                       <textarea
                         type="text"
                         class="form-control"
                         rows="3"
                         id="notes<%= index %>"
                         name="notes"
-                      ></textarea>
+                      ><%= sale.notes%>
+                    </textarea
+                      >
                     </div>
+
+                    <div class="my-3">
+                      <label for="status<%= index %>" class="form-label"
+                        >Tình trạng</label
+                      >
+                      <select
+                        class="form-select"
+                        id="status<%= index %>"
+                        name="status"
+                      >
+                        <option value="active" <%= sale.status === 'active' ? "selected" : "" %>> Đang mở </option>
+                        <option value="closed">Đóng</option>
+                      </select>
+                    </div>
+
                     <div class="modal-footer">
                       <!-- Buttons -->
                       <button type="submit" class="btn btn-success">Lưu</button>
@@ -395,6 +425,4 @@
     false,
     true,
   );
-
-
 </script>
