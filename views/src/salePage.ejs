@@ -5,6 +5,7 @@
   <script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.html5.min.js"></script>
   <script src="/js/datatable.js"></script>
   <script src="/js/inputFieldRestriction.js" defer></script>
+  <script src="/js/multipleFieldsWithText.js" defer></script>
 
   <!-- Slim select -->
   <script src="/js/slim-select.js" defer></script>
@@ -34,8 +35,9 @@
             <th>Ngày</th>
             <th>Mã hợp đồng</th>
             <th>Hàng hóa</th>
-            <th>Tình trạng</th>
             <th>Ghi chú</th>
+            <th>Tổng</th>
+            <th>Tình trạng</th>
             <th>Chỉnh sửa</th>
           </tr>
         </thead>
@@ -82,100 +84,118 @@
                         class="form-control"
                         id="date<%= index %>"
                         name="date"
-                        value="<%= sale.date.toISOString().slice(0,10) %>"
-                        onchange="newInput(this)"
+                        required
+                      />
+                    </div>
+
+                    <div class="my-3">
+                      <label for="code<%= index %>" class="form-label"
+                        >Mã hợp đồng</label
+                      >
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="code<%= index %>"
+                        name="code"
+                        placeholder="NPUE-3984"
+                        required
                       />
                     </div>
 
                     <hr />
 
-                    <div class="productLists my-3">
-                      <div class="productList">
+                    <div class="productLists<%= index %>  my-3" >
+                      <div class="productList<%= index %>">
                         <div class="row my-3">
-                          <label class="form-label">Mủ Quy Khô</label>
-                          <div class="col col-md-6">
-                            <label for="dryQuantity" class="form-label"
-                              >Số lượng</label
-                            >
-                            <input
-                              type="text"
-                              class="form-control"
-                              id="dryQuantity"
-                              name="dryQuantity"
-                              placeholder="1234,34"
-                              oninput="handleQuantityInput(this)"
-                              onchange="newInput(this)"
-                              value="<%= sale.products.dryQuantity %>"
-                            />
+                          <div class="row m-0 p-0">
+                            <div class="col">
+                              <label for="name<%= index %>" class="form-label"
+                                >Tên hàng hóa</label
+                              >
+                              <input
+                                type="text"
+                                name="name"
+                                id="name<%= index %>"
+                                class="form-control"
+                                placeholder="Mủ cao su"
+                                required
+                              />
+                            </div>
                           </div>
-                          <div class="col col-md-6">
-                            <label for="dryPercentage" class="form-label"
-                              >Hàm lượng</label
-                            >
-                            <input
-                              type="text"
-                              class="form-control"
-                              id="dryPercentage"
-                              name="dryPercentage"
-                              placeholder="23,04"
-                              oninput="handlePercentageInput(this)"
-                              onchange="newInput(this)"
-                              value="<%= sale.products.dryPercentage %>"
-                            />
+                          <div class="row my-3 m-0 p-0">
+                            <div class="col col-md-6">
+                              <label
+                                for="quantity<%= index %>"
+                                class="form-label"
+                                >Số lượng</label
+                              >
+                              <input
+                                type="text"
+                                class="form-control"
+                                id="quantity<%= index %>"
+                                name="quantity"
+                                placeholder="1234,34"
+                                oninput="handleQuantityInput(this)"
+                              />
+                            </div>
+                            <div class="col col-md-6">
+                              <label for="price<%= index %>" class="form-label"
+                                >Đơn giá</label
+                              >
+                              <input
+                                type="text"
+                                class="form-control"
+                                id="price<%= index %>"
+                                name="price"
+                                placeholder="20000"
+                                oninput="handleQuantityInput(this)"
+                              />
+                            </div>
                           </div>
                         </div>
                       </div>
 
                       <hr />
+                    </div>
 
-                      <div class="productList">
-                        <div class="row my-3">
-                          <label class="form-label">Mủ tạp</label>
-                          <div class="col-12">
-                            <label for="mixedQuantity" class="form-label"
-                              >Số lượng</label
-                            >
-                            <input
-                              type="text"
-                              class="form-control"
-                              id="mixedQuantity"
-                              name="mixedQuantity"
-                              placeholder="1234,34"
-                              min="0"
-                              oninput="handleQuantityInput(this)"
-                              onchange="newInput(this)"
-                              value="<%= sale.products.mixedQuantity %>"
-                            />
-                          </div>
-                        </div>
-                        <hr />
-                      </div>
+                    <div class="btnController my-3">
+                      <button
+                        type="button"
+                        class="btn btn-success"
+                        onclick="addInputField('form .productLists<%= index %>', '.productList<%= index %>')"
+                      >
+                        Thêm dữ liệu
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-danger mx-2"
+                        onclick="removeInputField('form .productLists<%= index %>', '.productList<%= index %>')"
+                      >
+                        Xóa
+                      </button>
                     </div>
 
                     <div class="my-3">
-                      <label for="note" class="form-label">Ghi chú</label>
+                      <label for="notes<%= index %>" class="form-label">Ghi chú</label>
                       <textarea
                         type="text"
                         class="form-control"
                         rows="3"
-                        id="note"
+                        id="notes<%= index %>"
                         name="notes"
-                        onchange="newInput(this)"
-                      >
-<%= sale.notes %></textarea
-                      >
+                      ></textarea>
                     </div>
-                  </div>
-                  <div class="modal-footer">
-                    <!-- Buttons -->
-                    <button type="submit" class="btn btn-success">Lưu</button>
-                    <button
-                      type="reset"
-                      class="btn btn-secondary"
-                      onclick="resetInput()"
-                    >
-                      Reset
-                    </button>
+                    <div class="modal-footer">
+                      <!-- Buttons -->
+                      <button type="submit" class="btn btn-success">Lưu</button>
+                      <button
+                        type="reset"
+                        class="btn btn-secondary"
+                        onclick="resetInput()"
+                      >
+                        Reset
+                      </button>
+                    </div>
                   </div>
                 </form>
               </div>
@@ -240,45 +260,64 @@
     <form action="/quan-ly-hop-dong/createData" method="post">
       <div class="my-3">
         <label for="date" class="form-label">Ngày nhập</label>
-        <input type="date" class="form-control" id="date" name="date" />
+        <input
+          type="date"
+          class="form-control"
+          id="date"
+          name="date"
+          required
+        />
+      </div>
+
+      <div class="my-3">
+        <label for="code" class="form-label">Mã hợp đồng</label>
+        <input
+          type="text"
+          class="form-control"
+          id="code"
+          name="code"
+          placeholder="NPUE-3984"
+          required
+        />
       </div>
 
       <hr />
 
       <div class="productLists my-3">
         <div class="productList">
-          <div class="row my-3 ">
+          <div class="row my-3">
             <div class="row m-0 p-0">
               <div class="col">
-                <label for="name[]" class="form-label">Tên hàng hóa</label>
+                <label for="name" class="form-label">Tên hàng hóa</label>
                 <input
                   type="text"
-                  name="name[]"
-                  id="name[]"
+                  name="name"
+                  id="name"
                   class="form-control"
                   placeholder="Mủ cao su"
+                  required
                 />
               </div>
             </div>
             <div class="row my-3 m-0 p-0">
               <div class="col col-md-6">
-                <label for="quantity[]" class="form-label">Số lượng</label>
+                <label for="quantity" class="form-label">Số lượng</label>
                 <input
                   type="text"
                   class="form-control"
-                  id="quantity[]"
-                  name="quantity[]"
+                  id="quantity"
+                  name="quantity"
                   placeholder="1234,34"
                   oninput="handleQuantityInput(this)"
                 />
               </div>
               <div class="col col-md-6">
-                <label for="price[]" class="form-label">Đơn giá</label>
+                <label for="price" class="form-label">Đơn giá</label>
                 <input
                   type="text"
                   class="form-control"
-                  id="price[]"
-                  name="price[]"
+                  id="price"
+                  name="price"
                   placeholder="20000"
                   oninput="handleQuantityInput(this)"
                 />
@@ -294,17 +333,28 @@
         <button
           type="button"
           class="btn btn-success"
-          onclick="addInputField('form .productLists')"
+          onclick="addInputField('form .productLists', '.productList')"
         >
           Thêm dữ liệu
         </button>
         <button
           type="button"
           class="btn btn-danger mx-2"
-          onclick="removeInputField('form .productLists')"
+          onclick="removeInputField('form .productLists', '.productList')"
         >
           Xóa
         </button>
+      </div>
+
+      <div class="my-3">
+        <label for="notes" class="form-label">Ghi chú</label>
+        <textarea
+          type="text"
+          class="form-control"
+          rows="3"
+          id="notes"
+          name="notes"
+        ></textarea>
       </div>
 
       <!-- Buttons -->
@@ -318,75 +368,33 @@
   let columns = [
     { data: 'no', orderable: false },
     { data: 'date' },
-    { data: 'dryQuantity', orderable: false },
-    { data: 'dryPercentage', orderable: false },
-    { data: 'dryTotal', orderable: false },
-    { data: 'mixedQuantity', orderable: false },
+    { data: 'code', orderable: false },
+    { data: 'products', orderable: false },
     { data: 'notes', orderable: false },
+    { data: 'total', orderable: false },
+    { data: 'status' },
     { data: 'id', orderable: false },
   ];
 
-  // initializeDataTable(
-  //   '#table',
-  //   '/quan-ly-du-lieu/getDatas',
-  //   '#staticBackdrop',
-  //   '#deleteModalToggle',
-  //   columns,
-  //   false,
-  //   '#filterButton',
-  //   '#startDate',
-  //   '#endDate',
-  //   '#clearFilterButton',
-  //   false,
-  //   false,
-  //   false,
-  //   false,
-  //   false,
-  //   false,
-  //   true
-  // );
+  initializeDataTable(
+    '#table',
+    '/quan-ly-hop-dong/getDatas',
+    '#staticBackdrop',
+    '#deleteModalToggle',
+    columns,
+    false,
+    '#filterButton',
+    '#startDate',
+    '#endDate',
+    '#clearFilterButton',
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    true,
+  );
 
-  // Toggle buttons
-  const deleteButton = document.querySelector('.btnController .btn-danger');
-  function addInputField(selector) {
-    // Get the productLists div
-    const productLists = document.querySelector(selector);
 
-    // Get the first .productList div within productLists
-    const firstProductList = productLists.querySelector('.productList');
-
-    // Clone the first .productList div
-    const clonedProductList = firstProductList.cloneNode(true);
-
-    // Append the cloned div to the productLists div
-    productLists.appendChild(clonedProductList);
-
-    // If there is more than one .productList div, show the delete button
-    if (productLists.querySelectorAll('.productList').length > 1) {
-      deleteButton.style.display = 'inline';
-    }
-  }
-
-  function removeInputField(selector) {
-    // Get the productLists div
-    const productLists = document.querySelector(selector);
-
-    // Get all .row divs
-    const rows = productLists.querySelectorAll('.productList');
-
-    // Get the last .row div
-    const lastRow = rows[rows.length - 1];
-
-    // Remove the last .row div
-    if (lastRow) {
-      lastRow.remove();
-    } else {
-      console.log('No .row div to remove in ' + selector);
-    }
-
-    // If there is only one .row div, hide the delete button
-    if (rows.length <= 2) {
-      deleteButton.style.display = 'none';
-    }
-  }
 </script>

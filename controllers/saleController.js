@@ -6,6 +6,7 @@ const trimStringFields = require('./utils/trimStringFields');
 module.exports = {
   renderPage,
   createData,
+  getDatas,
 };
 
 async function renderPage(req, res) {
@@ -28,31 +29,120 @@ async function renderPage(req, res) {
 async function createData(req, res) {
   req.body = trimStringFields(req.body);
   try {
-    console.log(req.body)
-    // Extract product data
-    const products = [];
-    for (let i = 0; i < req.body.name.length; i++) {
-      products.push({
-        name: req.body.name[i],
-        quantity: parseFloat(req.body.quantity[i].replace(/,/g, '')),
-        price: parseFloat(req.body.price[i].replace(/,/g, '')),
-      });
-    }
+    const products = (
+      Array.isArray(req.body.name) ? req.body.name : [req.body.name]
+    ).map((name, i) => ({
+      name,
+      quantity: parseFloat(
+        (Array.isArray(req.body.quantity)
+          ? req.body.quantity
+          : [req.body.quantity])[i].replace(/,/g, '.'),
+      ),
+      price: parseFloat(
+        (Array.isArray(req.body.price) ? req.body.price : [req.body.price])[
+          i
+        ].replace(/,/g, '.'),
+      ),
+    }));
 
-    // Create new sale
     const newSale = await SaleModel.create({
       ...req.body,
-      products: products,
+      products,
       status: 'active',
     });
 
-    if (!newSale) {
-      return handleResponse(req, res, 404, 'fail', 'Thêm hợp đồng bán mủ thất bại', req.headers.referer);
+    let updateData = { $inc: {} };
+
+    let totalQuantityUsed = 0;
+    let totalIncome = 0;
+    products.forEach(product => {
+      totalQuantityUsed += product.quantity;
+      totalIncome += product.quantity * product.price;
+    });
+
+    if (totalQuantityUsed > 0) {
+      updateData.$inc.dryRubber = -totalQuantityUsed;
+      updateData.$inc.income = totalIncome;
     }
-    handleResponse(req, res, 200, 'success', 'Thêm hợp đồng bán mủ thành công', req.headers.referer);
+
+    const total = await ProductTotalModel.updateOne({}, updateData, {
+      new: true,
+      upsert: true,
+    });
+
+    if (!total) {
+      return handleResponse(
+        req,
+        res,
+        500,
+        'fail',
+        'Cập nhật dữ liệu tổng thất bại',
+        req.headers.referer,
+      );
+    }
+
+    return handleResponse(
+      req,
+      res,
+      newSale ? 200 : 404,
+      newSale ? 'success' : 'fail',
+      newSale
+        ? 'Thêm hợp đồng bán mủ thành công'
+        : 'Thêm hợp đồng bán mủ thất bại',
+      req.headers.referer,
+    );
   } catch (err) {
     console.log(err);
-    res.status(500);
+    return res.status(500).send('Internal Server Error');
   }
 }
 
+async function getDatas(req, res) {
+  try {
+    const { draw, start = 0, length = 10, search, order, columns } = req.body;
+    const searchValue = search?.value || '';
+    const sortColumn = columns?.[order?.[0]?.column]?.data;
+    const sortDirection = order?.[0]?.dir === 'asc' ? 1 : -1;
+
+    // Use these ObjectId(s) in your searchQuery
+    const searchQuery = searchValue
+      ? {
+          $or: [
+            { date: { $regex: searchValue, $options: 'i' } },
+            { code: { $regex: searchValue, $options: 'i' } },
+            { status: { $regex: searchValue, $options: 'i' } },
+            { notes: { $regex: searchValue, $options: 'i' } },
+          ],
+        }
+      : {};
+
+    const totalRecords = await SaleModel.countDocuments();
+    const filteredRecords = await SaleModel.countDocuments(searchQuery);
+    const products = await SaleModel.find(searchQuery)
+      .sort({ [sortColumn]: sortDirection })
+      .skip(parseInt(start, 10))
+      .limit(parseInt(length, 10))
+      .exec();
+
+    const data = products.map((product, index) => ({
+      no: parseInt(start, 10) + index + 1,
+      date: product.date.toLocaleDateString(),
+      code: product.code || "",
+      products: "",
+      notes: product.notes || '',
+      total: (product.quantity * product.price) || 0,
+      status: product.status,
+      id: product._id,
+    }));
+
+    res.json({
+      draw,
+      recordsTotal: totalRecords,
+      recordsFiltered: filteredRecords,
+      data,
+    });
+  } catch (error) {
+    console.error('Error handling DataTable request:', error);
+    res.status(500);
+  }
+}
