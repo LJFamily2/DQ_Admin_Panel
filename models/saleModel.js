@@ -10,7 +10,11 @@ const saleSchema = new mongoose.Schema({
     date: Date, 
     contract: [{
         image: String,
-    }]
+    }],
+    status: {
+        type: String,
+        enum: ["active", "closed"]
+    } 
 });
 
 const saleModel = mongoose.model('Dữ liệu bán mủ', saleSchema);
