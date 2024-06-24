@@ -7,6 +7,7 @@ const areaRoute = require("./src/areaRoute")
 const plantationRoute = require("./src/plantationRoute")
 const queryRoute = require("./src/queryRoute")
 const rawMaterialRoute = require("./src/rawMaterialRoute")
+const saleRoute = require("./src/saleRoute")
 
 
 const routes = [
@@ -19,6 +20,7 @@ const routes = [
     {path: "/quan-ly-vuon", route: plantationRoute},
     {path: "/truy-van", route: queryRoute},
     {path: "/quan-ly-du-lieu", route: rawMaterialRoute},
+    {path: "/quan-ly-hop-dong", route: saleRoute},
 ]
 
 module.exports = routes;

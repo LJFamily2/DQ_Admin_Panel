@@ -14,10 +14,9 @@ module.exports = {
 
 async function renderPage(req, res) {
   try {
-    console.log(dryTotal);
     const total = await ProductTotalModel.find({});
     const datas = await RawMaterialModel.find({});
-    res.render('src/dataPage', {
+    res.render('src/rawMaterialPage', {
       layout: './layouts/defaultLayout',
       datas,
       total,
