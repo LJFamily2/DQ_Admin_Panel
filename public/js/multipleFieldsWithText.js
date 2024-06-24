@@ -6,7 +6,6 @@
 
     // Get the first .productList div within productLists
     const firstProductList = productLists.querySelector(child);
-    console.log(firstProductList)
     // Clone the first .productList div
     const clonedProductList = firstProductList.cloneNode(true);
 
