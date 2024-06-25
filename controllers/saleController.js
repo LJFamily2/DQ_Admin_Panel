@@ -9,6 +9,8 @@ module.exports = {
   getDatas,
   updateData,
   deleteData,
+
+  renderDetailPage,
 };
 
 async function renderPage(req, res) {
@@ -21,6 +23,32 @@ async function renderPage(req, res) {
       total,
       messages: req.flash(),
       title: 'Quản lý hợp đồng bán mủ',
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500);
+  }
+}
+
+async function renderDetailPage(req, res) {
+  try {
+    const { slug } = req.params;
+    const sale = await SaleModel.findOne({ slug });
+    if (!sale) {
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Không tìm thấy hợp đồng',
+        req.headers.referer,
+      );
+    }
+    res.render('src/saleDetailPage', {
+      layout: './layouts/defaultLayout',
+      sale,
+      messages: req.flash(),
+      title: 'Chi tiết hợp đồng bán mủ',
     });
   } catch (err) {
     console.log(err);
@@ -156,12 +184,57 @@ async function updateData(req, res) {
   try {
     const { id } = req.params;
     console.log(id);
-    // const updateField = {
-    //   ...req.body,
-    // };
+    if (!id) {
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Không tìm thấy hàng hóa trong cơ sở dữ liệu',
+        req.headers.referer,
+      );
+    }
+
+    // Check if product fields exist and set default values if not
+    const names = req.body.name || [];
+    const quantities = req.body.quantity || [];
+    const prices = req.body.price || [];
+
+    const products = names.map((name, index) => ({
+      name,
+      quantity: quantities[index] ? parseFloat(quantities[index].replace(/,/g, '.')) : 0,
+      price: prices[index] ? parseFloat(prices[index].replace(/,/g, '.')) : 0,
+    }));
+
+    const updateField = {
+      ...req.body,
+      products,
+    };
+
+    const newSale = await SaleModel.findByIdAndUpdate(id, updateField, { new: true });
+    if (!newSale) {
+      return handleResponse(
+        req,
+        res,
+        400,
+        'fail',
+        'Cập nhật hợp đồng thất bại!',
+        req.headers.referer,
+      );
+    }
+
+    handleResponse(
+      req,
+      res,
+      200,
+      'success',
+      'Cập nhật hợp đồng thành công!',
+      req.headers.referer,
+    )
+
   } catch (err) {
     console.log(err);
-    res.status(500);
+    res.status(500)
   }
 }
 
@@ -192,14 +265,20 @@ async function deleteData(req, res) {
       );
     }
 
-    let updateData ={};
+    let updateData = {};
 
     sale.products.forEach(product => {
-      updateData.$inc = {...updateData.$inc, income: -(product.quantity * product.price)}
+      updateData.$inc = {
+        ...updateData.$inc,
+        income: -(product.quantity * product.price),
+      };
       updateData.$inc = { ...updateData.$inc, dryRubber: product.quantity };
     });
 
-    const total = await ProductTotalModel.updateOne({}, updateData, {new: true, upsert: true})
+    const total = await ProductTotalModel.updateOne({}, updateData, {
+      new: true,
+      upsert: true,
+    });
 
     if (!total) {
       return handleResponse(
@@ -212,9 +291,14 @@ async function deleteData(req, res) {
       );
     }
 
-    handleResponse(req,res, 200, "success", 'Xóa hợp đồng thành công!', req.headers.referer)
-
-
+    handleResponse(
+      req,
+      res,
+      200,
+      'success',
+      'Xóa hợp đồng thành công!',
+      req.headers.referer,
+    );
   } catch (err) {
     console.log(err);
     res.status(500);

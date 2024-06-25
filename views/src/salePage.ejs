@@ -7,9 +7,7 @@
   <script src="/js/inputFieldRestriction.js" defer></script>
   <script src="/js/multipleFieldsWithText.js" defer></script>
 
-  <!-- Slim select -->
-  <script src="/js/slim-select.js" defer></script>
-
+  <!-- Css -->
   <style>
     .updateButton {
       transition: all 200ms linear;
@@ -205,8 +203,8 @@
       <button type="reset" class="btn btn-secondary">Làm mới</button>
     </form>
   </div>
-  
 </div>
+
 <script>
   let columns = [
     { data: 'no', orderable: false },
@@ -215,7 +213,25 @@
     { data: 'products', orderable: false },
     { data: 'notes', orderable: false },
     { data: 'total', orderable: false },
-    { data: 'status' },
+    { data: 'status',
+      render: function (data) {
+        return data ? `  <div class="row">
+          <div class="col text-center "  >
+            <div class="text-light bg-success rounded-2 py-1" style= "pointer-event: none">
+              Đang mở
+            </div>
+          </div>
+        </div>
+      </div>` : `  <div class="row">
+          <div class="col text-center "  >
+            <div class="text-light bg-danger rounded-2 py-1" style= "pointer-event: none">
+              Đã đóng
+            </div>
+          </div>
+        </div>
+      </div>`;
+      },
+     },
     {
       data: 'slug',
       orderable: false,

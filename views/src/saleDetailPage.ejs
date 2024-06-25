@@ -1,0 +1,132 @@
+<head>
+  <!-- js -->
+  <script src="/js/multipleFieldsWithText.js" defer></script>
+</head>
+<div class="row m-0 px-2">
+  <div class="col-12 p-0 px-md-3">
+    <form action="/quan-ly-hop-dong/update/<%= sale._id %>" method="post">
+        <div class="my-3">
+            <label for="status" class="form-label fw-bold">Tình trạng</label>
+            <select class="form-select" name="status" id="status" required>
+                <option value="active" <%= sale.status === "active" ? 'selected' : '' %>>Đang mở</option>
+                <option value="closed" <%= sale.status === "closed" ? 'selected' : '' %>>Đã đóng</option>
+            </select>
+        </div>
+
+      <div class="my-3">
+        <label for="date" class="form-label fw-bold">Ngày nhập</label>
+        <input
+          type="date"
+          class="form-control"
+          id="date"
+          name="date"
+          required
+          value="<%= sale.date.toISOString().slice(0,10) %>"
+        />
+      </div>
+
+      <div class="my-3">
+        <label for="code" class="form-label fw-bold">Mã hợp đồng</label>
+        <input
+          type="text"
+          class="form-control"
+          id="code"
+          name="code"
+          placeholder="NPUE-3984"
+          required
+          value="<%= sale.code %>"
+        />
+      </div>
+
+      <hr />
+
+      <div class="productLists my-3">
+          <% sale.products.forEach((product, index) => { %>
+        <div class="productList">
+          <div class="row my-3">
+            <div class="row m-0 p-0">
+              <div class="col">
+                <label for="name" class="form-label fw-bold"
+                  >Tên hàng hóa</label
+                >
+                <input
+                  type="text"
+                  name="name"
+                  id="name"
+                  class="form-control"
+                  placeholder="Mủ cao su"
+                  required
+                    value="<%= product.name %>"
+                />
+              </div>
+            </div>
+            <div class="row my-3 m-0 p-0">
+              <div class="col col-md-6">
+                <label for="quantity" class="form-label fw-bold"
+                  >Số lượng</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="quantity"
+                  name="quantity"
+                  placeholder="1234,34"
+                  oninput="handleQuantityInput(this)"
+                    value="<%= product.quantity %>"
+                />
+              </div>
+              <div class="col col-md-6">
+                <label for="price" class="form-label fw-bold">Đơn giá</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="price"
+                  name="price"
+                  placeholder="20000"
+                  oninput="handleQuantityInput(this)"
+                    value="<%= product.price %>"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <hr />
+        <% }) %>
+      </div>
+
+      <div class="btnController my-3">
+        <button
+          type="button"
+          class="btn btn-success"
+          onclick="addInputField('.productLists', '.productList')"
+        >
+          Thêm dữ liệu
+        </button>
+        <button
+          type="button"
+          class="btn btn-danger mx-2"
+          style="display: none;"
+          onclick="removeInputField('.productLists', '.productList')"
+        >
+          Xóa
+        </button>
+      </div>
+
+      <div class="my-3">
+        <label for="notes" class="form-label fw-bold">Ghi chú</label>
+        <textarea
+          type="text"
+          class="form-control"
+          rows="3"
+          id="notes"
+          name="notes"
+        ><%= sale.notes %></textarea>
+      </div>
+
+      <!-- Buttons -->
+      <button type="submit" class="btn btn-primary">Thêm</button>
+      <button type="reset" class="btn btn-secondary">Làm mới</button>
+    </form>
+  </div>
+</div>
