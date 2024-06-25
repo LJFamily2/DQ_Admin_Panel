@@ -6,5 +6,6 @@ router.get('/', saleController.renderPage)
 router.post('/createData', saleController.createData)
 router.post('/getDatas', saleController.getDatas)
 router.post('/update/:id', saleController.updateData )
+router.post('/delete/:id', saleController.deleteData )
 
 module.exports = router;

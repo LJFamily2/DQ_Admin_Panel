@@ -177,13 +177,13 @@ async function deleteProduct(req, res) {
     const { id } = req.params;
 
     if (!id) {
-      handleResponse(
+      return handleResponse(
         req,
         res,
         404,
         'fail',
         'Không tìm thấy hàng hóa trong cơ sở dữ liệu',
-        '/quan-ly-hang-hoa',
+        req.headers.referer,
       );
     }
 

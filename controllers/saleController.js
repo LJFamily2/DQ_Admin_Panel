@@ -8,6 +8,7 @@ module.exports = {
   createData,
   getDatas,
   updateData,
+  deleteData,
 };
 
 async function renderPage(req, res) {
@@ -29,7 +30,7 @@ async function renderPage(req, res) {
 
 async function createData(req, res) {
   req.body = trimStringFields(req.body);
-  console.log(req.body)
+  console.log(req.body);
   try {
     const products = (
       Array.isArray(req.body.name) ? req.body.name : [req.body.name]
@@ -150,14 +151,69 @@ async function getDatas(req, res) {
 }
 
 async function updateData(req, res) {
-  console.log(req.body)
-  req.body = trimStringFields(req.body)
+  console.log(req.body);
+  req.body = trimStringFields(req.body);
   try {
-     const {id} = req.params;
-    console.log(id)
+    const { id } = req.params;
+    console.log(id);
     // const updateField = {
     //   ...req.body,
     // };
+  } catch (err) {
+    console.log(err);
+    res.status(500);
+  }
+}
+
+async function deleteData(req, res) {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Không tìm thấy hàng hóa trong cơ sở dữ liệu',
+        req.headers.referer,
+      );
+    }
+
+    const sale = await SaleModel.findByIdAndDelete(id);
+
+    if (!sale) {
+      return handleResponse(
+        req,
+        res,
+        400,
+        'fail',
+        'Xóa hợp đồng thất bại!',
+        req.headers.referer,
+      );
+    }
+
+    let updateData ={};
+
+    sale.products.forEach(product => {
+      updateData.$inc = {...updateData.$inc, income: -(product.quantity * product.price)}
+      updateData.$inc = { ...updateData.$inc, dryRubber: product.quantity };
+    });
+
+    const total = await ProductTotalModel.updateOne({}, updateData, {new: true, upsert: true})
+
+    if (!total) {
+      return handleResponse(
+        req,
+        res,
+        500,
+        'fail',
+        'Cập nhật dữ liệu tổng thất bại',
+        req.headers.referer,
+      );
+    }
+
+    handleResponse(req,res, 200, "success", 'Xóa hợp đồng thành công!', req.headers.referer)
+
 
   } catch (err) {
     console.log(err);

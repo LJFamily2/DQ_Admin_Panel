@@ -67,12 +67,12 @@
                   ></button>
                 </div>
                 <form
-                  action="/quan-ly-du-lieu/delete/<%= sale._id %>"
+                  action="/quan-ly-hop-dong/delete/<%= sale._id %>"
                   method="post"
                 >
                   <div class="modal-body">
-                    Bạn có muốn xóa
-                    <strong><%= sale.date.toLocaleDateString() %></strong> ?
+                    Bạn có muốn xóa hợp đồng mã
+                    <strong><%= sale.code %></strong> ?
                     Hành động này không thể hoàn tác.
                   </div>
                   <div class="modal-footer">
