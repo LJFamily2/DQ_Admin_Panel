@@ -1,11 +1,14 @@
 // Toggle buttons
 const deleteButton = document.querySelector('.btnController .btn-danger');
 function addInputField(selector, child) {
+  console.log(selector)
+  console.log(child)
   // Get the productLists div
   const productLists = document.querySelector(selector);
-
+  console.log(productLists)
   // Get the first .productList div within productLists
   const firstProductList = productLists.querySelector(child);
+  console.log(firstProductList)
   // Clone the first .productList div
   const clonedProductList = firstProductList.cloneNode(true);
 

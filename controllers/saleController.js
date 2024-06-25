@@ -154,7 +154,7 @@ async function updateData(req, res) {
   req.body = trimStringFields(req.body)
   try {
      const {id} = req.params;
-
+    console.log(id)
     // const updateField = {
     //   ...req.body,
     // };

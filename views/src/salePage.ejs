@@ -109,8 +109,8 @@
                     <hr />
                     <% sale.products.forEach((element, index) => { %>
 
-                    <div class="productLists<%= index %> my-3">
-                      <div class="productList<%= index %>">
+                    <div class="productLists my-3">
+                      <div class="productList">
                         <div class="row my-3">
                           <div class="row m-0 p-0">
                             <div class="col">
@@ -173,14 +173,14 @@
                       <button
                         type="button"
                         class="btn btn-success"
-                        onclick="addInputField('.productLists<%= index %>', '.productList<%= index %>')"
+                        onclick="addInputField('#staticBackdrop<%= index + 1%> .productLists', '.productList')"
                       >
                         Thêm dữ liệu
                       </button>
                       <button
                         type="button"
                         class="btn btn-danger mx-2"
-                        onclick="removeInputField('.productLists<%= index %>', '.productList<%= index %>')"
+                        onclick="removeInputField('#staticBackdrop<%= index + 1%> .productLists', '.productList')"
                       >
                         Xóa
                       </button>
