@@ -29,6 +29,7 @@ async function renderPage(req, res) {
 
 async function createData(req, res) {
   req.body = trimStringFields(req.body);
+  console.log(req.body)
   try {
     const products = (
       Array.isArray(req.body.name) ? req.body.name : [req.body.name]
@@ -149,12 +150,14 @@ async function getDatas(req, res) {
 }
 
 async function updateData(req, res) {
+  console.log(req.body)
+  req.body = trimStringFields(req.body)
   try {
      const {id} = req.params;
 
-    const updateField = {
-      ...req.body,
-    };
+    // const updateField = {
+    //   ...req.body,
+    // };
 
   } catch (err) {
     console.log(err);
