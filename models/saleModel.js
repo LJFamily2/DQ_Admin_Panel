@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const slug = require('mongoose-slug-generator');
+mongoose.plugin(slug);
 
 const saleSchema = new mongoose.Schema({
     code: String,
@@ -12,7 +14,11 @@ const saleSchema = new mongoose.Schema({
         type: String,
         enum: ["active", "closed"]
     },
-    notes: String
+    notes: String,
+    slug:{
+        type: String,
+        slug: 'code'
+    }
 });
 
 const saleModel = mongoose.model('Dữ liệu bán mủ', saleSchema);

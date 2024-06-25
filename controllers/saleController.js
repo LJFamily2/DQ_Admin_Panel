@@ -134,7 +134,7 @@ async function getDatas(req, res) {
       notes: product.notes || '',
       total: product.quantity * product.price || 0,
       status: product.status,
-      id: product._id,
+      slug: product.slug,
     }));
 
     res.json({

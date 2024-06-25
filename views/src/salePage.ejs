@@ -44,205 +44,6 @@
 
         <tbody>
           <% sales.forEach( (sale,index) => { %>
-          <!-- Modal for updating -->
-          <div
-            class="modal fade"
-            id="staticBackdrop<%= index + 1%>"
-            data-bs-backdrop="static"
-            data-bs-keyboard="false"
-            tabindex="-1"
-            aria-labelledby="staticBackdropLabel"
-            aria-hidden="true"
-          >
-            <div
-              class="modal-dialog modal-dialog-centered modal-dialog-scrollable"
-            >
-              <div class="modal-content">
-                <div class="modal-header">
-                      <h1 class="modal-title fs-5" id="staticBackdropLabel">
-                        Cập nhật thông tin cho <%= sale.date.toLocaleDateString() %>
-                      </h1>
-                      <button
-                        type="button"
-                        class="btn-close"
-                        data-bs-dismiss="modal"
-                        aria-label="Close"
-                      ></button>
-
-                    </div>
-                    
-                    <button type="button" class="btn btn-secondary" data-bs-toggle="collapse" data-bs-target ="#updateForm" aria-expanded="false" aria-controls="updateForm">Chỉnh sửa</button>
-                    <button type="button" class="btn btn-secondary" data-bs-toggle="collapse" data-bs-target ="#addProductForm" aria-expanded="false" aria-controls="addProductForm">Thêm hàng hóa</button>
-                
-                    <div class="collapse show" id="updateForm">
-                      <form
-                        action="/quan-ly-hop-dong/update/<%= sale._id %>"
-                        method="post"
-                      >
-                        <div class="modal-body">
-                          <div class="my-3">
-                            <label for="date<%= index %>" class="form-label"
-                              >Ngày nhập</label
-                            >
-                            <input
-                              type="date"
-                              class="form-control"
-                              id="date<%= index %>"
-                              name="date"
-                              required
-                              value="<%= sale.date.toISOString().slice(0,10)  %>"
-                            />
-                          </div>
-      
-                          <div class="my-3">
-                            <label for="code<%= index %>" class="form-label"
-                              >Mã hợp đồng</label
-                            >
-                            <input
-                              type="text"
-                              class="form-control"
-                              id="code<%= index %>"
-                              name="code"
-                              placeholder="NPUE-3984"
-                              required
-                              value="<%= sale.code %>"
-                            />
-                          </div>
-      
-      
-      
-                          <hr />
-                          <% sale.products.forEach((element, index) => { %>
-      
-                          <div class="productLists my-3">
-                            <div class="productList">
-                              <div class="row my-3">
-                                <div class="row m-0 p-0">
-                                  <div class="col">
-                                    <label for="name<%= index %>" class="form-label"
-                                      >Tên hàng hóa</label
-                                    >
-                                    <input
-                                      type="text"
-                                      name="name[]"
-                                      id="name<%= index %>"
-                                      class="form-control"
-                                      placeholder="Mủ cao su"
-                                      required
-                                      value="<%= element.name %>"
-                                    />
-                                  </div>
-                                </div>
-      
-                                <div class="row my-3 m-0 p-0">
-                                  <div class="col col-md-6">
-                                    <label
-                                      for="quantity<%= index %>"
-                                      class="form-label"
-                                      >Số lượng</label
-                                    >
-                                    <input
-                                      type="text"
-                                      class="form-control"
-                                      id="quantity<%= index %>"
-                                      name="quantity[]"
-                                      placeholder="1234,34"
-                                      oninput="handleQuantityInput(this)"
-                                      value="<%= element.quantity %>"
-                                    />
-                                  </div>
-                                  <div class="col col-md-6">
-                                    <label for="price<%= index %>" class="form-label"
-                                      >Đơn giá</label
-                                    >
-                                    <input
-                                      type="text"
-                                      class="form-control"
-                                      id="price<%= index %>"
-                                      name="price[]"
-                                      placeholder="20000"
-                                      oninput="handleQuantityInput(this)"
-                                      value="<%= element.price %>"
-                                    />
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-      
-                          </div>
-                          <hr />
-      
-                          <% }) %>
-      
-                          <div class="my-3">
-                            <label for="notes<%= index %>" class="form-label"
-                              >Ghi chú</label
-                            >
-                            <textarea
-                              type="text"
-                              class="form-control"
-                              rows="3"
-                              id="notes<%= index %>"
-                              name="notes"
-                            ><%= sale.notes%></textarea
-                            >
-                          </div>
-      
-                          <div class="my-3">
-                            <label for="status<%= index %>" class="form-label"
-                              >Tình trạng</label
-                            >
-                            <select
-                              class="form-select"
-                              id="status<%= index %>"
-                              name="status"
-                            >
-                              <option value="active" <%= sale.status === 'active' ? "selected" : "" %>> Đang mở </option>
-                              <option value="closed">Đóng</option>
-                            </select>
-                          </div>
-      
-                        </div>
-                        <div class="modal-footer">
-                          <!-- Buttons -->
-                          <button type="submit" class="btn btn-success">Lưu</button>
-                          <button
-                            type="reset"
-                            class="btn btn-secondary"
-                            onclick="resetInput()"
-                          >
-                            Reset
-                          </button>
-                        </div>
-                      </form>
-
-                    </div>
-                
-                <div class="collapse" id="addProductForm">
-                  <form
-                    action="/quan-ly-hop-dong/update/<%= sale._id %>"
-                    method="post"
-                  >
-                    <div class="modal-body">
-                      gfhjfghfghj
-                    </div>
-                    <div class="modal-footer">
-                      <!-- Buttons -->
-                      <button type="submit" class="btn btn-success">Lưu</button>
-                      <button
-                        type="reset"
-                        class="btn btn-secondary"
-                        onclick="resetInput()"
-                      >
-                        Reset
-                      </button>
-                    </div>
-                  </form>
-
-                </div>
-              </div>
-            </div>
-          </div>
 
           <!-- Delete confirming modal  -->
           <div
@@ -404,8 +205,8 @@
       <button type="reset" class="btn btn-secondary">Làm mới</button>
     </form>
   </div>
+  
 </div>
-
 <script>
   let columns = [
     { data: 'no', orderable: false },
@@ -415,7 +216,22 @@
     { data: 'notes', orderable: false },
     { data: 'total', orderable: false },
     { data: 'status' },
-    { data: 'id', orderable: false },
+    {
+      data: 'slug',
+      orderable: false,
+      render: function (data, type, row) {
+        console.log(row)
+        return `<div class="d-flex justify-content-between fs-5">
+          <a href="/quan-ly-hop-dong/hop-dong/${data}" class="text-decoration-none text-dark">
+            <i class="ri-edit-box-line" style="cursor: pointer;"></i>
+          </a>
+            
+          <i class="ri-delete-bin-line" data-bs-toggle="modal" data-bs-target="#deleteModalToggle${
+            row.no
+          }" style="cursor: pointer;"></i>
+          </div>`;
+      },
+    },
   ];
 
   initializeDataTable(
