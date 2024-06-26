@@ -1,10 +1,24 @@
 const formatNumberForDisplay = require('./utils/formatNumberForDisplay');
 const PlantationModel = require('../models/plantationModel');
 const RawMaterialModel = require('../models/rawMaterialModel');
-const ProductTotalModel = require('../models/productTotalModel')
+const ProductTotalModel = require('../models/productTotalModel');
+
 async function renderPage(req, res) {
   try {
-    let total = await ProductTotalModel.find({})
+    let totalData = await ProductTotalModel.find();
+
+    const formatItem = item => {
+      const fieldsToFormat = ['dryRubber', 'income', 'quantity', 'price'];
+      fieldsToFormat.forEach(field => {
+        item[field] = {
+          raw: item[field],
+          formatted: formatNumberForDisplay(item[field]),
+        };
+      });
+      return item;
+    };
+
+    const total = totalData.map(item => formatItem(item.toObject()));
     res.render('src/queryPage', {
       layout: './layouts/defaultLayout',
       total,
@@ -158,10 +172,10 @@ async function getDataTotal(req, res) {
     console.log(reqEndDate);
 
     const filter = {
-      'date': { 
+      date: {
         $gte: new Date(startDate),
         $lte: new Date(endDate),
-      }
+      },
     };
 
     if (searchValue) {
@@ -187,14 +201,17 @@ async function getDataTotal(req, res) {
       const dataDate = new Date(plantation.date);
       if (dataDate >= new Date(startDate) && dataDate <= new Date(endDate)) {
         dryQuantityTotal +=
-          (plantation.products.dryQuantity * plantation.products.dryPercentage) /
+          (plantation.products.dryQuantity *
+            plantation.products.dryPercentage) /
           100;
         mixedQuantityTotal += plantation.products.mixedQuantity;
         if (plantation.notes) notes.push(plantation.notes);
       }
 
-      const dryPriceValue = parseFloat(dryPrice.toString().replace(',', '.')) || 0;
-      const mixedPriceValue = parseFloat(mixedPrice.toString().replace(',', '.')) || 0;
+      const dryPriceValue =
+        parseFloat(dryPrice.toString().replace(',', '.')) || 0;
+      const mixedPriceValue =
+        parseFloat(mixedPrice.toString().replace(',', '.')) || 0;
       const dryTotalValue = dryQuantityTotal * dryPriceValue;
       const mixedTotalValue = mixedQuantityTotal * mixedPriceValue;
       const totalMoneyValue = dryTotalValue + mixedTotalValue;
@@ -211,7 +228,7 @@ async function getDataTotal(req, res) {
         mixedTotal: mixedTotalValue,
         notes: notes.join(', '),
         totalMoney: totalMoneyValue,
-        id: plantation._id, 
+        id: plantation._id,
       };
     });
 

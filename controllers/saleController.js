@@ -2,6 +2,7 @@ const SaleModel = require('../models/saleModel');
 const ProductTotalModel = require('../models/productTotalModel');
 const handleResponse = require('./utils/handleResponse');
 const trimStringFields = require('./utils/trimStringFields');
+const formatNumberForDisplay = require('./utils/formatNumberForDisplay');
 
 module.exports = {
   renderPage,
@@ -42,7 +43,21 @@ const calculateDifferences = (products, oldSale) =>
 async function renderPage(req, res) {
   try {
     const sales = await SaleModel.find();
-    const total = await ProductTotalModel.find();
+    let totalData = await ProductTotalModel.find();
+
+    const formatItem = item => {
+      const fieldsToFormat = ['dryRubber', 'income', 'quantity', 'price'];
+      fieldsToFormat.forEach(field => {
+        item[field] = {
+          raw: item[field],
+          formatted: formatNumberForDisplay(item[field]),
+        };
+      });
+      return item;
+    };
+
+    const total = totalData.map(item => formatItem(item.toObject()));
+
     res.render('src/salePage', {
       layout: './layouts/defaultLayout',
       sales,

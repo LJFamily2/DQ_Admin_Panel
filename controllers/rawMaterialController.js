@@ -14,7 +14,20 @@ module.exports = {
 
 async function renderPage(req, res) {
   try {
-    const total = await ProductTotalModel.find({});
+    let totalData = await ProductTotalModel.find();
+
+    const formatItem = item => {
+      const fieldsToFormat = ['dryRubber', 'income', 'quantity', 'price'];
+      fieldsToFormat.forEach(field => {
+        item[field] = {
+          raw: item[field],
+          formatted: formatNumberForDisplay(item[field]),
+        };
+      });
+      return item;
+    };
+
+    const total = totalData.map(item => formatItem(item.toObject()));
     const datas = await RawMaterialModel.find({});
     res.render('src/rawMaterialPage', {
       layout: './layouts/defaultLayout',

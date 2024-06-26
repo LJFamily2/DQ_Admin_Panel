@@ -1,28 +1,48 @@
 <div class="container-fluid mb-3">
-    <div class="row m-0">
-      <div class="col-6 col-md-3 gap-2 d-flex align-items-center justify-content-center">
-        <div class="data p-2 text-bold rounded-2" style="box-shadow: 0 0 4px; width: fit-content;">
-          <%= total[0].dryRubber || 0 %>
-        </div>
-        <span>Quy Khô (kg)</span>
+  <div class="row m-0">
+    <div
+      class="col-6 col-md-3 gap-2 d-flex align-items-center justify-content-center"
+    >
+      <div
+        class="data p-2 text-bold rounded-2 <%= total[0].mixedQuantity.raw < 0 ? 'text-danger' : total[0].mixedQuantity.raw > 0 ? 'text-success' : '' %>"
+        style="box-shadow: 0 0 4px; width: fit-content"
+      >
+        <%= total[0].mixedQuantity.formatted || 0 %>
       </div>
-      <div class="col-6 col-md-3 gap-2 d-flex align-items-center justify-content-center">
-        <div class="data p-2 text-bold rounded-2" style="box-shadow: 0 0 4px; width: fit-content;">
-          <%= total[0].quantity || 0 %>
-        </div>
-        <span>Thành phẩm (kg)</span>
+      <span>Mủ tạp (kg)</span>
+    </div>
+    <div
+      class="col-6 col-md-3 gap-2 d-flex align-items-center justify-content-center"
+    >
+      <div
+        class="data p-2 text-bold rounded-2 <%= total[0].dryRubber.raw < 0 ? 'text-danger' : total[0].dryRubber.raw > 0 ? 'text-success' : '' %>"
+        style="box-shadow: 0 0 4px; width: fit-content"
+      >
+        <%= total[0].dryRubber.formatted || 0 %>
       </div>
-      <div class="col-6 col-md-3 gap-2 d-flex align-items-center justify-content-center">
-        <div class="data p-2 text-bold rounded-2" style="box-shadow: 0 0 4px; width: fit-content;">
-          <%= total[0].mixedQuantity || 0 %>
-        </div>
-        <span>Mủ tạp (kg)</span>
+      <span>Quy Khô (kg)</span>
+    </div>
+    <div
+      class="col-6 col-md-3 gap-2 d-flex align-items-center justify-content-center"
+    >
+      <div
+        class="data p-2 text-bold rounded-2 <%= total[0].quantity.raw < 0 ? 'text-danger' : total[0].quantity.raw > 0 ? 'text-success' : '' %>"
+        style="box-shadow: 0 0 4px; width: fit-content"
+      >
+        <%= total[0].quantity.formatted || 0 %>
       </div>
-      <div class="col-6 col-md-3 gap-2 d-flex align-items-center justify-content-center">
-        <div class="data p-2 text-bold rounded-2" style="box-shadow: 0 0 4px; width: fit-content;">
-          <%= total[0].income || 0 %>
-        </div>
-        <span>Thu vào (VND)</span>
+      <span>Thành phẩm (kg)</span>
+    </div>
+    <div
+      class="col-6 col-md-3 gap-2 d-flex align-items-center justify-content-center"
+    >
+      <div
+        class="data p-2 text-bold rounded-2 <%= total[0].income.raw < 0 ? 'text-danger' : total[0].income.raw > 0 ? 'text-success' : '' %>"
+        style="box-shadow: 0 0 4px; width: fit-content"
+      >
+        <%= total[0].income.formatted || 0 %>
       </div>
+      <span>Thu vào (VND)</span>
     </div>
   </div>
+</div>
