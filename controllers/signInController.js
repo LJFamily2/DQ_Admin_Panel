@@ -20,7 +20,7 @@ function handleLogin(req, res, next) {
             if (err) {
                 return next(err);
             }
-            if (req.body.rememberMe) {
+            if (req.body.rememberMe === "true") {
                 req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000; 
             } else {
                 req.session.cookie.expires = false;
