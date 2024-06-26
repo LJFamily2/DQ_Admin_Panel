@@ -1,11 +1,13 @@
 const passport = require('passport');
 const handleResponse = require('./utils/handleResponse')
+const trimStringFields = require('./utils/trimStringFields')
 
 function renderLogin(req,res){
     res.render("src/signInPage" , {layout:false, messages: req.flash()})
 }
 
 function handleLogin(req, res, next) {
+    req.body = trimStringFields(req.body)
     console.log(req.body)
     passport.authenticate('local', (err, user, info) => {
         if (err) {
