@@ -87,7 +87,7 @@ async function createData(req, res) {
     let updateData = {};
     if (totalQuantityUsed > 0) {
       updateData.$inc = {
-        dryRubber: -totalQuantityUsed,
+        product: -totalQuantityUsed,
         income: totalIncome,
       };
     }
@@ -243,7 +243,7 @@ async function updateData(req, res) {
 
   let updateData = { $inc: {} };
   if (totalQuantityUsedDiff !== 0 || totalIncomeDiff !== 0) {
-    updateData.$inc.dryRubber = -totalQuantityUsedDiff;
+    updateData.$inc.product = -totalQuantityUsedDiff;
     updateData.$inc.income = totalIncomeDiff;
   }
 
@@ -306,7 +306,7 @@ async function deleteData(req, res) {
         ...updateData.$inc,
         income: -(product.quantity * product.price),
       };
-      updateData.$inc = { ...updateData.$inc, dryRubber: product.quantity };
+      updateData.$inc = { ...updateData.$inc, product: product.quantity };
     });
 
     const total = await ProductTotalModel.findOneAndUpdate({}, updateData, {
