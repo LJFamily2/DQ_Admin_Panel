@@ -1,11 +1,13 @@
 const formatNumberForDisplay = require('./utils/formatNumberForDisplay');
 const PlantationModel = require('../models/plantationModel');
 const RawMaterialModel = require('../models/rawMaterialModel');
-
+const ProductTotalModel = require('../models/productTotalModel')
 async function renderPage(req, res) {
   try {
+    let total = await ProductTotalModel.find({})
     res.render('src/queryPage', {
       layout: './layouts/defaultLayout',
+      total,
       title: 'Truy vấn',
     });
   } catch (error) {
