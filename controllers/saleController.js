@@ -21,6 +21,7 @@ async function renderPage(req, res) {
       layout: './layouts/defaultLayout',
       sales,
       total,
+      index: 0,
       messages: req.flash(),
       title: 'Quản lý hợp đồng bán mủ',
     });

@@ -55,7 +55,7 @@
         </div>
 
         <!-- Buttons -->
-        <button type="submit" class="btn btn-primary">Thêm</button>
+        <button type="submit" class="btn btn-success">Lưu</button>
         <button type="reset" class="btn btn-secondary">Làm mới</button>
     </div>
     <div class="col-12 col-md p-3 rounded-2"
@@ -65,76 +65,76 @@
     <h4>Hàng hóa</h4>
     <div class="productLists my-3">
       <% sale.products.forEach((product, index) => { %>
-    <div class="productList">
-      <div class="row my-3">
-        <div class="row m-0 p-0">
-          <div class="col">
-            <label for="name" class="form-label fw-bold w-100 d-flex justify-content-between"
-              ><%= index + 1 %>. Tên hàng hóa <span><i class="ri-close-line" style="cursor: pointer;" onclick="removeProduct(<%= index + 1 %>, this)"></i></span></label
-            >
-            <input
-              type="text"
-              name="name"
-              id="name"
-              class="form-control"
-              placeholder="Mủ cao su"
-              required
-                value="<%= product.name %>"
-            />
+        <div class="productList">
+            <div class="row my-3">
+              <div class="row m-0 p-0">
+                <div class="col">
+                  <label for="name" class="form-label fw-bold w-100 d-flex justify-content-between"
+                    ><%= index + 1 %>. Tên hàng hóa <span><i class="ri-close-line" style="cursor: pointer;" onclick="removeProduct(<%= index + 1 %>, this)"></i></span></label
+                  >
+                  <input
+                    type="text"
+                    name="name"
+                    id="name"
+                    class="form-control"
+                    placeholder="Mủ cao su"
+                    required
+                      value="<%= product.name %>"
+                  />
+                </div>
+              </div>
+              <div class="row my-3 m-0 p-0">
+                <div class="col col-md-6">
+                  <label for="quantity" class="form-label fw-bold"
+                    >Số lượng</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="quantity"
+                    name="quantity"
+                    placeholder="1234,34"
+                    oninput="handleQuantityInput(this)"
+                      value="<%= product.quantity %>"
+                  />
+                </div>
+                <div class="col col-md-6">
+                  <label for="price" class="form-label fw-bold">Đơn giá</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="price"
+                    name="price"
+                    placeholder="20000"
+                    oninput="handleQuantityInput(this)"
+                      value="<%= product.price %>"
+                  />
+                </div>
+              </div>
+            </div>
+            <hr />
           </div>
-        </div>
-        <div class="row my-3 m-0 p-0">
-          <div class="col col-md-6">
-            <label for="quantity" class="form-label fw-bold"
-              >Số lượng</label
-            >
-            <input
-              type="text"
-              class="form-control"
-              id="quantity"
-              name="quantity"
-              placeholder="1234,34"
-              oninput="handleQuantityInput(this)"
-                value="<%= product.quantity %>"
-            />
-          </div>
-          <div class="col col-md-6">
-            <label for="price" class="form-label fw-bold">Đơn giá</label>
-            <input
-              type="text"
-              class="form-control"
-              id="price"
-              name="price"
-              placeholder="20000"
-              oninput="handleQuantityInput(this)"
-                value="<%= product.price %>"
-            />
-          </div>
-        </div>
-      </div>
-      <hr />
-    </div>
 
-    <% }) %>
+      <% }) %>
   </div>
 
   <div class="btnController my-3">
     <button
       type="button"
-      class="btn btn-success"
+      class="btn btn-info text-light"
       onclick="addInputField('.productLists', '.productList')"
     >
-      Thêm dữ liệu
-    </button>
-    <button
-      type="button"
-      class="btn btn-danger mx-2"
-      style="display: none;"
-      onclick="removeInputField('.productLists', '.productList')"
-    >
-      Xóa
+      +
     </button>
   </div>
     </div>
   </div>
 </form>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.productLists').forEach(list => {
+      const items = list.querySelectorAll('.productList');
+      items.forEach(item => item.querySelector('.ri-close-line').style.display = items.length > 1 ? 'block' : 'none');
+    });
+  });
+</script>

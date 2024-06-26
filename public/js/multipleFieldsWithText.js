@@ -43,26 +43,3 @@ function removeProduct(index, element) {
   const displayStyle = document.querySelectorAll('.productList').length <= 1 ? 'none' : '';
   document.querySelectorAll('.ri-close-line').forEach(button => button.style.display = displayStyle);
 }
-
-function removeInputField(selector, child) {
-  // Get the productLists div
-  const productLists = document.querySelector(selector);
-
-  // Get all .row divs
-  const rows = productLists.querySelectorAll(child);
-
-  // Get the last .row div
-  const lastRow = rows[rows.length - 1];
-
-  // Remove the last .row div
-  if (lastRow) {
-    lastRow.remove();
-  } else {
-    console.log('No .row div to remove in ' + selector);
-  }
-
-  // If there is only one .row div, hide the delete button
-  if (rows.length <= 2) {
-    deleteButton.style.display = 'none';
-  }
-}

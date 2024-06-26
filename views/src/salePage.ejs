@@ -129,7 +129,7 @@
           <div class="row my-3">
             <div class="row m-0 p-0">
               <div class="col">
-                <label for="name" class="form-label">Tên hàng hóa</label>
+                <label for="name" class="form-label fw-bold w-100 d-flex justify-content-between"><%= index + 1 %>. Tên hàng hóa <span><i class="ri-close-line" style="cursor: pointer;" onclick="removeProduct(<%= index + 1 %>, this)"></i></span></label>
                 <input
                   type="text"
                   name="name"
@@ -173,17 +173,10 @@
       <div class="btnController my-3">
         <button
           type="button"
-          class="btn btn-success"
+          class="btn btn-info text-light"
           onclick="addInputField('form .productLists', '.productList')"
         >
-          Thêm dữ liệu
-        </button>
-        <button
-          type="button"
-          class="btn btn-danger mx-2"
-          onclick="removeInputField('form .productLists', '.productList')"
-        >
-          Xóa
+          +
         </button>
       </div>
 
@@ -215,7 +208,7 @@
     { data: 'total', orderable: false },
     { data: 'status',
       render: function (data) {
-        return data ? `  <div class="row">
+        return data ==='active' ? `  <div class="row">
           <div class="col text-center "  >
             <div class="text-light bg-success rounded-2 py-1" style= "pointer-event: none">
               Đang mở
@@ -269,4 +262,11 @@
     false,
     true,
   );
+
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.productLists').forEach(list => {
+      const items = list.querySelectorAll('.productList');
+      items.forEach(item => item.querySelector('.ri-close-line').style.display = items.length > 1 ? 'block' : 'none');
+    });
+  });
 </script>
