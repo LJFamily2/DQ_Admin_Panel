@@ -5,6 +5,6 @@ const router = express.Router();
 const signInController = require('../../controllers/signInController')
 
 router.get("/", signInController.renderLogin)
-router.post('/dang-nhap', signInController.handleLogin)
+router.post('/login', signInController.handleLogin)
 
 module.exports = router;

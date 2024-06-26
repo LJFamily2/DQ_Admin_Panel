@@ -1,16 +1,18 @@
 const passport = require('passport');
+const handleResponse = require('./utils/handleResponse')
 
 function renderLogin(req,res){
-    res.render("src/signInPage" , {layout:false})
+    res.render("src/signInPage" , {layout:false, messages: req.flash()})
 }
 
 function handleLogin(req, res, next) {
+    console.log(req.body)
     passport.authenticate('local', (err, user, info) => {
         if (err) {
             return next(err);
         }
         if (!user) {
-            return res.redirect('/signIn');
+            return handleResponse(req,res, 401,'fail', "Tài khoản hoặc mật khẩu không đúng", '/dang-nhap');
         }
         req.logIn(user, (err) => {
             if (err) {
@@ -21,7 +23,7 @@ function handleLogin(req, res, next) {
             } else {
                 req.session.cookie.expires = false;
             }
-            return res.redirect('/account');
+            return res.redirect('/truy-van');
         });
     })(req, res, next);
 }

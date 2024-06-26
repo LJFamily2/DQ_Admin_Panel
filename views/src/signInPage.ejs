@@ -36,13 +36,15 @@
               />
             </a>
             <p class="text-center">Công Ty TNHH Đăng Quang</p>
-            <form>
+            <%- include('../partials/notificationMessage') %>
+            <form action="/dang-nhap/login" method="post">
               <div class="mb-3">
                 <label for="exampleInputEmail1" class="form-label"
                   >Tài khoản</label
                 >
                 <input
-                  type="email"
+                  type="text"
+                  name="username"
                   class="form-control"
                   id="exampleInputEmail1"
                   aria-describedby="emailHelp"
@@ -54,6 +56,7 @@
                 >
                 <input
                   type="password"
+                  name="password"
                   class="form-control"
                   id="exampleInputPassword1"
                 />
@@ -65,9 +68,8 @@
                   <input
                     class="form-check-input primary"
                     type="checkbox"
-                    value=""
                     id="flexCheckChecked"
-                    checked=""
+                    name="rememberMe"
                   />
                   <label
                     class="form-check-label text-dark"
@@ -77,10 +79,10 @@
                   </label>
                 </div>
               </div>
-              <a
-                href="./index.html"
-                class="btn btn-primary w-100 py-8 fs-4 mb-4 rounded-2"
-                >Đăng nhập</a
+              <button
+              type="submit"
+                class="btn btn-primary w-100 fs-4 mb-4 rounded-2"
+                >Đăng nhập</button
               >
             </form>
           </div>
