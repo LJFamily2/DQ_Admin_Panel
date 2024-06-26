@@ -206,6 +206,8 @@ async function deleteAllUsers(req, res) {
 }
 
 function logOut(req, res) {
-  req.logout();
-  res.redirect("/dang-nhap");
+  req.logout(function(err) {
+    if (err) { return next(err); }
+    res.redirect("/dang-nhap");
+  });
 }

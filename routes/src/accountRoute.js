@@ -22,4 +22,7 @@ router.post('/delete/:id', accountController.deleteUser);
 // Delete all users
 router.post('/deleteAll', accountController.deleteAllUsers);
 
+// Log out
+router.post('/logOut', accountController.logOut);
+
 module.exports = router;
