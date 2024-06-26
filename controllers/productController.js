@@ -14,11 +14,13 @@ module.exports = {
 
 async function renderPage(req, res) {
   try {
+    const total = await ProductTotalModel.find({});
     const products = await ProductModel.find({});
     res.render('src/productPage', {
       layout: './layouts/defaultLayout',
       title: 'Quản lý hàng hóa',
       products,
+      total,
       messages: req.flash(),
     });
   } catch (err) {
