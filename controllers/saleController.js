@@ -195,10 +195,10 @@ async function updateData(req, res) {
       );
     }
 
-    // Check if product fields exist and set default values if not
-    const names = req.body.name || [];
-    const quantities = req.body.quantity || [];
-    const prices = req.body.price || [];
+    // Ensure names, quantities, and prices are arrays
+    const names = Array.isArray(req.body.name) ? req.body.name : [req.body.name];
+    const quantities = Array.isArray(req.body.quantity) ? req.body.quantity : [req.body.quantity];
+    const prices = Array.isArray(req.body.price) ? req.body.price : [req.body.price];
 
     const products = names.map((name, index) => ({
       name,
@@ -234,7 +234,7 @@ async function updateData(req, res) {
 
   } catch (err) {
     console.log(err);
-    res.status(500)
+    res.status(500).send('Internal Server Error');
   }
 }
 

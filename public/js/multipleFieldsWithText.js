@@ -1,16 +1,28 @@
 // Toggle buttons
 const deleteButton = document.querySelector('.btnController .btn-danger');
 function addInputField(selector, child) {
-  console.log(selector)
-  console.log(child)
+  console.log(selector);
+  console.log(child);
   // Get the productLists div
   const productLists = document.querySelector(selector);
-  console.log(productLists)
-  // Get the first .productList div within productLists
-  const firstProductList = productLists.querySelector(child);
-  console.log(firstProductList)
-  // Clone the first .productList div
-  const clonedProductList = firstProductList.cloneNode(true);
+  console.log(productLists);
+  // Get all .productList divs within productLists and select the last one
+  const allProductLists = productLists.querySelectorAll(child);
+  const lastProductList = allProductLists[allProductLists.length - 1];
+  console.log(lastProductList);
+  // Clone the last .productList div
+  const clonedProductList = lastProductList.cloneNode(true);
+
+  // Find the current highest index
+  const lastIndex = allProductLists.length;
+  // Increment the index for the new cloned element
+  const newIndex = lastIndex + 1;
+
+  // Update the label in the cloned element
+  const label = clonedProductList.querySelector('label[for="name"]');
+  if (label) {
+    label.innerHTML = `${newIndex}. Tên hàng hóa`;
+  }
 
   // Reset input values (optional)
   clonedProductList

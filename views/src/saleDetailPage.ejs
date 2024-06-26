@@ -2,9 +2,12 @@
   <!-- js -->
   <script src="/js/multipleFieldsWithText.js" defer></script>
 </head>
-<form action="/quan-l y-hop-dong/update/<%= sale._id %>" method="post">
+<form action="/quan-ly-hop-dong/update/<%= sale._id %>" method="post">
   <div class="row m-0 p-4 gap-md-2 ">
-    <div class="col-12 col-md-5 p-3 rounded-2 " style="box-shadow: 0 0 4px;">
+    <div 
+    class="col-12 col-md-5 p-3 rounded-2 " 
+    style="box-shadow: 0 0 4px;">
+    <h4 >Thông tin hợp đồng</h4>
           <div class="my-3">
               <label for="status" class="form-label fw-bold">Tình trạng</label>
               <select class="form-select" name="status" id="status" required>
@@ -56,10 +59,11 @@
         <button type="submit" class="btn btn-primary">Thêm</button>
         <button type="reset" class="btn btn-secondary">Làm mới</button>
     </div>
-    <div class="col-12 col-md-5 rounded-2"
+    <div class="col-12 col-md-5 p-3 rounded-2"
     style="box-shadow: 0 0 4px;"
     >
-    
+
+    <h4>Hàng hóa</h4>
     <div class="productLists my-3">
       <% sale.products.forEach((product, index) => { %>
     <div class="productList">
@@ -109,9 +113,9 @@
           </div>
         </div>
       </div>
+      <hr />
     </div>
 
-    <hr />
     <% }) %>
   </div>
 
