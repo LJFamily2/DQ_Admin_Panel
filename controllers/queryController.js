@@ -1,4 +1,3 @@
-const AreaModel = require('../models/areaModel');
 const formatNumberForDisplay = require('./utils/formatNumberForDisplay');
 const PlantationModel = require('../models/plantationModel');
 const RawMaterialModel = require('../models/rawMaterialModel');
@@ -170,8 +169,8 @@ async function getDataTotal(req, res) {
       ];
     }
 
-    const totalRecords = await DataModel.countDocuments(filter);
-    const plantations = await DataModel.find(filter)
+    const totalRecords = await RawMaterialModel.countDocuments(filter);
+    const plantations = await RawMaterialModel.find(filter)
       .sort({ [sortColumn]: sortDirection })
       .skip(start)
       .limit(length)
