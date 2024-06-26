@@ -13,6 +13,32 @@ module.exports = {
   renderDetailPage,
 };
 
+const ensureArray = input => (Array.isArray(input) ? input : [input]);
+
+// Helper to convert product data
+const convertProductData = (names, quantities, prices) =>
+  names.map((name, index) => ({
+    name,
+    quantity: parseFloat(quantities[index].replace(/,/g, '.')) || 0,
+    price: parseFloat(prices[index].replace(/,/g, '.')) || 0,
+  }));
+
+// Calculate differences
+const calculateDifferences = (products, oldSale) =>
+  products.reduce(
+    (acc, product) => {
+      const oldProduct = oldSale.products.find(
+        p => p.name === product.name,
+      ) || { quantity: 0, price: 0 };
+      acc.totalQuantityUsedDiff += product.quantity - oldProduct.quantity;
+      acc.totalIncomeDiff +=
+        product.quantity * product.price -
+        oldProduct.quantity * oldProduct.price;
+      return acc;
+    },
+    { totalQuantityUsedDiff: 0, totalIncomeDiff: 0 },
+  );
+
 async function renderPage(req, res) {
   try {
     const sales = await SaleModel.find();
@@ -31,51 +57,14 @@ async function renderPage(req, res) {
   }
 }
 
-async function renderDetailPage(req, res) {
-  try {
-    const { slug } = req.params;
-    const sale = await SaleModel.findOne({ slug });
-    if (!sale) {
-      return handleResponse(
-        req,
-        res,
-        404,
-        'fail',
-        'Không tìm thấy hợp đồng',
-        '/quan-ly-hop-dong',
-      );
-    }
-    res.render('src/saleDetailPage', {
-      layout: './layouts/defaultLayout',
-      sale,
-      messages: req.flash(),
-      title: 'Chi tiết hợp đồng bán mủ',
-    });
-  } catch (err) {
-    console.log(err);
-    res.status(500);
-  }
-}
-
 async function createData(req, res) {
   req.body = trimStringFields(req.body);
   console.log(req.body);
   try {
-    const products = (
-      Array.isArray(req.body.name) ? req.body.name : [req.body.name]
-    ).map((name, i) => ({
-      name,
-      quantity: parseFloat(
-        (Array.isArray(req.body.quantity)
-          ? req.body.quantity
-          : [req.body.quantity])[i].replace(/,/g, '.'),
-      ),
-      price: parseFloat(
-        (Array.isArray(req.body.price) ? req.body.price : [req.body.price])[
-          i
-        ].replace(/,/g, '.'),
-      ),
-    }));
+    const names = ensureArray(req.body.name);
+    const quantities = ensureArray(req.body.quantity);
+    const prices = ensureArray(req.body.price);
+    const products = convertProductData(names, quantities, prices);
 
     const newSale = await SaleModel.create({
       ...req.body,
@@ -83,18 +72,21 @@ async function createData(req, res) {
       status: 'active',
     });
 
-    let updateData = { $inc: {} };
+    const totalQuantityUsed = products.reduce(
+      (acc, product) => acc + product.quantity,
+      0,
+    );
+    const totalIncome = products.reduce(
+      (acc, product) => acc + product.quantity * product.price,
+      0,
+    );
 
-    let totalQuantityUsed = 0;
-    let totalIncome = 0;
-    products.forEach(product => {
-      totalQuantityUsed += product.quantity;
-      totalIncome += product.quantity * product.price;
-    });
-
+    let updateData = {};
     if (totalQuantityUsed > 0) {
-      updateData.$inc.dryRubber = -totalQuantityUsed;
-      updateData.$inc.income = totalIncome;
+      updateData.$inc = {
+        dryRubber: -totalQuantityUsed,
+        income: totalIncome,
+      };
     }
 
     const total = await ProductTotalModel.findOneAndUpdate({}, updateData, {
@@ -182,124 +174,99 @@ async function getDatas(req, res) {
 async function updateData(req, res) {
   console.log(req.body);
   req.body = trimStringFields(req.body);
-  try {
-    const { id } = req.params;
-    console.log(id);
-    if (!id) {
-      return handleResponse(
-        req,
-        res,
-        400,
-        'fail',
-        'Không tìm thấy hàng hóa trong cơ sở dữ liệu',
-        req.headers.referer,
-      );
-    }
-
-    // Ensure names, quantities, and prices are arrays
-    const names = Array.isArray(req.body.name)
-      ? req.body.name
-      : [req.body.name];
-    const quantities = Array.isArray(req.body.quantity)
-      ? req.body.quantity
-      : [req.body.quantity];
-    const prices = Array.isArray(req.body.price)
-      ? req.body.price
-      : [req.body.price];
-
-    const products = names.map((name, index) => ({
-      name,
-      quantity: quantities[index]
-        ? parseFloat(quantities[index].replace(/,/g, '.'))
-        : 0,
-      price: prices[index] ? parseFloat(prices[index].replace(/,/g, '.')) : 0,
-    }));
-
-    const updateField = {
-      ...req.body,
-      products,
-    };
-    let oldSale = await SaleModel.findById(id);
-
-    const newSale = await SaleModel.findByIdAndUpdate(id, updateField, {
-      new: true,
-    });
-    if (!newSale) {
-      return handleResponse(
-        req,
-        res,
-        404,
-        'fail',
-        'Cập nhật hợp đồng thất bại!',
-        req.headers.referer,
-      );
-    }
-
-    let updateData = { $inc: {} };
-
-    let totalQuantityUsedDiff = 0;
-    let totalIncomeDiff = 0;
-
-    products.forEach((product, index) => {
-      const oldProduct = oldSale.products.find(p => p.name === product.name);
-      if (oldProduct) {
-        totalQuantityUsedDiff += product.quantity - oldProduct.quantity;
-        totalIncomeDiff +=
-          product.quantity * product.price -
-          oldProduct.quantity * oldProduct.price;
-      } else {
-        totalQuantityUsedDiff += product.quantity;
-        totalIncomeDiff += product.quantity * product.price;
-      }
-    });
-
-    oldSale.products.forEach((oldProduct) => {
-      if (!products.find(product => product.name === oldProduct.name)) {
-        // Subtract the quantities and income for removed products
-        totalQuantityUsedDiff -= oldProduct.quantity;
-        totalIncomeDiff -= oldProduct.quantity * oldProduct.price;
-      }
-    });
-    
-    console.log(totalQuantityUsedDiff);
-    console.log(totalIncomeDiff);
-
-    
-
-    if (totalQuantityUsedDiff !== 0 || totalIncomeDiff !== 0) {
-      updateData.$inc.dryRubber = -totalQuantityUsedDiff;
-      updateData.$inc.income = totalIncomeDiff;
-    }
-
-    console.log(updateData);
-
-    const total = await ProductTotalModel.findOneAndUpdate({}, updateData, {
-      new: true,
-    });
-
-    if (!total) {
-      return handleResponse(
-        req,
-        res,
-        404,
-        'fail',
-        'Cập nhật dữ liệu tổng thất bại',
-        req.headers.referer,
-      );
-    }
-
-    handleResponse(
+  const { id } = req.params;
+  console.log(id);
+  if (!id)
+    return handleResponse(
       req,
       res,
-      200,
-      'success',
-      'Cập nhật hợp đồng thành công!',
+      400,
+      'fail',
+      'Không tìm thấy hàng hóa trong cơ sở dữ liệu',
       req.headers.referer,
     );
-  } catch (err) {
-    console.log(err);
-    res.status(500).send('Internal Server Error');
+
+  const names = ensureArray(req.body.name);
+  const quantities = ensureArray(req.body.quantity);
+  const prices = ensureArray(req.body.price);
+  const products = convertProductData(names, quantities, prices);
+
+  let oldSale = await SaleModel.findById(id);
+  if (!oldSale)
+    return handleResponse(
+      req,
+      res,
+      404,
+      'fail',
+      'Không tìm thấy hợp đồng',
+      req.headers.referer,
+    );
+
+  // Identify and set removed fields to undefined
+  const updateField = { ...req.body, products };
+  Object.keys(oldSale.toObject()).forEach(key => {
+    if (!req.body.hasOwnProperty(key) && key !== '_id' && key !== 'products') {
+      updateField[key] = undefined;
+    }
+  });
+
+  const newSale = await SaleModel.findByIdAndUpdate(id, updateField, {
+    new: true,
+  });
+  if (!newSale)
+    return handleResponse(
+      req,
+      res,
+      404,
+      'fail',
+      'Cập nhật hợp đồng thất bại!',
+      req.headers.referer,
+    );
+
+  let { totalQuantityUsedDiff, totalIncomeDiff } = calculateDifferences(
+    products,
+    oldSale,
+  );
+
+  // Handle products that were removed
+  oldSale.products.forEach(oldProduct => {
+    if (!products.find(product => product.name === oldProduct.name)) {
+      totalQuantityUsedDiff -= oldProduct.quantity;
+      totalIncomeDiff -= oldProduct.quantity * oldProduct.price;
+    }
+  });
+
+  console.log(totalQuantityUsedDiff, totalIncomeDiff);
+
+  let updateData = { $inc: {} };
+  if (totalQuantityUsedDiff !== 0 || totalIncomeDiff !== 0) {
+    updateData.$inc.dryRubber = -totalQuantityUsedDiff;
+    updateData.$inc.income = totalIncomeDiff;
   }
+
+  console.log(updateData);
+
+  const total = await ProductTotalModel.findOneAndUpdate({}, updateData, {
+    new: true,
+  });
+  if (!total)
+    return handleResponse(
+      req,
+      res,
+      404,
+      'fail',
+      'Cập nhật dữ liệu tổng thất bại',
+      req.headers.referer,
+    );
+
+  handleResponse(
+    req,
+    res,
+    200,
+    'success',
+    'Cập nhật hợp đồng thành công!',
+    req.headers.referer,
+  );
 }
 
 async function deleteData(req, res) {
@@ -363,6 +330,32 @@ async function deleteData(req, res) {
       'Xóa hợp đồng thành công!',
       req.headers.referer,
     );
+  } catch (err) {
+    console.log(err);
+    res.status(500);
+  }
+}
+
+async function renderDetailPage(req, res) {
+  try {
+    const { slug } = req.params;
+    const sale = await SaleModel.findOne({ slug });
+    if (!sale) {
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Không tìm thấy hợp đồng',
+        '/quan-ly-hop-dong',
+      );
+    }
+    res.render('src/saleDetailPage', {
+      layout: './layouts/defaultLayout',
+      sale,
+      messages: req.flash(),
+      title: 'Chi tiết hợp đồng bán mủ',
+    });
   } catch (err) {
     console.log(err);
     res.status(500);
