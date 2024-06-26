@@ -2,23 +2,13 @@ const formatNumberForDisplay = require('./utils/formatNumberForDisplay');
 const PlantationModel = require('../models/plantationModel');
 const RawMaterialModel = require('../models/rawMaterialModel');
 const ProductTotalModel = require('../models/productTotalModel');
+const formatTotalData = require('./utils/formatTotalData');
 
 async function renderPage(req, res) {
   try {
     let totalData = await ProductTotalModel.find();
-
-    const formatItem = item => {
-      const fieldsToFormat = ['dryRubber', 'income', 'quantity', 'price'];
-      fieldsToFormat.forEach(field => {
-        item[field] = {
-          raw: item[field],
-          formatted: formatNumberForDisplay(item[field]),
-        };
-      });
-      return item;
-    };
-
-    const total = totalData.map(item => formatItem(item.toObject()));
+    const total = formatTotalData(totalData)
+    
     res.render('src/queryPage', {
       layout: './layouts/defaultLayout',
       total,

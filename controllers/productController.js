@@ -2,7 +2,8 @@ const ProductModel = require('../models/productModel');
 const handleResponse = require('./utils/handleResponse');
 const trimStringFields = require('./utils/trimStringFields');
 const ProductTotalModel = require('../models/productTotalModel');
-const formatNumberForDisplay = require('./utils/formatNumberForDisplay')
+const formatTotalData = require('./utils/formatTotalData');
+
 
 module.exports = {
   createProduct,
@@ -16,19 +17,8 @@ module.exports = {
 async function renderPage(req, res) {
   try {
     let totalData = await ProductTotalModel.find();
+    const total = formatTotalData(totalData)
 
-    const formatItem = item => {
-      const fieldsToFormat = ['dryRubber', 'income', 'quantity', 'price'];
-      fieldsToFormat.forEach(field => {
-        item[field] = {
-          raw: item[field],
-          formatted: formatNumberForDisplay(item[field]),
-        };
-      });
-      return item;
-    };
-
-    const total = totalData.map(item => formatItem(item.toObject()));
     const products = await ProductModel.find({});
     res.render('src/productPage', {
       layout: './layouts/defaultLayout',

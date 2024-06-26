@@ -26,10 +26,10 @@
       class="col-6 col-md-3 gap-2 d-flex align-items-center justify-content-center"
     >
       <div
-        class="data p-2 text-bold rounded-2 <%= total[0]?.quantity?.raw < 0 ? 'text-danger' : total[0]?.quantity?.raw > 0 ? 'text-success' : '' %>"
+        class="data p-2 text-bold rounded-2 <%= total[0]?.product?.raw < 0 ? 'text-danger' : total[0]?.product?.raw > 0 ? 'text-success' : '' %>"
         style="box-shadow: 0 0 4px; width: fit-content"
       >
-        <%= total[0]?.quantity?.formatted || 0 %>
+        <%= total[0]?.product?.formatted || 0 %>
       </div>
       <span>Thành phẩm (kg)</span>
     </div>
