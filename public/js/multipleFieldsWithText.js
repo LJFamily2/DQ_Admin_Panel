@@ -1,41 +1,47 @@
 // Toggle buttons
 const deleteButton = document.querySelector('.btnController .btn-danger');
+
 function addInputField(selector, child) {
-  console.log(selector);
-  console.log(child);
-  // Get the productLists div
   const productLists = document.querySelector(selector);
-  console.log(productLists);
-  // Get all .productList divs within productLists and select the last one
   const allProductLists = productLists.querySelectorAll(child);
-  const lastProductList = allProductLists[allProductLists.length - 1];
-  console.log(lastProductList);
-  // Clone the last .productList div
-  const clonedProductList = lastProductList.cloneNode(true);
+  const clonedProductList = allProductLists[allProductLists.length - 1].cloneNode(true);
 
-  // Find the current highest index
-  const lastIndex = allProductLists.length;
-  // Increment the index for the new cloned element
-  const newIndex = lastIndex + 1;
+  // Update newIndex directly without intermediate variable
+  clonedProductList.querySelector('label[for="name"]').innerHTML = `${allProductLists.length + 1}. Tên hàng hóa <span><i class="ri-close-line" style="cursor: pointer;" onclick="removeProduct(${allProductLists.length + 1}, this)"></i></span>`;
 
-  // Update the label in the cloned element
-  const label = clonedProductList.querySelector('label[for="name"]');
-  if (label) {
-    label.innerHTML = `${newIndex}. Tên hàng hóa`;
-  }
+  // Reset input values in the cloned element
+  clonedProductList.querySelectorAll('input').forEach(input => input.value = '');
 
-  // Reset input values (optional)
-  clonedProductList
-    .querySelectorAll('input')
-    .forEach(input => (input.value = ''));
-
-  // Append the cloned div to the productLists div
   productLists.appendChild(clonedProductList);
+  updateCloseLineIconsVisibility(productLists, child);
 
-  // If there is more than one .productList div, show the delete button
-  if (productLists.querySelectorAll(child).length > 1) {
-    deleteButton.style.display = 'inline';
-  }
+  // Directly check and update deleteButton's display property
+  document.querySelector('.btnController .btn-danger').style.display = allProductLists.length > 0 ? 'inline' : 'none';
+}
+function updateCloseLineIconsVisibility(productLists, child) {
+  const allProductLists = productLists.querySelectorAll(child);
+  const displayStyle = allProductLists.length > 1 ? 'inline' : 'none';
+  allProductLists.forEach(productList => {
+    const closeIcon = productList.querySelector('.ri-close-line');
+    if (closeIcon) { 
+      closeIcon.style.display = displayStyle;
+    }
+  });
+}
+
+function removeProduct(index, element) {
+  // Remove the closest .productList element
+  element.closest('.productList')?.remove();
+
+  // Query all remaining .productList elements and update their labels
+  document.querySelectorAll('.productList').forEach((product, newIndex) => {
+    const label = product.querySelector('label');
+    label.innerHTML = label.innerHTML.replace(/^\d+/, newIndex + 1);
+  });
+
+  // Hide or show the remove buttons based on the number of remaining products
+  const displayStyle = document.querySelectorAll('.productList').length <= 1 ? 'none' : '';
+  document.querySelectorAll('.ri-close-line').forEach(button => button.style.display = displayStyle);
 }
 
 function removeInputField(selector, child) {
