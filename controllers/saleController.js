@@ -42,7 +42,7 @@ async function renderDetailPage(req, res) {
         404,
         'fail',
         'Không tìm thấy hợp đồng',
-        req.headers.referer,
+        '/quan-ly-hop-dong',
       );
     }
     res.render('src/saleDetailPage', {
@@ -97,7 +97,7 @@ async function createData(req, res) {
       updateData.$inc.income = totalIncome;
     }
 
-    const total = await ProductTotalModel.updateOne({}, updateData, {
+    const total = await ProductTotalModel.findOneAndUpdate({}, updateData, {
       new: true,
       upsert: true,
     });
@@ -189,7 +189,7 @@ async function updateData(req, res) {
       return handleResponse(
         req,
         res,
-        404,
+        400,
         'fail',
         'Không tìm thấy hàng hóa trong cơ sở dữ liệu',
         req.headers.referer,
@@ -197,13 +197,21 @@ async function updateData(req, res) {
     }
 
     // Ensure names, quantities, and prices are arrays
-    const names = Array.isArray(req.body.name) ? req.body.name : [req.body.name];
-    const quantities = Array.isArray(req.body.quantity) ? req.body.quantity : [req.body.quantity];
-    const prices = Array.isArray(req.body.price) ? req.body.price : [req.body.price];
+    const names = Array.isArray(req.body.name)
+      ? req.body.name
+      : [req.body.name];
+    const quantities = Array.isArray(req.body.quantity)
+      ? req.body.quantity
+      : [req.body.quantity];
+    const prices = Array.isArray(req.body.price)
+      ? req.body.price
+      : [req.body.price];
 
     const products = names.map((name, index) => ({
       name,
-      quantity: quantities[index] ? parseFloat(quantities[index].replace(/,/g, '.')) : 0,
+      quantity: quantities[index]
+        ? parseFloat(quantities[index].replace(/,/g, '.'))
+        : 0,
       price: prices[index] ? parseFloat(prices[index].replace(/,/g, '.')) : 0,
     }));
 
@@ -211,15 +219,71 @@ async function updateData(req, res) {
       ...req.body,
       products,
     };
+    let oldSale = await SaleModel.findById(id);
 
-    const newSale = await SaleModel.findByIdAndUpdate(id, updateField, { new: true });
+    const newSale = await SaleModel.findByIdAndUpdate(id, updateField, {
+      new: true,
+    });
     if (!newSale) {
       return handleResponse(
         req,
         res,
-        400,
+        404,
         'fail',
         'Cập nhật hợp đồng thất bại!',
+        req.headers.referer,
+      );
+    }
+
+    let updateData = { $inc: {} };
+
+    let totalQuantityUsedDiff = 0;
+    let totalIncomeDiff = 0;
+
+    products.forEach((product, index) => {
+      const oldProduct = oldSale.products.find(p => p.name === product.name);
+      if (oldProduct) {
+        totalQuantityUsedDiff += product.quantity - oldProduct.quantity;
+        totalIncomeDiff +=
+          product.quantity * product.price -
+          oldProduct.quantity * oldProduct.price;
+      } else {
+        totalQuantityUsedDiff += product.quantity;
+        totalIncomeDiff += product.quantity * product.price;
+      }
+    });
+
+    oldSale.products.forEach((oldProduct) => {
+      if (!products.find(product => product.name === oldProduct.name)) {
+        // Subtract the quantities and income for removed products
+        totalQuantityUsedDiff -= oldProduct.quantity;
+        totalIncomeDiff -= oldProduct.quantity * oldProduct.price;
+      }
+    });
+    
+    console.log(totalQuantityUsedDiff);
+    console.log(totalIncomeDiff);
+
+    
+
+    if (totalQuantityUsedDiff !== 0 || totalIncomeDiff !== 0) {
+      updateData.$inc.dryRubber = -totalQuantityUsedDiff;
+      updateData.$inc.income = totalIncomeDiff;
+    }
+
+    console.log(updateData);
+
+    const total = await ProductTotalModel.findOneAndUpdate({}, updateData, {
+      new: true,
+    });
+
+    if (!total) {
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Cập nhật dữ liệu tổng thất bại',
         req.headers.referer,
       );
     }
@@ -231,8 +295,7 @@ async function updateData(req, res) {
       'success',
       'Cập nhật hợp đồng thành công!',
       req.headers.referer,
-    )
-
+    );
   } catch (err) {
     console.log(err);
     res.status(500).send('Internal Server Error');
@@ -246,7 +309,7 @@ async function deleteData(req, res) {
       return handleResponse(
         req,
         res,
-        404,
+        400,
         'fail',
         'Không tìm thấy hàng hóa trong cơ sở dữ liệu',
         req.headers.referer,
@@ -276,7 +339,7 @@ async function deleteData(req, res) {
       updateData.$inc = { ...updateData.$inc, dryRubber: product.quantity };
     });
 
-    const total = await ProductTotalModel.updateOne({}, updateData, {
+    const total = await ProductTotalModel.findOneAndUpdate({}, updateData, {
       new: true,
       upsert: true,
     });
@@ -285,7 +348,7 @@ async function deleteData(req, res) {
       return handleResponse(
         req,
         res,
-        500,
+        404,
         'fail',
         'Cập nhật dữ liệu tổng thất bại',
         req.headers.referer,
