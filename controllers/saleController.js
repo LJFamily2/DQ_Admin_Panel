@@ -299,15 +299,17 @@ async function deleteData(req, res) {
       );
     }
 
-    let updateData = {};
+    let updateData = {$inc: {}};
+    let totalIncome = 0;
+    let totalProduct = 0;
 
     sale.products.forEach(product => {
-      updateData.$inc = {
-        ...updateData.$inc,
-        income: -(product.quantity * product.price),
-      };
-      updateData.$inc = { ...updateData.$inc, product: product.quantity };
-    });
+      totalIncome += product.price * product.quantity;
+      totalProduct += product.quantity;
+    })
+
+    updateData = {$inc: {income: -totalIncome, product: totalProduct}}
+    
 
     const total = await ProductTotalModel.findOneAndUpdate({}, updateData, {
       new: true,
