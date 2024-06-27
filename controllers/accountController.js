@@ -208,6 +208,6 @@ async function deleteAllUsers(req, res) {
 function logOut(req, res, next) {
   req.logout(function(err) {
     if (err) { return next(err); }
-    res.clearCookie('dpixport').redirect("/dang-nhap");
+    res.clearCookie('dpixport', { path: '/', domain: 'http://localhost:1000/', secure: true }).redirect("/dang-nhap");
   });
 }
