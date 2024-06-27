@@ -140,18 +140,4 @@
     '#mixedPrice',
     true,
   );
-
-  function updateDateDisplay() {
-    let startDate = document.getElementById('startDate').value;
-    let endDate = document.getElementById('endDate').value;
-    let dateDisplay = document.querySelector('.dateSelectionSelector span');
-
-    if (startDate || endDate) {
-      startDate = startDate.split('-').reverse().join('-');
-      endDate = endDate.split('-').reverse().join('-');
-      dateDisplay.textContent = `Ngày: ${startDate} - ${endDate}`;
-    } else {
-      dateDisplay.textContent = 'Hôm nay';
-    }
-  }
 </script>
