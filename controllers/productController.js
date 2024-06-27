@@ -37,6 +37,18 @@ async function createProduct(req, res) {
   req.body = trimStringFields(req.body);
 
   try {
+    let date = await ProductModel.findOne({date:req.body.date})
+    if(date){
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        "Đã có dữ liệu ngày này. Hãy chọn ngày khác!",
+        req.headers.referer,
+      )
+    }
+
     // Ensure quantity and dryRubberUsed are defined, else default to "0"
     let quantityStr = req.body.quantity ? req.body.quantity.replace(",", ".") : "0";
     let dryRubberUsedStr = req.body.dryRubberUsed ? req.body.dryRubberUsed.replace(",", ".") : "0";
@@ -102,15 +114,14 @@ async function createProduct(req, res) {
 
 async function updateProduct(req, res) {
   console.log(req.body);
-  req.body = trimStringFields(req.body);
   try {
     const {id} =req.params;
     
     const updateFields = {
       date: req.body.date,
-      dryRubberUsed: req.body.dryRubberUsed,
-      quantity: req.body.quantity,
-      notes: req.body.notes,
+      dryRubberUsed: req.body.dryRubberUsed.trim(),
+      quantity: req.body.quantity.trim(),
+      notes: req.body.notes.trim(),
     };
     
     const oldData = await ProductModel.findById(id);
@@ -290,7 +301,7 @@ async function getProducts(req, res) {
     const data = products.map((product, index) => ({
       no: parseInt(start, 10) + index + 1,
       date: product.date.toLocaleDateString(),
-      dryRubberUsed: product.dryRubberUsed,
+      dryRubberUsed: product.dryRubberUsed|| 0,
       quantity: product.quantity || 0,
       notes: product.notes || '',
       id: product._id,

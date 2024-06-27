@@ -22,7 +22,7 @@
   <div class="col-12 col-md-9 p-0 px-md-3">
     <div
       class="col rounded-2 p-2 overflow-auto"
-      style="box-shadow: 0 0 10px; max-height: 80dvh"
+      style="box-shadow: 0 0 10px"
     >
       <table class="table table-striped table-bordered" id="products_table">
         <thead>
@@ -119,18 +119,18 @@
                         rows="3"
                         id="notes"
                         name="notes"
-                      > <%= product.notes %> </textarea>
+                      ><%= product.notes %></textarea>
                     </div>
 
-                    <div class="modal-footer">
-                      <!-- Buttons -->
-                      <button type="submit" class="btn btn-primary">
-                        Thêm
-                      </button>
-                      <button type="reset" class="btn btn-secondary">
-                        Làm mới
-                      </button>
-                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <!-- Buttons -->
+                    <button type="submit" class="btn btn-primary">
+                      Lưu
+                    </button>
+                    <button type="reset" class="btn btn-secondary">
+                      Làm mới
+                    </button>
                   </div>
                 </form>
               </div>
@@ -149,7 +149,7 @@
               <div class="modal-content">
                 <div class="modal-header">
                   <h1 class="modal-title fs-5" id="exampleModalToggleLabel">
-                    Xóa <%= product.name %>
+                    Xóa thông tin ngày <%= product.date.toLocaleDateString("vi-VN") %>
                   </h1>
                   <button
                     type="button"
@@ -163,8 +163,8 @@
                   method="post"
                 >
                   <div class="modal-body">
-                    Bạn có muốn xóa
-                    <strong><%= product.name %></strong> ? Hành động này không
+                    Bạn có muốn xóa thông tin ngày
+                    <strong><%= product.date.toLocaleDateString("vi-VN") %></strong> ? Hành động này không
                     thể hoàn tác.
                   </div>
                   <div class="modal-footer">
@@ -185,9 +185,6 @@
     class="col-12 col-md-3 rounded-2 my-5 m-md-0 py-3"
     style="
       box-shadow: 0 0 10px;
-      background: var(--background_color);
-      max-height: 80dvh;
-      overflow-y: auto;
     "
   >
     <%- include('../partials/notificationMessage.ejs') %>
@@ -241,7 +238,7 @@
       </div>
 
       <!-- Buttons -->
-      <button type="submit" class="btn btn-primary">Thêm</button>
+      <button type="submit" class="btn btn-success">Thêm</button>
       <button type="reset" class="btn btn-secondary">Làm mới</button>
     </form>
   </div>
