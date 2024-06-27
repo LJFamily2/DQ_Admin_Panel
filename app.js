@@ -32,13 +32,14 @@ if (process.env.NODE_ENV !== "production") {
 
 
 // Setup Session
-const isProduction = process.env.NODE_ENV === "production"
+const SessionMongoDB = require('./sessionMongoDB')
 app.use(session({
   secret: 'your_secret_key',
   resave: false,
   saveUninitialized: false,
-  cookie: { secure: isProduction},
-  name: 'dpixport'
+  cookie: { secure: 'auto'},
+  name: 'dpixport',
+  store: SessionMongoDB
 }));
 const initializePassport = require("./middlewares/passportConfig");
 initializePassport(passport);
@@ -63,7 +64,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // Setup Database
 const mongoose = require('mongoose');
-mongoose
+const db = mongoose
   .connect(process.env.MONGODB_URI)
   .then(() => console.log("Connected to MongoDB Atlas"))
   .catch((error) => console.log("Error connecting to MongoDB:", error.message));
