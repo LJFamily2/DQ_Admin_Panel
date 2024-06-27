@@ -215,7 +215,7 @@ function initializeDataTable(
     $(startDateId).val('');
     $(endDateId).val('');
     // Reset the DataTable to show all data
-    table.search('').draw();
+    table.ajax.reload();
   });
 
   $(inputPrice).on('click', function () {

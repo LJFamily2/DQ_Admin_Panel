@@ -145,15 +145,19 @@ async function getDatas(req, res) {
     let sortColumn = columns?.[sortColumnIndex]?.data;
     let sortDirection = order?.[0]?.dir === 'asc' ? 1 : -1;
 
+
     const filter = {};
 
     if (startDate && endDate) {
+      const filterStartDate = new Date(startDate);
+      const filterEndDate = new Date(endDate);
+      filterEndDate.setHours(0, 0, 0);
+
       filter.date = {
-        $gte: new Date(startDate),
-        $lte: new Date(endDate),
+        $gte: filterStartDate,
+        $lte: filterEndDate,
       };
     }
-
     const totalRecords = await RawMaterialModel.countDocuments(filter);
 
     let data = await RawMaterialModel.find(filter);

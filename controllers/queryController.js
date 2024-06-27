@@ -4,6 +4,12 @@ const RawMaterialModel = require('../models/rawMaterialModel');
 const ProductTotalModel = require('../models/productTotalModel');
 const formatTotalData = require('./utils/formatTotalData');
 
+module.exports = {
+  renderPage,
+  getQuery,
+  getDataTotal,
+};
+
 async function renderPage(req, res) {
   try {
     let totalData = await ProductTotalModel.find();
@@ -41,8 +47,8 @@ async function getQuery(req, res) {
 
     // Default to today's date if startDate and endDate are not provided
     const today = new Date();
-    const startDate = reqStartDate || today.toISOString().split('T')[0];
-    const endDate = reqEndDate || today.toISOString().split('T')[0];
+    const startDate = reqStartDate || today;
+    const endDate = reqEndDate || today;
 
     console.log(reqStartDate);
     console.log(reqEndDate);
@@ -233,8 +239,3 @@ async function getDataTotal(req, res) {
     res.status(500).send('Internal Server Error');
   }
 }
-module.exports = {
-  renderPage,
-  getQuery,
-  getDataTotal,
-};
