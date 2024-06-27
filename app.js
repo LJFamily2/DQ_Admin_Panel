@@ -32,11 +32,12 @@ if (process.env.NODE_ENV !== "production") {
 
 
 // Setup Session
+const isProduction = process.env.NODE_ENV === "production"
 app.use(session({
   secret: 'your_secret_key',
   resave: false,
   saveUninitialized: false,
-  cookie: { secure: true},
+  cookie: { secure: isProduction},
   name: 'dpixport'
 }));
 const initializePassport = require("./middlewares/passportConfig");
