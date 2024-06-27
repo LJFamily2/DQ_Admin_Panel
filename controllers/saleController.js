@@ -44,7 +44,7 @@ async function renderPage(req, res) {
   try {
     const sales = await SaleModel.find();
 
-    let totalData = await ProductTotalModel.find({})
+    let totalData = await ProductTotalModel.find({});
     const total = formatTotalData(totalData);
     res.render('src/salePage', {
       layout: './layouts/defaultLayout',
@@ -75,22 +75,31 @@ async function createData(req, res) {
       status: 'active',
     });
 
-    const totalQuantityUsed = products.reduce(
-      (acc, product) => acc + product.quantity,
-      0,
-    );
-    const totalIncome = products.reduce(
-      (acc, product) => acc + product.quantity * product.price,
-      0,
+    // Calculate totals and prepare updateData in a single step
+    const totals = products.reduce(
+      (acc, { name, quantity, price }) => {
+        acc[name] = (acc[name] || 0) + quantity;
+        acc.totalIncome += quantity * price;
+        return acc;
+      },
+      { product: 0, dryRubber: 0, mixedQuantity: 0, totalIncome: 0 },
     );
 
-    let updateData = {};
-    if (totalQuantityUsed > 0) {
-      updateData.$inc = {
-        product: -totalQuantityUsed,
-        income: totalIncome,
-      };
-    }
+    console.log(totals.totalIncome);
+    console.log(totals.product);
+    console.log(totals.dryRubber);
+    console.log(totals.mixedQuantity);
+
+    let updateData = {
+      $inc: {
+        income: totals.totalIncome,
+        ...(totals.product > 0 && { product: -totals.product }),
+        ...(totals.dryRubber > 0 && { dryRubber: -totals.dryRubber }),
+        ...(totals.mixedQuantity > 0 && {
+          mixedQuantity: -totals.mixedQuantity,
+        }),
+      },
+    };
 
     const total = await ProductTotalModel.findOneAndUpdate({}, updateData, {
       new: true,
@@ -299,17 +308,16 @@ async function deleteData(req, res) {
       );
     }
 
-    let updateData = {$inc: {}};
+    let updateData = { $inc: {} };
     let totalIncome = 0;
     let totalProduct = 0;
 
     sale.products.forEach(product => {
       totalIncome += product.price * product.quantity;
       totalProduct += product.quantity;
-    })
+    });
 
-    updateData = {$inc: {income: -totalIncome, product: totalProduct}}
-    
+    updateData = { $inc: { income: -totalIncome, product: totalProduct } };
 
     const total = await ProductTotalModel.findOneAndUpdate({}, updateData, {
       new: true,

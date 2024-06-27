@@ -131,14 +131,11 @@
             <div class="row m-0 p-0">
               <div class="col">
                 <label for="name" class="form-label fw-bold w-100 d-flex justify-content-between"><%= index + 1 %>. Tên hàng hóa <span><i class="ri-close-line" style="cursor: pointer;" onclick="removeProduct(<%= index + 1 %>, this)"></i></span></label>
-                <input
-                  type="text"
-                  name="name"
-                  id="name"
-                  class="form-control"
-                  placeholder="Mủ cao su"
-                  required
-                />
+                <select class="form-control" name="name" id="name">
+                  <option value="product" selected>Thành phẩm</option>
+                  <option value="mixedQuantity" >Mủ tạp</option>
+                  <option value="dryRubber" >Quy khô</option>
+                </select>
               </div>
             </div>
             <div class="row my-3 m-0 p-0">
