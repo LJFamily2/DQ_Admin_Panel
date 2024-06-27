@@ -214,6 +214,7 @@ async function getDatas(req, res) {
       .map((item, index) => ({
         no: parseInt(start, 10) + index + 1,
         date: new Date(item.date).toLocaleDateString(),
+        plantation: item.plantation || "",
         dryQuantity: formatNumberForDisplay(item.products.dryQuantity),
         dryPercentage: formatNumberForDisplay(item.products.dryPercentage),
         dryTotal: formatNumberForDisplay(

@@ -104,7 +104,7 @@ function initializeDataTable(
     footerCallbackOptions = {
       footerCallback: function () {
         const api = this.api();
-        const columns = [2, 4, 5];
+        const columns = [3, 5, 6];
         columns.forEach(colIndex => {
           const total = totalColumn(api, colIndex);
           const formatted = customFormatter(total);

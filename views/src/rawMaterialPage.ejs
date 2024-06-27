@@ -5,7 +5,8 @@
   <script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.html5.min.js"></script>
   <script src="/js/datatable.js"></script>
   <script src="/js/inputFieldRestriction.js" defer></script>
-  
+  <script src="/js/newInput.js" defer></script>
+
   <!-- Slim select -->
   <script src="/js/slim-select.js" defer></script>
 
@@ -23,18 +24,14 @@
 
 <div class="row m-0 px-2">
   <div class="col-12 col-md-9 p-0 px-md-3">
-    <div
-      class="col rounded-2 p-2 overflow-auto"
-      style="box-shadow: 0 0 10px; "
-    >
-    <div class="row m-0">
-      <%- include('../partials/dateSelection.ejs') %>
-    </div>
+    <div class="col rounded-2 p-2 overflow-auto" style="box-shadow: 0 0 10px">
+      <div class="row m-0"><%- include('../partials/dateSelection.ejs') %></div>
       <table class="table table-striped table-bordered" id="table">
         <thead>
           <tr>
             <th rowspan="2">STT</th>
             <th rowspan="2">Ngày</th>
+            <th rowspan="2">Cánh</th>
             <th colspan="3">Mủ quy khô</th>
             <th>Mủ tạp</th>
             <th rowspan="2">Ghi chú</th>
@@ -82,13 +79,26 @@
                 >
                   <div class="modal-body">
                     <div class="my-3">
-                      <label for="date" class="form-label">Ngày nhập</label>
+                      <label for="date<%= index + 1 %>" class="form-label">Ngày nhập</label>
                       <input
                         type="date"
                         class="form-control"
-                        id="date"
+                        id="date<%= index + 1 %>"
                         name="date"
                         value="<%= data.date.toISOString().slice(0,10) %>"
+                        onchange="newInput(this)"
+                      />
+                    </div>
+
+                    <div class="my-3">
+                      <label for="plantation<%= index + 1 %>" class="form-label">Cánh</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="plantation<%= index + 1 %>"
+                        name="plantation"
+                        placeholder="Ông A"
+                        value="<%= data.plantation %>"
                         onchange="newInput(this)"
                       />
                     </div>
@@ -100,13 +110,13 @@
                         <div class="row my-3">
                           <label class="form-label">Mủ Quy Khô</label>
                           <div class="col col-md-6">
-                            <label for="dryQuantity" class="form-label"
+                            <label for="dryQuantity<%= index + 1 %>" class="form-label"
                               >Số lượng</label
                             >
                             <input
                               type="text"
                               class="form-control"
-                              id="dryQuantity"
+                              id="dryQuantity<%= index + 1 %>"
                               name="dryQuantity"
                               placeholder="1234,34"
                               oninput="handleQuantityInput(this)"
@@ -115,13 +125,13 @@
                             />
                           </div>
                           <div class="col col-md-6">
-                            <label for="dryPercentage" class="form-label"
+                            <label for="dryPercentage<%= index + 1 %>" class="form-label"
                               >Hàm lượng</label
                             >
                             <input
                               type="text"
                               class="form-control"
-                              id="dryPercentage"
+                              id="dryPercentage<%= index + 1 %>"
                               name="dryPercentage"
                               placeholder="23,04"
                               oninput="handlePercentageInput(this)"
@@ -138,13 +148,13 @@
                         <div class="row my-3">
                           <label class="form-label">Mủ tạp</label>
                           <div class="col-12">
-                            <label for="mixedQuantity" class="form-label"
+                            <label for="mixedQuantity<%= index + 1 %>" class="form-label"
                               >Số lượng</label
                             >
                             <input
                               type="text"
                               class="form-control"
-                              id="mixedQuantity"
+                              id="mixedQuantity<%= index + 1 %>"
                               name="mixedQuantity"
                               placeholder="1234,34"
                               min="0"
@@ -159,16 +169,15 @@
                     </div>
 
                     <div class="my-3">
-                      <label for="note" class="form-label">Ghi chú</label>
+                      <label for="note<%= index + 1 %>" class="form-label">Ghi chú</label>
                       <textarea
                         type="text"
                         class="form-control"
                         rows="3"
-                        id="note"
+                        id="note<%= index + 1 %>"
                         name="notes"
                         onchange="newInput(this)"
-                      >
-<%= data.notes %></textarea
+                      ><%= data.notes %></textarea
                       >
                     </div>
                   </div>
@@ -215,8 +224,8 @@
                 >
                   <div class="modal-body">
                     Bạn có muốn xóa
-                    <strong><%= data.date.toLocaleDateString() %></strong> ? Hành động này không thể
-                    hoàn tác.
+                    <strong><%= data.date.toLocaleDateString() %></strong> ?
+                    Hành động này không thể hoàn tác.
                   </div>
                   <div class="modal-footer">
                     <button type="submit" class="btn btn-danger">
@@ -244,10 +253,7 @@
   </div>
   <div
     class="col-12 col-md-3 rounded-2 my-5 m-md-0 py-3"
-    style="
-      box-shadow: 0 0 10px;
-      overflow-y: auto;
-    "
+    style="box-shadow: 0 0 10px; overflow-y: auto"
   >
     <%- include('../partials/notificationMessage.ejs') %>
     <h4>Thêm dữ liệu</h4>
@@ -257,8 +263,14 @@
         <input type="date" class="form-control" id="date" name="date" />
       </div>
       <div class="my-3">
-      <label for="date" class="form-label">Ngày nhập</label>
-        <input type="date" class="form-control" id="date" name="date" />
+        <label for="plantation" class="form-label">Cánh</label>
+        <input
+          type="text"
+          class="form-control"
+          id="plantation"
+          name="plantation"
+          placeholder="Ông A"
+        />
       </div>
 
       <hr />
@@ -350,6 +362,7 @@
   let columns = [
     { data: 'no', orderable: false },
     { data: 'date' },
+    { data: 'plantation', orderable: false },
     { data: 'dryQuantity', orderable: false },
     { data: 'dryPercentage', orderable: false },
     { data: 'dryTotal', orderable: false },
@@ -375,6 +388,6 @@
     false,
     false,
     false,
-    true
+    true,
   );
 </script>
