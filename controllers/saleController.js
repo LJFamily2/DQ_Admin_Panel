@@ -268,25 +268,11 @@ async function updateData(req, res) {
     totalMixedQuantityDiff,
   } = calculateDifferences(products, oldSale);
 
+  // Handle products that were removed
   oldSale.products.forEach(oldProduct => {
-    const productInNewSale = products.find(
-      product => product.name === oldProduct.name,
-    );
-    if (!productInNewSale) {
-      // Convert string quantity to number for accurate calculation
-      const quantityToRemove = parseInt(oldProduct.quantity, 10);
-      switch (oldProduct.type) {
-        case 'product':
-          totalProductDiff -= quantityToRemove;
-          break;
-        case 'mixedQuantity':
-          totalMixedQuantityDiff -= quantityToRemove;
-          break;
-        case 'dryRubber':
-          totalDryRubberDiff -= quantityToRemove; // Ensure this line is correctly adjusting the total
-          break;
-      }
-      totalIncomeDiff -= quantityToRemove * oldProduct.price;
+    if (!products.find(product => product.name === oldProduct.name)) {
+      totalProductDiff -= oldProduct.quantity;
+      totalIncomeDiff -= oldProduct.quantity * oldProduct.price;
     }
   });
 
