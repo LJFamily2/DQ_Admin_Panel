@@ -114,7 +114,8 @@ async function createData(req, res) {
     console.log(totals.product);
     console.log(totals.dryRubber);
     console.log(totals.mixedQuantity);
-
+ 
+    
     let updateData = {
       $inc: {
         income: totals.totalIncome,
