@@ -271,7 +271,17 @@ async function updateData(req, res) {
   // Handle products that were removed
   oldSale.products.forEach(oldProduct => {
     if (!products.find(product => product.name === oldProduct.name)) {
-      totalProductDiff -= oldProduct.quantity;
+      switch (oldProduct.name) {
+        case 'product':
+          totalProductDiff -= oldProduct.quantity;
+          break;
+        case 'dryRubber':
+          totalDryRubberDiff -= oldProduct.quantity;
+          break;
+        case 'mixedQuantity':
+          totalMixedQuantityDiff -= oldProduct.quantity;
+          break;
+      }
       totalIncomeDiff -= oldProduct.quantity * oldProduct.price;
     }
   });
