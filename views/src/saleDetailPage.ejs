@@ -69,18 +69,12 @@
             <div class="row my-3">
               <div class="row m-0 p-0">
                 <div class="col">
-                  <label for="name" class="form-label fw-bold w-100 d-flex justify-content-between"
-                    ><%= index + 1 %>. Tên hàng hóa <span><i class="ri-close-line" style="cursor: pointer;" onclick="removeProduct(<%= index + 1 %>, this)"></i></span></label
-                  >
-                  <input
-                    type="text"
-                    name="name"
-                    id="name"
-                    class="form-control"
-                    placeholder="Mủ cao su"
-                    required
-                      value="<%= product.name %>"
-                  />
+                  <label for="name" class="form-label fw-bold w-100 d-flex justify-content-between"><%= index + 1 %>. Tên hàng hóa <span><i class="ri-close-line" style="cursor: pointer;" onclick="removeProduct(<%= index + 1 %>, this)"></i></span></label>
+                  <select class="form-control" name="name" id="name">
+                    <option value="product" <%= product.name === "product" ? "selected" : "" %>>Thành phẩm</option>
+                    <option value="mixedQuantity" <%= product.name === "mixedQuantity" ? "selected" : "" %>>Mủ tạp</option>
+                    <option value="dryRubber" <%= product.name === "dryRubber" ? "selected" : "" %>>Quy khô</option>
+                  </select>
                 </div>
               </div>
               <div class="row my-3 m-0 p-0">
