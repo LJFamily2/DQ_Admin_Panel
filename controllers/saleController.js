@@ -248,9 +248,9 @@ async function updateData(req, res) {
       req.headers.referer,
     );
 
-  const names = ensureArray(req.body.name);
-  const quantities = ensureArray(req.body.quantity);
-  const prices = ensureArray(req.body.price);
+  const names = ensureArray(req.body.name) || "";
+  const quantities = ensureArray(req.body.quantity) || 0;
+  const prices = ensureArray(req.body.price) || 0;
   const products = convertProductData(names, quantities, prices);
 
   let oldSale = await SaleModel.findById(id);
