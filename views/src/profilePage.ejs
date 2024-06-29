@@ -19,6 +19,17 @@
             />
           </div>
           <div class="mb-3">
+            <label for="role" class="form-label">Vai trò</label>
+            <input
+              type="text"
+              class="form-control"
+              id="role"
+              onfocus="toggleButtons(true, '.profile-body button')"
+              value="<%= user.role ? "Admin" : "Nhân viên" %>"
+              disabled
+            />
+          </div>
+          <div class="mb-3">
             <a
               style="
                 text-decoration: underline;

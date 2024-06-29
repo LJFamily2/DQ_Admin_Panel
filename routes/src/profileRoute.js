@@ -6,6 +6,6 @@ const profileController = require('../../controllers/profileController')
 
 router.get("/",connectEnsureLogin.ensureLoggedIn({redirectTo:'/dang-nhap'}), profileController.renderPage )
 
-// router.post('/tao-tai-khoan', )
+router.post('/update/:id', profileController.updateData )
 
 module.exports = router;
