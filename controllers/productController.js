@@ -4,7 +4,6 @@ const trimStringFields = require('./utils/trimStringFields');
 const ProductTotalModel = require('../models/productTotalModel');
 const formatTotalData = require('./utils/formatTotalData');
 
-
 module.exports = {
   createProduct,
   updateProduct,
@@ -17,7 +16,7 @@ module.exports = {
 async function renderPage(req, res) {
   try {
     let totalData = await ProductTotalModel.find();
-    const total = formatTotalData(totalData)
+    const total = formatTotalData(totalData);
 
     const products = await ProductModel.find({});
     res.render('src/productPage', {
@@ -37,25 +36,29 @@ async function createProduct(req, res) {
   req.body = trimStringFields(req.body);
 
   try {
-    let date = await ProductModel.findOne({date:req.body.date})
-    if(date){
+    let date = await ProductModel.findOne({ date: req.body.date });
+    if (date) {
       return handleResponse(
         req,
         res,
         404,
         'fail',
-        "Đã có dữ liệu ngày này. Hãy chọn ngày khác!",
+        'Đã có dữ liệu ngày này. Hãy chọn ngày khác!',
         req.headers.referer,
-      )
+      );
     }
 
     // Ensure quantity and dryRubberUsed are defined, else default to "0"
-    let quantityStr = req.body.quantity ? req.body.quantity.replace(",", ".") : "0";
-    let dryRubberUsedStr = req.body.dryRubberUsed ? req.body.dryRubberUsed.replace(",", ".") : "0";
+    let quantityStr = req.body.quantity
+      ? req.body.quantity.replace(',', '.')
+      : '0';
+    let dryRubberUsedStr = req.body.dryRubberUsed
+      ? req.body.dryRubberUsed.replace(',', '.')
+      : '0';
 
     let quantity = parseFloat(quantityStr);
     let dryRubberUsed = parseFloat(dryRubberUsedStr);
-    
+
     const newProduct = await ProductModel.create({
       ...req.body,
       quantity: quantity,
@@ -115,17 +118,17 @@ async function createProduct(req, res) {
 async function updateProduct(req, res) {
   console.log(req.body);
   try {
-    const {id} =req.params;
-    
+    const { id } = req.params;
+
     const updateFields = {
       date: req.body.date,
       dryRubberUsed: req.body.dryRubberUsed.trim(),
       quantity: req.body.quantity.trim(),
       notes: req.body.notes.trim(),
     };
-    
+
     const oldData = await ProductModel.findById(id);
-    
+
     const updatedProduct = await ProductModel.findByIdAndUpdate(
       id,
       updateFields,
@@ -145,15 +148,15 @@ async function updateProduct(req, res) {
 
     console.log(updatedProduct);
 
-
     let updateData = {};
 
-    let dryRubberUsedDiff = updatedProduct.dryRubberUsed - oldData.dryRubberUsed
-    let quantityDiff = updatedProduct.quantity - oldData.quantity
-    console.log(updatedProduct.dryRubberUsed)
-    console.log(oldData.dryRubberUsed)
-    console.log(dryRubberUsedDiff , quantityDiff)
-  
+    let dryRubberUsedDiff =
+      updatedProduct.dryRubberUsed - oldData.dryRubberUsed;
+    let quantityDiff = updatedProduct.quantity - oldData.quantity;
+    console.log(updatedProduct.dryRubberUsed);
+    console.log(oldData.dryRubberUsed);
+    console.log(dryRubberUsedDiff, quantityDiff);
+
     if (dryRubberUsedDiff !== 0) {
       updateData.$inc = { ...updateData.$inc, dryRubber: -dryRubberUsedDiff };
     }
@@ -161,8 +164,10 @@ async function updateProduct(req, res) {
       updateData.$inc = { ...updateData.$inc, product: quantityDiff };
     }
 
-
-    const total = await ProductTotalModel.findOneAndUpdate({}, updateData, {new:true, upsert: true})
+    const total = await ProductTotalModel.findOneAndUpdate({}, updateData, {
+      new: true,
+      upsert: true,
+    });
 
     if (!total) {
       return handleResponse(
@@ -219,16 +224,24 @@ async function deleteProduct(req, res) {
 
     let updateData = {};
     if (deletedProduct.dryRubberUsed > 0) {
-      updateData.$inc = { ...updateData.$inc, dryRubber: deletedProduct.dryRubberUsed };
+      updateData.$inc = {
+        ...updateData.$inc,
+        dryRubber: deletedProduct.dryRubberUsed,
+      };
     }
     if (deletedProduct.quantity > 0) {
-      updateData.$inc = { ...updateData.$inc, product: -deletedProduct.quantity };
+      updateData.$inc = {
+        ...updateData.$inc,
+        product: -deletedProduct.quantity,
+      };
     }
 
-    const total = await ProductTotalModel.findOneAndUpdate
-      ({}, updateData, {new:true, upsert: true})
+    const total = await ProductTotalModel.findOneAndUpdate({}, updateData, {
+      new: true,
+      upsert: true,
+    });
 
-    if(!total){
+    if (!total) {
       return handleResponse(
         req,
         res,
@@ -238,7 +251,6 @@ async function deleteProduct(req, res) {
         '/quan-ly-hang-hoa',
       );
     }
-    
 
     handleResponse(
       req,
@@ -284,7 +296,6 @@ async function getProducts(req, res) {
       endDate,
     } = req.body;
 
-
     const searchValue = search?.value || '';
     const sortColumn = columns?.[order?.[0]?.column]?.data;
     const sortDirection = order?.[0]?.dir === 'asc' ? 1 : -1;
@@ -320,13 +331,12 @@ async function getProducts(req, res) {
     const products = await ProductModel.find(filter)
       .sort({ [sortColumn]: sortDirection })
       .skip(parseInt(start, 10))
-      .limit(parseInt(length, 10))
-
+      .limit(parseInt(length, 10));
 
     const data = products.map((product, index) => ({
       no: parseInt(start, 10) + index + 1,
       date: product.date.toLocaleDateString(),
-      dryRubberUsed: product.dryRubberUsed|| 0,
+      dryRubberUsed: product.dryRubberUsed || 0,
       quantity: product.quantity || 0,
       notes: product.notes || '',
       id: product._id,

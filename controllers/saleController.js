@@ -3,7 +3,6 @@ const ProductTotalModel = require('../models/productTotalModel');
 const handleResponse = require('./utils/handleResponse');
 const trimStringFields = require('./utils/trimStringFields');
 const formatTotalData = require('./utils/formatTotalData');
-const { strategies } = require('passport');
 
 module.exports = {
   renderPage,
