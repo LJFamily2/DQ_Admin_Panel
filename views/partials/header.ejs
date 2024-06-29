@@ -1,19 +1,19 @@
 <header class="container-fluid" style="height: 70px;">
   <div class="row p-0 m-0 w-100 h-100 align-items-center">
-    <div class="col-md-10 col-10 p-0 p-md-2"><h1><%= title %></h1></div>
-    <div class="col-md-2 d-none d-md-flex align-items-center">
-      <div class="dropdown mb-0 rounded-3 border p-2" id="dropdownUser2"  data-bs-toggle="dropdown" aria-expanded="false" 
+    <div class="col-md-11 col-10 p-0 p-md-2"><h1><%= title %></h1></div>
+    <div class="col-md-1 d-none d-md-flex align-items-center">
+      <div class="dropdown mb-0" id="dropdownUser2"  data-bs-toggle="dropdown" aria-expanded="false" 
       <% if(title === "Hồ sơ cá nhân"){ %>
-        style="cursor: pointer; background: blue; color: white;" 
+        style="cursor: pointer;" 
       <%} else{ %>
         style="cursor: pointer;" 
       <% } %>
       >
-        Username
+        <i class="ri-account-circle-line fs-2"></i>
       </div>
       <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2">
         <li><a class="dropdown-item" href="ho-so">Hồ Sơ Cá Nhân</a></li>
-        <li><a class="dropdown-item" href="#">Sign out</a></li>
+        <li><a class="dropdown-item" href="#">Đăng xuất</a></li>
       </ul>
     </div>
   </div>

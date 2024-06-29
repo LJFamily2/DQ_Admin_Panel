@@ -18,6 +18,7 @@ async function renderPage(req, res) {
     res.render('src/queryPage', {
       layout: './layouts/defaultLayout',
       total,
+      user: req.user,
       title: 'Truy vấn',
     });
   } catch (error) {

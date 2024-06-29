@@ -76,6 +76,7 @@ async function renderPage(req, res) {
       sales,
       total,
       index: 0,
+      user: req.user,
       messages: req.flash(),
       title: 'Quản lý hợp đồng bán mủ',
     });

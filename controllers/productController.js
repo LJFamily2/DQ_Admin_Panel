@@ -23,6 +23,7 @@ async function renderPage(req, res) {
       layout: './layouts/defaultLayout',
       title: 'Quản lý hàng hóa',
       products,
+      user: req.user,
       total,
       messages: req.flash(),
     });

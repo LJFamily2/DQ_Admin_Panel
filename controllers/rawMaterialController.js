@@ -23,6 +23,7 @@ async function renderPage(req, res) {
       layout: './layouts/defaultLayout',
       datas,
       total,
+      user: req.user,
       messages: req.flash(),
       title: 'Dữ liệu',
     });
