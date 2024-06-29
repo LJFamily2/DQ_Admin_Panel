@@ -24,6 +24,8 @@
       class="col rounded-2 p-2 overflow-auto"
       style="box-shadow: 0 0 10px"
     >
+    <div class="row m-0"><%- include('../partials/dateSelection.ejs') %></div>
+
       <table class="table table-striped table-bordered" id="products_table">
         <thead>
           <tr>
@@ -294,5 +296,10 @@
     '#staticBackdrop',
     '#deleteModalToggle',
     productColumns,
+    false,
+    '#filterButton',
+    '#startDate',
+    '#endDate',
+    '#clearFilterButton',
   );
 </script>

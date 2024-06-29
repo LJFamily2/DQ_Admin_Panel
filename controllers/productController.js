@@ -273,30 +273,55 @@ async function deleteAllProducts(req, res) {
 
 async function getProducts(req, res) {
   try {
-    const { draw, start = 0, length = 10, search, order, columns } = req.body;
+    const {
+      draw,
+      start = 0,
+      length = 10,
+      search,
+      order,
+      columns,
+      startDate,
+      endDate,
+    } = req.body;
+
+
     const searchValue = search?.value || '';
     const sortColumn = columns?.[order?.[0]?.column]?.data;
     const sortDirection = order?.[0]?.dir === 'asc' ? 1 : -1;
 
-    // Use these ObjectId(s) in your searchQuery
     const searchQuery = searchValue
       ? {
           $or: [
-            { date: { $regex: searchValue, $options: 'i' } },
-            { quantity: { $regex: searchValue, $options: 'i' } },
-            { dryRubberUsed: { $regex: searchValue, $options: 'i' } },
+            { code: { $regex: searchValue, $options: 'i' } },
+            { status: { $regex: searchValue, $options: 'i' } },
             { notes: { $regex: searchValue, $options: 'i' } },
           ],
         }
       : {};
 
+    let filter = { ...searchQuery };
+
+    if (startDate || endDate) {
+      filter.date = {};
+      if (startDate) {
+        const filterStartDate = new Date(startDate);
+        filterStartDate.setHours(0, 0, 0, 0);
+        filter.date.$gte = filterStartDate;
+      }
+      if (endDate) {
+        const filterEndDate = new Date(endDate);
+        filterEndDate.setHours(23, 59, 59, 999);
+        filter.date.$lte = filterEndDate;
+      }
+    }
+
     const totalRecords = await ProductModel.countDocuments();
-    const filteredRecords = await ProductModel.countDocuments(searchQuery);
-    const products = await ProductModel.find(searchQuery)
+    const filteredRecords = await ProductModel.countDocuments(filter);
+    const products = await ProductModel.find(filter)
       .sort({ [sortColumn]: sortDirection })
       .skip(parseInt(start, 10))
       .limit(parseInt(length, 10))
-      .exec();
+
 
     const data = products.map((product, index) => ({
       no: parseInt(start, 10) + index + 1,

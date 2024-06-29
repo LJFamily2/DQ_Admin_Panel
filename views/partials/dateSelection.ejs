@@ -4,7 +4,7 @@
   data-bs-toggle="modal"
   data-bs-target="#staticBackdrop"
 >
-  <strong>Ngày: </strong><span> Hôm nay</span>
+  <strong>Chọn ngày: </strong><span> </span>
 </div>
 
 <div
@@ -63,7 +63,7 @@
             class="btn btn-secondary mx-2"
             style="display: none"
             data-bs-dismiss="modal"
-            onclick="this.style.display ='none', document.querySelector('.dateSelectionSelector span').textContent = 'Hôm nay'"
+            onclick="this.style.display ='none', document.querySelector('.dateSelectionSelector span').textContent = ''"
           >
             <i class="ri-calendar-close-line"></i>
           </button>
@@ -82,9 +82,9 @@
     if (startDate || endDate) {
       startDate = startDate.split('-').reverse().join('-');
       endDate = endDate.split('-').reverse().join('-');
-      dateDisplay.textContent = `Ngày: ${startDate} - ${endDate}`;
+      dateDisplay.textContent = `${startDate} - ${endDate}`;
     } else {
-      dateDisplay.textContent = 'Hôm nay';
+      dateDisplay.textContent = '';
     }
   }
 </script>
