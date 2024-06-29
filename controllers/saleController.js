@@ -3,6 +3,7 @@ const ProductTotalModel = require('../models/productTotalModel');
 const handleResponse = require('./utils/handleResponse');
 const trimStringFields = require('./utils/trimStringFields');
 const formatTotalData = require('./utils/formatTotalData');
+const { strategies } = require('passport');
 
 module.exports = {
   renderPage,
@@ -160,12 +161,22 @@ async function createData(req, res) {
 
 async function getDatas(req, res) {
   try {
-    const { draw, start = 0, length = 10, search, order, columns } = req.body;
+    const {
+      draw,
+      start = 0,
+      length = 10,
+      search,
+      order,
+      columns,
+      startDate,
+      endDate,
+    } = req.body;
+
+
     const searchValue = search?.value || '';
     const sortColumn = columns?.[order?.[0]?.column]?.data;
     const sortDirection = order?.[0]?.dir === 'asc' ? 1 : -1;
 
-    // Use these ObjectId(s) in your searchQuery
     const searchQuery = searchValue
       ? {
           $or: [
@@ -177,9 +188,25 @@ async function getDatas(req, res) {
         }
       : {};
 
+    let filter = { ...searchQuery };
+
+    if (startDate || endDate) {
+      filter.date = {};
+      if (startDate) {
+        const filterStartDate = new Date(startDate);
+        filterStartDate.setHours(0, 0, 0, 0);
+        filter.date.$gte = filterStartDate;
+      }
+      if (endDate) {
+        const filterEndDate = new Date(endDate);
+        filterEndDate.setHours(23, 59, 59, 999);
+        filter.date.$lte = filterEndDate;
+      }
+    }
+
     const totalRecords = await SaleModel.countDocuments();
-    const filteredRecords = await SaleModel.countDocuments(searchQuery);
-    const products = await SaleModel.find(searchQuery)
+    const filteredRecords = await SaleModel.countDocuments(filter);
+    const products = await SaleModel.find(filter)
       .sort({ [sortColumn]: sortDirection })
       .skip(parseInt(start, 10))
       .limit(parseInt(length, 10))
@@ -203,8 +230,8 @@ async function getDatas(req, res) {
       data,
     });
   } catch (error) {
-    console.error('Error handling DataTable request:', error);
-    res.status(500);
+    console.error('Error in getDatas function:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 }
 

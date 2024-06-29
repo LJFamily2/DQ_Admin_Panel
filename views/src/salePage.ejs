@@ -24,7 +24,7 @@
   <div class="col-12 col-md-9 p-0 px-md-3">
     <div
       class="col rounded-2 p-2 overflow-auto"
-      style="box-shadow: 0 0 10px; max-height: 80dvh"
+      style="box-shadow: 0 0 10px "
     >
       <div class="row m-0"><%- include('../partials/dateSelection.ejs') %></div>
       <table class="table table-striped table-bordered" id="table">
@@ -92,9 +92,6 @@
     class="col-12 col-md-3 rounded-2 my-5 m-md-0 py-3"
     style="
       box-shadow: 0 0 10px;
-      background: var(--background_color);
-      max-height: 80dvh;
-      overflow-y: auto;
     "
   >
     <%- include('../partials/notificationMessage.ejs') %>
@@ -199,7 +196,7 @@
 <script>
   let columns = [
     { data: 'no', orderable: false },
-    { data: 'date' },
+    { data: 'date', searchable: true },
     { data: 'code', orderable: false },
     { data: 'products', orderable: false },
     { data: 'notes', orderable: false },
@@ -258,7 +255,7 @@
     false,
     false,
     false,
-    true,
+    false,
   );
 
   document.addEventListener('DOMContentLoaded', () => {
