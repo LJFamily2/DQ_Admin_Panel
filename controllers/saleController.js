@@ -180,7 +180,6 @@ async function getDatas(req, res) {
     const searchQuery = searchValue
       ? {
           $or: [
-            { date: { $regex: searchValue, $options: 'i' } },
             { code: { $regex: searchValue, $options: 'i' } },
             { status: { $regex: searchValue, $options: 'i' } },
             { notes: { $regex: searchValue, $options: 'i' } },
@@ -210,9 +209,8 @@ async function getDatas(req, res) {
       .sort({ [sortColumn]: sortDirection })
       .skip(parseInt(start, 10))
       .limit(parseInt(length, 10))
-      .exec();
 
-    const data = products.map((product, index) => ({
+      const data = products.map((product, index) => ({
       no: parseInt(start, 10) + index + 1,
       date: product.date.toLocaleDateString(),
       code: product.code || '',
