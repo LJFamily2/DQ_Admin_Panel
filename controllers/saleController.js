@@ -114,8 +114,7 @@ async function createData(req, res) {
     console.log(totals.product);
     console.log(totals.dryRubber);
     console.log(totals.mixedQuantity);
- 
-    
+
     let updateData = {
       $inc: {
         income: totals.totalIncome,
@@ -355,16 +354,30 @@ async function deleteData(req, res) {
       );
     }
 
-    let updateData = { $inc: {} };
-    let totalIncome = 0;
-    let totalProduct = 0;
+    const totals = sale.products.reduce(
+      (acc, { name, quantity, price }) => {
+        acc[name] = (acc[name] || 0) + quantity;
+        acc.totalIncome += quantity * price;
+        return acc;
+      },
+      { product: 0, dryRubber: 0, mixedQuantity: 0, totalIncome: 0 },
+    );
 
-    sale.products.forEach(product => {
-      totalIncome += product.price * product.quantity;
-      totalProduct += product.quantity;
-    });
+    console.log(totals.totalIncome);
+    console.log(totals.product);
+    console.log(totals.dryRubber);
+    console.log(totals.mixedQuantity);
 
-    updateData = { $inc: { income: -totalIncome, product: totalProduct } };
+    let updateData = {
+      $inc: {
+        income: -totals.totalIncome,
+        ...(totals.product > 0 && { product: totals.product }),
+        ...(totals.dryRubber > 0 && { dryRubber: totals.dryRubber }),
+        ...(totals.mixedQuantity > 0 && {
+          mixedQuantity: totals.mixedQuantity,
+        }),
+      },
+    };
 
     const total = await ProductTotalModel.findOneAndUpdate({}, updateData, {
       new: true,
