@@ -1,4 +1,4 @@
-const AccountModel = require('../models/userAccountModel')
+const AccountModel = require('../models/accountModel')
 const handleResponse = require('./utils/handleResponse');
 
 async function renderPage(req,res){
