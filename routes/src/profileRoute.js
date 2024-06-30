@@ -5,6 +5,5 @@ const profileController = require('../../controllers/profileController')
 
 router.get("/",connectEnsureLogin.ensureLoggedIn({redirectTo:'/dang-nhap'}), profileController.renderPage )
 
-router.post('/update/:id', profileController.updateData )
 
 module.exports = router;

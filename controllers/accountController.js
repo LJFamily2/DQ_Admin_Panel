@@ -81,7 +81,6 @@ async function getUsers(req, res) {
       .sort({ [sortColumn]: sortDirection })
       .skip(parseInt(start, 10))
       .limit(parseInt(length, 10))
-      .exec();
 
     const data = users.map((user, index) => ({
       no: parseInt(start, 10) + index + 1,
