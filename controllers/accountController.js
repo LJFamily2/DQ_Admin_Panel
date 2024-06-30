@@ -44,7 +44,7 @@ async function createUser(req, res) {
         404,
         "fail",
         "Tạo tài khoản thất bại",
-        "/quan-ly-tai-khoan"
+        req.headers.referer
       );
     }
 
@@ -56,7 +56,7 @@ async function createUser(req, res) {
       201,
       "success",
       "Tạo tài khoản thành công",
-      "/quan-ly-tai-khoan"
+      req.headers.referer
     );
   } catch (error) {
     res.status(500);
@@ -105,27 +105,42 @@ async function updateUser(req, res) {
   console.log(req.body)
   req.body = trimStringFields(req.body);
   try {
-    if (!user) {
+    const userID = req.params.id;
+    const user = await UserModel.findById(userID);
+    if (!userID) {
       return handleResponse(
         req,
         res,
         404,
         "fail",
         "Không thấy tài khoản",
-        "/quan-ly-tai-khoan"
+        req.headers.referer
       );
+    }
+
+    if(req.body.oldPassword){
+      if(req.body.oldPassword !== user.password){
+        return handleResponse(
+          req,
+          res,
+          404,
+          "fail",
+          "Mật khẩu cũ không đúng",
+          req.headers.referer
+        );
+      }
     }
 
     const updateFields = {
       username: req.body.username,
       role: req.body.role,
-      password: req.body.password,
+      password: req.body.newPassword,
     };
-    if (req.body.password) {
+    if (req.body.newPassword) {
       updateFields.password = await bcrypt.hash(req.body.password, 10);
     }
 
-    const newUser = await UserModel.findByIdAndUpdate(req.params.id, updateFields, {new:true})
+    const newUser = await UserModel.findByIdAndUpdate(userID, updateFields, {new:true})
 
     if (!newUser) {
       return handleResponse(
@@ -134,7 +149,7 @@ async function updateUser(req, res) {
         404,
         "fail",
         "Cập nhập tài khoản thất bại",
-        "/quan-ly-tai-khoan"
+        req.headers.referer
       );
     }
 
@@ -146,7 +161,7 @@ async function updateUser(req, res) {
       200,
       "success",
       "Cập nhập tài khoản thành công",
-      "/quan-ly-tai-khoan"
+      req.headers.referer
     );
   } catch (err) {
     console.log(err);
@@ -164,7 +179,7 @@ async function deleteUser(req, res) {
         404,
         "fail",
         "Không thấy tài khoản",
-        "/quan-ly-tai-khoan"
+        req.headers.referer
       );
     }
     handleResponse(
@@ -173,7 +188,7 @@ async function deleteUser(req, res) {
       200,
       "success",
       "Xóa tài khoản thành công",
-      "/quan-ly-tai-khoan"
+      req.headers.referer
     );
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -189,7 +204,7 @@ async function deleteAllUsers(req, res) {
       200,
       "success",
       "Xóa tất cả tài khoản thành công",
-      "/quan-ly-tai-khoan"
+      req.headers.referer
     );
   } catch (err) {
     console.log(err);
@@ -199,7 +214,7 @@ async function deleteAllUsers(req, res) {
       500,
       "fail",
       "Xóa tất cả tài khoản thất bại",
-      "/quan-ly-tai-khoan"
+      req.headers.referer
     );
   }
 }
