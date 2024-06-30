@@ -19,6 +19,7 @@ async function renderPage(req, res) {
     res.render('src/accountPage', {
       layout: './layouts/defaultLayout',
       users,
+      user:req.user,
       messages: req.flash(),
       title: 'Quản lý tài khoản',
     });
@@ -31,6 +32,19 @@ async function createUser(req, res) {
   console.log(req.body);
   req.body = trimStringFields(req.body);
   try {
+    let existedUsername = await UserModel.findOne({username: req.body.username})
+    if(existedUsername){
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Tên tài khoản đã tồn tại. Hãy tạo với tên khác!',
+        req.headers.referer,
+      );
+    }
+
+
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
     const user = await UserModel.create({
       username: req.body.username,
@@ -206,6 +220,16 @@ async function deleteUser(req, res) {
         req.headers.referer,
       );
     }
+    if(user.role){
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Không thể xóa tài khoản quản trị',
+        req.headers.referer,
+      );
+    }
 
     if (req.session && req.session.userId === req.params.id) {
       // Destroy the session
@@ -235,13 +259,35 @@ async function deleteUser(req, res) {
 
 async function deleteAllUsers(req, res) {
   try {
-    await UserModel.deleteMany({});
+    // Delete all users with role false
+    const deletionResult = await UserModel.deleteMany({ role: false });
+
+    // Check if the current user is affected and destroy the session if so
+    if (req.session.userRole === false) {
+      req.session.destroy((err) => {
+        if (err) {
+          console.log('Session destruction error:', err);
+        }
+      });
+    }
+
+    if (deletionResult.deletedCount === 0) {
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Không có tài khoản nào để xóa',
+        req.headers.referer,
+      );
+    }
+
     handleResponse(
       req,
       res,
       200,
       'success',
-      'Xóa tất cả tài khoản thành công',
+      'Xóa tất cả tài khoản nhân viên thành công',
       req.headers.referer,
     );
   } catch (err) {

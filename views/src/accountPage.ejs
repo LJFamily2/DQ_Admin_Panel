@@ -20,15 +20,17 @@
   </button>
 
   <!-- Delete all button -->
-  <!-- <button
-  type="button"
-  class="btn btn-danger mx-3"
-  data-bs-toggle="modal"
-  data-bs-target="#deleteAll-admin-user"
-  style="width: max-content"
-  >
-  Xóa tất cả tài khoản 
-  </button> -->
+  <% if(user.role){ %>
+    <button
+    type="button"
+    class="btn btn-danger mx-3"
+    data-bs-toggle="modal"
+    data-bs-target="#deleteAll-admin-user"
+    style="width: max-content"
+    >
+    Xóa tất cả tài khoản 
+    </button>
+  <% } %>
 </section>
 
 <section class="row m-0 mt-2">
@@ -183,6 +185,7 @@
               class="form-control"
               id="username"
               name="username"
+              required
             />
           </div>
           <div class="mb-3">
@@ -194,6 +197,7 @@
               class="form-control"
               id="password"
               name="password"
+              required
             />
           </div>
 
@@ -203,7 +207,7 @@
             >
             <select class="form-control" name="role" id="role">
               <option value="true">Admin</option>
-              <option value="false">Nhân viên</option>
+              <option value="false" selected>Nhân viên</option>
             </select>
           </div>
         </div>
@@ -257,18 +261,18 @@
     { data: "no", orderable: false },
     { data: "username" },
     { data: "password", orderable: false },
-    { data: "role", orderable: false,
+    { data: "role",
     render: function (data) {
         return data  ? `  <div class="row">
           <div class="col text-center "  >
-            <button type="button" class="btn btn-outline-primary">
+            <button type="button" class="btn btn-primary">
               Admin
             </button>
           </div>
         </div>
       </div>` : `  <div class="row">
           <div class="col text-center "  >
-            <button type="button" class="btn btn-outline-dark">
+            <button type="button" class="btn btn-light">
               Nhân viên
             </button>
           </div>
