@@ -20,7 +20,7 @@
   </button>
 
   <!-- Delete all button -->
-  <button
+  <!-- <button
   type="button"
   class="btn btn-danger mx-3"
   data-bs-toggle="modal"
@@ -28,14 +28,14 @@
   style="width: max-content"
   >
   Xóa tất cả tài khoản 
-  </button>
+  </button> -->
 </section>
 
 <section class="row m-0 mt-2">
   <table class="table table-striped table-bordered" id="user_accounts">
     <thead>
       <tr>
-        <% ['STT', 'Tài khoản', 'Mật Khẩu', 'Chỉnh Sửa'].forEach(header => { %>
+        <% ['STT', 'Tài khoản', 'Mật Khẩu','Vai trò', 'Chỉnh Sửa'].forEach(header => { %>
           <th><%= header %></th>
         <% }) %>
       </tr>
@@ -85,10 +85,10 @@
                     >Mật khẩu mới</label
                   >
                   <input
-                    type="text"
+                    type="password"
                     class="form-control"
                     id="password<%= index +1  %>"
-                    name="password"
+                    name="newPassword"
                     placeholder="**********"
                   />
                 </div>
@@ -121,7 +121,7 @@
           <div class="modal-content">
             <div class="modal-header">
               <h1 class="modal-title fs-5" id="exampleModalToggleLabel">
-                Xóa <%= user.username %>
+                Xóa tài khoản <%= user.username %>
               </h1>
               <button
                 type="button"
@@ -137,7 +137,7 @@
                 hoàn tác.
               </div>
               <div class="modal-footer">
-                <button type="submit" class="btn btn-success">Xác nhận</button>
+                <button type="submit" class="btn btn-danger">Xác nhận</button>
               </div>
             </form>
           </div>
@@ -257,6 +257,25 @@
     { data: "no", orderable: false },
     { data: "username" },
     { data: "password", orderable: false },
+    { data: "role", orderable: false,
+    render: function (data) {
+        return data  ? `  <div class="row">
+          <div class="col text-center "  >
+            <button type="button" class="btn btn-outline-primary">
+              Admin
+            </button>
+          </div>
+        </div>
+      </div>` : `  <div class="row">
+          <div class="col text-center "  >
+            <button type="button" class="btn btn-outline-dark">
+              Nhân viên
+            </button>
+          </div>
+        </div>
+      </div>`;
+      },
+     },
     { data: "id", orderable: false },
   ];
 
@@ -265,6 +284,7 @@
     "/quan-ly-tai-khoan/getUsers",
     "#staticBackdrop",
     "#deleteModalToggle",
-    userColumns
+    userColumns,
+    false
   );
 </script>
