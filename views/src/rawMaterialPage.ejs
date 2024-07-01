@@ -25,7 +25,7 @@
 <div class="row m-2 g-3">
   <div class="col-12 col-md-9">
     <div class="card">
-      <div class="card-header p-3">
+      <div class="card-header">
         <%- include('../partials/dateSelection.ejs') %>
       </div>
       <div class="card-body">
@@ -274,12 +274,12 @@
     <div class="col-12 col-md-3">
     <div class="card">
       <div class="card-header">
-        <%- include('../partials/notificationMessage.ejs') %>
-        <h4>Thêm dữ liệu</h4>
+        <h4 class="m-0">Tạo dữ liệu</h4>
       </div>
+      <form action="/quan-ly-du-lieu/createData" method="post">
       <div class="card-body">
-        <form action="/quan-ly-du-lieu/createData" method="post">
-          <div class="my-3">
+        <%- include('../partials/notificationMessage.ejs') %>
+          <div>
             <label for="date" class="form-label">Ngày nhập</label>
             <input type="date" class="form-control" id="date" name="date" />
           </div>
@@ -372,11 +372,13 @@
             ></textarea>
           </div>
   
-          <!-- Buttons -->
-          <button type="submit" class="btn btn-primary">Thêm</button>
-          <button type="reset" class="btn btn-secondary">Làm mới</button>
-        </form>
       </div>
+      <div class="card-footer">
+        <!-- Buttons -->
+        <button type="submit" class="btn btn-primary">Tạo</button>
+        <button type="reset" class="btn btn-link text-dark">Làm mới</button>
+      </div>
+      </form>
     </div>
     </div>
   </div>
