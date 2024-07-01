@@ -71,7 +71,7 @@
                   >
                     <div class="modal-body">
                       <div class="my-3">
-                        <label for="date" class="form-label"
+                        <label for="date" class="form-label fw-bold"
                           >Ngày chạy lò</label
                         >
                         <input
@@ -85,7 +85,7 @@
                       </div>
 
                       <div class="my-3">
-                        <label for="dryRubberUsed" class="form-label"
+                        <label for="dryRubberUsed" class="form-label fw-bold"
                           >Quy khô sử dụng</label
                         >
                         <input
@@ -100,7 +100,7 @@
                       </div>
 
                       <div class="my-3">
-                        <label for="quantity" class="form-label"
+                        <label for="quantity" class="form-label fw-bold"
                           >Thành phẩm</label
                         >
                         <input
@@ -115,22 +115,21 @@
                       </div>
 
                       <div class="my-3">
-                        <label for="notes" class="form-label">Ghi chú</label>
+                        <label for="notes" class="form-label fw-bold">Ghi chú</label>
                         <textarea
                           type="text"
                           class="form-control"
                           rows="3"
                           id="notes"
                           name="notes"
-                        >
-<%= product.notes %></textarea
+                        ><%= product.notes %></textarea
                         >
                       </div>
                     </div>
                     <div class="modal-footer">
                       <!-- Buttons -->
                       <button type="submit" class="btn btn-primary">Lưu</button>
-                      <button type="reset" class="btn btn-secondary">
+                      <button type="reset" class="btn text-dark">
                         Làm mới
                       </button>
                     </div>
@@ -196,7 +195,7 @@
         <div class="card-body">
           <%- include('../partials/notificationMessage.ejs') %>
           <div>
-            <label for="date" class="form-label">Ngày chạy lò</label>
+            <label for="date" class="form-label fw-bold">Ngày chạy lò</label>
             <input
               type="date"
               class="form-control"
@@ -208,7 +207,7 @@
           </div>
 
           <div class="my-3">
-            <label for="dryRubberUsed" class="form-label"
+            <label for="dryRubberUsed" class="form-label fw-bold"
               >Quy khô sử dụng</label
             >
             <input
@@ -222,7 +221,7 @@
           </div>
 
           <div class="my-3">
-            <label for="quantity" class="form-label">Thành phẩm</label>
+            <label for="quantity" class="form-label fw-bold">Thành phẩm</label>
             <input
               type="text"
               class="form-control"
@@ -234,7 +233,7 @@
           </div>
 
           <div class="my-3">
-            <label for="notes" class="form-label">Ghi chú</label>
+            <label for="notes" class="form-label fw-bold">Ghi chú</label>
             <textarea
               type="text"
               class="form-control"
@@ -247,7 +246,7 @@
         <div class="card-footer">
           <!-- Buttons -->
           <button type="submit" class="btn btn-primary">Tạo</button>
-          <button type="reset" class="btn btn-link text-dark">Làm mới</button>
+          <button type="reset" class="btn text-dark">Làm mới</button>
         </div>
       </form>
     </div>

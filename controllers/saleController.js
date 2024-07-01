@@ -451,6 +451,7 @@ async function renderDetailPage(req, res) {
     res.render('src/saleDetailPage', {
       layout: './layouts/defaultLayout',
       sale,
+      user:req.user,
       messages: req.flash(),
       title: 'Chi tiết hợp đồng bán mủ',
     });

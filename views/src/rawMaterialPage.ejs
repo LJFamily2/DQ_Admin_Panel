@@ -83,7 +83,7 @@
                   >
                     <div class="modal-body">
                       <div class="my-3">
-                        <label for="date<%= index + 1 %>" class="form-label"
+                        <label for="date<%= index + 1 %>" class="form-label fw-bold"
                           >Ngày nhập</label
                         >
                         <input
@@ -99,7 +99,7 @@
                       <div class="my-3">
                         <label
                           for="plantation<%= index + 1 %>"
-                          class="form-label"
+                          class="form-label fw-bold"
                           >Cánh</label
                         >
                         <input
@@ -118,11 +118,11 @@
                       <div class="productLists my-3">
                         <div class="productList">
                           <div class="row my-3">
-                            <label class="form-label">Mủ Quy Khô</label>
+                            <label class="form-label fw-bold">Mủ Quy Khô</label>
                             <div class="col col-md-6">
                               <label
                                 for="dryQuantity<%= index + 1 %>"
-                                class="form-label"
+                                class="form-label "
                                 >Số lượng</label
                               >
                               <input
@@ -139,7 +139,7 @@
                             <div class="col col-md-6">
                               <label
                                 for="dryPercentage<%= index + 1 %>"
-                                class="form-label"
+                                class="form-label "
                                 >Hàm lượng</label
                               >
                               <input
@@ -160,7 +160,7 @@
 
                         <div class="productList">
                           <div class="row my-3">
-                            <label class="form-label">Mủ tạp</label>
+                            <label class="form-label fw-bold">Mủ tạp</label>
                             <div class="col-12">
                               <label
                                 for="mixedQuantity<%= index + 1 %>"
@@ -185,7 +185,7 @@
                       </div>
 
                       <div class="my-3">
-                        <label for="note<%= index + 1 %>" class="form-label"
+                        <label for="note<%= index + 1 %>" class="form-label fw-bold"
                           >Ghi chú</label
                         >
                         <textarea
@@ -280,11 +280,11 @@
       <div class="card-body">
         <%- include('../partials/notificationMessage.ejs') %>
           <div>
-            <label for="date" class="form-label">Ngày nhập</label>
+            <label for="date" class="form-label fw-bold">Ngày nhập</label>
             <input type="date" class="form-control" id="date" name="date" />
           </div>
           <div class="my-3">
-            <label for="plantation" class="form-label">Cánh</label>
+            <label for="plantation" class="form-label fw-bold">Cánh</label>
             <input
               type="text"
               class="form-control"
@@ -299,7 +299,7 @@
           <div class="productLists my-3">
             <div class="productList">
               <div class="row my-3">
-                <label class="form-label">Mủ Quy Khô</label>
+                <label class="form-label fw-bold">Mủ Quy Khô</label>
                 <input
                   type="text"
                   class="form-control"
@@ -308,7 +308,7 @@
                   hidden
                 />
                 <div class="col col-md-6">
-                  <label for="dryQuantity" class="form-label">Số lượng</label>
+                  <label for="dryQuantity" class="form-label ">Số lượng</label>
                   <input
                     type="text"
                     class="form-control"
@@ -319,7 +319,7 @@
                   />
                 </div>
                 <div class="col col-md-6">
-                  <label for="dryPercentage" class="form-label">Hàm lượng</label>
+                  <label for="dryPercentage" class="form-label ">Hàm lượng</label>
                   <input
                     type="text"
                     class="form-control"
@@ -336,7 +336,7 @@
   
             <div class="productList">
               <div class="row my-3">
-                <label class="form-label">Mủ tạp</label>
+                <label class="form-label fw-bold">Mủ tạp</label>
                 <input
                   type="text"
                   class="form-control"
@@ -345,7 +345,7 @@
                   hidden
                 />
                 <div class="col-12">
-                  <label for="mixedQuantity" class="form-label">Số lượng</label>
+                  <label for="mixedQuantity" class="form-label ">Số lượng</label>
                   <input
                     type="text"
                     class="form-control"
@@ -362,7 +362,7 @@
           </div>
   
           <div class="my-3">
-            <label for="notes" class="form-label">Ghi chú</label>
+            <label for="notes" class="form-label fw-bold">Ghi chú</label>
             <textarea
               type="text"
               class="form-control"
@@ -376,7 +376,7 @@
       <div class="card-footer">
         <!-- Buttons -->
         <button type="submit" class="btn btn-primary">Tạo</button>
-        <button type="reset" class="btn btn-link text-dark">Làm mới</button>
+        <button type="reset" class="btn text-dark">Làm mới</button>
       </div>
       </form>
     </div>
