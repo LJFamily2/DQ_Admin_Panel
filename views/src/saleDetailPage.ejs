@@ -4,129 +4,139 @@
 </head>
 
 <form action="/quan-ly-hop-dong/update/<%= sale._id %>" method="post">
-  <div class="row m-0 p-4 gap-md-3 ">
-    <div class="col-12 col-md p-3 rounded-2 " 
-    style="box-shadow: 0 0 4px;">
-    <%- include('../partials/notificationMessage.ejs') %>
-    <h4 >Thông tin hợp đồng</h4>
-          <div class="my-3">
-              <label for="status" class="form-label fw-bold">Tình trạng</label>
-              <select class="form-select" name="status" id="status" required>
-                  <option value="active" <%= sale.status === "active" ? 'selected' : '' %>>Đang mở</option>
-                  <option value="closed" <%= sale.status === "closed" ? 'selected' : '' %>>Đã đóng</option>
-              </select>
-          </div>
-
-        <div class="my-3">
-          <label for="date" class="form-label fw-bold">Ngày nhập</label>
-          <input
-            type="date"
-            class="form-control"
-            id="date"
-            name="date"
-            required
-            value="<%= sale.date.toISOString().slice(0,10) %>"
-          />
+  <div class="row m-2 g-3">
+    <div class="col-12 col-md-6">
+    <div class="card">
+      <div class="card-header">
+        <h4 >Thông tin hợp đồng</h4>
+      </div>
+      <div class="card-body">
+        <%- include('../partials/notificationMessage.ejs') %>
+        <div >
+            <label for="status" class="form-label fw-bold">Tình trạng</label>
+            <select class="form-select" name="status" id="status" required>
+                <option value="active" <%= sale.status === "active" ? 'selected' : '' %>>Đang mở</option>
+                <option value="closed" <%= sale.status === "closed" ? 'selected' : '' %>>Đã đóng</option>
+            </select>
         </div>
+  
+      <div class="my-3">
+        <label for="date" class="form-label fw-bold">Ngày nhập</label>
+        <input
+          type="date"
+          class="form-control"
+          id="date"
+          name="date"
+          required
+          value="<%= sale.date.toISOString().slice(0,10) %>"
+        />
+      </div>
+  
+      <div class="my-3">
+        <label for="code" class="form-label fw-bold">Mã hợp đồng</label>
+        <input
+          type="text"
+          class="form-control"
+          id="code"
+          name="code"
+          placeholder="NPUE-3984"
+          required
+          value="<%= sale.code %>"
+        />
+      </div>
+  
+  
+  
+      <div class="my-3">
+        <label for="notes" class="form-label fw-bold">Ghi chú</label>
+        <textarea
+          type="text"
+          class="form-control"
+          rows="3"
+          id="notes"
+          name="notes"
+        ><%= sale.notes %></textarea>
+      </div>
 
-        <div class="my-3">
-          <label for="code" class="form-label fw-bold">Mã hợp đồng</label>
-          <input
-            type="text"
-            class="form-control"
-            id="code"
-            name="code"
-            placeholder="NPUE-3984"
-            required
-            value="<%= sale.code %>"
-          />
-        </div>
-
-        <hr />
-
-
-        <div class="my-3">
-          <label for="notes" class="form-label fw-bold">Ghi chú</label>
-          <textarea
-            type="text"
-            class="form-control"
-            rows="3"
-            id="notes"
-            name="notes"
-          ><%= sale.notes %></textarea>
-        </div>
-
+      </div>
+      <div class="card-footer">
         <!-- Buttons -->
         <button type="submit" class="btn btn-success">Lưu</button>
-        <button type="reset" class="btn btn-secondary">Làm mới</button>
+        <button type="reset" class="btn text-dark">Làm mới</button>
+      </div>
     </div>
-    <div class="col-12 col-md p-3 rounded-2"
-    style="box-shadow: 0 0 4px;"
-    >
+    </div>
 
-    <h4>Hàng hóa</h4>
-    <div class="productLists my-3">
-      <% sale.products.forEach((product, index) => { %>
-        <div class="productList">
-            <div class="row my-3">
-              <div class="row m-0 p-0">
-                <div class="col">
-                  <label for="name" class="form-label fw-bold w-100 d-flex justify-content-between"><%= index + 1 %>. Tên hàng hóa <span><i class="ri-close-line" style="cursor: pointer;" onclick="removeProduct(<%= index + 1 %>, this)"></i></span></label>
-                  <select class="form-control" name="name" id="name">
-                    <option value="product" <%= product.name === "product" ? "selected" : "" %>>Thành phẩm</option>
-                    <option value="mixedQuantity" <%= product.name === "mixedQuantity" ? "selected" : "" %>>Mủ tạp</option>
-                    <option value="dryRubber" <%= product.name === "dryRubber" ? "selected" : "" %>>Quy khô</option>
-                  </select>
+    <div class="col-12 col-md-6 ">
+      <div class="card">
+        <div class="card-header">
+          <h4>Hàng hóa</h4>
+        </div>
+        <div class="card-body">
+          <div class="productLists">
+            <% sale.products.forEach((product, index) => { %>
+              <div class="productList">
+                  <div class="row my-3">
+                    <div class="row m-0 p-0">
+                      <div class="col">
+                        <label for="name" class="form-label fw-bold w-100 d-flex justify-content-between"><%= index + 1 %>. Tên hàng hóa <span><i class="ri-close-line" style="cursor: pointer;" onclick="removeProduct(<%= index + 1 %>, this)"></i></span></label>
+                        <select class="form-control" name="name" id="name">
+                          <option value="product" <%= product.name === "product" ? "selected" : "" %>>Thành phẩm</option>
+                          <option value="mixedQuantity" <%= product.name === "mixedQuantity" ? "selected" : "" %>>Mủ tạp</option>
+                          <option value="dryRubber" <%= product.name === "dryRubber" ? "selected" : "" %>>Quy khô</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="row my-3 m-0 p-0">
+                      <div class="col col-md-6">
+                        <label for="quantity" class="form-label fw-bold"
+                          >Số lượng</label
+                        >
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="quantity"
+                          name="quantity"
+                          placeholder="1234,34"
+                          oninput="handleQuantityInput(this)"
+                          value="<%= product.quantity %>"
+                          required
+                        />
+                      </div>
+                      <div class="col col-md-6">
+                        <label for="price" class="form-label fw-bold">Đơn giá</label>
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="price"
+                          name="price"
+                          placeholder="20000"
+                          oninput="handleQuantityInput(this)"
+                          value="<%= product.price %>"
+                          required
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <hr />
                 </div>
-              </div>
-              <div class="row my-3 m-0 p-0">
-                <div class="col col-md-6">
-                  <label for="quantity" class="form-label fw-bold"
-                    >Số lượng</label
-                  >
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="quantity"
-                    name="quantity"
-                    placeholder="1234,34"
-                    oninput="handleQuantityInput(this)"
-                    value="<%= product.quantity %>"
-                    required
-                  />
-                </div>
-                <div class="col col-md-6">
-                  <label for="price" class="form-label fw-bold">Đơn giá</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="price"
-                    name="price"
-                    placeholder="20000"
-                    oninput="handleQuantityInput(this)"
-                    value="<%= product.price %>"
-                    required
-                  />
-                </div>
-              </div>
-            </div>
-            <hr />
-          </div>
-
-      <% }) %>
-  </div>
-
-  <div class="btnController my-3">
-    <button
-      type="button"
-      class="btn btn-info text-light"
-      onclick="addInputField('.productLists', '.productList')"
-    >
-      +
-    </button>
-  </div>
+      
+            <% }) %>
+        </div>
+        <div class="btnController my-3">
+          <button
+            type="button"
+            class="btn btn-outline-secondary btn-sm"
+            onclick="addInputField('.productLists', '.productList')"
+          >
+            +
+          </button>
+        </div>
+        </div>
+      </div>
     </div>
   </div>
+
 </form>
 <script>
   document.addEventListener('DOMContentLoaded', () => {
