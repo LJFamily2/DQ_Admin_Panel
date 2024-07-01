@@ -265,19 +265,18 @@
     render: function (data) {
         return data  ? `  <div class="row">
           <div class="col text-center "  >
-            <button type="button" class="btn btn-primary">
+          <div class="badge bg-primary"  >
               Admin
-            </button>
           </div>
         </div>
       </div>` : `  <div class="row">
           <div class="col text-center "  >
-            <button type="button" class="btn btn-light">
+          <div class="badge bg-light text-dark "  >
               Nhân viên
-            </button>
+          </div>
           </div>
         </div>
-      </div>`;
+      `;
       },
      },
     { data: "id", orderable: false },
