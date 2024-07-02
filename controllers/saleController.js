@@ -80,15 +80,13 @@ async function renderPage(req, res) {
       messages: req.flash(),
       title: 'Quản lý hợp đồng bán mủ',
     });
-  } catch (err) {
-    console.log(err);
-    res.status(500);
+  } catch {
+    res.status(500).render('partials/500');
   }
 }
 
 async function createData(req, res) {
   req.body = trimStringFields(req.body);
-  console.log(req.body);
   try {
     const names = ensureArray(req.body.name);
     const quantities = ensureArray(req.body.quantity);
@@ -110,11 +108,6 @@ async function createData(req, res) {
       },
       { product: 0, dryRubber: 0, mixedQuantity: 0, totalIncome: 0 },
     );
-
-    console.log(totals.totalIncome);
-    console.log(totals.product);
-    console.log(totals.dryRubber);
-    console.log(totals.mixedQuantity);
 
     let updateData = {
       $inc: {
@@ -153,9 +146,8 @@ async function createData(req, res) {
         : 'Thêm hợp đồng bán mủ thất bại',
       req.headers.referer,
     );
-  } catch (err) {
-    console.log(err);
-    return res.status(500).send('Internal Server Error');
+  } catch {
+    res.status(500).render('partials/500');
   }
 }
 
@@ -227,17 +219,15 @@ async function getDatas(req, res) {
       recordsFiltered: filteredRecords,
       data,
     });
-  } catch (error) {
-    console.error('Error in getDatas function:', error);
-    res.status(500).json({ message: 'Internal server error' });
+  } catch  {
+    res.status(500).render('partials/500');
   }
 }
 
 async function updateData(req, res) {
-  console.log(req.body);
   req.body = trimStringFields(req.body);
+  try{ 
   const { id } = req.params;
-  console.log(id);
   if (!id)
     return handleResponse(
       req,
@@ -327,7 +317,6 @@ async function updateData(req, res) {
     },
   };
 
-  console.log(updateData);
 
   const total = await ProductTotalModel.findOneAndUpdate({}, updateData, {
     new: true,
@@ -350,6 +339,9 @@ async function updateData(req, res) {
     'Cập nhật hợp đồng thành công!',
     req.headers.referer,
   );
+  }catch{
+    res.status(500).render('partials/500');
+  }
 }
 
 async function deleteData(req, res) {
@@ -428,9 +420,8 @@ async function deleteData(req, res) {
       'Xóa hợp đồng thành công!',
       req.headers.referer,
     );
-  } catch (err) {
-    console.log(err);
-    res.status(500);
+  } catch  {
+    res.status(500).render('partials/500');
   }
 }
 
@@ -455,8 +446,7 @@ async function renderDetailPage(req, res) {
       messages: req.flash(),
       title: 'Chi tiết hợp đồng bán mủ',
     });
-  } catch (err) {
-    console.log(err);
-    res.status(500);
+  } catch  {
+    res.status(500).render('partials/500');
   }
 }

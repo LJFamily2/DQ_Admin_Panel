@@ -27,13 +27,12 @@ async function renderPage(req, res) {
       total,
       messages: req.flash(),
     });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+  } catch  {
+    res.status(500).render('partials/500');
   }
 }
 
 async function createProduct(req, res) {
-  console.log(req.body);
   req.body = trimStringFields(req.body);
 
   try {
@@ -76,8 +75,6 @@ async function createProduct(req, res) {
       );
     }
 
-    console.log(newProduct);
-
     let updateData = {};
     if (dryRubberUsed > 0) {
       updateData.$inc = { ...updateData.$inc, dryRubber: -dryRubberUsed };
@@ -110,14 +107,12 @@ async function createProduct(req, res) {
       'Thêm hàng hóa thành công',
       '/quan-ly-hang-hoa',
     );
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message });
+  } catch  {
+    res.status(500).render('partials/500');
   }
 }
 
 async function updateProduct(req, res) {
-  console.log(req.body);
   try {
     const { id } = req.params;
 
@@ -147,7 +142,6 @@ async function updateProduct(req, res) {
       );
     }
 
-    console.log(updatedProduct);
 
     let updateData = {};
 
@@ -189,9 +183,8 @@ async function updateProduct(req, res) {
       'Cập nhật hàng hóa thành công',
       '/quan-ly-hang-hoa',
     );
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message });
+  } catch  {
+    res.status(500).render('partials/500');
   }
 }
 
@@ -213,7 +206,7 @@ async function deleteProduct(req, res) {
     const deletedProduct = await ProductModel.findByIdAndDelete(id);
 
     if (!deletedProduct) {
-      handleResponse(
+      return handleResponse(
         req,
         res,
         404,
@@ -261,16 +254,15 @@ async function deleteProduct(req, res) {
       'Xóa hàng hóa thành công',
       '/quan-ly-hang-hoa',
     );
-  } catch (err) {
-    console.error(err);
-    res.status(500);
+  } catch{
+    res.status(500).render('partials/500');
   }
 }
 
 async function deleteAllProducts(req, res) {
   try {
     await ProductModel.deleteMany({});
-    handleResponse(
+    return  handleResponse(
       req,
       res,
       200,
@@ -278,9 +270,8 @@ async function deleteAllProducts(req, res) {
       'Xóa tất cả hàng hóa thành công',
       '/quan-ly-hang-hoa',
     );
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message });
+  } catch {
+    res.status(500).render('partials/500');
   }
 }
 
@@ -349,8 +340,7 @@ async function getProducts(req, res) {
       recordsFiltered: filteredRecords,
       data,
     });
-  } catch (error) {
-    console.error('Error handling DataTable request:', error);
-    res.status(500).json({ error: error.message });
+  } catch  {
+    res.status(500).render('partials/500');
   }
 }

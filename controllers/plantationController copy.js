@@ -111,9 +111,8 @@ async function createPlantation(req, res) {
       'Tạo vườn mới thành công!',
       '/quan-ly-vuon',
     );
-  } catch (err) {
-    console.log(err);
-    res.status(500);
+  } catch  {
+    res.status(500).render('partials/500');
   }
 }
 
@@ -203,9 +202,8 @@ async function updatePlantation(req, res) {
       'Thay đổi thông tin thành công',
       req.headers.referer,
     );
-  } catch (error) {
-    console.error(error);
-    handleResponse(res, 500, false, 'Internal Server Error');
+  } catch  {
+    res.status(500).render('partials/500');
   }
 }
 
@@ -239,9 +237,8 @@ async function deletePlantation(req, res) {
         ? 'Xóa vườn và người quản lý thành công!'
         : 'Xóa vườn thành công!';
     return handleResponse(req, res, 200, 'success', message, '/quan-ly-vuon');
-  } catch (err) {
-    console.log(err);
-    res.status(500);
+  } catch  {
+    res.status(500).render('partials/500');
   }
 }
 
@@ -266,9 +263,8 @@ async function deleteAllPlantation(req, res) {
       'Xóa tất cả vườn và người quản lý thành công!',
       '/quan-ly-vuon',
     );
-  } catch (err) {
-    console.log(err);
-    res.status(500);
+  } catch  {
+    res.status(500).render('partials/500');
   }
 }
 
@@ -336,9 +332,8 @@ async function getPlantations(req, res) {
       recordsFiltered: filteredRecords,
       data,
     });
-  } catch (error) {
-    console.error('Error handling DataTable request:', error);
-    res.status(500).json({ error: error.message });
+  } catch  {
+    res.status(500).render('partials/500');
   }
 }
 async function renderPage(req, res) {
@@ -357,9 +352,8 @@ async function renderPage(req, res) {
       areas,
       messages: req.flash(),
     });
-  } catch (err) {
-    console.log(err);
-    res.status(500);
+  } catch  {
+    res.status(500).render('partials/500');
   }
 }
 
@@ -407,9 +401,8 @@ async function renderDetailPage(req, res) {
       maxProductColumns,
       messages: req.flash(),
     });
-  } catch (err) {
-    console.log(err);
-    res.status(500);
+  } catch {
+    res.status(500).render('partials/500');
   }
 }
 
@@ -478,11 +471,9 @@ async function addData(req, res) {
       'Thêm thông tin mới thành công!',
       req.headers.referer,
     );
-  } catch (error) {
-    console.error('Error adding data:', error);
-    return res
-      .status(500)
-      .json({ error: 'Đã xảy ra lỗi khi thêm thông tin mới!' });
+  } catch  {
+    res.status(500).render('partials/500');
+      
   }
 }
 
@@ -615,9 +606,8 @@ async function getDatas(req, res) {
       recordsFiltered,
       data,
     });
-  } catch (error) {
-    console.error('Error in getDatas:', error);
-    res.status(500).json({ error: error.message });
+  } catch  {
+    res.status(500).render('partials/500');
   }
 }
 
@@ -684,9 +674,8 @@ async function updateData(req, res) {
       'Cập nhật thông tin thành công!',
       req.headers.referer,
     );
-  } catch (err) {
-    console.log(err);
-    res.status(500);
+  } catch {
+    res.status(500).render('partials/500');
   }
 }
 
@@ -716,8 +705,7 @@ async function deleteData(req, res) {
       'Xóa thông tin thành công!',
       req.headers.referer,
     );
-  } catch (err) {
-    console.log(err);
-    res.status(500);
+  } catch  {
+    res.status(500).render('partials/500');
   }
 }

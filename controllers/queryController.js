@@ -21,9 +21,8 @@ async function renderPage(req, res) {
       user: req.user,
       title: 'Truy vấn',
     });
-  } catch (error) {
-    console.log(error);
-    res.status(500).send('Internal Server Error');
+  } catch  {
+    res.status(500).render('partials/500');
   }
 }
 
@@ -136,9 +135,8 @@ async function renderPage(req, res) {
 //       recordsFiltered: filteredRecords,
 //       data,
 //     });
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).send('Internal Server Error');
+//   } catch  {
+//     res.status(500).render('partials/500');
 //   }
 // }
 
@@ -230,11 +228,10 @@ async function getDataTotal(req, res) {
     res.json({
       draw,
       recordsTotal: totalRecords,
-      recordsFiltered: plantations.length, // Assuming this is the count after filtering
+      recordsFiltered: plantations.length, 
       data,
     });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Internal Server Error');
+  } catch  {
+    res.status(500).render('partials/500');
   }
 }

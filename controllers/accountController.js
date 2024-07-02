@@ -24,12 +24,11 @@ async function renderPage(req, res) {
       title: 'Quản lý tài khoản',
     });
   } catch {
-    res.status(500).json({ error: err.message });
+    res.status(500).render('partials/500');
   }
 }
 
 async function createUser(req, res) {
-  console.log(req.body);
   req.body = trimStringFields(req.body);
   try {
     let existedUsername = await UserModel.findOne({username: req.body.username})
@@ -52,7 +51,7 @@ async function createUser(req, res) {
       role: req.body.role,
     });
     if (!user) {
-      handleResponse(
+      return handleResponse(
         req,
         res,
         404,
@@ -62,7 +61,6 @@ async function createUser(req, res) {
       );
     }
 
-    console.log(user);
 
     handleResponse(
       req,
@@ -72,8 +70,8 @@ async function createUser(req, res) {
       'Tạo tài khoản thành công',
       req.headers.referer,
     );
-  } catch (error) {
-    res.status(500);
+  } catch  {
+    res.status(500).render('partials/500');
   }
 }
 
@@ -109,9 +107,8 @@ async function getUsers(req, res) {
       recordsFiltered: filteredRecords,
       data,
     });
-  } catch (error) {
-    console.error('Error handling DataTable request:', error);
-    res.status(500);
+  } catch  {
+    res.status(500).render('partials/500');
   }
 }
 
@@ -133,8 +130,6 @@ async function updateUser(req, res) {
 
   try {
     const user = await UserModel.findById(userID);
-    console.log(req.body.oldPassword);
-    console.log(user.password);
 
     if (
       req.body.oldPassword &&
@@ -150,7 +145,6 @@ async function updateUser(req, res) {
       );
     }
 
-    console.log('newpassword', req.body.newPassword);
 
     const updateFields = {
       username: req.body.username,
@@ -178,7 +172,6 @@ async function updateUser(req, res) {
       );
     }
 
-    console.log(newUser);
 
     // If the password was changed, invalidate the session
     if (passwordChanged) {
@@ -201,9 +194,8 @@ async function updateUser(req, res) {
         req.headers.referer,
       );
     }
-  } catch (err) {
-    console.log(err);
-    res.status(500).send('Internal Server Error');
+  } catch  {
+    res.status(500).render('partials/500');
   }
 }
 
@@ -252,8 +244,8 @@ async function deleteUser(req, res) {
       'Xóa tài khoản thành công',
       req.headers.referer,
     );
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+  } catch  {
+    res.status(500).render('partials/500');
   }
 }
 
@@ -290,16 +282,8 @@ async function deleteAllUsers(req, res) {
       'Xóa tất cả tài khoản nhân viên thành công',
       req.headers.referer,
     );
-  } catch (err) {
-    console.log(err);
-    handleResponse(
-      req,
-      res,
-      500,
-      'fail',
-      'Xóa tất cả tài khoản thất bại',
-      req.headers.referer,
-    );
+  } catch {
+    res.status(500).render('partials/500')
   }
 }
 

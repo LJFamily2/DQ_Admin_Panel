@@ -27,9 +27,8 @@ async function renderPage(req, res) {
       messages: req.flash(),
       title: 'Dữ liệu',
     });
-  } catch (err) {
-    console.log(err);
-    res.status(500);
+  } catch  {
+    res.status(500).render('partials/500');
   }
 }
 
@@ -72,7 +71,6 @@ async function createData(req, res) {
       );
     }
 
-    console.log(req.body);
     products = {
       dryQuantity: parseFloat((req.body.dryQuantity || '0').replace(',', '.')),
       dryPercentage: parseFloat(
@@ -87,7 +85,7 @@ async function createData(req, res) {
       products: products,
     });
     if (!newData) {
-      handleResponse(
+      return handleResponse(
         req,
         res,
         404,
@@ -104,7 +102,7 @@ async function createData(req, res) {
     const total = await updateProductTotal({ products }, 'add');
 
     if (!total) {
-      handleResponse(
+      return handleResponse(
         req,
         res,
         404,
@@ -122,9 +120,8 @@ async function createData(req, res) {
       'Tạo dữ liệu thành công',
       req.headers.referer,
     );
-  } catch (error) {
-    console.log(error);
-    res.status(500);
+  } catch  {
+    res.status(500).render('partials/500');
   }
 }
 
@@ -236,9 +233,8 @@ async function getDatas(req, res) {
       recordsFiltered: filteredRecords,
       data: formattedData,
     });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Internal Server Error');
+  } catch {
+    res.status(500).render('partials/500');
   }
 }
 
@@ -246,8 +242,6 @@ async function updateData(req, res) {
   const { id } = req.params;
 
   try {
-    console.log(req.body);
-
     const {
       dryQuantity = null,
       dryPercentage = null,
@@ -272,7 +266,6 @@ async function updateData(req, res) {
       products,
     };
 
-    console.log(updateFields);
 
     // Retrieve the old data before updating
     const oldData = await RawMaterialModel.findById(id);
@@ -285,7 +278,7 @@ async function updateData(req, res) {
     );
 
     if (!newData) {
-      handleResponse(
+      return handleResponse(
         req,
         res,
         404,
@@ -293,10 +286,8 @@ async function updateData(req, res) {
         'Cập nhật thông tin thất bại',
         req.headers.referer,
       );
-      return; // Exit if newData is not found
     }
 
-    // Destructuring for cleaner access to product properties
     const {
       dryQuantity: newDryQuantity,
       dryPercentage: newDryPercentage,
@@ -313,7 +304,6 @@ async function updateData(req, res) {
     const mixedQuantityDiff = newMixedQuantity - oldMixedQuantity;
     const dryPercentageDiff = newDryPercentage - oldDryPercentage;
 
-    console.log(dryQuantityDiff, mixedQuantityDiff, dryPercentageDiff);
 
     const updateData = { $inc: { mixedQuantity: mixedQuantityDiff } };
 
@@ -332,7 +322,7 @@ async function updateData(req, res) {
     });
 
     if (!total) {
-      handleResponse(
+      return handleResponse(
         req,
         res,
         404,
@@ -340,7 +330,6 @@ async function updateData(req, res) {
         'Cập nhật thông tin thất bại',
         req.headers.referer,
       );
-      return;
     }
 
     handleResponse(
@@ -351,9 +340,8 @@ async function updateData(req, res) {
       'Cập nhật thông tin thành công',
       req.headers.referer,
     );
-  } catch (err) {
-    console.error(err);
-    res.status(500);
+  } catch  {
+    res.status(500).render('partials/500');
   }
 }
 
@@ -365,7 +353,7 @@ async function deleteData(req, res) {
     const data = await RawMaterialModel.findByIdAndDelete(id);
 
     if (!data) {
-      handleResponse(
+      return handleResponse(
         req,
         res,
         404,
@@ -373,18 +361,13 @@ async function deleteData(req, res) {
         'Xóa dữ liệu thất bại',
         req.headers.referer,
       );
-      return;
     }
 
     // Calculate the total dry rubber to be subtracted
-    const totalDryRubber = calculateTotalDryRubber(data.products);
+    calculateTotalDryRubber(data.products);
 
     // Update the ProductTotal document efficiently
-    await updateProductTotal({ products: data.products }, 'subtract'); // Pass data.products directly
-
-    console.log(
-      `Deleted data with ${totalDryRubber} dry rubber and ${data.products.mixedQuantity} mixed quantity.`,
-    ); // Informative message
+    await updateProductTotal({ products: data.products }, 'subtract'); 
 
     handleResponse(
       req,
@@ -394,8 +377,7 @@ async function deleteData(req, res) {
       'Xóa dữ liệu thành công',
       req.headers.referer,
     );
-  } catch (err) {
-    console.error(err);
-    res.status(500);
+  } catch {
+    res.status(500).render('partials/500');
   }
 }

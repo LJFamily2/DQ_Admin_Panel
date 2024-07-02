@@ -26,7 +26,7 @@ async function renderPage(req, res) {
       messages: req.flash(),
     });
   } catch (err) {
-    res.status(500);
+    res.status(500).render('partials/500');
   }
 }
 
@@ -86,7 +86,6 @@ async function createArea(req, res) {
       );
     }
 
-    console.log(newArea)
 
     return handleResponse(
       req,
@@ -96,9 +95,8 @@ async function createArea(req, res) {
       "Thêm khu vực thành công",
       "/quan-ly-khu-vuc"
     );
-  } catch (err) {
-    console.error(err);
-    return res.status(500);
+  } catch  {
+    return res.status(500).render('partials/500');
   }
 }
 
@@ -125,7 +123,7 @@ async function updateArea(req, res) {
     });
 
     if (!updatedArea) {
-      handleResponse(
+      return handleResponse(
         req,
         res,
         404,
@@ -143,9 +141,8 @@ async function updateArea(req, res) {
       "Cập nhật khu vực thành công",
       "/quan-ly-khu-vuc"
     );
-  } catch (err) {
-    console.error(err);
-    res.status(500);
+  } catch  {
+    res.status(500).render('partials/500');
   }
 }
 
@@ -191,7 +188,7 @@ async function removePlantationFromArea(req, res) {
     }
   } catch (err) {
     console.error(err);
-    return res.status(500);
+    return res.status(500).render('partials/500');
   }
 }
 
@@ -202,7 +199,7 @@ async function deleteAreas(req, res) {
     areaID = [].concat(areaID); 
 
     if (!areaID) {
-      handleResponse(
+      return handleResponse(
         req,
         res,
         404,
@@ -210,13 +207,12 @@ async function deleteAreas(req, res) {
         "Không tìm thấy khu vực để xóa",
         "/quan-ly-khu-vuc"
       );
-      return;
     }
 
     const deleteResults = await Promise.all(areaID.map(areaId => AreaModel.findByIdAndDelete(areaId)));
 
     if (deleteResults.some(result => result == null)) {
-      handleResponse(
+      return handleResponse(
         req,
         res,
         404,
@@ -224,7 +220,6 @@ async function deleteAreas(req, res) {
         "Xóa một hoặc nhiều khu vực thất bại",
         "/quan-ly-khu-vuc"
       );
-      return;
     }
 
     handleResponse(
@@ -235,16 +230,15 @@ async function deleteAreas(req, res) {
       "Xóa khu vực thành công",
       "/quan-ly-khu-vuc"
     );
-  } catch (err) {
-    console.error(err);
-    res.status(500);
+  } catch  {
+    res.status(500).render('partials/500');
   }
 }
 
 async function deleteAllAreas(req, res) {
   try {
     await AreaModel.deleteMany({});
-    handleResponse(
+    return handleResponse(
       req,
       res,
       200,
@@ -252,9 +246,8 @@ async function deleteAllAreas(req, res) {
       "Xóa tất cả khu vực thành công",
       "/quan-ly-khu-vuc"
     );
-  } catch (err) {
-    console.error(err);
-    res.status(500);
+  } catch {
+    res.status(500).render('partials/500');
   }
 }
 

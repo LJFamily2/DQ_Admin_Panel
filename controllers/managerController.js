@@ -25,8 +25,8 @@ async function renderPage(req, res) {
       messages: req.flash(),
       title: "Người quản lý",
     });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+  } catch {
+    res.status(500).render('partials/500');
   }
 }
 
@@ -51,7 +51,7 @@ async function createManager(req, res) {
     });
 
     if (!newManager) {
-      handleResponse(
+      return handleResponse(
         req,
         res,
         404,
@@ -69,9 +69,8 @@ async function createManager(req, res) {
         "/quan-ly-nguoi-quan-ly"
       );
     }
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: error.message });
+  } catch  {
+    res.status(500).render('partials/500');
   }
 }
 
@@ -159,9 +158,8 @@ async function deleteManager(req, res) {
       "Xóa người quản lý thành công",
       "/quan-ly-nguoi-quan-ly"
     );
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: error.message });
+  } catch  {
+    res.status(500).render('partials/500');
   }
 }
 
@@ -188,9 +186,8 @@ async function deleteAllManagers(req, res) {
       "Đã xóa tất cả người quản lý",
       "/quan-ly-nguoi-quan-ly"
     );
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: error.message });
+  } catch  {
+    res.status(500).render('partials/500');
   }
 }
 
@@ -245,9 +242,8 @@ async function getManagers(req, res) {
       recordsFiltered: filteredRecords,
       data,
     });
-  } catch (error) {
-    console.error("Error handling DataTable request:", error);
-    res.status(500).json({ error: error.message });
+  } catch  {
+    res.status(500).render('partials/500');
   }
 }
 
