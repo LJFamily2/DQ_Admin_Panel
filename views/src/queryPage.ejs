@@ -24,8 +24,7 @@
 <%- include('../partials/totalValue.ejs') %>
 
   <div class="card m-3">
-    <div class="card-header d-flex justify-content-between align-items-end p-3">
-      <%- include('../partials/dateSelection.ejs') %>
+    <div class="card-header bg-transparent d-flex justify-content-between align-items-end p-3">
       <div>
         <h5 class="p-0">Dự đoán tổng tiền</h5>
         <div class="p-0 d-flex">
@@ -54,6 +53,7 @@
           </div>
         </div>
       </div>
+      <%- include('../partials/dateSelection.ejs') %>
     </div>
     <div class="card-body">
       <table class="table table-striped table-bordered" id="query_table">
