@@ -7,17 +7,17 @@ var express = require('express');
 const expressLayouts = require("express-ejs-layouts");
 var path = require('path');
 const session = require('express-session');
-var logger = require('morgan');
 const passport = require("passport");
 const flash = require("connect-flash");
 
 var app = express();
 
-// Include connect-livereload middleware
-var livereload = require("livereload");
-var connectLiveReload = require("connect-livereload");
+
 // LiveReload Setup
 if (process.env.NODE_ENV !== "production") {
+    // Include connect-livereload middleware
+    var livereload = require("livereload");
+    var connectLiveReload = require("connect-livereload");
   const liveReloadServer = livereload.createServer();
   liveReloadServer.watch(path.join(__dirname, 'public'));
 
@@ -46,8 +46,10 @@ initializePassport(passport);
 app.use(passport.initialize());
 app.use(passport.session());
 
-// SetUp logger
-app.use(logger('dev'));
+if (process.env.NODE_ENV === 'development') {
+  const morgan = require('morgan');
+  app.use(morgan('dev'));
+}
 
 // SetUp parse
 app.use(express.urlencoded({ extended: true }));
