@@ -29,7 +29,7 @@
         <%- include('../partials/dateSelection.ejs') %>
       </div>
       <div class="card-body">
-        <table class="table table-striped table-bordered" id="table">
+        <table class="table table-bordered table-hover" id="table">
           <thead>
             <tr>
               <th rowspan="2">STT</th>
@@ -195,8 +195,7 @@
                           id="note<%= index + 1 %>"
                           name="notes"
                           onchange="newInput(this)"
-                        >
-<%= data.notes %></textarea
+                        ><%= data.notes %></textarea
                         >
                       </div>
                     </div>
@@ -258,6 +257,7 @@
             <% }) %>
           </tbody>
           <tfoot>
+            <th></th>
             <th></th>
             <th></th>
             <th></th>
@@ -386,15 +386,15 @@
 
   <script>
     let columns = [
-      { data: 'no', orderable: false },
-      { data: 'date' },
+      { data: 'no', orderable: false, width: "5%" },
+      { data: 'date', width: "15%" },
       { data: 'plantation', orderable: false },
       { data: 'dryQuantity', orderable: false },
       { data: 'dryPercentage', orderable: false },
       { data: 'dryTotal', orderable: false },
       { data: 'mixedQuantity', orderable: false },
       { data: 'notes', orderable: false },
-      { data: 'id', orderable: false },
+      { data: 'id', orderable: false, width: "5%" },
     ];
 
     initializeDataTable(
