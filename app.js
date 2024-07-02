@@ -77,6 +77,6 @@ routes.forEach((routeConfig) => {
   app.use(routeConfig.path, routeConfig.route);
 });
 
-app.listen(process.env.PORT || 1000, () => {
+app.listen(process.env.PORT || 4000, () => {
   console.log(`Server is running on port localhost:1000`);
 });
