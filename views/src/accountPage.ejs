@@ -3,11 +3,8 @@
   <script src="/js/datatable.js"></script>
 </head>
 
-<div class="position-absolute" style="right: 10px; top: 70px; width: max-content;">
-  <%- include('../partials/notificationMessage.ejs') %>
-</div>
 
-<section class="row m-0 px-2">
+<section class="row m-2 position-relative">
   <!-- add button -->
   <button
   type="button"
@@ -17,20 +14,23 @@
   style="width: max-content"
   >
   Tạo tài khoản
-  </button>
+</button>
 
-  <!-- Delete all button -->
-  <!-- <% if(user.role){ %>
-    <button
-    type="button"
-    class="btn btn-danger mx-3"
-    data-bs-toggle="modal"
-    data-bs-target="#deleteAll-admin-user"
-    style="width: max-content"
-    >
-    Xóa tất cả tài khoản 
-    </button>
-  <% } %> -->
+<!-- Delete all button -->
+<!-- <% if(user.role){ %>
+  <button
+  type="button"
+  class="btn btn-danger mx-3"
+  data-bs-toggle="modal"
+  data-bs-target="#deleteAll-admin-user"
+  style="width: max-content"
+  >
+  Xóa tất cả tài khoản 
+</button>
+<% } %> -->
+  <div class="position-absolute" style="right: 10px; top: -3px;width: max-content;">
+    <%- include('../partials/notificationMessage.ejs') %>
+  </div>
 </section>
 
 <section class="card m-2 mb-4" style="box-shadow: 0 1px 2px;">
