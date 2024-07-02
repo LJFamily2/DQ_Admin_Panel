@@ -35,7 +35,7 @@ userSchema.methods.getFormattedDateTime = function () {
     }
   };
 
-const UserModel = mongoose.model("Tài khoản", userSchema);
+const UserModel = mongoose.model("Accounts", userSchema);
 
 
 module.exports = UserModel;

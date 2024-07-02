@@ -21,7 +21,7 @@ const saleSchema = new mongoose.Schema({
     }
 });
 
-const saleModel = mongoose.model('Dữ liệu bán mủ', saleSchema);
+const saleModel = mongoose.model('Sales', saleSchema);
 
 module.exports = saleModel;
  

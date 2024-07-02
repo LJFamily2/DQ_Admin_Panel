@@ -8,11 +8,11 @@ const plantationSchema = new mongoose.Schema({
   },
   areaID: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Khu Vực',
+    ref: 'Areas',
   },
   managerID: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Người Quản Lý',
+    ref: 'Managers',
   },
   code: {
     type: String,
@@ -139,6 +139,6 @@ plantationSchema.methods.calculateTotalRemainingDays = function () {
   }
 };
 
-const plantationModel = mongoose.model('Vườn', plantationSchema);
+const plantationModel = mongoose.model('Plantations', plantationSchema);
 
 module.exports = plantationModel;

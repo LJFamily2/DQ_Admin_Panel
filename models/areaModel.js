@@ -7,12 +7,12 @@ const areaSchema = new mongoose.Schema({
     },
     plantations: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Vườn"
+        ref: "Plantations"
     }],
 });
 
 
-const areaModel = mongoose.model("Khu Vực", areaSchema);
+const areaModel = mongoose.model("Areas", areaSchema);
 
 
 module.exports = areaModel;

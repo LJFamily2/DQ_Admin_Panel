@@ -19,7 +19,7 @@ const productTotalSchema = new mongoose.Schema({
     },
 });
 
-const productTotalModel = mongoose.model('Dữ liệu Tổng', productTotalSchema);
+const productTotalModel = mongoose.model('TotalProducts', productTotalSchema);
 
 module.exports = productTotalModel;
  

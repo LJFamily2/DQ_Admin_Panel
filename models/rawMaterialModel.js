@@ -11,7 +11,7 @@ const rawMaterialSchema = new mongoose.Schema({
     },
 });
 
-const rawMaterialModel = mongoose.model('Dữ liệu', rawMaterialSchema);
+const rawMaterialModel = mongoose.model('Raw Materials', rawMaterialSchema);
 
 module.exports = rawMaterialModel;
  

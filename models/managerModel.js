@@ -14,7 +14,7 @@ const managerSchema = new mongoose.Schema({
   plantations: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Vườn',
+      ref: 'Plantations',
     },
   ],
   frontIdentification: {
@@ -25,6 +25,6 @@ const managerSchema = new mongoose.Schema({
   },
 });
 
-const managerModel = mongoose.model('Người Quản Lý', managerSchema);
+const managerModel = mongoose.model('Managers', managerSchema);
 
 module.exports = managerModel;

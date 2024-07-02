@@ -8,7 +8,7 @@ const productSchema = new mongoose.Schema({
 });
 
 
-const productModel = mongoose.model("Thành phẩm", productSchema);
+const productModel = mongoose.model("Products", productSchema);
 
 
 module.exports = productModel;
