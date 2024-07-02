@@ -10,13 +10,13 @@
         <li><div class="mx-3 pb-1 fs-5">Tài khoản: <%= user.username %></div></li>
         <hr class="m-0">
         <li><a class="dropdown-item" href="ho-so">Hồ Sơ Cá Nhân</a></li>
-        <li><form
+        <li>
+          <form
           action="/quan-ly-tai-khoan/logOut"
           method="post"
           style="cursor: pointer"
-          class="dropdown-item"
           >
-          <button type="submit" style="border: none; background: none;">
+          <button type="submit" class="dropdown-item" style="border: none; background: none; width: 100% ; text-align: left;" >
             Đăng xuất
           </button>
         </form></li>
