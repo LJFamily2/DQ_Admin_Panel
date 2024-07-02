@@ -20,7 +20,7 @@
   </button>
 
   <!-- Delete all button -->
-  <% if(user.role){ %>
+  <!-- <% if(user.role){ %>
     <button
     type="button"
     class="btn btn-danger mx-3"
@@ -30,124 +30,127 @@
     >
     Xóa tất cả tài khoản 
     </button>
-  <% } %>
+  <% } %> -->
 </section>
 
-<section class="row m-0 mt-2">
-  <table class="table table-striped table-bordered" id="user_accounts">
-    <thead>
-      <tr>
-        <% ['STT', 'Tài khoản', 'Mật Khẩu','Vai trò', 'Chỉnh Sửa'].forEach(header => { %>
-          <th><%= header %></th>
-        <% }) %>
-      </tr>
-    </thead>
-    <tbody>
-      <% users.forEach( (user,index) => { %>
-      <!-- Modal for updating -->
-      <div
-        class="modal fade"
-        id="staticBackdrop<%= index + 1%>"
-        data-bs-backdrop="static"
-        data-bs-keyboard="false"
-        tabindex="-1"
-        aria-labelledby="staticBackdropLabel"
-        aria-hidden="true"
-      >
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h1 class="modal-title fs-5" id="staticBackdropLabel">
-                Cập nhật thông tin cho <%= user.username %>
-              </h1>
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div>
-
-            <form action="/quan-ly-tai-khoan/update/<%= user._id %>" method="post">
-            <div class="modal-body">
-                <div class="mb-3">
-                  <label for="username<%= index + 1 %>" class="form-label" style="float: left"
-                    >Tài khoản</label
-                  >
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="username<%= index + 1 %>"
-                    name="username"
-                    value="<%= user.username %>"
-                  />
-                </div>
-                <div class="mb-3">
-                  <label for="password<%= index +1  %>" class="form-label" style="float: left"
-                    >Mật khẩu mới</label
-                  >
-                  <input
-                    type="password"
-                    class="form-control"
-                    id="password<%= index +1  %>"
-                    name="newPassword"
-                    placeholder="**********"
-                  />
-                </div>
-
-                <div class="mb-3">
-                  <label for="role<%= index %>" class="form-label" style="float: left;">Vai trò</label>
-                  <select class="form-select" id="role<%= index %>" name="role" aria-label="Default select example">
-                     <option value="true" <%= (user.role === true) ? 'selected' : '' %>>Admin</option>
-                     <option value="false" <%= (user.role === false) ? 'selected' : '' %>>Nhân viên</option>
-                     </select>
-               </div>
+<section class="card m-2" style="box-shadow: 0 1px 2px;">
+  <div class="card-body">
+    <table class="table table-striped table-bordered" id="user_accounts">
+      <thead>
+        <tr>
+          <% ['STT', 'Tài khoản', 'Mật Khẩu','Vai trò', 'Chỉnh Sửa'].forEach(header => { %>
+            <th><%= header %></th>
+          <% }) %>
+        </tr>
+      </thead>
+      <tbody>
+        <% users.forEach( (user,index) => { %>
+        <!-- Modal for updating -->
+        <div
+          class="modal fade"
+          id="staticBackdrop<%= index + 1%>"
+          data-bs-backdrop="static"
+          data-bs-keyboard="false"
+          tabindex="-1"
+          aria-labelledby="staticBackdropLabel"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">
+                  Cập nhật thông tin cho <%= user.username %>
+                </h1>
+                <button
+                  type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
               </div>
-              <div class="modal-footer">
-              <button type="submit" class="btn btn-success">Lưu mới</button>
-            </div>
-          </form>
-          </div>
-        </div>
-      </div>
-
-      <!-- Delete confirming modal  -->
-      <div
-        class="modal fade"
-        id="deleteModalToggle<%= index + 1 %>"
-        aria-hidden="true"
-        aria-labelledby="exampleModalToggleLabel"
-        tabindex="-1"
-      >
-        <div class="modal-dialog modal-dialog-centered">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h1 class="modal-title fs-5" id="exampleModalToggleLabel">
-                Xóa tài khoản <%= user.username %>
-              </h1>
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div>
-            <form action="/quan-ly-tai-khoan/delete/<%=  user._id %>" method="post">
+  
+              <form action="/quan-ly-tai-khoan/update/<%= user._id %>" method="post">
               <div class="modal-body">
-                Bạn có muốn xóa tài khoản
-                <strong><%= user.username %></strong> ? Hành động này không thể
-                hoàn tác.
-              </div>
-              <div class="modal-footer">
-                <button type="submit" class="btn btn-danger">Xác nhận</button>
+                  <div class="mb-3">
+                    <label for="username<%= index + 1 %>" class="form-label" style="float: left"
+                      >Tài khoản</label
+                    >
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="username<%= index + 1 %>"
+                      name="username"
+                      value="<%= user.username %>"
+                    />
+                  </div>
+                  <div class="mb-3">
+                    <label for="password<%= index +1  %>" class="form-label" style="float: left"
+                      >Mật khẩu mới</label
+                    >
+                    <input
+                      type="password"
+                      class="form-control"
+                      id="password<%= index +1  %>"
+                      name="newPassword"
+                      placeholder="**********"
+                    />
+                  </div>
+  
+                  <div class="mb-3">
+                    <label for="role<%= index %>" class="form-label" style="float: left;">Vai trò</label>
+                    <select class="form-select" id="role<%= index %>" name="role" aria-label="Default select example">
+                       <option value="true" <%= (user.role === true) ? 'selected' : '' %>>Admin</option>
+                       <option value="false" <%= (user.role === false) ? 'selected' : '' %>>Nhân viên</option>
+                       </select>
+                 </div>
+                </div>
+                <div class="modal-footer">
+                <button type="submit" class="btn btn-success">Lưu mới</button>
               </div>
             </form>
+            </div>
           </div>
         </div>
-      </div>
-      <% }) %>
-    </tbody>
-  </table>
+  
+        <!-- Delete confirming modal  -->
+        <div
+          class="modal fade"
+          id="deleteModalToggle<%= index + 1 %>"
+          aria-hidden="true"
+          aria-labelledby="exampleModalToggleLabel"
+          tabindex="-1"
+        >
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalToggleLabel">
+                  Xóa tài khoản <%= user.username %>
+                </h1>
+                <button
+                  type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
+              </div>
+              <form action="/quan-ly-tai-khoan/delete/<%=  user._id %>" method="post">
+                <div class="modal-body">
+                  Bạn có muốn xóa tài khoản
+                  <strong><%= user.username %></strong> ? Hành động này không thể
+                  hoàn tác.
+                </div>
+                <div class="modal-footer">
+                  <button type="submit" class="btn btn-danger">Xác nhận</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        <% }) %>
+      </tbody>
+    </table>
+    
+  </div>
 </section>
 
 <!-- Modal for creating admin -->
