@@ -19,8 +19,8 @@
 
 <div class="row m-2 g-3">
   <div class="col-12 col-md-9">
-    <div class="card">
-      <div class="card-header">
+    <div class="card" style="box-shadow: 0 1px 2px;">
+      <div class="card-header bg-transparent">
         <div class="row m-0">
           <%- include('../partials/dateSelection.ejs') %>
         </div>
@@ -91,8 +91,8 @@
   <div
     class="col-12 col-md-3"
   >
-    <div class="card">
-      <div class="card-header">
+    <div class="card"  style="box-shadow: 0 1px 2px;">
+      <div class="card-header bg-transparent">
         <h4>Tạo hợp đồng</h4>
       </div>
       <form action="/quan-ly-hop-dong/createData" method="post">
@@ -194,7 +194,7 @@
             ></textarea>
           </div>
         </div>
-        <div class="card-footer">
+        <div class="card-footer bg-transparent">
           <!-- Buttons -->
           <button type="submit" class="btn btn-primary">Tạo</button>
           <button type="reset" class="btn text-dark">Làm mới</button>
