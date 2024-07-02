@@ -3,6 +3,17 @@
   <script src="/js/multipleFieldsWithText.js" defer></script>
 </head>
 
+<!-- breadcrumb -->
+<nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: '>';" class="mx-2 mx-md-4">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/quan-ly-hop-dong">Quản lý hợp đồng </a></li>
+    <li class="breadcrumb-item active" aria-current="page">
+      <%= sale.slug %>
+    </li>
+  </ol>
+</nav>
+
+
 <form action="/quan-ly-hop-dong/update/<%= sale._id %>" method="post">
   <div class="row m-2 g-3">
     <div class="col-12 col-md-6">
