@@ -19,7 +19,7 @@ async function renderPage(req, res) {
     res.render('src/accountPage', {
       layout: './layouts/defaultLayout',
       users,
-      user:req.user,
+      user: req.user,
       messages: req.flash(),
       title: 'Quản lý tài khoản',
     });
@@ -31,8 +31,10 @@ async function renderPage(req, res) {
 async function createUser(req, res) {
   req.body = trimStringFields(req.body);
   try {
-    let existedUsername = await UserModel.findOne({username: req.body.username})
-    if(existedUsername){
+    let existedUsername = await UserModel.findOne({
+      username: req.body.username,
+    });
+    if (existedUsername) {
       return handleResponse(
         req,
         res,
@@ -42,7 +44,6 @@ async function createUser(req, res) {
         req.headers.referer,
       );
     }
-
 
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
     const user = await UserModel.create({
@@ -61,7 +62,6 @@ async function createUser(req, res) {
       );
     }
 
-
     handleResponse(
       req,
       res,
@@ -70,7 +70,7 @@ async function createUser(req, res) {
       'Tạo tài khoản thành công',
       req.headers.referer,
     );
-  } catch  {
+  } catch {
     res.status(500).render('partials/500');
   }
 }
@@ -107,7 +107,7 @@ async function getUsers(req, res) {
       recordsFiltered: filteredRecords,
       data,
     });
-  } catch  {
+  } catch {
     res.status(500).render('partials/500');
   }
 }
@@ -145,7 +145,6 @@ async function updateUser(req, res) {
       );
     }
 
-
     const updateFields = {
       username: req.body.username,
       role: req.body.role,
@@ -172,29 +171,30 @@ async function updateUser(req, res) {
       );
     }
 
-
-    // If the password was changed, invalidate the session
+    // If the password was changed, regenerate the session without logging the user out
     if (passwordChanged) {
-      req.session.destroy(function(err) {
-        if (err) { return next(err); }
-    
-        // Clear specific cookies if needed
-        res.clearCookie('dpixport', { path: '/', domain: 'http://localhost:1000/', secure: true });
-    
-        // Redirect to the login page or wherever appropriate
-        res.redirect("/dang-nhap");
+      req.session.regenerate(function (err) {
+        if (err) {
+          return res.status(500).render('partials/500'); 
+        }
+
+        // Save the session after modifications
+        req.session.save(function (saveErr) {
+          if (saveErr) {
+            return res.status(500).render('partials/500'); 
+          }
+        });
       });
-    } else {
-      handleResponse(
-        req,
-        res,
-        200,
-        'success',
-        'Cập nhập tài khoản thành công',
-        req.headers.referer,
-      );
     }
-  } catch  {
+    handleResponse(
+      req,
+      res,
+      200,
+      'success',
+      'Cập nhập tài khoản thành công',
+      req.headers.referer,
+    );
+  } catch (error) {
     res.status(500).render('partials/500');
   }
 }
@@ -212,7 +212,7 @@ async function deleteUser(req, res) {
         req.headers.referer,
       );
     }
-    if(user.role){
+    if (user.role) {
       return handleResponse(
         req,
         res,
@@ -225,7 +225,7 @@ async function deleteUser(req, res) {
 
     if (req.session && req.session.userId === req.params.id) {
       // Destroy the session
-      req.session.destroy((err) => {
+      req.session.destroy(err => {
         if (err) {
           // Handle error (optional)
           console.log('Session destruction error:', err);
@@ -244,7 +244,7 @@ async function deleteUser(req, res) {
       'Xóa tài khoản thành công',
       req.headers.referer,
     );
-  } catch  {
+  } catch {
     res.status(500).render('partials/500');
   }
 }
@@ -256,7 +256,7 @@ async function deleteAllUsers(req, res) {
 
     // Check if the current user is affected and destroy the session if so
     if (req.session.userRole === false) {
-      req.session.destroy((err) => {
+      req.session.destroy(err => {
         if (err) {
           console.log('Session destruction error:', err);
         }
@@ -283,19 +283,25 @@ async function deleteAllUsers(req, res) {
       req.headers.referer,
     );
   } catch {
-    res.status(500).render('partials/500')
+    res.status(500).render('partials/500');
   }
 }
 
 function logOut(req, res, next) {
   // Destroy the session
-  req.session.destroy(function(err) {
-    if (err) { return next(err); }
+  req.session.destroy(function (err) {
+    if (err) {
+      return next(err);
+    }
 
     // Clear specific cookies if needed
-    res.clearCookie('dpixport', { path: '/', domain: 'http://localhost:1000/', secure: true });
+    res.clearCookie('dpixport', {
+      path: '/',
+      domain: 'http://localhost:1000/',
+      secure: true,
+    });
 
     // Redirect to the login page or wherever appropriate
-    res.redirect("/dang-nhap");
+    res.redirect('/dang-nhap');
   });
 }

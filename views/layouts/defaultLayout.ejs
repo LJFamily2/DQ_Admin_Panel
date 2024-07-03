@@ -4,7 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Đăng Quang</title>
-    <link rel="shortcut icon" href="/images/OIG3.HcFjYMBA3iNvsE-removebg-preview.png" type="image/x-icon">
+    <link
+      rel="shortcut icon"
+      href="/images/OIG3.HcFjYMBA3iNvsE-removebg-preview.png"
+      type="image/x-icon"
+    />
     <!-- js -->
     <script src="/js/previewImage.js" defer></script>
     <!-- Css -->
@@ -38,7 +42,12 @@
     />
     <script src="https://cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
     <!-- Slim select -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/slim-select/2.8.0/slimselect.min.js" integrity="sha512-mG8eLOuzKowvifd2czChe3LabGrcIU8naD1b9FUVe4+gzvtyzSy+5AafrHR57rHB+msrHlWsFaEYtumxkC90rg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/slim-select/2.8.0/slimselect.min.js"
+      integrity="sha512-mG8eLOuzKowvifd2czChe3LabGrcIU8naD1b9FUVe4+gzvtyzSy+5AafrHR57rHB+msrHlWsFaEYtumxkC90rg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/slim-select/2.8.0/slimselect.min.css"
@@ -48,20 +57,27 @@
     />
 
     <!-- Google font -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
 
     <style>
-      .paddingMobile{
-        padding-bottom: 100px;
+      @media (max-width: 768px) {
+        .paddingMobile {
+          padding-bottom: 100px;
+        }
       }
     </style>
   </head>
-  <body style="display: flex;">
+  <body style="display: flex">
     <%- include('../partials/navigation') %>
-    <div class="container-fluid paddingMobile" style="background: rgb(245, 245, 245);">
+    <div
+      class="container-fluid paddingMobile"
+      style="background: rgb(245, 245, 245)"
+    >
       <%- include('../partials/header') %> <%- body %>
     </div>
   </body>

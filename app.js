@@ -34,7 +34,7 @@ if (process.env.NODE_ENV !== "production") {
 // Setup Session
 const SessionMongoDB = require('./sessionMongoDB')
 app.use(session({
-  secret: 'your_secret_key',
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   cookie: { secure: 'auto'},
