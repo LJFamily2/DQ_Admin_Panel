@@ -66,7 +66,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // Setup Database
 const mongoose = require('mongoose');
-const db = mongoose
+mongoose
   .connect(process.env.MONGODB_URI)
   .then(() => console.log("Connected to MongoDB Atlas"))
   .catch((error) => console.log("Error connecting to MongoDB:", error.message));
@@ -76,6 +76,11 @@ const routes = require("./routes");
 routes.forEach((routeConfig) => {
   app.use(routeConfig.path, routeConfig.route);
 });
+
+// Default path when route doesn't existed
+app.use((req,res) =>{
+  res.render('partials/500',{layout: false})
+})
 
 app.listen(process.env.PORT || 4000, () => {
   console.log(`Server is running on port localhost:1000`);
