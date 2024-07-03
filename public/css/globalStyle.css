@@ -1,15 +1,14 @@
-*{
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Be Vietnam Pro', sans-serif;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Be Vietnam Pro', sans-serif;
 }
 
-:root{
-    --background_color: #CAF4FF;
+:root {
+  --background_color: #caf4ff;
 }
 
-table td{
-    word-break: break-all;
-  }
-
+table td {
+    word-wrap: break-word;
+}
