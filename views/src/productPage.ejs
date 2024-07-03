@@ -17,9 +17,9 @@
 >
   Xóa tất cả hàng hóa
 </button> -->
-<div class="row m-2 g-3 mb-4">
-  <div class="col-12 col-md-9">
-    <div class="card"  style="box-shadow: 0 1px 2px;">
+<div class="row m-0 m-md-2 g-3 mb-4">
+  <div class="col-12 col-md-9 mt-2">
+    <div class="card" style="box-shadow: 0 1px 2px">
       <div class="card-header bg-transparent">
         <%- include('../partials/dateSelection.ejs') %>
       </div>
@@ -115,14 +115,17 @@
                       </div>
 
                       <div class="my-3">
-                        <label for="notes" class="form-label fw-bold">Ghi chú</label>
+                        <label for="notes" class="form-label fw-bold"
+                          >Ghi chú</label
+                        >
                         <textarea
                           type="text"
                           class="form-control"
                           rows="3"
                           id="notes"
                           name="notes"
-                        ><%= product.notes %></textarea
+                        >
+<%= product.notes %></textarea
                         >
                       </div>
                     </div>
@@ -186,8 +189,8 @@
       </div>
     </div>
   </div>
-  <div class="col-12 col-md-3">
-    <div class="card"  style="box-shadow: 0 1px 2px;">
+  <div class="col-12 col-md-3 mt-2">
+    <div class="card" style="box-shadow: 0 1px 2px">
       <div class="card-header bg-transparent">
         <h4 class="m-0">Tạo hàng hóa</h4>
       </div>
@@ -289,12 +292,12 @@
 </div>
 <script>
   const productColumns = [
-    { data: 'no', orderable: false, width: "10%" },
-    { data: 'date' , width: "15%"},
-    { data: 'dryRubberUsed', orderable: false, width: "20%" },
-    { data: 'quantity', orderable: false, width: "20%" },
-    { data: 'notes', orderable: false, width: "20%" },
-    { data: 'id', orderable: false, width: "15%" },
+    { data: 'no', orderable: false, width: '10%' },
+    { data: 'date', width: '15%' },
+    { data: 'dryRubberUsed', orderable: false, width: '20%' },
+    { data: 'quantity', orderable: false, width: '20%' },
+    { data: 'notes', orderable: false, width: '20%' },
+    { data: 'id', orderable: false, width: '15%' },
   ];
 
   initializeDataTable(
