@@ -115,6 +115,7 @@ function initializeDataTable(
       },
     };
   }
+  var isMobile = window.innerWidth < 768;
   const tableOptions = {
     dom:
       "<'row m-0 p-0 py-2'<'col-sm-12 col-md-6 d-flex align-items-center'B><'col-sm-12 col-md-6 d-flex justify-content-end'f>>" +
@@ -137,7 +138,7 @@ function initializeDataTable(
     serverSide: true,
     processing: true,
     responsive: true,
-    scrollX: true,
+    scrollX: isMobile,
     pagingType: 'first_last_numbers',
     rowGroup: rowGroupOptions,
     ajax: {
