@@ -122,3 +122,26 @@
     </form>
   </div>
 </nav>
+
+<nav class="d-md-none navbar fixed-bottom nav-pills bg-light" >
+  <div class="container-fluid justify-content-around">
+    <a class="nav-link link-dark p-1" href="/truy-van" style=" text-align: center;font-size: 0.8rem;">
+      <i class="ri-search-line" style="font-size: 1.4rem; display: block"></i>Truy vấn
+    </a>
+    <a class="nav-link link-dark p-1" href="/quan-ly-du-lieu" style=" text-align: center;font-size: 0.8rem;">
+      <i class="ri-database-line" style="font-size: 1.4rem; display: block"></i>Dữ liệu
+    </a>
+    <a class="nav-link link-dark p-1" href="/quan-ly-hang-hoa" style=" text-align: center;font-size: 0.8rem;">
+      <i class="ri-instance-line" style="font-size: 1.4rem; display: block"></i>Hàng hóa
+    </a>
+    <a class="nav-link link-dark p-1" href="/quan-ly-hop-dong" style=" text-align: center;font-size: 0.8rem;">
+      <i class="ri-contract-line" style="font-size: 1.4rem; display: block"></i>Hợp đồng
+    </a>
+    <% if(user.role){ %>
+    <a class="nav-link link-dark p-1" href="/quan-ly-tai-khoan" style=" text-align: center;font-size: 0.8rem;">
+      <i class="ri-group-line" style="font-size: 1.4rem; display: block"></i>Tài khoản
+    </a>
+    <% } %>
+
+  </div>
+</nav>
