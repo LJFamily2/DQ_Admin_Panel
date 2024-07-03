@@ -1,5 +1,4 @@
 const express = require("express");
-const connectEnsureLogin = require('connect-ensure-login');
 const router = express.Router();
 const managerController = require('../../controllers/managerController');
 const upload = require('../../middlewares/multer');

@@ -1,5 +1,5 @@
 const UserModel = require('../models/accountModel');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const handleResponse = require('./utils/handleResponse');
 const trimStringFields = require('./utils/trimStringFields');
 
