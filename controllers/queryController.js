@@ -48,9 +48,6 @@ async function renderPage(req, res) {
 //     const startDate = reqStartDate || today;
 //     const endDate = reqEndDate || today;
 
-//     console.log(reqStartDate);
-//     console.log(reqEndDate);
-
 //     const filter = {};
 
 //     if (searchValue) {
@@ -161,8 +158,6 @@ async function getDataTotal(req, res) {
     const startDate = reqStartDate || today.toISOString().split('T')[0];
     const endDate = reqEndDate || today.toISOString().split('T')[0];
 
-    console.log(reqStartDate);
-    console.log(reqEndDate);
 
     const filter = {
       date: {

@@ -31,9 +31,6 @@ async function renderPage(req, res) {
 }
 
 async function createManager(req, res) {
-  console.log("Form data:", req.body);
-  console.log("Files:", req.files);
-  console.log(req.body)
   req.body = trimStringFields(req.body)
   try {
     const frontIdentification = req.files["frontIdentification"]
@@ -75,7 +72,6 @@ async function createManager(req, res) {
 }
 
 async function updateManager(req, res) {
-  console.log(req.body);
   req.body = trimStringFields(req.body)
 
   try {
@@ -100,7 +96,6 @@ async function updateManager(req, res) {
         if (manager[imageField]) {
           try {
             await deleteImageFile(manager[imageField]);
-            console.log(`Deleted old image: ${manager[imageField]}`);
           } catch (err) {
             console.error(
               `Error deleting old image ${manager[imageField]}:`,
@@ -129,7 +124,6 @@ async function updateManager(req, res) {
       req.flash("rejected", "Manager update failed!");
       return res.redirect("/quan-ly-nguoi-quan-ly");
     }
-    console.log(updatedManager)
 
     req.flash("accepted", "Cập nhật người quản lý thành công");
     res.redirect("/quan-ly-nguoi-quan-ly");

@@ -113,7 +113,6 @@ PlantationModel.findOneOrCreate = async function findOneOrCreate(condition) {
 async function updateArea(req, res) {
   try {
     req.body = trimStringFields(req.body)
-    console.log(req.body);
 
     const updateFields = {
       name:req.body.name,
@@ -194,7 +193,6 @@ async function removePlantationFromArea(req, res) {
 
 async function deleteAreas(req, res) {
   try {
-    console.log(req.body)
     let { areaID } = req.body;
     areaID = [].concat(areaID); 
 

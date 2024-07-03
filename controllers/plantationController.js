@@ -38,7 +38,6 @@ async function createPlantation(req, res) {
   try {
     // Trim all string fields
     req.body = trimStringFields(req.body);
-    console.log(req.body);
 
     // Validate information
     // Check if a plantation with the same code or name already exists
@@ -76,7 +75,6 @@ async function createPlantation(req, res) {
     // Create the new plantation
     const plantation = await PlantationModel.create(plantationData);
 
-    console.log(plantation);
     if (!plantation) {
       return handleResponse(
         req,
@@ -650,7 +648,6 @@ async function updateData(req, res) {
       );
     }
 
-    console.log(req.body);
     const updateFields = {
       notes: req.body.notes,
       ...req.body,
@@ -664,7 +661,6 @@ async function updateData(req, res) {
         req.body.mixedQuantity.replace(',', '.'),
       ),
     };
-    console.log(updateFields);
     data.set(updateFields);
 
     const savedData = await plantation.save();

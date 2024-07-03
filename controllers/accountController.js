@@ -113,7 +113,6 @@ async function getUsers(req, res) {
 }
 
 async function updateUser(req, res) {
-  console.log(req.body);
   req.body = trimStringFields(req.body);
   const userID = req.params.id;
 
@@ -223,16 +222,6 @@ async function deleteUser(req, res) {
       );
     }
 
-    if (req.session && req.session.userId === req.params.id) {
-      // Destroy the session
-      req.session.destroy(err => {
-        if (err) {
-          // Handle error (optional)
-          console.log('Session destruction error:', err);
-        }
-      });
-    }
-
     // Proceed to delete the user from the database
     await UserModel.findByIdAndDelete(req.params.id);
 
@@ -254,14 +243,6 @@ async function deleteAllUsers(req, res) {
     // Delete all users with role false
     const deletionResult = await UserModel.deleteMany({ role: false });
 
-    // Check if the current user is affected and destroy the session if so
-    if (req.session.userRole === false) {
-      req.session.destroy(err => {
-        if (err) {
-          console.log('Session destruction error:', err);
-        }
-      });
-    }
 
     if (deletionResult.deletedCount === 0) {
       return handleResponse(

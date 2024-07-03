@@ -37,7 +37,6 @@ async function createPlantation(req, res) {
   try {
     // Trim all string fields
     req.body = trimStringFields(req.body);
-    console.log(req.body);
 
     // Validate information
     // Check if a plantation with the same code or name already exists
@@ -75,7 +74,6 @@ async function createPlantation(req, res) {
     // Create the new plantation
     const plantation = await PlantationModel.create(plantationData);
 
-    console.log(plantation);
     if (!plantation) {
       return handleResponse(
         req,
@@ -119,8 +117,6 @@ async function createPlantation(req, res) {
 async function updatePlantation(req, res) {
   req.body = trimStringFields(req.body);
   const { id } = req.params;
-
-  console.log(req.body);
 
   try {
     // Get the plantation first
@@ -208,8 +204,6 @@ async function updatePlantation(req, res) {
 }
 
 async function deletePlantation(req, res) {
-  console.log(req.params);
-  console.log(req.body);
   try {
     const plantationId = req.params.id;
     const { deleteManager } = req.body;
@@ -408,7 +402,6 @@ async function renderDetailPage(req, res) {
 
 async function addData(req, res) {
   req.body = trimStringFields(req.body);
-  console.log(req.body);
   try {
     const plantation = await PlantationModel.findOne({ slug: req.params.slug });
     if (!plantation) {
@@ -638,7 +631,6 @@ async function updateData(req, res) {
       );
     }
 
-    console.log(req.body);
     const updateFields = {
       notes: req.body.notes,
       ...req.body,
@@ -652,7 +644,6 @@ async function updateData(req, res) {
         req.body.mixedQuantity.replace(',', '.'),
       ),
     };
-    console.log(updateFields);
     data.set(updateFields);
 
     const savedData = await plantation.save();

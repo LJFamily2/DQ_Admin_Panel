@@ -301,12 +301,6 @@ async function updateData(req, res) {
     }
   });
 
-  console.log(
-    totalProductDiff,
-    totalIncomeDiff,
-    totalDryRubberDiff,
-    totalMixedQuantityDiff,
-  );
 
   let updateData = {
     $inc: {
@@ -380,10 +374,7 @@ async function deleteData(req, res) {
       { product: 0, dryRubber: 0, mixedQuantity: 0, totalIncome: 0 },
     );
 
-    console.log(totals.totalIncome);
-    console.log(totals.product);
-    console.log(totals.dryRubber);
-    console.log(totals.mixedQuantity);
+ 
 
     let updateData = {
       $inc: {

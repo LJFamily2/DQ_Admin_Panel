@@ -148,9 +148,6 @@ async function updateProduct(req, res) {
     let dryRubberUsedDiff =
       updatedProduct.dryRubberUsed - oldData.dryRubberUsed;
     let quantityDiff = updatedProduct.quantity - oldData.quantity;
-    console.log(updatedProduct.dryRubberUsed);
-    console.log(oldData.dryRubberUsed);
-    console.log(dryRubberUsedDiff, quantityDiff);
 
     if (dryRubberUsedDiff !== 0) {
       updateData.$inc = { ...updateData.$inc, dryRubber: -dryRubberUsedDiff };

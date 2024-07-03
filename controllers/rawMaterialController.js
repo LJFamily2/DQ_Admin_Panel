@@ -97,7 +97,6 @@ async function createData(req, res) {
 
     const totalDryRubber = calculateTotalDryRubber(products);
 
-    console.log(totalDryRubber);
 
     const total = await updateProductTotal({ products }, 'add');
 
