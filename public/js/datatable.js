@@ -136,7 +136,8 @@ function initializeDataTable(
       : [],
     serverSide: true,
     processing: true,
-    // responsive: true,
+    responsive: true,
+    scrollX: true,
     pagingType: 'first_last_numbers',
     rowGroup: rowGroupOptions,
     ajax: {

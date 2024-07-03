@@ -46,7 +46,7 @@ initializePassport(passport);
 app.use(passport.initialize());
 app.use(passport.session());
 
-if (process.env.NODE_ENV === 'development') {
+if (process.env.NODE_ENV !== "production") {
   const morgan = require('morgan');
   app.use(morgan('dev'));
 }
