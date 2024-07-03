@@ -8,7 +8,6 @@ function renderLogin(req,res){
 
 function handleLogin(req, res, next) {
     req.body = trimStringFields(req.body)
-    console.log(req.body)
     passport.authenticate('local', (err, user, info) => {
         if (err) {
             return next(err);
