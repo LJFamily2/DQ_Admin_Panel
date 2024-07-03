@@ -79,7 +79,7 @@ routes.forEach((routeConfig) => {
 
 // Default path when route doesn't existed
 app.use((req,res) =>{
-  res.render('partials/500',{layout: false})
+  res.render('partials/404',{layout: false})
 })
 
 app.listen(process.env.PORT || 4000, () => {
