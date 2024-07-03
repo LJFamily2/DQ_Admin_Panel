@@ -197,21 +197,25 @@ async function getDatas(req, res) {
 
     const totalRecords = await SaleModel.countDocuments();
     const filteredRecords = await SaleModel.countDocuments(filter);
-    const products = await SaleModel.find(filter)
+    const sales = await SaleModel.find(filter)
       .sort({ [sortColumn]: sortDirection })
       .skip(parseInt(start, 10))
       .limit(parseInt(length, 10))
 
-      const data = products.map((product, index) => ({
-      no: parseInt(start, 10) + index + 1,
-      date: product.date.toLocaleDateString(),
-      code: product.code || '',
-      products: '',
-      notes: product.notes || '',
-      total: product.quantity * product.price || 0,
-      status: product.status,
-      slug: product.slug,
-    }));
+      const data = sales.map((sale, index) => {
+        // Assuming each sale has a 'products' array
+        const totalPrice = sale.products.reduce((acc, product) => acc + (product.quantity * product.price), 0);
+        return {
+          no: parseInt(start, 10) + index + 1,
+          date: sale.date.toLocaleDateString(),
+          code: sale.code || '',
+          products: '', // Assuming you want to keep this empty, otherwise populate as needed
+          notes: sale.notes || '',
+          total: totalPrice + " VND",
+          status: sale.status,
+          slug: sale.slug,
+        };
+      });
 
     res.json({
       draw,
