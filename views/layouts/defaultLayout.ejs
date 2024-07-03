@@ -46,7 +46,7 @@
       src="https://cdnjs.cloudflare.com/ajax/libs/slim-select/2.8.0/slimselect.min.js"
       integrity="sha512-mG8eLOuzKowvifd2czChe3LabGrcIU8naD1b9FUVe4+gzvtyzSy+5AafrHR57rHB+msrHlWsFaEYtumxkC90rg=="
       crossorigin="anonymous"
-      referrerpolicy="no-referrer"
+    referrerpolicy="no-referrer"
     ></script>
     <link
       rel="stylesheet"
@@ -67,16 +67,15 @@
     <style>
       @media (max-width: 768px) {
         .paddingMobile {
-          padding-bottom: 100px;
+          padding-bottom: 70px;
         }
       }
     </style>
   </head>
-  <body style="display: flex">
+  <body style="display: flex; background: rgb(245, 245, 245)">
     <%- include('../partials/navigation') %>
     <div
       class="container-fluid paddingMobile"
-      style="background: rgb(245, 245, 245)"
     >
       <%- include('../partials/header') %> <%- body %>
     </div>
