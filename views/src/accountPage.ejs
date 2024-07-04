@@ -261,10 +261,10 @@
 
 <script>
   const userColumns = [
-    { data: "no", orderable: false },
-    { data: "username" },
-    { data: "password", orderable: false },
-    { data: "role",
+    { data: "no", orderable: false, width:"10%" },
+    { data: "username", width:"15%" },
+    { data: "password", orderable: false, width:"15%" },
+    { data: "role", width:"15%", 
     render: function (data) {
         return data  ? `  <div class="row">
           <div class="col text-center "  >
@@ -282,7 +282,7 @@
       `;
       },
      },
-    { data: "id", orderable: false },
+    { data: "id", orderable: false, width:"10%" },
   ];
 
   initializeDataTable(
