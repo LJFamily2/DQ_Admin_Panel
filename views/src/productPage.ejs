@@ -94,7 +94,7 @@
                           id="dryRubberUsed"
                           name="dryRubberUsed"
                           placeholder="123,45"
-                          value="<%= product.dryRubberUsed %>"
+                          value="<%= product.dryRubberUsed.toLocaleString('vi-VN') %>"
                           oninput="handleQuantityInput(this)"
                         />
                       </div>
@@ -110,7 +110,7 @@
                           name="quantity"
                           placeholder="123,45"
                           oninput="handleQuantityInput(this)"
-                          value="<%= product.quantity %>"
+                          value="<%= product.quantity.toLocaleString('vi-VN') %>"
                         />
                       </div>
 
@@ -131,7 +131,7 @@
                     </div>
                     <div class="modal-footer">
                       <!-- Buttons -->
-                      <button type="submit" class="btn btn-primary">Lưu</button>
+                      <button type="submit" class="btn btn-success">Lưu</button>
                       <button type="reset" class="btn text-dark">
                         Làm mới
                       </button>

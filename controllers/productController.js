@@ -32,6 +32,14 @@ async function renderPage(req, res) {
   }
 }
 
+function convertToDecimal(input) {
+  // First, remove all periods assuming they are used as thousand separators
+  let result = input.replace(/\./g, '');
+  // Then, replace the first comma with a period to handle decimal separator
+  result = result.replace(',', '.');
+  return result;
+}
+
 async function createProduct(req, res) {
   req.body = trimStringFields(req.body);
 
@@ -49,12 +57,8 @@ async function createProduct(req, res) {
     }
 
     // Ensure quantity and dryRubberUsed are defined, else default to "0"
-    let quantityStr = req.body.quantity
-      ? req.body.quantity.replace(',', '.')
-      : '0';
-    let dryRubberUsedStr = req.body.dryRubberUsed
-      ? req.body.dryRubberUsed.replace(',', '.')
-      : '0';
+    let quantityStr = req.body.quantity ? convertToDecimal(req.body.quantity) : '0';
+    let dryRubberUsedStr = req.body.dryRubberUsed ? convertToDecimal(req.body.dryRubberUsed) : '0';
 
     let quantity = parseFloat(quantityStr);
     let dryRubberUsed = parseFloat(dryRubberUsedStr);
@@ -107,7 +111,7 @@ async function createProduct(req, res) {
       'Thêm hàng hóa thành công',
       '/quan-ly-hang-hoa',
     );
-  } catch  {
+  } catch {
     res.status(500).render('partials/500');
   }
 }
@@ -116,20 +120,30 @@ async function updateProduct(req, res) {
   try {
     const { id } = req.params;
 
+    const dryRubberUsed = convertToDecimal(req.body.dryRubberUsed).trim();
+    const quantity = convertToDecimal(req.body.quantity).trim();
+
+
     const updateFields = {
       date: req.body.date,
-      dryRubberUsed: req.body.dryRubberUsed.trim(),
-      quantity: req.body.quantity.trim(),
+      dryRubberUsed: dryRubberUsed,
+      quantity: quantity,
       notes: req.body.notes.trim(),
     };
 
     const oldData = await ProductModel.findById(id);
+    if (!oldData) {
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Product not found',
+        '/quan-ly-hang-hoa',
+      );
+    }
 
-    const updatedProduct = await ProductModel.findByIdAndUpdate(
-      id,
-      updateFields,
-      { new: true },
-    );
+    const updatedProduct = await ProductModel.findByIdAndUpdate(id, updateFields, { new: true });
 
     if (!updatedProduct) {
       return handleResponse(
@@ -142,11 +156,9 @@ async function updateProduct(req, res) {
       );
     }
 
-
     let updateData = {};
 
-    let dryRubberUsedDiff =
-      updatedProduct.dryRubberUsed - oldData.dryRubberUsed;
+    let dryRubberUsedDiff = updatedProduct.dryRubberUsed - oldData.dryRubberUsed;
     let quantityDiff = updatedProduct.quantity - oldData.quantity;
 
     if (dryRubberUsedDiff !== 0) {
@@ -180,7 +192,7 @@ async function updateProduct(req, res) {
       'Cập nhật hàng hóa thành công',
       '/quan-ly-hang-hoa',
     );
-  } catch  {
+  } catch{
     res.status(500).render('partials/500');
   }
 }
@@ -325,8 +337,8 @@ async function getProducts(req, res) {
     const data = products.map((product, index) => ({
       no: parseInt(start, 10) + index + 1,
       date: product.date.toLocaleDateString(),
-      dryRubberUsed: product.dryRubberUsed || 0,
-      quantity: product.quantity || 0,
+      dryRubberUsed: product.dryRubberUsed.toLocaleString('vi-VN') || 0,
+      quantity: product.quantity.toLocaleString('vi-VN') || 0,
       notes: product.notes || '',
       id: product._id,
     }));
