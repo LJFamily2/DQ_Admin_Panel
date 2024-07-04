@@ -133,7 +133,7 @@
                                 placeholder="1234,34"
                                 oninput="handleQuantityInput(this)"
                                 onchange="newInput(this)"
-                                value="<%= data.products.dryQuantity %>"
+                                value="<%= data.products.dryQuantity.toLocaleString('vi-VN')  %>"
                               />
                             </div>
                             <div class="col col-md-6">
@@ -150,7 +150,7 @@
                                 placeholder="23,04"
                                 oninput="handlePercentageInput(this)"
                                 onchange="newInput(this)"
-                                value="<%= data.products.dryPercentage %>"
+                                value="<%= data.products.dryPercentage.toLocaleString('vi-VN')  %>"
                               />
                             </div>
                           </div>
@@ -176,7 +176,7 @@
                                 min="0"
                                 oninput="handleQuantityInput(this)"
                                 onchange="newInput(this)"
-                                value="<%= data.products.mixedQuantity %>"
+                                value="<%= data.products.mixedQuantity.toLocaleString('vi-VN')  %>"
                               />
                             </div>
                           </div>

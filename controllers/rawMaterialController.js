@@ -3,6 +3,7 @@ const handleResponse = require('./utils/handleResponse');
 const formatNumberForDisplay = require('./utils/formatNumberForDisplay');
 const RawMaterialModel = require('../models/rawMaterialModel');
 const ProductTotalModel = require('../models/productTotalModel');
+const convertToDecimal = require('./utils/convertToDecimal')
 const formatTotalData = require('./utils/formatTotalData');
 
 module.exports = {
@@ -72,12 +73,12 @@ async function createData(req, res) {
     }
 
     products = {
-      dryQuantity: parseFloat((req.body.dryQuantity || '0').replace(',', '.')),
-      dryPercentage: parseFloat(
-        (req.body.dryPercentage || '0').replace(',', '.'),
+      dryQuantity: convertToDecimal(req.body.dryQuantity.trim()) || 0,
+      dryPercentage: convertToDecimal(
+        (req.body.dryPercentage.trim()) || 0 ,
       ),
-      mixedQuantity: parseFloat(
-        (req.body.mixedQuantity || '0').replace(',', '.'),
+      mixedQuantity: convertToDecimal(
+        (req.body.mixedQuantity.trim()) || 0,
       ),
     };
     const newData = await RawMaterialModel.create({
@@ -95,7 +96,7 @@ async function createData(req, res) {
       );
     }
 
-    const totalDryRubber = calculateTotalDryRubber(products);
+    calculateTotalDryRubber(products);
 
 
     const total = await updateProductTotal({ products }, 'add');
@@ -241,21 +242,14 @@ async function updateData(req, res) {
   const { id } = req.params;
 
   try {
-    const {
-      dryQuantity = null,
-      dryPercentage = null,
-      mixedQuantity = null,
-    } = req.body;
     const products = {
-      dryQuantity: dryQuantity
-        ? parseFloat(dryQuantity.replace(',', '.'))
-        : null,
-      dryPercentage: dryPercentage
-        ? parseFloat(dryPercentage.replace(',', '.'))
-        : null,
-      mixedQuantity: mixedQuantity
-        ? parseFloat(mixedQuantity.replace(',', '.'))
-        : null,
+      dryQuantity: convertToDecimal(req.body.dryQuantity.trim()) || 0,
+      dryPercentage: convertToDecimal(
+        (req.body.dryPercentage.trim()) || 0 ,
+      ),
+      mixedQuantity: convertToDecimal(
+        (req.body.mixedQuantity.trim()) || 0,
+      ),
     };
 
     // Prepare the fields to be updated
