@@ -4,6 +4,7 @@ const handleResponse = require('./utils/handleResponse');
 const trimStringFields = require('./utils/trimStringFields');
 const formatTotalData = require('./utils/formatTotalData');
 const formatNumberForDisplay = require('./utils/formatNumberForDisplay');
+const convertToDecimal = require('./utils/convertToDecimal')
 
 module.exports = {
   renderPage,
@@ -21,8 +22,8 @@ const ensureArray = input => (Array.isArray(input) ? input : [input]);
 const convertProductData = (names, quantities, prices) =>
   names.map((name, index) => ({
     name,
-    quantity: parseFloat(quantities[index].replace(/,/g, '.')) || 0,
-    price: parseFloat(prices[index].replace(/,/g, '.')) || 0,
+    quantity: convertToDecimal(quantities[index].trim()) || 0,
+    price: convertToDecimal(prices[index].trim()) || 0,
   }));
 
 // Calculate differences
@@ -425,6 +426,8 @@ async function renderDetailPage(req, res) {
   try {
     const { slug } = req.params;
     const sale = await SaleModel.findOne({ slug });
+    let totalData = await ProductTotalModel.find({});
+    const total = formatTotalData(totalData);
     if (!sale) {
       return handleResponse(
         req,
@@ -439,6 +442,7 @@ async function renderDetailPage(req, res) {
       layout: './layouts/defaultLayout',
       sale,
       user:req.user,
+      total,
       messages: req.flash(),
       title: 'Chi tiết hợp đồng bán mủ',
     });

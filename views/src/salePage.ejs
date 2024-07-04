@@ -79,7 +79,7 @@
                               <input
                                 type="text"
                                 class="form-control"
-                                value="<%= product.name %>"
+                                value="<%= product.name === "product" ? "Thành phẩm" :  product.name  === "mixedQuantity" ? "Mủ tạp" : "Quy khô" %>"
                                 disabled
                               />
                             </div>
@@ -176,6 +176,7 @@
               id="date"
               name="date"
               required
+              autofocus
             />
           </div>
 
