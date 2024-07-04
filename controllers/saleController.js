@@ -3,6 +3,7 @@ const ProductTotalModel = require('../models/productTotalModel');
 const handleResponse = require('./utils/handleResponse');
 const trimStringFields = require('./utils/trimStringFields');
 const formatTotalData = require('./utils/formatTotalData');
+const formatNumberForDisplay = require('./utils/formatNumberForDisplay');
 
 module.exports = {
   renderPage,
@@ -209,9 +210,9 @@ async function getDatas(req, res) {
           no: parseInt(start, 10) + index + 1,
           date: sale.date.toLocaleDateString(),
           code: sale.code || '',
-          products: '', // Assuming you want to keep this empty, otherwise populate as needed
+          products: parseInt(start, 10) + index + 1, 
           notes: sale.notes || '',
-          total: totalPrice + " VND",
+          total:formatNumberForDisplay(totalPrice)  + " VND",
           status: sale.status,
           slug: sale.slug,
         };

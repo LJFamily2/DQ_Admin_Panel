@@ -67,7 +67,7 @@ app.use(express.static(path.join(__dirname, "public")));
 // Setup Database
 const mongoose = require('mongoose');
 mongoose
-  .connect(process.env.MONGODB_URI)
+  .connect(process.env.MONGODB_URI, {serverSelectionTimeoutMS: 5000 })
   .then(() => console.log("Connected to MongoDB Atlas"))
   .catch((error) => console.log("Error connecting to MongoDB:", error.message));
 

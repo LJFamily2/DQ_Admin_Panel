@@ -43,6 +43,78 @@
           <tbody>
             <% sales.forEach( (sale,index) => { %>
 
+            <!-- Products modal -->
+            <div
+              class="modal fade"
+              id="productList<%= index + 1 %>"
+              aria-hidden="true"
+              aria-labelledby="productList"
+              tabindex="-1"
+            >
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="productList">
+                      Hàng hóa của hợp đồng <%= sale.code %>
+                    </h1>
+                    <button
+                      type="button"
+                      class="btn-close"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"
+                    ></button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="productLists">
+                      <% sale.products.forEach((product, index) => { %>
+                      <div class="productList">
+                        <div class="row my-3">
+                          <div class="row m-0 p-0">
+                            <div class="col">
+                              <label
+                                for="name"
+                                class="form-label fw-bold w-100 d-flex justify-content-between"
+                                ><%= index + 1 %>. Tên hàng hóa
+                              </label>
+                              <input
+                                type="text"
+                                class="form-control"
+                                value="<%= product.name %>"
+                                disabled
+                              />
+                            </div>
+                          </div>
+                          <div class="row my-3 m-0 p-0">
+                            <div class="col col-md-6">
+                              <label class="form-label fw-bold">Số lượng</label>
+                              <input
+                                type="text"
+                                class="form-control"
+                                value="<%= product.quantity.toLocaleString('vi-VN') %>"
+                                disabled
+                              />
+                            </div>
+                            <div class="col col-md-6">
+                              <label class="form-label fw-bold">Đơn giá</label>
+                              <input
+                                type="text"
+                                class="form-control"
+                                value="<%= product.price.toLocaleString('vi-VN') %>"
+                                disabled
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <hr />
+                      </div>
+
+                      <% }) %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <!-- Delete confirming modal  -->
             <div
               class="modal fade"
@@ -211,7 +283,16 @@
     { data: 'no', orderable: false, width: '5%' },
     { data: 'date', searchable: true, width: '15%' },
     { data: 'code', orderable: false, width: '15%' },
-    { data: 'products', orderable: false, width: '12%' },
+    {
+      data: 'products',
+      orderable: false,
+      width: '12%',
+      render: function (data, row, type) {
+        return `
+          <a class="link-opacity-75-hover" data-bs-toggle="modal" data-bs-target="#productList<%= index + 1 %>" style="cursor: pointer;" >Xem</a>
+        `;
+      },
+    },
     { data: 'notes', orderable: false, width: '15%' },
     { data: 'total', orderable: false, width: '15%' },
     {
@@ -242,7 +323,6 @@
       width: '10%',
       orderable: false,
       render: function (data, type, row) {
-        console.log(row);
         return `<div class="d-flex justify-content-between fs-5">
           <a href="/quan-ly-hop-dong/hop-dong/${data}" class="text-decoration-none text-dark">
             <i class="ri-edit-box-line" style="cursor: pointer;"></i>
