@@ -27,44 +27,44 @@ const convertProductData = (names, quantities, prices) =>
   }));
 
 // Calculate differences
-const calculateDifferences = (products, oldSale) => {
-  return products.reduce(
-    (acc, product) => {
-      const oldProduct = oldSale.products.find(
-        p => p.name === product.name,
-      ) || { quantity: 0, price: 0 };
+const calculateDifferences = (newProducts, oldSale) => {
+  // Initialize accumulators for old sale totals
+  let oldTotals = {
+    product: 0,
+    dryRubber: 0,
+    mixedQuantity: 0,
+    income: 0,
+  };
 
-      // Calculate the quantity difference
-      const quantityDiff = product.quantity - oldProduct.quantity;
+  // Accumulate totals for old sale
+  oldSale.products.forEach(product => {
+    oldTotals[product.name] += product.quantity;
+    oldTotals.income += product.quantity * product.price;
+  });
 
-      // Calculate the income difference
-      acc.totalIncomeDiff +=
-        product.quantity * product.price -
-        oldProduct.quantity * oldProduct.price;
+  // Initialize accumulators for new sale totals
+  let newTotals = {
+    product: 0,
+    dryRubber: 0,
+    mixedQuantity: 0,
+    income: 0,
+  };
 
-      switch (product.name) {
-        case 'product':
-          acc.totalProductDiff += quantityDiff;
-          break;
-        case 'dryRubber':
-          acc.totalDryRubberDiff += quantityDiff;
-          break;
-        case 'mixedQuantity':
-          acc.totalMixedQuantityDiff += quantityDiff;
-          break;
-        default:
-          break;
-      }
+  // Accumulate totals for new sale
+  newProducts.forEach(product => {
+    newTotals[product.name] += product.quantity;
+    newTotals.income += product.quantity * product.price;
+  });
 
-      return acc;
-    },
-    {
-      totalProductDiff: 0,
-      totalIncomeDiff: 0,
-      totalDryRubberDiff: 0,
-      totalMixedQuantityDiff: 0,
-    },
-  );
+  // Calculate differences
+  let differences = {
+    totalProductDiff: newTotals.product - oldTotals.product,
+    totalDryRubberDiff: newTotals.dryRubber - oldTotals.dryRubber,
+    totalMixedQuantityDiff: newTotals.mixedQuantity - oldTotals.mixedQuantity,
+    totalIncomeDiff: newTotals.income - oldTotals.income,
+  };
+
+  return differences;
 };
 
 async function renderPage(req, res) {
@@ -263,11 +263,6 @@ async function updateData(req, res) {
   // Identify and set removed fields to undefined
   const updateField = { ...req.body, products };
 
-  Object.keys(oldSale.toObject()).forEach(key => {
-    if (!req.body.hasOwnProperty(key) && key !== '_id' && key !== 'products') {
-      updateField[key] = undefined;
-    }
-  });
 
   const newSale = await SaleModel.findByIdAndUpdate(id, updateField, {
     new: true,
@@ -289,23 +284,6 @@ async function updateData(req, res) {
     totalMixedQuantityDiff,
   } = calculateDifferences(products, oldSale);
 
-  // Handle products that were removed
-  oldSale.products.forEach(oldProduct => {
-    if (!products.find(product => product.name === oldProduct.name)) {
-      switch (oldProduct.name) {
-        case 'product':
-          totalProductDiff -= oldProduct.quantity;
-          break;
-        case 'dryRubber':
-          totalDryRubberDiff -= oldProduct.quantity;
-          break;
-        case 'mixedQuantity':
-          totalMixedQuantityDiff -= oldProduct.quantity;
-          break;
-      }
-      totalIncomeDiff -= oldProduct.quantity * oldProduct.price;
-    }
-  });
 
 
   let updateData = {
