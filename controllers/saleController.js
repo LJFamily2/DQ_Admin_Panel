@@ -22,8 +22,8 @@ const ensureArray = input => (Array.isArray(input) ? input : [input]);
 const convertProductData = (names, quantities, prices) =>
   names.map((name, index) => ({
     name,
-    quantity: convertToDecimal(quantities[index].trim()) || 0,
-    price: convertToDecimal(prices[index].trim()) || 0,
+    quantity: parseFloat(convertToDecimal(quantities[index])) || 0,
+    price: parseFloat(convertToDecimal(prices[index])) || 0,
   }));
 
 // Calculate differences
