@@ -1,6 +1,7 @@
 const RawMaterialModel = require('../models/rawMaterialModel');
 const ProductTotalModel = require('../models/productTotalModel');
 const formatTotalData = require('./utils/formatTotalData');
+const convertToDecimal = require('./utils/convertToDecimal')
 
 module.exports = {
   renderPage,
@@ -197,9 +198,9 @@ async function getDataTotal(req, res) {
       }
 
       const dryPriceValue =
-        parseFloat(dryPrice.toString().replace(',', '.')) || 0;
+        convertToDecimal(dryPrice) || 0;
       const mixedPriceValue =
-        parseFloat(mixedPrice.toString().replace(',', '.')) || 0;
+        convertToDecimal(mixedPrice) || 0;
       const dryTotalValue = dryQuantityTotal * dryPriceValue;
       const mixedTotalValue = mixedQuantityTotal * mixedPriceValue;
       const totalMoneyValue = dryTotalValue + mixedTotalValue;
@@ -207,14 +208,14 @@ async function getDataTotal(req, res) {
       return {
         no: parseInt(start, 10) + index + 1,
         plantation: plantation.plantation || '', 
-        dryQuantity: dryQuantityTotal, 
-        dryPrice: dryPriceValue.toLocaleString('vi-VN'),
-        dryTotal: dryTotalValue,
-        mixedQuantity: mixedQuantityTotal,
-        mixedPrice: mixedPriceValue.toLocaleString('vi-VN'),
-        mixedTotal: mixedTotalValue,
+        dryQuantity: dryQuantityTotal.toLocaleString('vi-VN'), 
+        dryPrice: dryPrice,
+        dryTotal: dryTotalValue.toLocaleString('vi-VN'),
+        mixedQuantity: mixedQuantityTotal.toLocaleString('vi-VN'),
+        mixedPrice: mixedPrice,
+        mixedTotal: mixedTotalValue.toLocaleString('vi-VN'),
         notes: notes.join(', '),
-        totalMoney: totalMoneyValue,
+        totalMoney: totalMoneyValue.toLocaleString('vi-VN'),
       };
     });
 
