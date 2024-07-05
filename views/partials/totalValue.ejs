@@ -1,21 +1,5 @@
 <div class="row m-0 m-md-2 g-3">
-  <div class="col-12 col-md-3">
-    <div class="card" style="border-left: 5px solid rgb(13, 110, 253)">
-      <div
-        class="card-body <%= total[0]?.mixedQuantity?.raw < 0 ? 'text-danger' : total[0]?.mixedQuantity?.raw > 0 ? 'text-success' : '' %>"
-      >
-        <h5><%= total[0]?.mixedQuantity?.formatted || 0 %></h5>
-        <div class="card-text text-muted" style="font-size: smaller">
-          <div class="d-flex justify-content-between align-items-center">
-            <div class="w-75">
-              <div>Mủ tạp</div>
-            </div>
-            <div>KG</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+
   <div class="col-12 col-md-3">
     <div class="card" style="border-left: 5px solid rgb(255, 179, 0)">
       <div
@@ -43,6 +27,23 @@
           <div class="d-flex justify-content-between align-items-center">
             <div class="w-75">
               <div>Thành phẩm</div>
+            </div>
+            <div>KG</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+    <div class="col-12 col-md-3">
+    <div class="card" style="border-left: 5px solid rgb(13, 110, 253)">
+      <div
+        class="card-body <%= total[0]?.mixedQuantity?.raw < 0 ? 'text-danger' : total[0]?.mixedQuantity?.raw > 0 ? 'text-success' : '' %>"
+      >
+        <h5><%= total[0]?.mixedQuantity?.formatted || 0 %></h5>
+        <div class="card-text text-muted" style="font-size: smaller">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="w-75">
+              <div>Mủ tạp</div>
             </div>
             <div>KG</div>
           </div>
