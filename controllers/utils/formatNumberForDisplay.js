@@ -5,7 +5,7 @@ function formatNumberForDisplay(number) {
   
   const formatter = new Intl.NumberFormat('vi-VN', {
     minimumFractionDigits: 0,
-    maximumFractionDigits: number <= 0 ? 0 : 2,
+    maximumFractionDigits: number === 0 ? 0 : 2,
   });
 
   return formatter.format(number);
