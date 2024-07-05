@@ -39,14 +39,12 @@ function calculateTotalDryRubber(product) {
   );
 }
 async function updateProductTotal(data, operation) {
-  const totalDryRubber = calculateTotalDryRubber(data.products);
+  const totalDryRubber = parseFloat(calculateTotalDryRubber(data.products).toFixed(2));
+  const mixedQuantityRounded = parseFloat(data.products.mixedQuantity.toFixed(2));
   const updateData = {
     $inc: {
       dryRubber: operation === 'add' ? totalDryRubber : -totalDryRubber,
-      mixedQuantity:
-        operation === 'add'
-          ? data.products.mixedQuantity
-          : -data.products.mixedQuantity,
+      mixedQuantity: operation === 'add' ? mixedQuantityRounded : -mixedQuantityRounded,
     },
   };
 
@@ -73,13 +71,9 @@ async function createData(req, res) {
     }
 
     products = {
-      dryQuantity: convertToDecimal(req.body.dryQuantity.trim()) || 0,
-      dryPercentage: convertToDecimal(
-        (req.body.dryPercentage.trim()) || 0 ,
-      ),
-      mixedQuantity: convertToDecimal(
-        (req.body.mixedQuantity.trim()) || 0,
-      ),
+      dryQuantity: convertToDecimal(req.body.dryQuantity) || 0,
+      dryPercentage: convertToDecimal(req.body.dryPercentage) || 0 ,
+      mixedQuantity: convertToDecimal(req.body.mixedQuantity) || 0,
     };
     const newData = await RawMaterialModel.create({
       ...req.body,
@@ -121,7 +115,7 @@ async function createData(req, res) {
       req.headers.referer,
     );
   } catch  {
-    res.status(500).render('partials/500');
+    res.status(500).render('partials/500', {layout: false});
   }
 }
 
@@ -243,12 +237,12 @@ async function updateData(req, res) {
 
   try {
     const products = {
-      dryQuantity: convertToDecimal(req.body.dryQuantity.trim()) || 0,
+      dryQuantity: convertToDecimal(req.body.dryQuantity) || 0,
       dryPercentage: convertToDecimal(
-        (req.body.dryPercentage.trim()) || 0 ,
+        (req.body.dryPercentage) || 0 ,
       ),
       mixedQuantity: convertToDecimal(
-        (req.body.mixedQuantity.trim()) || 0,
+        (req.body.mixedQuantity) || 0,
       ),
     };
 

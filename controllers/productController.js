@@ -52,11 +52,11 @@ async function createProduct(req, res) {
     }
 
     // Ensure quantity and dryRubberUsed are defined, else default to "0"
-    let quantityStr = req.body.quantity ? convertToDecimal(req.body.quantity) : '0';
-    let dryRubberUsedStr = req.body.dryRubberUsed ? convertToDecimal(req.body.dryRubberUsed) : '0';
+    let quantityStr = req.body.quantity ? convertToDecimal(req.body.quantity) : 0;
+    let dryRubberUsedStr = req.body.dryRubberUsed ? convertToDecimal(req.body.dryRubberUsed) : 0;
 
-    let quantity = parseFloat(quantityStr);
-    let dryRubberUsed = parseFloat(dryRubberUsedStr);
+    let quantity = parseFloat(quantityStr).toFixed(2);
+    let dryRubberUsed = parseFloat(dryRubberUsedStr).toFixed(2);
 
     const newProduct = await ProductModel.create({
       ...req.body,

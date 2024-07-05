@@ -113,29 +113,17 @@ async function createData(req, res) {
 
     let updateData = {
       $inc: {
-        income: totals.totalIncome,
-        ...(totals.product > 0 && { product: -totals.product }),
-        ...(totals.dryRubber > 0 && { dryRubber: -totals.dryRubber }),
-        ...(totals.mixedQuantity > 0 && {
-          mixedQuantity: -totals.mixedQuantity,
-        }),
+        income: parseFloat(totals.totalIncome.toFixed(2)),
+        ...(totals.product > 0 && { product: -parseFloat(totals.product.toFixed(2)) }),
+        ...(totals.dryRubber > 0 && { dryRubber: -parseFloat(totals.dryRubber.toFixed(2)) }),
+        ...(totals.mixedQuantity > 0 && { mixedQuantity: -parseFloat(totals.mixedQuantity.toFixed(2)) }),
       },
     };
-
-    const total = await ProductTotalModel.findOneAndUpdate({}, updateData, {
-      new: true,
-      upsert: true,
-    });
-
+    
+    const total = await ProductTotalModel.findOneAndUpdate({}, updateData, { new: true, upsert: true });
+    
     if (!total) {
-      return handleResponse(
-        req,
-        res,
-        500,
-        'fail',
-        'Cập nhật dữ liệu tổng thất bại',
-        req.headers.referer,
-      );
+      return handleResponse(req, res, 500, 'fail', 'Cập nhật dữ liệu tổng thất bại', req.headers.referer);
     }
 
     return handleResponse(
