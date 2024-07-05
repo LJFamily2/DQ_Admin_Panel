@@ -1,3 +1,24 @@
+function formatNumberForDisplay(number) {
+  if (isNaN(number) || number === null || number === undefined) {
+    return ''; // Return empty string if the number is invalid
+  }
+
+  const formatter = new Intl.NumberFormat('vi-VN', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: number <= 0 ? 0 : 2,
+  });
+
+  return formatter.format(number);
+}
+
+const parseNumber = value => {
+  if (typeof value === 'string') {
+    value = value.replace(/\./g, '').replace(',', '.');
+    return parseFloat(value);
+  }
+  return typeof value === 'number' ? value : 0;
+};
+
 function initializeDataTable(
   tableId,
   ajaxUrl,
@@ -21,100 +42,54 @@ function initializeDataTable(
     dataSrc: rowGroup,
   };
 
+  let footerCallbackOptions = {};
+
   if (plantationDetailPageRender) {
     const sumColumn = (rows, columnName) =>
       rows
         .data()
         .pluck(columnName)
-        .reduce(
-          (a, b) => a + parseFloat(b.replace(/\./g, '').replace(',', '.')),
-          0,
-        );
-
-    const formatter = new Intl.NumberFormat('vi-VN', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
+        .reduce((a, b) => a + parseNumber(b), 0);
 
     rowGroupOptions.endRender = function (rows) {
-      const dryTotal = formatter.format(sumColumn(rows, 'dryTotal'));
-      const mixedQuantity = formatter.format(sumColumn(rows, 'mixedQuantity'));
+      const dryTotal = formatNumberForDisplay(sumColumn(rows, 'dryTotal'));
+      const mixedQuantity = formatNumberForDisplay(
+        sumColumn(rows, 'mixedQuantity'),
+      );
 
       return `<span class="float-end">(Mủ quy khô: ${dryTotal} kg, Mủ tạp: ${mixedQuantity}kg)</span>`;
     };
   }
 
-  let footerCallbackOptions = {};
+  const setupFooterCallback = (columns, api) => {
+    columns.forEach(colIndex => {
+      const total = api
+        .column(colIndex, { search: 'applied' })
+        .data()
+        .reduce((acc, val) => acc + parseNumber(val), 0);
+      const formatted = formatNumberForDisplay(total);
+      $(api.column(colIndex).footer()).html(`<strong>${formatted}</strong>`);
+    });
+  };
 
   if (queryPageFooter) {
-    const intVal = i => {
-      if (typeof i === 'string') {
-        i = i.replace(/\./g, '').replace(',', '.');
-        return parseFloat(i);
-      }
-      return typeof i === 'number' ? i : 0;
-    };
+      const columns = [2, 4, 5, 7, 9];
+      footerCallbackOptions = {
+        footerCallback: function () {
+          setupFooterCallback(columns, this.api());
+        },
+      };
+    }
+  
+    if (dataPageFooter) {
+      const columns = [3, 5, 6];
+      footerCallbackOptions = {
+        footerCallback: function () {
+          setupFooterCallback(columns, this.api());
+        },
+      };
+    }
 
-    const totalColumn = (api, colIndex) =>
-      api
-        .column(colIndex, { search: 'applied' })
-        .data()
-        .reduce((acc, val) => acc + intVal(val), 0);
-
-    const customFormatter = num =>
-      new Intl.NumberFormat('vi-VN', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }).format(num);
-
-    footerCallbackOptions = {
-      footerCallback: function () {
-        const api = this.api();
-        const columns = [2, 4, 5, 7, 9];
-        columns.forEach(colIndex => {
-          const total = totalColumn(api, colIndex);
-          const formatted = customFormatter(total);
-          $(api.column(colIndex).footer()).html(
-            `<strong>${formatted}</strong>`,
-          );
-        });
-      },
-    };
-  }
-  if (dataPageFooter) {
-    const intVal = i => {
-      if (typeof i === 'string') {
-        i = i.replace(/\./g, '').replace(',', '.');
-        return parseFloat(i);
-      }
-      return typeof i === 'number' ? i : 0;
-    };
-    const totalColumn = (api, colIndex) =>
-      api
-        .column(colIndex, { search: 'applied' })
-        .data()
-        .reduce((acc, val) => acc + intVal(val), 0);
-
-    const customFormatter = num =>
-      new Intl.NumberFormat('vi-VN', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }).format(num);
-
-    footerCallbackOptions = {
-      footerCallback: function () {
-        const api = this.api();
-        const columns = [3, 5, 6];
-        columns.forEach(colIndex => {
-          const total = totalColumn(api, colIndex);
-          const formatted = customFormatter(total);
-          $(api.column(colIndex).footer()).html(
-            `<strong>${formatted}</strong>`,
-          );
-        });
-      },
-    };
-  }
   var isMobile = window.innerWidth < 1600;
   const tableOptions = {
     dom:
