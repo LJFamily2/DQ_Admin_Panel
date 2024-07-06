@@ -40,7 +40,7 @@ function calculateTotalDryRubber(product) {
 }
 async function updateProductTotal(data, operation) {
   const totalDryRubber = parseFloat(calculateTotalDryRubber(data.products).toFixed(2));
-  const mixedQuantityRounded = parseFloat(data.products.mixedQuantity.toFixed(2));
+  const mixedQuantityRounded = parseFloat(data.products.mixedQuantity).toFixed(2);
   const updateData = {
     $inc: {
       dryRubber: operation === 'add' ? totalDryRubber : -totalDryRubber,
@@ -114,8 +114,9 @@ async function createData(req, res) {
       'Tạo dữ liệu thành công',
       req.headers.referer,
     );
-  } catch  {
-    res.status(500).render('partials/500', {layout: false});
+  } catch (err)  {
+    console.log(err)
+    return res.status(500).render('partials/500', {layout: false});
   }
 }
 
@@ -275,33 +276,20 @@ async function updateData(req, res) {
       );
     }
 
-    const {
-      dryQuantity: newDryQuantity,
-      dryPercentage: newDryPercentage,
-      mixedQuantity: newMixedQuantity,
-    } = newData.products;
-    const {
-      dryQuantity: oldDryQuantity = 0,
-      dryPercentage: oldDryPercentage = 0,
-      mixedQuantity: oldMixedQuantity = 0,
-    } = oldData.products || {};
-
-    // Calculate differences in one step using nullish coalescing operator
-    const dryQuantityDiff = newDryQuantity - oldDryQuantity;
+    const { dryQuantity: newDryQuantity, dryPercentage: newDryPercentage, mixedQuantity: newMixedQuantity } = newData.products;
+    const { dryQuantity: oldDryQuantity = 0, dryPercentage: oldDryPercentage = 0, mixedQuantity: oldMixedQuantity = 0 } = oldData.products || {};
+    
+    // Calculate differences
     const mixedQuantityDiff = newMixedQuantity - oldMixedQuantity;
-    const dryPercentageDiff = newDryPercentage - oldDryPercentage;
-
-
-    const updateData = { $inc: { mixedQuantity: mixedQuantityDiff } };
-
-    // Update dryRubber if there's a difference in dry quantity or percentage
-    if (dryQuantityDiff !== 0 || dryPercentageDiff !== 0) {
-      const newTotalDryRubberDiff =
-        parseFloat(((newDryQuantity * newDryPercentage) / 100).toFixed(2)) -
-        parseFloat(((oldDryQuantity * oldDryPercentage) / 100).toFixed(2));
-      updateData.$inc.dryRubber = newTotalDryRubberDiff;
+    const dryRubberDiff = ((newDryQuantity * newDryPercentage) - (oldDryQuantity * oldDryPercentage)) / 100;
+    
+    // Initialize update object with mixedQuantity difference
+    const updateData = { $inc: { mixedQuantity: parseFloat(mixedQuantityDiff.toFixed(2)) } };
+    
+    if (Math.abs(dryRubberDiff) >= 0.01) {
+      updateData.$inc.dryRubber = parseFloat(dryRubberDiff.toFixed(2));
     }
-
+    
     // Perform the update
     const total = await ProductTotalModel.findOneAndUpdate({}, updateData, {
       new: true,

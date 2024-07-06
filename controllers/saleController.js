@@ -113,10 +113,10 @@ async function createData(req, res) {
 
     let updateData = {
       $inc: {
-        income: parseFloat(totals.totalIncome.toFixed(2)),
-        ...(totals.product > 0 && { product: -parseFloat(totals.product.toFixed(2)) }),
-        ...(totals.dryRubber > 0 && { dryRubber: -parseFloat(totals.dryRubber.toFixed(2)) }),
-        ...(totals.mixedQuantity > 0 && { mixedQuantity: -parseFloat(totals.mixedQuantity.toFixed(2)) }),
+        income: parseFloat(totals.totalIncome).toFixed(2),
+        ...(totals.product > 0 && { product: -parseFloat(totals.product).toFixed(2) }),
+        ...(totals.dryRubber > 0 && { dryRubber: -parseFloat(totals.dryRubber).toFixed(2) }),
+        ...(totals.mixedQuantity > 0 && { mixedQuantity: -parseFloat(totals.mixedQuantity).toFixed(2) }),
       },
     };
     
@@ -271,15 +271,13 @@ async function updateData(req, res) {
     totalDryRubberDiff,
     totalMixedQuantityDiff,
   } = calculateDifferences(products, oldSale);
-
-
-
+  
   let updateData = {
     $inc: {
-      product: -totalProductDiff || 0,
-      income: totalIncomeDiff || 0,
-      dryRubber: -totalDryRubberDiff || 0,
-      mixedQuantity: -totalMixedQuantityDiff || 0,
+      product: -parseFloat(parseFloat(totalProductDiff).toFixed(2)),
+      income: parseFloat(parseFloat(totalIncomeDiff).toFixed(2)),
+      dryRubber: -parseFloat(parseFloat(totalDryRubberDiff).toFixed(2)),
+      mixedQuantity: -parseFloat(parseFloat(totalMixedQuantityDiff).toFixed(2)),
     },
   };
 
@@ -339,26 +337,27 @@ async function deleteData(req, res) {
 
     const totals = sale.products.reduce(
       (acc, { name, quantity, price }) => {
+        // Assuming quantity and price are already numbers
+        const totalForProduct = quantity * price;
         acc[name] = (acc[name] || 0) + quantity;
-        acc.totalIncome += quantity * price;
+        acc.totalIncome += totalForProduct;
         return acc;
       },
       { product: 0, dryRubber: 0, mixedQuantity: 0, totalIncome: 0 },
     );
-
- 
-
+    
+    
     let updateData = {
       $inc: {
-        income: -totals.totalIncome,
-        ...(totals.product > 0 && { product: totals.product }),
-        ...(totals.dryRubber > 0 && { dryRubber: totals.dryRubber }),
+        income:  -parseFloat(totals.totalIncome.toFixed(2)),
+        ...(totals.product > 0 && { product: parseFloat(totals.product.toFixed(2)) }),
+        ...(totals.dryRubber > 0 && { dryRubber: parseFloat(totals.dryRubber.toFixed(2)) }),
         ...(totals.mixedQuantity > 0 && {
-          mixedQuantity: totals.mixedQuantity,
+          mixedQuantity: parseFloat(totals.mixedQuantity.toFixed(2)),
         }),
       },
     };
-
+    
     const total = await ProductTotalModel.findOneAndUpdate({}, updateData, {
       new: true,
       upsert: true,

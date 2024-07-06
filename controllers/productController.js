@@ -152,17 +152,17 @@ async function updateProduct(req, res) {
     }
 
     let updateData = {};
-
-    let dryRubberUsedDiff = updatedProduct.dryRubberUsed - oldData.dryRubberUsed;
-    let quantityDiff = updatedProduct.quantity - oldData.quantity;
-
+    
+    let dryRubberUsedDiff = parseFloat((updatedProduct.dryRubberUsed - oldData.dryRubberUsed).toFixed(2));
+    let quantityDiff = parseFloat((updatedProduct.quantity - oldData.quantity).toFixed(2));
+    
     if (dryRubberUsedDiff !== 0) {
       updateData.$inc = { ...updateData.$inc, dryRubber: -dryRubberUsedDiff };
     }
     if (quantityDiff !== 0) {
       updateData.$inc = { ...updateData.$inc, product: quantityDiff };
     }
-
+    
     const total = await ProductTotalModel.findOneAndUpdate({}, updateData, {
       new: true,
       upsert: true,
@@ -224,13 +224,13 @@ async function deleteProduct(req, res) {
     if (deletedProduct.dryRubberUsed > 0) {
       updateData.$inc = {
         ...updateData.$inc,
-        dryRubber: deletedProduct.dryRubberUsed,
+        dryRubber: parseFloat(deletedProduct.dryRubberUsed).toFixed(2),
       };
     }
     if (deletedProduct.quantity > 0) {
       updateData.$inc = {
         ...updateData.$inc,
-        product: -deletedProduct.quantity,
+        product: -parseFloat(deletedProduct.quantity).toFixed(2),
       };
     }
 
