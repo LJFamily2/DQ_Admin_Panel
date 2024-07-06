@@ -261,10 +261,10 @@
 
 <script>
   const userColumns = [
-    { data: "no", orderable: false, width:"10%" },
-    { data: "username", width:"15%" },
-    { data: "password", orderable: false, width:"15%" },
-    { data: "role", width:"15%", 
+    { data: "no", orderable: false, width:"25%" },
+    { data: "username", width:"25%" },
+    { data: "password", orderable: false, width:"25%" },
+    { data: "role", width:"25%", 
     render: function (data) {
         return data  ? `  <div class="row">
           <div class="col text-center "  >
@@ -282,7 +282,7 @@
       `;
       },
      },
-    { data: "id", orderable: false, width:"10%" },
+    { data: "id", orderable: false, width:"25%" },
   ];
 
   initializeDataTable(
@@ -291,6 +291,5 @@
     "#staticBackdrop",
     "#deleteModalToggle",
     userColumns,
-    false
   );
 </script>
