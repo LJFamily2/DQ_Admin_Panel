@@ -4,7 +4,8 @@ function convertToDecimal(input) {
     let result = input.replace(/\./g, '');
     // Then, replace the first comma with a period to handle decimal separator
     result = result.replace(',', '.');
-    return result;
+    // Convert the string to a floating-point number
+    return parseFloat(result);
   }
 }
 

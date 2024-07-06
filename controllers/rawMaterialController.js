@@ -3,7 +3,7 @@ const handleResponse = require('./utils/handleResponse');
 const formatNumberForDisplay = require('./utils/formatNumberForDisplay');
 const RawMaterialModel = require('../models/rawMaterialModel');
 const ProductTotalModel = require('../models/productTotalModel');
-const convertToDecimal = require('./utils/convertToDecimal')
+const convertToDecimal = require('./utils/convertToDecimal');
 const formatTotalData = require('./utils/formatTotalData');
 
 module.exports = {
@@ -17,8 +17,8 @@ module.exports = {
 async function renderPage(req, res) {
   try {
     let totalData = await ProductTotalModel.find();
-    const total = formatTotalData(totalData)
-    
+    const total = formatTotalData(totalData);
+
     const datas = await RawMaterialModel.find({});
     res.render('src/rawMaterialPage', {
       layout: './layouts/defaultLayout',
@@ -28,23 +28,22 @@ async function renderPage(req, res) {
       messages: req.flash(),
       title: 'Dữ liệu',
     });
-  } catch  {
+  } catch {
     res.status(500).render('partials/500');
   }
 }
 
 function calculateTotalDryRubber(product) {
-  return parseFloat(
-    ((product.dryQuantity * product.dryPercentage) / 100).toFixed(2),
-  );
+  return ((product.dryQuantity * product.dryPercentage) / 100).toFixed(2);
 }
 async function updateProductTotal(data, operation) {
-  const totalDryRubber = parseFloat(calculateTotalDryRubber(data.products).toFixed(2));
-  const mixedQuantityRounded = parseFloat(data.products.mixedQuantity).toFixed(2);
+  const totalDryRubber = calculateTotalDryRubber(data.products);
+  const mixedQuantityRounded = data.products.mixedQuantity.toFixed(2);
   const updateData = {
     $inc: {
       dryRubber: operation === 'add' ? totalDryRubber : -totalDryRubber,
-      mixedQuantity: operation === 'add' ? mixedQuantityRounded : -mixedQuantityRounded,
+      mixedQuantity:
+        operation === 'add' ? mixedQuantityRounded : -mixedQuantityRounded,
     },
   };
 
@@ -72,7 +71,7 @@ async function createData(req, res) {
 
     products = {
       dryQuantity: convertToDecimal(req.body.dryQuantity) || 0,
-      dryPercentage: convertToDecimal(req.body.dryPercentage) || 0 ,
+      dryPercentage: convertToDecimal(req.body.dryPercentage) || 0,
       mixedQuantity: convertToDecimal(req.body.mixedQuantity) || 0,
     };
     const newData = await RawMaterialModel.create({
@@ -91,7 +90,6 @@ async function createData(req, res) {
     }
 
     calculateTotalDryRubber(products);
-
 
     const total = await updateProductTotal({ products }, 'add');
 
@@ -114,9 +112,9 @@ async function createData(req, res) {
       'Tạo dữ liệu thành công',
       req.headers.referer,
     );
-  } catch (err)  {
-    console.log(err)
-    return res.status(500).render('partials/500', {layout: false});
+  } catch (err) {
+    console.log(err);
+    return res.status(500).render('partials/500', { layout: false });
   }
 }
 
@@ -138,7 +136,6 @@ async function getDatas(req, res) {
     let sortColumn = columns?.[sortColumnIndex]?.data;
     let sortDirection = order?.[0]?.dir === 'asc' ? 1 : -1;
 
-
     const filter = {};
 
     if (startDate && endDate) {
@@ -151,9 +148,15 @@ async function getDatas(req, res) {
         $lte: filterEndDate,
       };
     }
-    const totalRecords = await RawMaterialModel.countDocuments(filter);
+    // Determine if the sort column is 'date'
+    const isSortingByDate = sortColumn === 'date';
 
-    let data = await RawMaterialModel.find(filter);
+    const sortObject = isSortingByDate
+      ? { [sortColumn]: sortDirection }
+      : { date: -1 };
+
+    const totalRecords = await RawMaterialModel.countDocuments(filter);
+    let data = await RawMaterialModel.find(filter).sort(sortObject);
 
     if (searchValue) {
       const searchColumns = ['dryQuantity', 'dryPercentage', 'mixedQuantity'];
@@ -211,7 +214,7 @@ async function getDatas(req, res) {
       .map((item, index) => ({
         no: parseInt(start, 10) + index + 1,
         date: new Date(item.date).toLocaleDateString(),
-        plantation: item.plantation || "",
+        plantation: item.plantation || '',
         dryQuantity: formatNumberForDisplay(item.products.dryQuantity),
         dryPercentage: formatNumberForDisplay(item.products.dryPercentage),
         dryTotal: formatNumberForDisplay(
@@ -239,12 +242,8 @@ async function updateData(req, res) {
   try {
     const products = {
       dryQuantity: convertToDecimal(req.body.dryQuantity) || 0,
-      dryPercentage: convertToDecimal(
-        (req.body.dryPercentage) || 0 ,
-      ),
-      mixedQuantity: convertToDecimal(
-        (req.body.mixedQuantity) || 0,
-      ),
+      dryPercentage: convertToDecimal(req.body.dryPercentage || 0),
+      mixedQuantity: convertToDecimal(req.body.mixedQuantity || 0),
     };
 
     // Prepare the fields to be updated
@@ -253,7 +252,6 @@ async function updateData(req, res) {
       notes: req.body.notes,
       products,
     };
-
 
     // Retrieve the old data before updating
     const oldData = await RawMaterialModel.findById(id);
@@ -276,20 +274,32 @@ async function updateData(req, res) {
       );
     }
 
-    const { dryQuantity: newDryQuantity, dryPercentage: newDryPercentage, mixedQuantity: newMixedQuantity } = newData.products;
-    const { dryQuantity: oldDryQuantity = 0, dryPercentage: oldDryPercentage = 0, mixedQuantity: oldMixedQuantity = 0 } = oldData.products || {};
-    
+    const {
+      dryQuantity: newDryQuantity,
+      dryPercentage: newDryPercentage,
+      mixedQuantity: newMixedQuantity,
+    } = newData.products;
+    const {
+      dryQuantity: oldDryQuantity = 0,
+      dryPercentage: oldDryPercentage = 0,
+      mixedQuantity: oldMixedQuantity = 0,
+    } = oldData.products || {};
+
     // Calculate differences
     const mixedQuantityDiff = newMixedQuantity - oldMixedQuantity;
-    const dryRubberDiff = ((newDryQuantity * newDryPercentage) - (oldDryQuantity * oldDryPercentage)) / 100;
-    
+    const dryRubberDiff =
+      (newDryQuantity * newDryPercentage - oldDryQuantity * oldDryPercentage) /
+      100;
+
     // Initialize update object with mixedQuantity difference
-    const updateData = { $inc: { mixedQuantity: parseFloat(mixedQuantityDiff.toFixed(2)) } };
-    
+    const updateData = {
+      $inc: { mixedQuantity: mixedQuantityDiff.toFixed(2) },
+    };
+
     if (Math.abs(dryRubberDiff) >= 0.01) {
-      updateData.$inc.dryRubber = parseFloat(dryRubberDiff.toFixed(2));
+      updateData.$inc.dryRubber = dryRubberDiff.toFixed(2);
     }
-    
+
     // Perform the update
     const total = await ProductTotalModel.findOneAndUpdate({}, updateData, {
       new: true,
@@ -315,7 +325,7 @@ async function updateData(req, res) {
       'Cập nhật thông tin thành công',
       req.headers.referer,
     );
-  } catch  {
+  } catch {
     res.status(500).render('partials/500');
   }
 }
@@ -342,7 +352,7 @@ async function deleteData(req, res) {
     calculateTotalDryRubber(data.products);
 
     // Update the ProductTotal document efficiently
-    await updateProductTotal({ products: data.products }, 'subtract'); 
+    await updateProductTotal({ products: data.products }, 'subtract');
 
     handleResponse(
       req,

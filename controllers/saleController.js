@@ -4,7 +4,7 @@ const handleResponse = require('./utils/handleResponse');
 const trimStringFields = require('./utils/trimStringFields');
 const formatTotalData = require('./utils/formatTotalData');
 const formatNumberForDisplay = require('./utils/formatNumberForDisplay');
-const convertToDecimal = require('./utils/convertToDecimal')
+const convertToDecimal = require('./utils/convertToDecimal');
 
 module.exports = {
   renderPage,
@@ -113,17 +113,31 @@ async function createData(req, res) {
 
     let updateData = {
       $inc: {
-        income: parseFloat(totals.totalIncome).toFixed(2),
-        ...(totals.product > 0 && { product: -parseFloat(totals.product).toFixed(2) }),
-        ...(totals.dryRubber > 0 && { dryRubber: -parseFloat(totals.dryRubber).toFixed(2) }),
-        ...(totals.mixedQuantity > 0 && { mixedQuantity: -parseFloat(totals.mixedQuantity).toFixed(2) }),
+        income: totals.totalIncome.toFixed(2),
+        ...(totals.product > 0 && { product: -totals.product.toFixed(2) }),
+        ...(totals.dryRubber > 0 && {
+          dryRubber: -totals.dryRubber.toFixed(2),
+        }),
+        ...(totals.mixedQuantity > 0 && {
+          mixedQuantity: -totals.mixedQuantity.toFixed(2),
+        }),
       },
     };
-    
-    const total = await ProductTotalModel.findOneAndUpdate({}, updateData, { new: true, upsert: true });
-    
+
+    const total = await ProductTotalModel.findOneAndUpdate({}, updateData, {
+      new: true,
+      upsert: true,
+    });
+
     if (!total) {
-      return handleResponse(req, res, 500, 'fail', 'Cập nhật dữ liệu tổng thất bại', req.headers.referer);
+      return handleResponse(
+        req,
+        res,
+        500,
+        'fail',
+        'Cập nhật dữ liệu tổng thất bại',
+        req.headers.referer,
+      );
     }
 
     return handleResponse(
@@ -154,7 +168,6 @@ async function getDatas(req, res) {
       endDate,
     } = req.body;
 
-
     const searchValue = search?.value || '';
     const sortColumn = columns?.[order?.[0]?.column]?.data;
     const sortDirection = order?.[0]?.dir === 'asc' ? 1 : -1;
@@ -184,28 +197,37 @@ async function getDatas(req, res) {
         filter.date.$lte = filterEndDate;
       }
     }
+    // Determine if the sort column is 'date'
+    const isSortingByDate = sortColumn === 'date';
+
+    const sortObject = isSortingByDate
+      ? { [sortColumn]: sortDirection }
+      : { date: -1 };
 
     const totalRecords = await SaleModel.countDocuments();
     const filteredRecords = await SaleModel.countDocuments(filter);
     const sales = await SaleModel.find(filter)
-      .sort({ [sortColumn]: sortDirection })
+      .sort(sortObject)
       .skip(parseInt(start, 10))
-      .limit(parseInt(length, 10))
+      .limit(parseInt(length, 10));
 
-      const data = sales.map((sale, index) => {
-        // Assuming each sale has a 'products' array
-        const totalPrice = sale.products.reduce((acc, product) => acc + (product.quantity * product.price), 0);
-        return {
-          no: parseInt(start, 10) + index + 1,
-          date: sale.date.toLocaleDateString(),
-          code: sale.code || '',
-          products: parseInt(start, 10) + index + 1, 
-          notes: sale.notes || '',
-          total:formatNumberForDisplay(totalPrice)  + " VND",
-          status: sale.status,
-          slug: sale.slug,
-        };
-      });
+    const data = sales.map((sale, index) => {
+      // Assuming each sale has a 'products' array
+      const totalPrice = sale.products.reduce(
+        (acc, product) => acc + product.quantity * product.price,
+        0,
+      );
+      return {
+        no: parseInt(start, 10) + index + 1,
+        date: sale.date.toLocaleDateString(),
+        code: sale.code || '',
+        products: parseInt(start, 10) + index + 1,
+        notes: sale.notes || '',
+        total: formatNumberForDisplay(totalPrice) + ' VND',
+        status: sale.status,
+        slug: sale.slug,
+      };
+    });
 
     res.json({
       draw,
@@ -213,97 +235,95 @@ async function getDatas(req, res) {
       recordsFiltered: filteredRecords,
       data,
     });
-  } catch  {
+  } catch {
     res.status(500).render('partials/500');
   }
 }
 
 async function updateData(req, res) {
   req.body = trimStringFields(req.body);
-  try{ 
-  const { id } = req.params;
-  if (!id)
-    return handleResponse(
+  try {
+    const { id } = req.params;
+    if (!id)
+      return handleResponse(
+        req,
+        res,
+        400,
+        'fail',
+        'Không tìm thấy hàng hóa trong cơ sở dữ liệu',
+        req.headers.referer,
+      );
+
+    const names = ensureArray(req.body.name) || '';
+    const quantities = ensureArray(req.body.quantity) || 0;
+    const prices = ensureArray(req.body.price) || 0;
+    const products = convertProductData(names, quantities, prices);
+
+    let oldSale = await SaleModel.findById(id);
+    if (!oldSale)
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Không tìm thấy hợp đồng',
+        req.headers.referer,
+      );
+
+    // Identify and set removed fields to undefined
+    const updateField = { ...req.body, products };
+
+    const newSale = await SaleModel.findByIdAndUpdate(id, updateField, {
+      new: true,
+    });
+    if (!newSale)
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Cập nhật hợp đồng thất bại!',
+        req.headers.referer,
+      );
+
+    let {
+      totalProductDiff,
+      totalIncomeDiff,
+      totalDryRubberDiff,
+      totalMixedQuantityDiff,
+    } = calculateDifferences(products, oldSale);
+
+    let updateData = {
+      $inc: {
+        product: -totalProductDiff.toFixed(2),
+        income: totalIncomeDiff.toFixed(2),
+        dryRubber: -totalDryRubberDiff.toFixed(2),
+        mixedQuantity: -totalMixedQuantityDiff.toFixed(2),
+      },
+    };
+
+    const total = await ProductTotalModel.findOneAndUpdate({}, updateData, {
+      new: true,
+    });
+    if (!total)
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Cập nhật dữ liệu tổng thất bại',
+        req.headers.referer,
+      );
+
+    handleResponse(
       req,
       res,
-      400,
-      'fail',
-      'Không tìm thấy hàng hóa trong cơ sở dữ liệu',
+      200,
+      'success',
+      'Cập nhật hợp đồng thành công!',
       req.headers.referer,
     );
-
-  const names = ensureArray(req.body.name) || "";
-  const quantities = ensureArray(req.body.quantity) || 0;
-  const prices = ensureArray(req.body.price) || 0;
-  const products = convertProductData(names, quantities, prices);
-
-  let oldSale = await SaleModel.findById(id);
-  if (!oldSale)
-    return handleResponse(
-      req,
-      res,
-      404,
-      'fail',
-      'Không tìm thấy hợp đồng',
-      req.headers.referer,
-    );
-
-  // Identify and set removed fields to undefined
-  const updateField = { ...req.body, products };
-
-
-  const newSale = await SaleModel.findByIdAndUpdate(id, updateField, {
-    new: true,
-  });
-  if (!newSale)
-    return handleResponse(
-      req,
-      res,
-      404,
-      'fail',
-      'Cập nhật hợp đồng thất bại!',
-      req.headers.referer,
-    );
-
-  let {
-    totalProductDiff,
-    totalIncomeDiff,
-    totalDryRubberDiff,
-    totalMixedQuantityDiff,
-  } = calculateDifferences(products, oldSale);
-  
-  let updateData = {
-    $inc: {
-      product: -parseFloat(parseFloat(totalProductDiff).toFixed(2)),
-      income: parseFloat(parseFloat(totalIncomeDiff).toFixed(2)),
-      dryRubber: -parseFloat(parseFloat(totalDryRubberDiff).toFixed(2)),
-      mixedQuantity: -parseFloat(parseFloat(totalMixedQuantityDiff).toFixed(2)),
-    },
-  };
-
-
-  const total = await ProductTotalModel.findOneAndUpdate({}, updateData, {
-    new: true,
-  });
-  if (!total)
-    return handleResponse(
-      req,
-      res,
-      404,
-      'fail',
-      'Cập nhật dữ liệu tổng thất bại',
-      req.headers.referer,
-    );
-
-  handleResponse(
-    req,
-    res,
-    200,
-    'success',
-    'Cập nhật hợp đồng thành công!',
-    req.headers.referer,
-  );
-  }catch{
+  } catch {
     res.status(500).render('partials/500');
   }
 }
@@ -345,19 +365,18 @@ async function deleteData(req, res) {
       },
       { product: 0, dryRubber: 0, mixedQuantity: 0, totalIncome: 0 },
     );
-    
-    
+
     let updateData = {
       $inc: {
-        income:  -parseFloat(totals.totalIncome.toFixed(2)),
-        ...(totals.product > 0 && { product: parseFloat(totals.product.toFixed(2)) }),
-        ...(totals.dryRubber > 0 && { dryRubber: parseFloat(totals.dryRubber.toFixed(2)) }),
+        income: -totals.totalIncome.toFixed(2),
+        ...(totals.product > 0 && { product: totals.product.toFixed(2) }),
+        ...(totals.dryRubber > 0 && { dryRubber: totals.dryRubber.toFixed(2) }),
         ...(totals.mixedQuantity > 0 && {
-          mixedQuantity: parseFloat(totals.mixedQuantity.toFixed(2)),
+          mixedQuantity: totals.mixedQuantity.toFixed(2),
         }),
       },
     };
-    
+
     const total = await ProductTotalModel.findOneAndUpdate({}, updateData, {
       new: true,
       upsert: true,
@@ -382,11 +401,10 @@ async function deleteData(req, res) {
       'Xóa hợp đồng thành công!',
       req.headers.referer,
     );
-  } catch  {
+  } catch {
     res.status(500).render('partials/500');
   }
 }
-
 async function renderDetailPage(req, res) {
   try {
     const { slug } = req.params;
@@ -406,12 +424,12 @@ async function renderDetailPage(req, res) {
     res.render('src/saleDetailPage', {
       layout: './layouts/defaultLayout',
       sale,
-      user:req.user,
+      user: req.user,
       total,
       messages: req.flash(),
       title: 'Chi tiết hợp đồng bán mủ',
     });
-  } catch  {
+  } catch {
     res.status(500).render('partials/500');
   }
 }
