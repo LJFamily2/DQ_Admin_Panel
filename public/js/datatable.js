@@ -37,6 +37,7 @@ function initializeDataTable(
   mixedPriceID,
   queryPageFooter,
   dataPageFooter,
+  salePageFooter,
 ) {
 
   let rowGroupOptions ={};
@@ -88,7 +89,15 @@ function initializeDataTable(
         },
       };
     }
-
+    if (salePageFooter) {
+      const columns = [5];
+      footerCallbackOptions = {
+        footerCallback: function () {
+          setupFooterCallback(columns, this.api());
+        },
+      };
+    }
+    
   var isMobile = window.innerWidth < 1600;
   const tableOptions = {
     dom:
