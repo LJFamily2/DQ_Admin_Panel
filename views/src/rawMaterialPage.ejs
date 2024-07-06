@@ -34,7 +34,6 @@
             <tr>
               <th rowspan="2">STT</th>
               <th rowspan="2">Ngày</th>
-              <th rowspan="2">Cánh</th>
               <th colspan="3">Mủ quy khô</th>
               <th>Mủ tạp</th>
               <th rowspan="2">Ghi chú</th>
@@ -92,23 +91,6 @@
                           id="date<%= index + 1 %>"
                           name="date"
                           value="<%= data.date.toISOString().slice(0,10) %>"
-                          onchange="newInput(this)"
-                        />
-                      </div>
-
-                      <div class="my-3">
-                        <label
-                          for="plantation<%= index + 1 %>"
-                          class="form-label fw-bold"
-                          >Cánh</label
-                        >
-                        <input
-                          type="text"
-                          class="form-control"
-                          id="plantation<%= index + 1 %>"
-                          name="plantation"
-                          placeholder="Ông A"
-                          value="<%= data.plantation %>"
                           onchange="newInput(this)"
                         />
                       </div>
@@ -257,15 +239,12 @@
             <% }) %>
           </tbody>
           <tfoot>
+            <th colspan="2">Tổng</th>
             <th></th>
             <th></th>
             <th></th>
             <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
+            <th colspan="2"></th>
           </tfoot>
         </table>
       </div>
@@ -282,17 +261,6 @@
           <div>
             <label for="date" class="form-label fw-bold">Ngày nhập</label>
             <input type="date" class="form-control" id="date" name="date" required autofocus/>
-          </div>
-          <div class="my-3">
-            <label for="plantation" class="form-label fw-bold">Cánh</label>
-            <input
-              type="text"
-              class="form-control"
-              id="plantation"
-              name="plantation"
-              placeholder="Ông A"
-              required
-            />
           </div>
   
           <hr />
@@ -388,7 +356,6 @@
     let columns = [
       { data: 'no', orderable: false, width: "5%"  },
       { data: 'date', width: "5%" },
-      { data: 'plantation', orderable: false, width: "5%"} ,
       { data: 'dryQuantity', orderable: false, width: "5%"  },
       { data: 'dryPercentage', orderable: false, width: "5%"  },
       { data: 'dryTotal', orderable: false, width: "5%" },

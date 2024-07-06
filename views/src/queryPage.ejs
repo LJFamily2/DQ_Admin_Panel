@@ -3,7 +3,6 @@
   <script src="https://cdn.datatables.net/buttons/3.0.2/js/dataTables.buttons.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.html5.min.js"></script>
-  <script src="https://cdn.datatables.net/rowgroup/1.5.0/js/dataTables.rowGroup.js"></script>
   <script src="/js/datatable.js"></script>
   <script src="/js/inputFieldRestriction.js" defer></script>
 
@@ -60,7 +59,7 @@
         <thead>
           <tr>
             <th rowspan="2">STT</th>
-            <th rowspan="2">Cánh</th>
+            <th rowspan="2">Ngày</th>
             <th colspan="3">Mủ quy khô</th>
             <th colspan="3">Mủ tạp</th>
             <th rowspan="2">Ghi chú</th>
@@ -79,23 +78,14 @@
         <tfoot>
           <tr>
             <th colspan="2">Tổng</th>
-            <!-- STT -->
             <th></th>
-            <!-- Mủ quy khô - SL -->
             <th></th>
-            <!-- Mủ quy khô - Đơn giá -->
             <th></th>
-            <!-- Mủ quy khô - TT -->
             <th></th>
-            <!-- Mủ tạp - SL -->
             <th></th>
-            <!-- Mủ tạp - Đơn giá -->
             <th></th>
-            <!-- Mủ tạp - TT -->
             <th></th>
-            <!-- Ghi chú -->
             <th></th>
-            <!-- Tổng tiền -->
           </tr>
         </tfoot>
       </table>
@@ -104,16 +94,16 @@
 
 <script>
   let queryColumns = [
-    { data: 'no', orderable: false },
-    { data: 'plantation', width: '5%' },
+    { data: 'no', orderable: false, width: '5%' },
+    { data: 'date', width: '5%', },
     { data: 'dryQuantity', width: '10%' },
-    { data: 'dryPrice', orderable: false, width: '7%' },
+    { data: 'dryPrice', orderable: false, width: '10%' },
     { data: 'dryTotal', orderable: false, width: '15%' },
-    { data: 'mixedQuantity', width: '10%' },
-    { data: 'mixedPrice', orderable: false, width: '7%' },
+    { data: 'mixedQuantity', width: '15%' },
+    { data: 'mixedPrice', orderable: false, width: '10%' },
     { data: 'mixedTotal', orderable: false, width: '15%' },
-    { data: 'notes', orderable: false, width: '15%' },
-    { data: 'totalMoney', width: '16%' },
+    { data: 'notes', orderable: false, width: '7%' },
+    { data: 'totalMoney', width: '15%' },
   ];
   initializeDataTable(
     '#query_table',
@@ -121,7 +111,7 @@
     '#staticBackdrop',
     '#deleteModalToggle',
     queryColumns,
-    'area',
+    null,
     '#filterButton',
     '#startDate',
     '#endDate',

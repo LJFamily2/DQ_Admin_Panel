@@ -138,16 +138,18 @@ async function getDatas(req, res) {
 
     const filter = {};
 
-    if (startDate && endDate) {
-      const filterStartDate = new Date(startDate);
-      const filterEndDate = new Date(endDate);
-      filterEndDate.setHours(0, 0, 0);
-
-      filter.date = {
-        $gte: filterStartDate,
-        $lte: filterEndDate,
-      };
+    if (startDate || endDate) {
+      filter.date = {};
+    
+      const filterStartDate = new Date(startDate || endDate);
+      filterStartDate.setHours(0, 0, 0, 0);
+      filter.date.$gte = filterStartDate;
+    
+      const filterEndDate = new Date(endDate || startDate);
+      filterEndDate.setHours(23, 59, 59, 999);
+      filter.date.$lte = filterEndDate;
     }
+
     // Determine if the sort column is 'date'
     const isSortingByDate = sortColumn === 'date';
 
@@ -214,7 +216,6 @@ async function getDatas(req, res) {
       .map((item, index) => ({
         no: parseInt(start, 10) + index + 1,
         date: new Date(item.date).toLocaleDateString(),
-        plantation: item.plantation || '',
         dryQuantity: formatNumberForDisplay(item.products.dryQuantity),
         dryPercentage: formatNumberForDisplay(item.products.dryPercentage),
         dryTotal: formatNumberForDisplay(

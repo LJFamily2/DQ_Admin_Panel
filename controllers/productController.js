@@ -340,16 +340,14 @@ async function getProducts(req, res) {
 
     if (startDate || endDate) {
       filter.date = {};
-      if (startDate) {
-        const filterStartDate = new Date(startDate);
-        filterStartDate.setHours(0, 0, 0, 0);
-        filter.date.$gte = filterStartDate;
-      }
-      if (endDate) {
-        const filterEndDate = new Date(endDate);
-        filterEndDate.setHours(23, 59, 59, 999);
-        filter.date.$lte = filterEndDate;
-      }
+    
+      const filterStartDate = new Date(startDate || endDate);
+      filterStartDate.setHours(0, 0, 0, 0);
+      filter.date.$gte = filterStartDate;
+    
+      const filterEndDate = new Date(endDate || startDate);
+      filterEndDate.setHours(23, 59, 59, 999);
+      filter.date.$lte = filterEndDate;
     }
 
     // Determine if the sort column is 'date'

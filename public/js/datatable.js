@@ -30,7 +30,7 @@ function initializeDataTable(
   startDateId,
   endDateId,
   clearFilterButton,
-  plantationDetailPageRender,
+  productPageFooter,
   exportsOption,
   inputPrice,
   dryPriceID,
@@ -38,28 +38,18 @@ function initializeDataTable(
   queryPageFooter,
   dataPageFooter,
 ) {
-  const rowGroupOptions = {
-    dataSrc: rowGroup,
-  };
+
+  let rowGroupOptions ={};
+
+  if(rowGroup !== null){
+    rowGroupOptions = {
+      dataSrc: rowGroup,
+    };
+
+  }
 
   let footerCallbackOptions = {};
 
-  if (plantationDetailPageRender) {
-    const sumColumn = (rows, columnName) =>
-      rows
-        .data()
-        .pluck(columnName)
-        .reduce((a, b) => a + parseNumber(b), 0);
-
-    rowGroupOptions.endRender = function (rows) {
-      const dryTotal = formatNumberForDisplay(sumColumn(rows, 'dryTotal'));
-      const mixedQuantity = formatNumberForDisplay(
-        sumColumn(rows, 'mixedQuantity'),
-      );
-
-      return `<span class="float-end">(Mủ quy khô: ${dryTotal} kg, Mủ tạp: ${mixedQuantity}kg)</span>`;
-    };
-  }
 
   const setupFooterCallback = (columns, api) => {
     columns.forEach(colIndex => {
@@ -82,7 +72,16 @@ function initializeDataTable(
     }
   
     if (dataPageFooter) {
-      const columns = [3, 5, 6];
+      const columns = [2, 4, 5];
+      footerCallbackOptions = {
+        footerCallback: function () {
+          setupFooterCallback(columns, this.api());
+        },
+      };
+    }
+
+    if (productPageFooter) {
+      const columns = [2, 3];
       footerCallbackOptions = {
         footerCallback: function () {
           setupFooterCallback(columns, this.api());

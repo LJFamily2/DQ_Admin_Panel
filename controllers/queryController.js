@@ -1,7 +1,7 @@
 const RawMaterialModel = require('../models/rawMaterialModel');
 const ProductTotalModel = require('../models/productTotalModel');
 const formatTotalData = require('./utils/formatTotalData');
-const convertToDecimal = require('./utils/convertToDecimal')
+const convertToDecimal = require('./utils/convertToDecimal');
 
 module.exports = {
   renderPage,
@@ -12,15 +12,15 @@ module.exports = {
 async function renderPage(req, res) {
   try {
     let totalData = await ProductTotalModel.find();
-    const total = formatTotalData(totalData)
-    
+    const total = formatTotalData(totalData);
+
     res.render('src/queryPage', {
       layout: './layouts/defaultLayout',
       total,
       user: req.user,
       title: 'Truy vấn',
     });
-  } catch  {
+  } catch {
     res.status(500).render('partials/500');
   }
 }
@@ -155,17 +155,22 @@ async function getDataTotal(req, res) {
     const sortColumn = columns?.[order?.[0]?.column]?.data || 'name';
     const sortDirection = order?.[0]?.dir === 'asc' ? 1 : -1;
 
+    const filter = {};
+
+    // Initialize today's date and reset hours to start of the day for comparison
     const today = new Date();
-    const startDate = reqStartDate || today.toISOString().split('T')[0];
-    const endDate = reqEndDate || today.toISOString().split('T')[0];
-
-
-    const filter = {
-      date: {
-        $gte: new Date(startDate),
-        $lte: new Date(endDate),
-      },
-    };
+    today.setHours(0, 0, 0, 0);
+    
+    // If reqStartDate is provided, use it; otherwise, use today
+    const startDate = reqStartDate ? new Date(reqStartDate) : new Date(today);
+    startDate.setHours(0, 0, 0, 0); // Ensure start of the day
+    
+    // If reqEndDate is provided, use it; otherwise, use startDate
+    const endDate = reqEndDate ? new Date(reqEndDate) : new Date(startDate);
+    endDate.setHours(23, 59, 59, 999); // Ensure end of the day
+    
+    // Apply the simplified date range filter
+    filter.date = { $gte: startDate, $lte: endDate };
 
     if (searchValue) {
       filter.$or = [
@@ -197,18 +202,16 @@ async function getDataTotal(req, res) {
         if (plantation.notes) notes.push(plantation.notes);
       }
 
-      const dryPriceValue =
-        convertToDecimal(dryPrice) || 0;
-      const mixedPriceValue =
-        convertToDecimal(mixedPrice) || 0;
+      const dryPriceValue = convertToDecimal(dryPrice) || 0;
+      const mixedPriceValue = convertToDecimal(mixedPrice) || 0;
       const dryTotalValue = dryQuantityTotal * dryPriceValue;
       const mixedTotalValue = mixedQuantityTotal * mixedPriceValue;
       const totalMoneyValue = dryTotalValue + mixedTotalValue;
 
       return {
         no: parseInt(start, 10) + index + 1,
-        plantation: plantation.plantation || '', 
-        dryQuantity: dryQuantityTotal.toLocaleString('vi-VN'), 
+        date: plantation.date.toLocaleDateString(),
+        dryQuantity: dryQuantityTotal.toLocaleString('vi-VN'),
         dryPrice: dryPrice,
         dryTotal: dryTotalValue.toLocaleString('vi-VN'),
         mixedQuantity: mixedQuantityTotal.toLocaleString('vi-VN'),
@@ -222,10 +225,10 @@ async function getDataTotal(req, res) {
     res.json({
       draw,
       recordsTotal: totalRecords,
-      recordsFiltered: plantations.length, 
+      recordsFiltered: plantations.length,
       data,
     });
-  } catch  {
+  } catch {
     res.status(500).render('partials/500');
   }
 }

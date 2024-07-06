@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 
 const rawMaterialSchema = new mongoose.Schema({
     date: Date,
-    plantation: String,
     notes: String,
     products: {
         dryQuantity: Number,
