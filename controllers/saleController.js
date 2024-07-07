@@ -83,7 +83,7 @@ async function renderPage(req, res) {
       title: 'Quản lý hợp đồng bán mủ',
     });
   } catch {
-    res.status(500).render('partials/500');
+    res.status(500).render('partials/500', {layout: false});
   }
 }
 
@@ -151,7 +151,7 @@ async function createData(req, res) {
       req.headers.referer,
     );
   } catch {
-    res.status(500).render('partials/500');
+    res.status(500).render('partials/500', {layout: false});
   }
 }
 
@@ -236,7 +236,7 @@ async function getDatas(req, res) {
       data,
     });
   } catch {
-    res.status(500).render('partials/500');
+    res.status(500).render('partials/500', {layout: false});
   }
 }
 
@@ -324,7 +324,7 @@ async function updateData(req, res) {
       req.headers.referer,
     );
   } catch {
-    res.status(500).render('partials/500');
+    res.status(500).render('partials/500', {layout: false});
   }
 }
 
@@ -402,7 +402,7 @@ async function deleteData(req, res) {
       req.headers.referer,
     );
   } catch {
-    res.status(500).render('partials/500');
+    res.status(500).render('partials/500', {layout: false});
   }
 }
 async function renderDetailPage(req, res) {
@@ -430,6 +430,6 @@ async function renderDetailPage(req, res) {
       title: 'Chi tiết hợp đồng bán mủ',
     });
   } catch {
-    res.status(500).render('partials/500');
+    res.status(500).render('partials/500', {layout: false});
   }
 }

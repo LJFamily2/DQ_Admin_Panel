@@ -26,7 +26,7 @@ async function renderPage(req, res) {
       title: "Người quản lý",
     });
   } catch {
-    res.status(500).render('partials/500');
+    res.status(500).render('partials/500', {layout: false});
   }
 }
 
@@ -67,7 +67,7 @@ async function createManager(req, res) {
       );
     }
   } catch  {
-    res.status(500).render('partials/500');
+    res.status(500).render('partials/500', {layout: false});
   }
 }
 
@@ -153,7 +153,7 @@ async function deleteManager(req, res) {
       "/quan-ly-nguoi-quan-ly"
     );
   } catch  {
-    res.status(500).render('partials/500');
+    res.status(500).render('partials/500', {layout: false});
   }
 }
 
@@ -181,7 +181,7 @@ async function deleteAllManagers(req, res) {
       "/quan-ly-nguoi-quan-ly"
     );
   } catch  {
-    res.status(500).render('partials/500');
+    res.status(500).render('partials/500', {layout: false});
   }
 }
 
@@ -237,7 +237,7 @@ async function getManagers(req, res) {
       data,
     });
   } catch  {
-    res.status(500).render('partials/500');
+    res.status(500).render('partials/500', {layout: false});
   }
 }
 

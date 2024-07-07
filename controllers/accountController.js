@@ -24,7 +24,7 @@ async function renderPage(req, res) {
       title: 'Quản lý tài khoản',
     });
   } catch {
-    res.status(500).render('partials/500');
+    res.status(500).render('partials/500', {layout: false});
   }
 }
 
@@ -71,7 +71,7 @@ async function createUser(req, res) {
       req.headers.referer,
     );
   } catch {
-    res.status(500).render('partials/500');
+    res.status(500).render('partials/500', {layout: false});
   }
 }
 
@@ -108,7 +108,7 @@ async function getUsers(req, res) {
       data,
     });
   } catch {
-    res.status(500).render('partials/500');
+    res.status(500).render('partials/500', {layout: false});
   }
 }
 
@@ -174,13 +174,13 @@ async function updateUser(req, res) {
     if (passwordChanged) {
       req.session.regenerate(function (err) {
         if (err) {
-          return res.status(500).render('partials/500'); 
+          return res.status(500).render('partials/500', {layout: false}); 
         }
 
         // Save the session after modifications
         req.session.save(function (saveErr) {
           if (saveErr) {
-            return res.status(500).render('partials/500'); 
+            return res.status(500).render('partials/500', {layout: false}); 
           }
         });
       });
@@ -194,7 +194,7 @@ async function updateUser(req, res) {
       req.headers.referer,
     );
   } catch (error) {
-    res.status(500).render('partials/500');
+    res.status(500).render('partials/500', {layout: false});
   }
 }
 
@@ -234,7 +234,7 @@ async function deleteUser(req, res) {
       req.headers.referer,
     );
   } catch {
-    res.status(500).render('partials/500');
+    res.status(500).render('partials/500', {layout: false});
   }
 }
 
@@ -264,7 +264,7 @@ async function deleteAllUsers(req, res) {
       req.headers.referer,
     );
   } catch {
-    res.status(500).render('partials/500');
+    res.status(500).render('partials/500', {layout: false});
   }
 }
 

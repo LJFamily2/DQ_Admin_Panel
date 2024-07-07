@@ -26,7 +26,7 @@ async function renderPage(req, res) {
       messages: req.flash(),
     });
   } catch (err) {
-    res.status(500).render('partials/500');
+    res.status(500).render('partials/500', {layout: false});
   }
 }
 
@@ -96,7 +96,7 @@ async function createArea(req, res) {
       "/quan-ly-khu-vuc"
     );
   } catch  {
-    return res.status(500).render('partials/500');
+    return res.status(500).render('partials/500', {layout: false});
   }
 }
 
@@ -141,7 +141,7 @@ async function updateArea(req, res) {
       "/quan-ly-khu-vuc"
     );
   } catch  {
-    res.status(500).render('partials/500');
+    res.status(500).render('partials/500', {layout: false});
   }
 }
 
@@ -187,7 +187,7 @@ async function removePlantationFromArea(req, res) {
     }
   } catch (err) {
     console.error(err);
-    return res.status(500).render('partials/500');
+    return res.status(500).render('partials/500', {layout: false});
   }
 }
 
@@ -229,7 +229,7 @@ async function deleteAreas(req, res) {
       "/quan-ly-khu-vuc"
     );
   } catch  {
-    res.status(500).render('partials/500');
+    res.status(500).render('partials/500', {layout: false});
   }
 }
 
@@ -245,7 +245,7 @@ async function deleteAllAreas(req, res) {
       "/quan-ly-khu-vuc"
     );
   } catch {
-    res.status(500).render('partials/500');
+    res.status(500).render('partials/500', {layout: false});
   }
 }
 

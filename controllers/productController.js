@@ -29,7 +29,7 @@ async function renderPage(req, res) {
       messages: req.flash(),
     });
   } catch {
-    res.status(500).render('partials/500');
+    res.status(500).render('partials/500', {layout: false});
   }
 }
 
@@ -131,7 +131,7 @@ async function createProduct(req, res) {
     );
   } catch (err) {
     console.log(err);
-    res.status(500).render('partials/500');
+    res.status(500).render('partials/500', {layout: false});
   }
 }
 
@@ -229,7 +229,7 @@ async function updateProduct(req, res) {
     );
   } catch (error) {
     // Handle any errors that occur during the update process
-    res.status(500).render('partials/500');
+    res.status(500).render('partials/500', {layout: false});
   }
 }
 
@@ -289,7 +289,7 @@ async function deleteProduct(req, res) {
       '/quan-ly-hang-hoa',
     );
   } catch {
-    res.status(500).render('partials/500');
+    res.status(500).render('partials/500', {layout: false});
   }
 }
 
@@ -305,7 +305,7 @@ async function deleteAllProducts(req, res) {
       '/quan-ly-hang-hoa',
     );
   } catch {
-    res.status(500).render('partials/500');
+    res.status(500).render('partials/500', {layout: false});
   }
 }
 
@@ -380,6 +380,6 @@ async function getProducts(req, res) {
       data,
     });
   } catch {
-    res.status(500).render('partials/500');
+    res.status(500).render('partials/500', {layout: false});
   }
 }

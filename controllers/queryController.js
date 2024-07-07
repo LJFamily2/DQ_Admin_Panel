@@ -21,7 +21,7 @@ async function renderPage(req, res) {
       title: 'Truy vấn',
     });
   } catch {
-    res.status(500).render('partials/500');
+    res.status(500).render('partials/500', {layout: false});
   }
 }
 
@@ -132,7 +132,7 @@ async function renderPage(req, res) {
 //       data,
 //     });
 //   } catch  {
-//     res.status(500).render('partials/500');
+//     res.status(500).render('partials/500', {layout: false});
 //   }
 // }
 
@@ -229,6 +229,6 @@ async function getDataTotal(req, res) {
       data,
     });
   } catch {
-    res.status(500).render('partials/500');
+    res.status(500).render('partials/500', {layout: false});
   }
 }

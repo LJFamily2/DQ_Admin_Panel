@@ -29,7 +29,7 @@ async function renderPage(req, res) {
       title: 'Dữ liệu',
     });
   } catch {
-    res.status(500).render('partials/500');
+    res.status(500).render('partials/500', {layout: false});
   }
 }
 
@@ -233,7 +233,7 @@ async function getDatas(req, res) {
       data: formattedData,
     });
   } catch {
-    res.status(500).render('partials/500');
+    res.status(500).render('partials/500', {layout: false});
   }
 }
 
@@ -327,7 +327,7 @@ async function updateData(req, res) {
       req.headers.referer,
     );
   } catch {
-    res.status(500).render('partials/500');
+    res.status(500).render('partials/500', {layout: false});
   }
 }
 
@@ -364,6 +364,6 @@ async function deleteData(req, res) {
       req.headers.referer,
     );
   } catch {
-    res.status(500).render('partials/500');
+    res.status(500).render('partials/500', {layout: false});
   }
 }

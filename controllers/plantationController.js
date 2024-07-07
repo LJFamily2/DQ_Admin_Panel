@@ -111,7 +111,7 @@ async function createPlantation(req, res) {
       '/quan-ly-vuon',
     );
   } catch {
-    res.status(500).render('partials/500');
+    res.status(500).render('partials/500', {layout: false});
   }
 }
 
@@ -200,7 +200,7 @@ async function updatePlantation(req, res) {
       req.headers.referer,
     );
   } catch{
-    res.status(500).render('partials/500');
+    res.status(500).render('partials/500', {layout: false});
   }
 }
 
@@ -233,7 +233,7 @@ async function deletePlantation(req, res) {
         : 'Xóa vườn thành công!';
     return handleResponse(req, res, 200, 'success', message, '/quan-ly-vuon');
   } catch{
-    res.status(500).render('partials/500');
+    res.status(500).render('partials/500', {layout: false});
   }
 }
 
@@ -259,7 +259,7 @@ async function deleteAllPlantation(req, res) {
       '/quan-ly-vuon',
     );
   } catch  {
-    res.status(500).render('partials/500');
+    res.status(500).render('partials/500', {layout: false});
   }
 }
 
@@ -328,7 +328,7 @@ async function getPlantations(req, res) {
       data,
     });
   } catch {
-    res.status(500).render('partials/500');
+    res.status(500).render('partials/500', {layout: false});
   }
 }
 async function renderPage(req, res) {
@@ -348,7 +348,7 @@ async function renderPage(req, res) {
       messages: req.flash(),
     });
   } catch {
-    res.status(500).render('partials/500');
+    res.status(500).render('partials/500', {layout: false});
   }
 }
 
@@ -383,7 +383,7 @@ async function renderDetailPage(req, res) {
       messages: req.flash(),
     });
   } catch{
-    res.status(500).render('partials/500');
+    res.status(500).render('partials/500', {layout: false});
   }
 }
 
@@ -457,7 +457,7 @@ async function addData(req, res) {
       req.headers.referer,
     );
   } catch {
-    res.status(500).render('partials/500');
+    res.status(500).render('partials/500', {layout: false});
   }
 }
 
@@ -683,7 +683,7 @@ async function updateData(req, res) {
       req.headers.referer,
     );
   } catch {
-    res.status(500).render('partials/500');
+    res.status(500).render('partials/500', {layout: false});
   }
 }
 
@@ -714,6 +714,6 @@ async function deleteData(req, res) {
       req.headers.referer,
     );
   } catch {
-    res.status(500).render('partials/500');
+    res.status(500).render('partials/500', {layout: false});
   }
 }
