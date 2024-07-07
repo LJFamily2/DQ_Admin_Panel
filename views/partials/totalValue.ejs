@@ -71,9 +71,9 @@
   <div class="col-12 col-md-4">
     <div class="card" style="border-left: 5px solid rgb(156, 39, 176)">
       <div
-        class="card-body <%= total[0]?.income?.raw < 0 ? 'text-danger' : total[0]?.income?.raw > 0 ? 'text-success' : '' %>"
+        class="card-body <%= total[0]?.spend?.raw < 0 ? 'text-danger' : total[0]?.spend?.raw > 0 ? 'text-success' : '' %>"
       >
-        <h5><%= total[0]?.income?.formatted || 0 %></h5>
+        <h5><%= total[0]?.spend?.formatted || 0 %></h5>
         <div class="card-text text-muted" style="font-size: smaller">
           <div class="d-flex justify-content-between align-items-center">
             <div class="w-75">
@@ -88,9 +88,9 @@
   <div class="col-12 col-md-4">
     <div class="card" style="border-left: 5px solid rgb(156, 39, 176)">
       <div
-        class="card-body <%= total[0]?.income?.raw < 0 ? 'text-danger' : total[0]?.income?.raw > 0 ? 'text-success' : '' %>"
+        class="card-body <%= total[0]?.profit?.raw < 0 ? 'text-danger' : total[0]?.profit?.raw > 0 ? 'text-success' : '' %>"
       >
-        <h5><%= total[0]?.income?.formatted || 0 %></h5>
+        <h5><%= total[0]?.profit?.formatted || 0 %></h5>
         <div class="card-text text-muted" style="font-size: smaller">
           <div class="d-flex justify-content-between align-items-center">
             <div class="w-75">

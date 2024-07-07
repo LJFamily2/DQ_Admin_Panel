@@ -17,6 +17,14 @@ const productTotalSchema = new mongoose.Schema({
         type:Number,
         default: 0
     },
+    spend:{
+        type:Number,
+        default: 0
+    },
+    profit:{
+        type:Number,
+        default: 0
+    },
 });
 
 const productTotalModel = mongoose.model('TotalProducts', productTotalSchema);

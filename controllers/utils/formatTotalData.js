@@ -2,7 +2,7 @@ const formatNumberForDisplay = require('./formatNumberForDisplay');
 
 const formatTotalData = (totalData) => {
   const formatItem = item => {
-    const fieldsToFormat = ['dryRubber', 'income', 'mixedQuantity', 'product'];
+    const fieldsToFormat = ['dryRubber', 'income', 'mixedQuantity', 'product', 'spend', 'profit'];
     fieldsToFormat.forEach(field => {
       item[field] = {
         raw: item[field], // Store the raw value
