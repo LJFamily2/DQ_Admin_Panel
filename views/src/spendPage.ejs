@@ -28,9 +28,11 @@
           <thead>
             <tr>
               <th>STT</th>
-              <th>Ngày chạy lò</th>
-              <th>Quy khô sử dụng</th>
-              <th>Thành phẩm</th>
+              <th>Ngày</th>
+              <th>Hàng hóa</th>
+              <th>Số lượng</th>
+              <th>Đơn giá</th>
+              <th>Tổng</th>
               <th>Ghi chú</th>
               <th>Chỉnh sửa</th>
             </tr>
@@ -199,13 +201,13 @@
   <div class="col-12 col-md-3 mt-2">
     <div class="card" style="box-shadow: 0 1px 2px">
       <div class="card-header bg-transparent">
-        <h4 class="m-0">Tạo hàng hóa</h4>
+        <h4 class="m-0">Tạo chi tiêu</h4>
       </div>
-      <form action="/quan-ly-hang-hoa/addspend" method="post">
+      <form action="/quan-ly-chi-tieu/addData" method="post">
         <div class="card-body">
           <%- include('../partials/notificationMessage.ejs') %>
           <div>
-            <label for="date" class="form-label fw-bold">Ngày chạy lò</label>
+            <label for="date" class="form-label fw-bold">Ngày </label>
             <input
               type="date"
               class="form-control"
@@ -217,27 +219,38 @@
           </div>
 
           <div class="my-3">
-            <label for="dryRubberUsed" class="form-label fw-bold"
-              >Quy khô sử dụng</label
+            <label for="product" class="form-label fw-bold"
+              >Hàng hóa</label
             >
             <input
               type="text"
               class="form-control"
-              id="dryRubberUsed"
-              name="dryRubberUsed"
-              placeholder="123,45"
-              oninput="handleQuantityInput(this)"
+              id="product"
+              name="product"
+              placeholder="Dầu"
             />
           </div>
 
           <div class="my-3">
-            <label for="quantity" class="form-label fw-bold">Thành phẩm</label>
+            <label for="quantity" class="form-label fw-bold">Số lượng</label>
             <input
               type="text"
               class="form-control"
               id="quantity"
               name="quantity"
-              placeholder="123,45"
+              placeholder="1.500"
+              oninput="handleQuantityInput(this)"
+            />
+          </div>
+
+          <div class="my-3">
+            <label for="price" class="form-label fw-bold">Đơn giá</label>
+            <input
+              type="text"
+              class="form-control"
+              id="price"
+              name="price"
+              placeholder="20.000"
               oninput="handleQuantityInput(this)"
             />
           </div>
@@ -247,7 +260,7 @@
             <textarea
               type="text"
               class="form-control"
-              rows="3"
+              rows="2"
               id="notes"
               name="notes"
             ></textarea>
@@ -299,7 +312,14 @@
 </div>
 <script>
   const columns = [
-
+    { data: 'no' },
+    { data: 'date' },
+    { data: 'product' },
+    { data: 'quantity' },
+    { data: 'price' },
+    { data: 'total' },
+    { data: 'notes' },
+    { data: 'id' },
   ];
 
   initializeDataTable(
