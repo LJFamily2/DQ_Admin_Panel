@@ -73,13 +73,13 @@
                   >
                     <div class="modal-body">
                       <div class="my-3">
-                        <label for="date" class="form-label fw-bold"
-                          >Ngày chạy lò</label
+                        <label for="date<%= index %>" class="form-label fw-bold"
+                          >Ngày</label
                         >
                         <input
                           type="date"
                           class="form-control"
-                          id="date"
+                          id="date<%= index %>"
                           name="date"
                           placeholder="Nhập tên"
                           value="<%= spend.date.toISOString().slice(0,10)  %>"
@@ -87,44 +87,58 @@
                       </div>
 
                       <div class="my-3">
-                        <label for="dryRubberUsed" class="form-label fw-bold"
+                        <label for="product<%= index %>" class="form-label fw-bold"
                           >Quy khô sử dụng</label
                         >
                         <input
                           type="text"
                           class="form-control"
-                          id="dryRubberUsed"
-                          name="dryRubberUsed"
+                          id="product<%= index %>"
+                          name="product"
                           placeholder="123,45"
-                          value="<%= spend.dryRubberUsed.toLocaleString('vi-VN') %>"
-                          oninput="handleQuantityInput(this)"
+                          value="<%= spend.products %>"
                         />
                       </div>
 
                       <div class="my-3">
-                        <label for="quantity" class="form-label fw-bold"
+                        <label for="quantity<%= index %>" class="form-label fw-bold"
                           >Thành phẩm</label
                         >
                         <input
                           type="text"
                           class="form-control"
-                          id="quantity"
+                          id="quantity<%= index %>"
                           name="quantity"
-                          placeholder="123,45"
+                          placeholder="1.500"
                           oninput="handleQuantityInput(this)"
                           value="<%= spend.quantity.toLocaleString('vi-VN') %>"
                         />
                       </div>
 
                       <div class="my-3">
-                        <label for="notes" class="form-label fw-bold"
+                        <label for="price<%= index %>" class="form-label fw-bold"
+                          >Thành phẩm</label
+                        >
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="price<%= index %>"
+                          name="price"
+                          placeholder="20.000"
+                          oninput="handleQuantityInput(this)"
+                          value="<%= spend.price.toLocaleString('vi-VN') %>"
+                        />
+                      </div>
+
+                      <div class="my-3">
+                        <label for="notes<%= index %>" class="form-label fw-bold"
                           >Ghi chú</label
                         >
                         <textarea
                           type="text"
                           class="form-control"
                           rows="3"
-                          id="notes"
+                          id="notes<%= index %>"
                           name="notes"
                         ><%= spend.notes %></textarea
                         >

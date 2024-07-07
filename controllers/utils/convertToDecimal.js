@@ -5,7 +5,7 @@ function convertToDecimal(input) {
     // Then, replace the first comma with a period to handle decimal separator
     result = result.replace(',', '.');
     // Convert the string to a floating-point number
-    return parseFloat(result);
+    return parseFloat(result).toFixed(2);
   }
 }
 

@@ -4,7 +4,7 @@ const spendController = require('../../controllers/spendController')
 const connectEnsureLogin =  require('connect-ensure-login');
 
 router.get("/",connectEnsureLogin.ensureLoggedIn({redirectTo:'/dang-nhap'}), spendController.renderPage )
-// router.post("/addProduct",connectEnsureLogin.ensureLoggedIn({redirectTo:'/dang-nhap'}), spendController.createProduct )
+router.post("/addData",connectEnsureLogin.ensureLoggedIn({redirectTo:'/dang-nhap'}), spendController.createData )
 // router.post("/getProducts",connectEnsureLogin.ensureLoggedIn({redirectTo:'/dang-nhap'}), spendController.getProducts )
 // router.post("/update/:id",connectEnsureLogin.ensureLoggedIn({redirectTo:'/dang-nhap'}), spendController.updateProduct )
 // router.post("/delete/:id",connectEnsureLogin.ensureLoggedIn({redirectTo:'/dang-nhap'}), spendController.deleteProduct )
