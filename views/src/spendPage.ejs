@@ -202,10 +202,10 @@
           </tbody>
           <tfoot>
             <tr>
-              <th colspan="2">Tổng</th>
+              <th colspan="5">Tổng</th>
               <th></th>
               <th></th>
-              <th colspan="2"></th>
+              <th></th>
             </tr>
           </tfoot>
         </table>
@@ -326,27 +326,35 @@
 </div>
 <script>
   const columns = [
-    { data: 'no' },
+    { data: 'no', visible: false, orderable: false },
     { data: 'date' },
-    { data: 'product' },
-    { data: 'quantity' },
-    { data: 'price' },
-    { data: 'total' },
-    { data: 'notes' },
-    { data: 'id' },
+    { data: 'product', orderable: false },
+    { data: 'quantity', orderable: false },
+    { data: 'price', orderable: false },
+    { data: 'total', orderable: false },
+    { data: 'notes', orderable: false },
+    { data: 'id', orderable: false },
   ];
 
   initializeDataTable(
     '#spends_table',
-    '/quan-ly-hang-hoa/getspends',
+    '/quan-ly-chi-tieu/getData',
     '#staticBackdrop',
     '#deleteModalToggle',
     columns,
-    false,
+    null,
     '#filterButton',
     '#startDate',
     '#endDate',
     '#clearFilterButton',
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
     true
   );
 </script>

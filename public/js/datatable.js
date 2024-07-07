@@ -38,6 +38,7 @@ function initializeDataTable(
   queryPageFooter,
   dataPageFooter,
   salePageFooter,
+  spendPageFooter,
 ) {
 
   let rowGroupOptions ={};
@@ -97,8 +98,16 @@ function initializeDataTable(
         },
       };
     }
+    if (spendPageFooter) {
+      const columns = [5];
+      footerCallbackOptions = {
+        footerCallback: function () {
+          setupFooterCallback(columns, this.api());
+        },
+      };
+    }
     
-  var isMobile = window.innerWidth < 1600;
+  var isMobile = window.innerWidth < 1300;
   const tableOptions = {
     dom:
       "<'row m-0 p-0 py-2'<'col-sm-12 col-md-6 d-flex align-items-center'B><'col-sm-12 col-md-6 d-flex justify-content-end'f>>" +
