@@ -90,6 +90,19 @@ async function renderPage(req, res) {
 async function createData(req, res) {
   req.body = trimStringFields(req.body);
   try {
+
+    let checkExistedData = await SaleModel.findOne({code: {$regex: new RegExp(req.body.code, "i")}, date: req.body.date})
+    if(checkExistedData){
+      return handleResponse(
+        req,
+        res,
+        400,
+        'fail',
+        'Hợp đồng đã tồn tại',
+        req.headers.referer,
+      );
+    }
+
     const names = ensureArray(req.body.name);
     const quantities = ensureArray(req.body.quantity);
     const prices = ensureArray(req.body.price);
@@ -113,13 +126,14 @@ async function createData(req, res) {
 
     let updateData = {
       $inc: {
-        income: totals.totalIncome.toFixed(2),
-        ...(totals.product > 0 && { product: -totals.product.toFixed(2) }),
+        income: totals.totalIncome,
+        profit: totals.totalIncome,
+        ...(totals.product > 0 && { product: -totals.product }),
         ...(totals.dryRubber > 0 && {
-          dryRubber: -totals.dryRubber.toFixed(2),
+          dryRubber: -totals.dryRubber,
         }),
         ...(totals.mixedQuantity > 0 && {
-          mixedQuantity: -totals.mixedQuantity.toFixed(2),
+          mixedQuantity: -totals.mixedQuantity,
         }),
       },
     };
@@ -197,19 +211,22 @@ async function getDatas(req, res) {
         filter.date.$lte = filterEndDate;
       }
     }
-    // Determine if the sort column is 'date'
-    const isSortingByDate = sortColumn === 'date';
-
-    const sortObject = isSortingByDate
-      ? { [sortColumn]: sortDirection }
-      : { date: -1 };
-
-    const totalRecords = await SaleModel.countDocuments();
-    const filteredRecords = await SaleModel.countDocuments(filter);
-    const sales = await SaleModel.find(filter)
-      .sort(sortObject)
-      .skip(parseInt(start, 10))
-      .limit(parseInt(length, 10));
+    
+     // Update sortObject to include sorting by the "active" column
+     let sortObject = {};
+     if (sortColumn) {
+       sortObject[sortColumn] = sortDirection;
+     } else {
+       // Default sorting if no column is specified
+       sortObject = { date: -1 };
+     }
+ 
+     const totalRecords = await SaleModel.countDocuments();
+     const filteredRecords = await SaleModel.countDocuments(filter);
+     const sales = await SaleModel.find(filter)
+       .sort(sortObject)
+       .skip(parseInt(start, 10))
+       .limit(parseInt(length, 10));
 
     const data = sales.map((sale, index) => {
       // Assuming each sale has a 'products' array
@@ -221,7 +238,7 @@ async function getDatas(req, res) {
         no: parseInt(start, 10) + index + 1,
         date: sale.date.toLocaleDateString(),
         code: sale.code || '',
-        products: parseInt(start, 10) + index + 1,
+        products: sale.slug,
         notes: sale.notes || '',
         total: formatNumberForDisplay(totalPrice) + ' VND',
         status: sale.status,
@@ -295,10 +312,11 @@ async function updateData(req, res) {
 
     let updateData = {
       $inc: {
-        product: -totalProductDiff.toFixed(2),
-        income: totalIncomeDiff.toFixed(2),
-        dryRubber: -totalDryRubberDiff.toFixed(2),
-        mixedQuantity: -totalMixedQuantityDiff.toFixed(2),
+        product: -totalProductDiff,
+        income: totalIncomeDiff,
+        profit: totalIncomeDiff,
+        dryRubber: -totalDryRubberDiff,
+        mixedQuantity: -totalMixedQuantityDiff,
       },
     };
 
@@ -368,11 +386,12 @@ async function deleteData(req, res) {
 
     let updateData = {
       $inc: {
-        income: -totals.totalIncome.toFixed(2),
-        ...(totals.product > 0 && { product: totals.product.toFixed(2) }),
-        ...(totals.dryRubber > 0 && { dryRubber: totals.dryRubber.toFixed(2) }),
+        income: -totals.totalIncome,
+        profit: -totals.totalIncome,
+        ...(totals.product > 0 && { product: totals.product }),
+        ...(totals.dryRubber > 0 && { dryRubber: totals.dryRubber }),
         ...(totals.mixedQuantity > 0 && {
-          mixedQuantity: totals.mixedQuantity.toFixed(2),
+          mixedQuantity: totals.mixedQuantity,
         }),
       },
     };
