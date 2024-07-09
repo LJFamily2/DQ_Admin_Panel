@@ -8,15 +8,17 @@
 
 <%- include('../partials/totalValue.ejs') %>
 
-<!-- <button
+<% if(user.role === true){ %>
+<button
   type="button"
-  class="btn btn-danger mx-2 mx-md-4 my-3"
+  class="btn btn-danger mx-2 mx-md-3 mt-2"
   data-bs-toggle="modal"
   data-bs-target="#deleteAll-admin-user"
   style="width: max-content"
 >
   Xóa tất cả hàng hóa
-</button> -->
+</button>
+<% } %>
 <div class="row m-0 m-md-2 g-3 mb-4">
   <div class="col-12 col-md-9 mt-2">
     <div class="card" style="box-shadow: 0 1px 2px">
@@ -295,7 +297,7 @@
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="deleteUsers">Xóa tất cả tài khoản</h1>
+        <h1 class="modal-title fs-5" id="deleteUsers">Xóa tất cả chi tiêu </h1>
         <button
           type="button"
           class="btn-close"
@@ -304,9 +306,9 @@
         ></button>
       </div>
 
-      <form action="/quan-ly-hang-hoa/deleteAll" method="post">
+      <form action="/quan-ly-chi-tieu/deleteAll" method="post">
         <div class="modal-body">
-          Bạn có muốn xóa <strong>tất cả</strong> thông tin người quản lý ? Hành
+          Bạn có muốn xóa <strong>tất cả</strong> thông tin ? Hành
           động này không thể hoàn tác.
         </div>
         <div class="modal-footer">

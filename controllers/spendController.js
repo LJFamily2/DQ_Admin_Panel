@@ -12,6 +12,7 @@ module.exports = {
   getData,
   updateData,
   deleteData,
+  deleteAll
 };
 
 async function updateProductTotal(amount, isCreating = true) {
@@ -221,6 +222,25 @@ async function deleteData(req,res){
     )
 
   }catch(err){
+    console.log(err);
+    res.status(500).render('partials/500', { layout: false });
+  }
+}
+
+async function deleteAll(req, res) {
+  try {
+    await SpendModel.deleteMany({});
+
+    const productTotal = await ProductTotalModel.findOne({});
+    const currentSpend = productTotal ? productTotal.spend : 0;
+    
+    await ProductTotalModel.updateMany({}, { 
+      $set: { spend: 0 },
+      $inc: { profit: currentSpend }
+    });
+
+    return handleResponse(req, res, 200, "success", "Xóa tất cả thông tin chi tiêu thành công!", req.headers.referer);
+  } catch (err) {
     console.log(err);
     res.status(500).render('partials/500', { layout: false });
   }
