@@ -1,7 +1,7 @@
 <div class="row m-0 m-md-2 g-3">
 
   <div class="col-12 col-md-4">
-    <div class="card" style="border-left: 5px solid rgb(255, 179, 0)">
+    <div class="card" style="border-left: 5px solid  rgb(38, 166, 154)">
       <div
         class="card-body <%= total[0]?.dryRubber?.raw < 0 ? 'text-danger' : total[0]?.dryRubber?.raw > 0 ? 'text-success' : '' %>"
       >
@@ -18,7 +18,7 @@
     </div>
   </div>
   <div class="col-12 col-md-4">
-    <div class="card" style="border-left: 5px solid rgb(38, 166, 154)">
+    <div class="card" style="border-left: 5px solid rgb(255, 179, 0)">
       <div
         class="card-body <%= total[0]?.product?.raw < 0 ? 'text-danger' : total[0]?.product?.raw > 0 ? 'text-success' : '' %>"
       >
@@ -35,7 +35,7 @@
     </div>
   </div>
     <div class="col-12 col-md-4">
-    <div class="card" style="border-left: 5px solid rgb(13, 110, 253)">
+    <div class="card" style="border-left: 5px solid rgb(135, 143, 153)">
       <div
         class="card-body <%= total[0]?.mixedQuantity?.raw < 0 ? 'text-danger' : total[0]?.mixedQuantity?.raw > 0 ? 'text-success' : '' %>"
       >
@@ -52,7 +52,7 @@
     </div>
   </div>
   <div class="col-12 col-md-4">
-    <div class="card" style="border-left: 5px solid rgb(156, 39, 176)">
+    <div class="card" style="border-left: 5px solid rgb(13, 110, 253)">
       <div
         class="card-body <%= total[0]?.income?.raw < 0 ? 'text-danger' : total[0]?.income?.raw > 0 ? 'text-success' : '' %>"
       >
@@ -69,15 +69,15 @@
     </div>
   </div>
   <div class="col-12 col-md-4">
-    <div class="card" style="border-left: 5px solid rgb(156, 39, 176)">
+    <div class="card" style="border-left: 5px solid rgb(255, 38, 38)">
       <div
-        class="card-body <%= total[0]?.spend?.raw < 0 ? 'text-danger' : total[0]?.spend?.raw > 0 ? 'text-success' : '' %>"
+        class="card-body <%= total[0]?.spend?.raw > 0 ? 'text-danger' : '' %>"
       >
         <h5><%= total[0]?.spend?.formatted || 0 %></h5>
         <div class="card-text text-muted" style="font-size: smaller">
           <div class="d-flex justify-content-between align-items-center">
             <div class="w-75">
-              <div>Thu nhập</div>
+              <div>Chi phí</div>
             </div>
             <div>VND</div>
           </div>
@@ -86,7 +86,7 @@
     </div>
   </div>
   <div class="col-12 col-md-4">
-    <div class="card" style="border-left: 5px solid rgb(156, 39, 176)">
+    <div class="card" style="border-left: 5px solid rgb(40, 167, 69)">
       <div
         class="card-body <%= total[0]?.profit?.raw < 0 ? 'text-danger' : total[0]?.profit?.raw > 0 ? 'text-success' : '' %>"
       >
@@ -94,7 +94,7 @@
         <div class="card-text text-muted" style="font-size: smaller">
           <div class="d-flex justify-content-between align-items-center">
             <div class="w-75">
-              <div>Thu nhập</div>
+              <div>Doanh thu</div>
             </div>
             <div>VND</div>
           </div>
