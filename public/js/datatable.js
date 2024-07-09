@@ -172,18 +172,19 @@ function initializeDataTable(
         return {
           ...column,
           render: function (data, type, row) {
+            console.log(row)
             return `
             <div class="d-flex justify-content-between fs-5">
               <i
                   class="ri-edit-box-line"
                   data-bs-toggle="modal"
-                  data-bs-target="${modalUpdateTarget}${row.no}"
+                  data-bs-target="${modalUpdateTarget}${row.id}"
                   style="cursor: pointer;"
               ></i>
               <i
                   class="ri-delete-bin-line"
                   data-bs-toggle="modal"
-                  data-bs-target="${modalDeleteTarget}${row.no}"
+                  data-bs-target="${modalDeleteTarget}${row.id}"
                   style="cursor: pointer;"
               ></i>
             </div>

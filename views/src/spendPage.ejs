@@ -43,7 +43,7 @@
             <!-- Modal for updating -->
             <div
               class="modal fade"
-              id="staticBackdrop<%= index + 1%>"
+              id="staticBackdrop<%= spend._id %>"
               data-bs-backdrop="static"
               data-bs-keyboard="false"
               tabindex="-1"
@@ -68,80 +68,74 @@
                   </div>
 
                   <form
-                    action="/quan-ly-hang-hoa/update/<%= spend._id %>"
+                    action="/quan-ly-chi-tieu/update/<%= spend._id %>"
                     method="post"
                   >
                     <div class="modal-body">
-                      <div class="my-3">
-                        <label for="date<%= index %>" class="form-label fw-bold"
-                          >Ngày</label
-                        >
+                      <div>
+                        <label for="date" class="form-label fw-bold">Ngày </label>
                         <input
                           type="date"
                           class="form-control"
-                          id="date<%= index %>"
+                          id="date"
                           name="date"
-                          placeholder="Nhập tên"
+                          required
+                          autofocus
                           value="<%= spend.date.toISOString().slice(0,10)  %>"
+
                         />
                       </div>
-
+            
                       <div class="my-3">
-                        <label for="product<%= index %>" class="form-label fw-bold"
-                          >Quy khô sử dụng</label
+                        <label for="product" class="form-label fw-bold"
+                          >Hàng hóa</label
                         >
                         <input
                           type="text"
                           class="form-control"
-                          id="product<%= index %>"
+                          id="product"
                           name="product"
-                          placeholder="123,45"
-                          value="<%= spend.products %>"
+                          placeholder="Dầu"
+                          required
+                          value="<%= spend.product %>"
                         />
                       </div>
-
+            
                       <div class="my-3">
-                        <label for="quantity<%= index %>" class="form-label fw-bold"
-                          >Thành phẩm</label
-                        >
+                        <label for="quantity" class="form-label fw-bold">Số lượng</label>
                         <input
                           type="text"
                           class="form-control"
-                          id="quantity<%= index %>"
+                          id="quantity"
                           name="quantity"
                           placeholder="1.500"
                           oninput="handleQuantityInput(this)"
-                          value="<%= spend.quantity.toLocaleString('vi-VN') %>"
+                          value="<%= spend.quantity.toLocaleString('vi-VN') %>" 
                         />
                       </div>
-
+            
                       <div class="my-3">
-                        <label for="price<%= index %>" class="form-label fw-bold"
-                          >Thành phẩm</label
-                        >
+                        <label for="price" class="form-label fw-bold">Đơn giá</label>
                         <input
                           type="text"
                           class="form-control"
-                          id="price<%= index %>"
+                          id="price"
                           name="price"
                           placeholder="20.000"
                           oninput="handleQuantityInput(this)"
-                          value="<%= spend.price.toLocaleString('vi-VN') %>"
+                          value="<%= spend.price.toLocaleString('vi-VN') %>" 
                         />
                       </div>
-
+            
                       <div class="my-3">
-                        <label for="notes<%= index %>" class="form-label fw-bold"
-                          >Ghi chú</label
-                        >
+                        <label for="notes" class="form-label fw-bold">Ghi chú</label>
                         <textarea
                           type="text"
                           class="form-control"
-                          rows="3"
-                          id="notes<%= index %>"
+                          rows="2"
+                          id="notes"
                           name="notes"
-                        ><%= spend.notes %></textarea
-                        >
+                        ><%= spend.notes %></textarea>
                       </div>
                     </div>
                     <div class="modal-footer">
@@ -159,7 +153,7 @@
             <!-- Delete confirming modal  -->
             <div
               class="modal fade"
-              id="deleteModalToggle<%= index + 1 %>"
+              id="deleteModalToggle<%= spend._id %>"
               aria-hidden="true"
               aria-labelledby="exampleModalToggleLabel"
               tabindex="-1"
@@ -168,8 +162,7 @@
                 <div class="modal-content">
                   <div class="modal-header">
                     <h1 class="modal-title fs-5" id="exampleModalToggleLabel">
-                      Xóa thông tin ngày <%=
-                      spend.date.toLocaleDateString("vi-VN") %>
+                      Xóa thông tin ngày <%= spend.date.toLocaleDateString("vi-VN") %>
                     </h1>
                     <button
                       type="button"
@@ -179,7 +172,7 @@
                     ></button>
                   </div>
                   <form
-                    action="/quan-ly-hang-hoa/delete/<%= spend._id %>"
+                    action="/quan-ly-chi-tieu/delete/<%= spend._id %>"
                     method="post"
                   >
                     <div class="modal-body">
@@ -204,8 +197,7 @@
             <tr>
               <th colspan="5">Tổng</th>
               <th></th>
-              <th></th>
-              <th></th>
+              <th colspan="2"></th>
             </tr>
           </tfoot>
         </table>

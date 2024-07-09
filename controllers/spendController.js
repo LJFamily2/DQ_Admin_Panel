@@ -10,7 +10,19 @@ module.exports = {
   renderPage,
   createData,
   getData,
+  updateData,
+  deleteData,
 };
+
+async function updateProductTotal(amount, isCreating = true) {
+  const updateData = {
+    $inc: {
+      spend: isCreating ? amount : -amount,
+      profit: isCreating ? -amount : amount,
+    },
+  };
+  await ProductTotalModel.findOneAndUpdate({}, updateData, { new: true, upsert: true });
+}
 
 async function renderPage(req, res) {
   try {
@@ -60,22 +72,7 @@ async function createData(req, res) {
       price,
     });
 
-    let totalPrice = price * quantity;
-
-    // Update product total document
-    await ProductTotalModel.findOneAndUpdate(
-      {},
-      {
-        $inc: {
-          spend: totalPrice,
-          profit: totalPrice,
-        },
-      },
-      {
-        new: true,
-        upsert: true,
-      },
-    );
+    await updateProductTotal(quantity * price);
 
     // Success response
     return handleResponse(
@@ -165,6 +162,65 @@ async function getData(req, res) {
       data,
     });
   } catch (err) {
+    console.log(err);
+    res.status(500).render('partials/500', { layout: false });
+  }
+}
+
+async function updateData(req, res) {
+  req.body = trimStringFields(req.body);
+  try {
+    const id = req.params.id;
+    // Combine finding and updating into a single operation if possible
+    const product = await SpendModel.findById(id);
+    if (!product) {
+      return handleResponse(req, res, 404, 'fail', 'Không tìm thấy sản phẩm !', req.headers.referer);
+    }
+
+    const updateFields = {
+      ...req.body,
+      quantity: convertToDecimal(req.body.quantity) || 0,
+      price: convertToDecimal(req.body.price) || 0,
+    };
+
+    const newSpend = await SpendModel.findByIdAndUpdate(id, updateFields, { new: true });
+    const oldTotalPrice = product.price * product.quantity;
+    const newTotalPrice = newSpend.price * newSpend.quantity;
+    const diff = newTotalPrice - oldTotalPrice;
+
+    if (diff !== 0) {
+      const updateData = {
+        $inc: {
+          spend: diff,
+          profit: -diff, 
+        },
+      };
+      await ProductTotalModel.findOneAndUpdate({}, updateData, { new: true });
+    }
+
+    return handleResponse(req, res, 200, "success", "Cập nhật thông tin chi tiêu thành công!", req.headers.referer);
+  } catch (err) {
+    console.log(err);
+    res.status(500).render('partials/500', { layout: false });
+  }
+}
+
+async function deleteData(req,res){
+  try{
+    const id = req.params.id;
+    let product = await SpendModel.findByIdAndDelete(id);
+    if(!product){
+      return handleResponse(req, res, 404, 'fail', 'Không tìm thấy sản phẩm !', req.headers.referer);
+    }
+
+    await updateProductTotal(product.price * product.quantity, false);
+
+
+    return handleResponse(
+      req,res, 200, "success", "Xóa thông tin chi tiêu thành công!", req.headers.referer
+    )
+
+  }catch(err){
     console.log(err);
     res.status(500).render('partials/500', { layout: false });
   }
