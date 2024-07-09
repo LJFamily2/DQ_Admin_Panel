@@ -234,7 +234,7 @@ async function deleteAll(req, res) {
     const productTotal = await ProductTotalModel.findOne({});
     const currentSpend = productTotal ? productTotal.spend : 0;
     
-    await ProductTotalModel.updateMany({}, { 
+    await ProductTotalModel.findOneAndUpdate({}, { 
       $set: { spend: 0 },
       $inc: { profit: currentSpend }
     });

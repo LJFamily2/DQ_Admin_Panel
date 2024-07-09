@@ -22,7 +22,7 @@
     type="button"
     class="btn btn-danger mx-2 mx-md-3 mt-2"
     data-bs-toggle="modal"
-    data-bs-target="#deleteAll-admin-user"
+    data-bs-target="#deleteAll"
     style="width: max-content"
   >
     Xóa tất cả thông tin
@@ -290,6 +290,41 @@
           <!-- Buttons -->
           <button type="submit" class="btn btn-primary">Tạo</button>
           <button type="reset" class="btn text-dark">Làm mới</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for deleting all -->
+<div
+  class="modal fade"
+  id="deleteAll"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="deleteUsers"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="deleteUsers">Xóa tất cả hợp đồng </h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+
+      <form action="/quan-ly-hop-dong/deleteAll" method="post">
+        <div class="modal-body">
+          Bạn có muốn xóa <strong class="fs-3">tất cả</strong> thông tin ? Hành
+          động này không thể hoàn tác.
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-danger">Xác nhận</button>
         </div>
       </form>
     </div>

@@ -12,6 +12,7 @@ module.exports = {
   getDatas,
   updateData,
   deleteData,
+  deleteAll,
 
   renderDetailPage,
 };
@@ -83,16 +84,18 @@ async function renderPage(req, res) {
       title: 'Quản lý hợp đồng bán mủ',
     });
   } catch {
-    res.status(500).render('partials/500', {layout: false});
+    res.status(500).render('partials/500', { layout: false });
   }
 }
 
 async function createData(req, res) {
   req.body = trimStringFields(req.body);
   try {
-
-    let checkExistedData = await SaleModel.findOne({code: {$regex: new RegExp(req.body.code, "i")}, date: req.body.date})
-    if(checkExistedData){
+    let checkExistedData = await SaleModel.findOne({
+      code: { $regex: new RegExp(req.body.code, 'i') },
+      date: req.body.date,
+    });
+    if (checkExistedData) {
       return handleResponse(
         req,
         res,
@@ -165,7 +168,7 @@ async function createData(req, res) {
       req.headers.referer,
     );
   } catch {
-    res.status(500).render('partials/500', {layout: false});
+    res.status(500).render('partials/500', { layout: false });
   }
 }
 
@@ -211,22 +214,22 @@ async function getDatas(req, res) {
         filter.date.$lte = filterEndDate;
       }
     }
-    
-     // Update sortObject to include sorting by the "active" column
-     let sortObject = {};
-     if (sortColumn) {
-       sortObject[sortColumn] = sortDirection;
-     } else {
-       // Default sorting if no column is specified
-       sortObject = { date: -1 };
-     }
- 
-     const totalRecords = await SaleModel.countDocuments();
-     const filteredRecords = await SaleModel.countDocuments(filter);
-     const sales = await SaleModel.find(filter)
-       .sort(sortObject)
-       .skip(parseInt(start, 10))
-       .limit(parseInt(length, 10));
+
+    // Update sortObject to include sorting by the "active" column
+    let sortObject = {};
+    if (sortColumn) {
+      sortObject[sortColumn] = sortDirection;
+    } else {
+      // Default sorting if no column is specified
+      sortObject = { date: -1 };
+    }
+
+    const totalRecords = await SaleModel.countDocuments();
+    const filteredRecords = await SaleModel.countDocuments(filter);
+    const sales = await SaleModel.find(filter)
+      .sort(sortObject)
+      .skip(parseInt(start, 10))
+      .limit(parseInt(length, 10));
 
     const data = sales.map((sale, index) => {
       // Assuming each sale has a 'products' array
@@ -253,7 +256,7 @@ async function getDatas(req, res) {
       data,
     });
   } catch {
-    res.status(500).render('partials/500', {layout: false});
+    res.status(500).render('partials/500', { layout: false });
   }
 }
 
@@ -342,7 +345,7 @@ async function updateData(req, res) {
       req.headers.referer,
     );
   } catch {
-    res.status(500).render('partials/500', {layout: false});
+    res.status(500).render('partials/500', { layout: false });
   }
 }
 
@@ -421,7 +424,7 @@ async function deleteData(req, res) {
       req.headers.referer,
     );
   } catch {
-    res.status(500).render('partials/500', {layout: false});
+    res.status(500).render('partials/500', { layout: false });
   }
 }
 async function renderDetailPage(req, res) {
@@ -449,6 +452,70 @@ async function renderDetailPage(req, res) {
       title: 'Chi tiết hợp đồng bán mủ',
     });
   } catch {
-    res.status(500).render('partials/500', {layout: false});
+    res.status(500).render('partials/500', { layout: false });
+  }
+}
+
+async function deleteAll(req, res) {
+  try {
+    const sales = await SaleModel.find({});
+
+    let dryrubberQuantity = 0;
+    let productQuantity = 0;
+    let mixedQuantity = 0;
+
+    sales.forEach(sale => {
+      sale.products.forEach(product => {
+        switch (product.name) {
+          case 'dryRubber':
+            dryrubberQuantity += product.quantity;
+            break;
+          case 'product':
+            productQuantity += product.quantity;
+            break;
+          case 'mixedQuantity':
+            mixedQuantity += product.quantity;
+            break;
+          default:
+            break;
+        }
+      });
+    });
+
+    const productTotal = await ProductTotalModel.findOne({});
+    let currentIncome = productTotal ? productTotal.income : 0; 
+
+    await ProductTotalModel.findOneAndUpdate(
+      {},
+      {
+        $set: {
+          income: 0,
+        },
+        $inc: {
+          product: productQuantity,
+          dryrubber: dryrubberQuantity,
+          mixedQuantity: mixedQuantity,
+          profit: -currentIncome,
+        },
+      },
+      {
+        new: true,
+      },
+    );
+
+    // Delete all sales
+    await SaleModel.deleteMany({});
+
+    return handleResponse(
+      req,
+      res,
+      200,
+      'success',
+      'Xóa tất cả hợp đồng thành công!',
+      req.headers.referer,
+    );
+  } catch (err) {
+    console.log(err);
+    res.status(500).render('partials/500', { layout: false });
   }
 }
