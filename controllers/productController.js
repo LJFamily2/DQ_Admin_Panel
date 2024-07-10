@@ -82,8 +82,8 @@ async function createProduct(req, res) {
       ? convertToDecimal(req.body.dryRubberUsed)
       : 0;
 
-    let quantity = quantityStr.toFixed(2);
-    let dryRubberUsed = dryRubberUsedStr.toFixed(2);
+    let quantity = quantityStr;
+    let dryRubberUsed = dryRubberUsedStr;
 
     const newProduct = await ProductModel.create({
       ...req.body,

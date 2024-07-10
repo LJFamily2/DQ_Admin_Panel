@@ -8,4 +8,5 @@ router.post('/createData', connectEnsureLogin.ensureLoggedIn({redirectTo:'/dang-
 router.post('/getDatas', connectEnsureLogin.ensureLoggedIn({redirectTo:'/dang-nhap'}), rawMaterialController.getDatas )
 router.post('/update/:id', connectEnsureLogin.ensureLoggedIn({redirectTo:'/dang-nhap'}), rawMaterialController.updateData )
 router.post('/delete/:id', connectEnsureLogin.ensureLoggedIn({redirectTo:'/dang-nhap'}), rawMaterialController.deleteData )
+router.post('/deleteAll', connectEnsureLogin.ensureLoggedIn({redirectTo:'/dang-nhap'}), rawMaterialController.deleteAll)
 module.exports = router;

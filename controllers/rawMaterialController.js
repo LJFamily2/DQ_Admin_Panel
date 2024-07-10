@@ -12,6 +12,7 @@ module.exports = {
   getDatas,
   updateData,
   deleteData,
+  deleteAll,
 };
 
 async function renderPage(req, res) {
@@ -34,11 +35,11 @@ async function renderPage(req, res) {
 }
 
 function calculateTotalDryRubber(product) {
-  return ((product.dryQuantity * product.dryPercentage) / 100).toFixed(2);
+  return ((product.dryQuantity * product.dryPercentage) / 100);
 }
 async function updateProductTotal(data, operation) {
   const totalDryRubber = calculateTotalDryRubber(data.products);
-  const mixedQuantityRounded = data.products.mixedQuantity.toFixed(2);
+  const mixedQuantityRounded = data.products.mixedQuantity;
   const updateData = {
     $inc: {
       dryRubber: operation === 'add' ? totalDryRubber : -totalDryRubber,
@@ -294,11 +295,11 @@ async function updateData(req, res) {
 
     // Initialize update object with mixedQuantity difference
     const updateData = {
-      $inc: { mixedQuantity: mixedQuantityDiff.toFixed(2) },
+      $inc: { mixedQuantity: mixedQuantityDiff },
     };
 
     if (Math.abs(dryRubberDiff) >= 0.01) {
-      updateData.$inc.dryRubber = dryRubberDiff.toFixed(2);
+      updateData.$inc.dryRubber = dryRubberDiff;
     }
 
     // Perform the update
@@ -365,5 +366,33 @@ async function deleteData(req, res) {
     );
   } catch {
     res.status(500).render('partials/500', {layout: false});
+  }
+}
+
+async function deleteAll(req, res) {
+  try {
+    const [{ totalDryQuantity = 0, totalMixedQuantity = 0 } = {}] = await RawMaterialModel.aggregate([
+      {
+        $group: {
+          _id: null,
+          totalDryQuantity: { $sum: "$products.dryQuantity" },
+          totalMixedQuantity: { $sum: "$products.mixedQuantity" }
+        }
+      }
+    ]);
+
+    await ProductTotalModel.findOneAndUpdate({}, {
+      $inc: {
+        dryRubber: -totalDryQuantity,
+        mixedQuantity: -totalMixedQuantity
+      }
+    }, { new: true });
+
+    await RawMaterialModel.deleteMany({});
+
+    return handleResponse(req, res, 200, 'success', 'Xóa tất cả dữ liệu thành công !', req.headers.referer);
+  } catch (err) {
+    console.log(err);
+    res.status(500).render('partials/500', { layout: false });
   }
 }
