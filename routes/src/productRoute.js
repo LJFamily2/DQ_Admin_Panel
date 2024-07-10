@@ -8,6 +8,6 @@ router.post("/addProduct",connectEnsureLogin.ensureLoggedIn({redirectTo:'/dang-n
 router.post("/getProducts",connectEnsureLogin.ensureLoggedIn({redirectTo:'/dang-nhap'}), productController.getProducts )
 router.post("/update/:id",connectEnsureLogin.ensureLoggedIn({redirectTo:'/dang-nhap'}), productController.updateProduct )
 router.post("/delete/:id",connectEnsureLogin.ensureLoggedIn({redirectTo:'/dang-nhap'}), productController.deleteProduct )
-router.post("/deleteAll",connectEnsureLogin.ensureLoggedIn({redirectTo:'/dang-nhap'}), productController.deleteAllProducts )
+router.post("/deleteAll",connectEnsureLogin.ensureLoggedIn({redirectTo:'/dang-nhap'}), productController.deleteAll )
 
 module.exports = router;

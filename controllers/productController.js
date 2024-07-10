@@ -12,6 +12,7 @@ module.exports = {
   deleteAllProducts,
   getProducts,
   renderPage,
+  deleteAll
 };
 
 async function renderPage(req, res) {
@@ -379,6 +380,41 @@ async function getProducts(req, res) {
       recordsFiltered: filteredRecords,
       data,
     });
+  } catch {
+    res.status(500).render('partials/500', {layout: false});
+  }
+}
+
+async function deleteAll(req,res){
+  try {
+    const [{totalDryQuantity = 0, totalProduct = 0} ={}] = await ProductModel.aggregate([
+      {
+        $group:{
+          _id:null,
+          totalDryQuantity:{$sum:"$dryRubberUsed"},
+          totalProduct:{$sum:"$quantity"}
+        }
+      }
+    ])
+
+    await ProductTotalModel.findOneAndUpdate({},{
+      $inc: {
+        dryRubber: totalDryQuantity,
+        product: -totalProduct
+      }
+    },{
+      new:true,
+    });
+
+    await ProductModel.deleteMany({});
+    return handleResponse(
+      req,
+      res,
+      200,
+      'success',
+      'Xóa tất cả hàng hóa thành công !',
+      '/quan-ly-hang-hoa',
+    );
   } catch {
     res.status(500).render('partials/500', {layout: false});
   }
