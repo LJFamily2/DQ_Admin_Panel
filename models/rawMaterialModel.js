@@ -6,6 +6,7 @@ const rawMaterialSchema = new mongoose.Schema({
     products: {
         dryQuantity: Number,
         dryPercentage: Number,
+        keQuantity: Number,
         mixedQuantity: Number,
     },
 });

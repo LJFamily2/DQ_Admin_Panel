@@ -38,25 +38,25 @@ function calculateTotalDryRubber(product) {
   return ((product.dryQuantity * product.dryPercentage) / 100);
 }
 async function updateProductTotal(data, operation) {
-  const totalDryRubber = calculateTotalDryRubber(data.products);
-  const mixedQuantityRounded = data.products.mixedQuantity;
+  const multiplier = operation === 'add' ? 1 : -1;
+  const totalDryRubber = calculateTotalDryRubber(data.products) * multiplier;
+  const mixedQuantityRounded = data.products.mixedQuantity * multiplier;
+  const keQuantity = ((data.products.keQuantity * data.products.dryPercentage) / 100) * multiplier;
+  
   const updateData = {
     $inc: {
-      dryRubber: operation === 'add' ? totalDryRubber : -totalDryRubber,
-      mixedQuantity:
-        operation === 'add' ? mixedQuantityRounded : -mixedQuantityRounded,
+      dryRubber: totalDryRubber,
+      mixedQuantity: mixedQuantityRounded + keQuantity,
     },
   };
 
-  const total = await ProductTotalModel.findOneAndUpdate({}, updateData, {
-    new: true,
-    upsert: true,
-  });
+  const total = await ProductTotalModel.findOneAndUpdate({}, updateData, { new: true, upsert: true });
   return total;
 }
 
 async function createData(req, res) {
   req.body = trimStringFields(req.body);
+  console.log(req.body)
   try {
     let date = await RawMaterialModel.findOne({ date: req.body.date });
     if (date) {
@@ -73,6 +73,8 @@ async function createData(req, res) {
     products = {
       dryQuantity: convertToDecimal(req.body.dryQuantity) || 0,
       dryPercentage: convertToDecimal(req.body.dryPercentage) || 0,
+      keQuantity: convertToDecimal(req.body.keQuantity) || 0,
+      kePercentage: convertToDecimal(req.body.dryPercentage) || 0,
       mixedQuantity: convertToDecimal(req.body.mixedQuantity) || 0,
     };
     const newData = await RawMaterialModel.create({
@@ -223,6 +225,11 @@ async function getDatas(req, res) {
           (item.products.dryQuantity * item.products.dryPercentage) / 100,
         ),
         mixedQuantity: formatNumberForDisplay(item.products.mixedQuantity),
+        keQuantity: formatNumberForDisplay(item.products.keQuantity),
+        kePercentage: formatNumberForDisplay(item.products.dryPercentage),
+        keTotal: formatNumberForDisplay(
+          (item.products.keQuantity * item.products.dryPercentage) / 100,
+        ),
         notes: item.notes || '',
         id: item._id,
       }));
@@ -245,6 +252,8 @@ async function updateData(req, res) {
     const products = {
       dryQuantity: convertToDecimal(req.body.dryQuantity) || 0,
       dryPercentage: convertToDecimal(req.body.dryPercentage || 0),
+      keQuantity: convertToDecimal(req.body.keQuantity) || 0,
+      kePercentage: convertToDecimal(req.body.dryPercentage || 0),
       mixedQuantity: convertToDecimal(req.body.mixedQuantity || 0),
     };
 
@@ -279,11 +288,13 @@ async function updateData(req, res) {
     const {
       dryQuantity: newDryQuantity,
       dryPercentage: newDryPercentage,
+      keQuantity: newKeQuantity,
       mixedQuantity: newMixedQuantity,
     } = newData.products;
     const {
       dryQuantity: oldDryQuantity = 0,
       dryPercentage: oldDryPercentage = 0,
+      keQuantity: oldKeQuantity = 0,
       mixedQuantity: oldMixedQuantity = 0,
     } = oldData.products || {};
 
@@ -292,15 +303,19 @@ async function updateData(req, res) {
     const dryRubberDiff =
       (newDryQuantity * newDryPercentage - oldDryQuantity * oldDryPercentage) /
       100;
+    const keRubberDiff =
+      (newKeQuantity * newDryPercentage - oldKeQuantity * oldDryPercentage) /
+      100;
 
     // Initialize update object with mixedQuantity difference
     const updateData = {
-      $inc: { mixedQuantity: mixedQuantityDiff },
+      $inc: { mixedQuantity: mixedQuantityDiff + keRubberDiff},
     };
 
     if (Math.abs(dryRubberDiff) >= 0.01) {
       updateData.$inc.dryRubber = dryRubberDiff;
     }
+
 
     // Perform the update
     const total = await ProductTotalModel.findOneAndUpdate({}, updateData, {
@@ -371,20 +386,37 @@ async function deleteData(req, res) {
 
 async function deleteAll(req, res) {
   try {
-    const [{ totalDryQuantity = 0, totalMixedQuantity = 0 } = {}] = await RawMaterialModel.aggregate([
+    const [{ totalDryQuantity = 0, totalMixedQuantity = 0, totalKeQuantity = 0 } = {}] = await RawMaterialModel.aggregate([
       {
         $group: {
           _id: null,
-          totalDryQuantity: { $sum: "$products.dryQuantity" },
-          totalMixedQuantity: { $sum: "$products.mixedQuantity" }
+          totalDryQuantity: {
+            $sum: {
+              $divide: [
+                { $multiply: ["$products.dryQuantity", "$products.dryPercentage"] },
+                100
+              ]
+            }
+          },
+          totalKeQuantity: {
+            $sum: {
+              $divide: [
+                { $multiply: ["$products.keQuantity", "$products.dryPercentage"] },
+                100
+              ]
+            }
+          },
+          totalMixedQuantity: { $sum: "$products.mixedQuantity" },
         }
       }
     ]);
 
+    console.log(totalDryQuantity,totalMixedQuantity,totalKeQuantity  )
+
     await ProductTotalModel.findOneAndUpdate({}, {
       $inc: {
         dryRubber: -totalDryQuantity,
-        mixedQuantity: -totalMixedQuantity
+        mixedQuantity: -(totalMixedQuantity + totalKeQuantity)
       }
     }, { new: true });
 

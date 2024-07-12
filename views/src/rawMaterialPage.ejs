@@ -20,19 +20,17 @@
     }
   </style>
 </head>
-<%- include('../partials/totalValue.ejs') %>
-
-<% if(user.role === true){ %>
-  <button
-    type="button"
-    class="btn btn-danger mx-2 mx-md-3 mt-2"
-    data-bs-toggle="modal"
-    data-bs-target="#deleteAll"
-    style="width: max-content"
-  >
-    Xóa tất cả thông tin
-  </button>
-  <% } %>
+<%- include('../partials/totalValue.ejs') %> <% if(user.role === true){ %>
+<button
+  type="button"
+  class="btn btn-danger mx-2 mx-md-3 mt-2"
+  data-bs-toggle="modal"
+  data-bs-target="#deleteAll"
+  style="width: max-content"
+>
+  Xóa tất cả thông tin
+</button>
+<% } %>
 <div class="row m-0 m-md-2 g-3">
   <div class="col-12 col-md-9 mt-2">
     <div class="card" style="box-shadow: 0 1px 2px">
@@ -47,6 +45,7 @@
               <th rowspan="2">Ngày</th>
               <th colspan="3">Mủ quy khô</th>
               <th>Mủ tạp</th>
+              <th colspan="3">Mủ ké</th>
               <th rowspan="2">Ghi chú</th>
               <th rowspan="2">Chỉnh sửa</th>
             </tr>
@@ -55,6 +54,9 @@
               <th>Hàm lượng</th>
               <th>Tổng</th>
               <th>SL</th>
+              <th>SL</th>
+              <th>Hàm lượng</th>
+              <th>Tổng</th>
             </tr>
           </thead>
 
@@ -177,6 +179,25 @@
                           </div>
                           <hr />
                         </div>
+                        <div class="productList">
+                          <div class="row my-3">
+                            <label class="form-label fw-bold">Mủ Ké</label>
+                            <input type="text" class="form-control" hidden />
+                            <div class="col ">
+                              <label for="keQuantity<%= index + 1 %>" class="form-label">Số lượng</label>
+                              <input
+                                type="text"
+                                class="form-control"
+                                id="keQuantity<%= index + 1 %>"
+                                name="keQuantity"
+                                placeholder="1234,34"
+                                oninput="handleQuantityInput(this)"
+                                value="<%= data.products.keQuantity.toLocaleString('vi-VN')  %>"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <hr />
                       </div>
 
                       <div class="my-3">
@@ -259,6 +280,9 @@
             <th></th>
             <th></th>
             <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
             <th colspan="2"></th>
           </tfoot>
         </table>
@@ -291,13 +315,6 @@
             <div class="productList">
               <div class="row my-3">
                 <label class="form-label fw-bold">Mủ Quy Khô</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  name="dryRubber"
-                  value="Mủ quy khô"
-                  hidden
-                />
                 <div class="col col-md-6">
                   <label for="dryQuantity" class="form-label">Số lượng</label>
                   <input
@@ -330,13 +347,6 @@
             <div class="productList">
               <div class="row my-3">
                 <label class="form-label fw-bold">Mủ tạp</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  name="mixedRubber"
-                  value="Mủ tạp"
-                  hidden
-                />
                 <div class="col-12">
                   <label for="mixedQuantity" class="form-label">Số lượng</label>
                   <input
@@ -350,8 +360,26 @@
                   />
                 </div>
               </div>
-              <hr />
             </div>
+            <hr />
+
+            <div class="productList">
+              <div class="row my-3">
+                <label class="form-label fw-bold">Mủ Ké</label>
+                <div class="col">
+                  <label for="keQuantity" class="form-label">Số lượng</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="keQuantity"
+                    name="keQuantity"
+                    placeholder="1234,34"
+                    oninput="handleQuantityInput(this)"
+                  />
+                </div>
+              </div>
+            </div>
+            <hr />
           </div>
 
           <div class="my-3">
@@ -418,6 +446,9 @@
     { data: 'dryPercentage', orderable: false, width: '5%' },
     { data: 'dryTotal', orderable: false, width: '5%' },
     { data: 'mixedQuantity', orderable: false, width: '5%' },
+    { data: 'keQuantity', orderable: false, width: '5%' },
+    { data: 'kePercentage', orderable: false, width: '5%' },
+    { data: 'keTotal', orderable: false, width: '5%' },
     { data: 'notes', orderable: false, width: '5%' },
     { data: 'id', orderable: false, width: '5%' },
   ];
