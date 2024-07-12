@@ -53,7 +53,6 @@ if (process.env.NODE_ENV !== "production") {
 
 // SetUp parse
 app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
 
 // Page Template Engine
 app.set("view engine", "ejs");
