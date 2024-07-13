@@ -188,6 +188,7 @@ async function getDataTotal(req, res) {
 
     const data = plantations.map((plantation, index) => {
       let dryQuantityTotal = 0;
+      let keQuantityTotal = 0;
       let mixedQuantityTotal = 0;
       let notes = [];
 
@@ -198,15 +199,21 @@ async function getDataTotal(req, res) {
           (plantation.products.dryQuantity *
             plantation.products.dryPercentage) /
           100;
+          keQuantityTotal +=
+          (plantation.products.keQuantity *
+            plantation.products.dryPercentage) /
+          100;
         mixedQuantityTotal += plantation.products.mixedQuantity;
         if (plantation.notes) notes.push(plantation.notes);
       }
 
       const dryPriceValue = convertToDecimal(dryPrice) || 0;
       const mixedPriceValue = convertToDecimal(mixedPrice) || 0;
-      const dryTotalValue = dryQuantityTotal * dryPriceValue;
-      const mixedTotalValue = mixedQuantityTotal * mixedPriceValue;
-      const totalMoneyValue = dryTotalValue + mixedTotalValue;
+      const dryTotalValue = dryQuantityTotal * dryPriceValue || "";
+      const kePriceValue = convertToDecimal(dryPrice) - 4000 || '';
+      const keTotalValue = keQuantityTotal * kePriceValue || "";
+      const mixedTotalValue = mixedQuantityTotal * mixedPriceValue || "";
+      const totalMoneyValue = dryTotalValue + mixedTotalValue + keTotalValue;
 
       return {
         no: parseInt(start, 10) + index + 1,
@@ -217,6 +224,9 @@ async function getDataTotal(req, res) {
         mixedQuantity: mixedQuantityTotal.toLocaleString('vi-VN'),
         mixedPrice: mixedPrice,
         mixedTotal: mixedTotalValue.toLocaleString('vi-VN'),
+        keQuantity: keQuantityTotal.toLocaleString('vi-VN'),
+        kePrice: kePriceValue.toLocaleString('vi-VN'),
+        keTotal: keTotalValue.toLocaleString('vi-VN'),
         notes: notes.join(', '),
         totalMoney: totalMoneyValue.toLocaleString('vi-VN'),
       };
@@ -228,7 +238,8 @@ async function getDataTotal(req, res) {
       recordsFiltered: plantations.length,
       data,
     });
-  } catch {
+  } catch (err) {
+    console.log(err)
     res.status(500).render('partials/500', {layout: false});
   }
 }

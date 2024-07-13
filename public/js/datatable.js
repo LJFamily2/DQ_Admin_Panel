@@ -65,7 +65,7 @@ function initializeDataTable(
   };
 
   if (queryPageFooter) {
-      const columns = [2, 4, 5, 7, 9];
+      const columns = [2, 4, 5, 7, 8, 10,12];
       footerCallbackOptions = {
         footerCallback: function () {
           setupFooterCallback(columns, this.api());
