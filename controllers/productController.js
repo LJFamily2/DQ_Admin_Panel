@@ -15,6 +15,28 @@ module.exports = {
   deleteAll
 };
 
+
+async function updateTotal(dryRubberAdjustment, productAdjustment) {
+  let updateData = {};
+  if (dryRubberAdjustment !== 0) {
+    updateData.$inc = {
+      ...updateData.$inc,
+      dryRubber: dryRubberAdjustment,
+    };
+  }
+  if (productAdjustment !== 0) {
+    updateData.$inc = {
+      ...updateData.$inc,
+      product: productAdjustment,
+    };
+  }
+
+  // Update the totals in the database
+  return await ProductTotalModel.findOneAndUpdate({}, updateData, {
+    new: true,
+  });
+}
+
 async function renderPage(req, res) {
   try {
     let totalData = await ProductTotalModel.find();
@@ -98,7 +120,7 @@ async function createProduct(req, res) {
         404,
         'fail',
         'Thêm hàng hóa thất bại',
-        '/quan-ly-hang-hoa',
+        req.headers.referer,
       );
     }
 
@@ -118,7 +140,7 @@ async function createProduct(req, res) {
         404,
         'fail',
         'Cập nhật dữ liệu tổng thất bại',
-        '/quan-ly-hang-hoa',
+        req.headers.referer,
       );
     }
 
@@ -128,7 +150,7 @@ async function createProduct(req, res) {
       201,
       'success',
       'Thêm hàng hóa thành công',
-      '/quan-ly-hang-hoa',
+      req.headers.referer,
     );
   } catch (err) {
     console.log(err);
@@ -139,74 +161,35 @@ async function createProduct(req, res) {
 async function updateProduct(req, res) {
   try {
     const { id } = req.params;
-    // Convert input values to decimals and trim whitespace
-    const dryRubberUsed = convertToDecimal(req.body.dryRubberUsed).trim();
-    const quantity = convertToDecimal(req.body.quantity).trim();
+    // Convert input values to decimals
+    const dryRubberUsedInput = convertToDecimal(req.body.dryRubberUsed) ;
+    const quantityInput = convertToDecimal(req.body.quantity) ;
 
     // Prepare the fields to be updated
     const updateFields = {
       date: req.body.date,
-      dryRubberUsed: dryRubberUsed,
-      quantity: quantity,
+      dryRubberUsed: dryRubberUsedInput,
+      quantity: quantityInput,
       notes: req.body.notes.trim(),
     };
 
     // Check if the product exists before attempting to update
     const oldData = await ProductModel.findById(id);
     if (!oldData) {
-      return handleResponse(
-        req,
-        res,
-        404,
-        'fail',
-        'Product not found',
-        '/quan-ly-hang-hoa',
-      );
+      return res.status(404).send('Product not found');
     }
 
-    // Update the product with new values
-    const updatedProduct = await ProductModel.findByIdAndUpdate(
-      id,
-      updateFields,
-      { new: true },
-    );
-    if (!updatedProduct) {
-      return handleResponse(
-        req,
-        res,
-        404,
-        'fail',
-        'Cập nhật hàng hóa thất bại',
-        '/quan-ly-hang-hoa',
-      );
-    }
+    await ProductModel.findByIdAndUpdate(id, updateFields, { new: true });
 
-    // Utility function to update totals in the database
-    async function updateTotal(dryRubberAdjustment, productAdjustment) {
-      let updateData = {};
-      if (dryRubberAdjustment !== 0) {
-        updateData.$inc = {
-          ...updateData.$inc,
-          dryRubber: dryRubberAdjustment,
-        };
-      }
-      if (productAdjustment !== 0) {
-        updateData.$inc = {
-          ...updateData.$inc,
-          product: productAdjustment,
-        };
-      }
+    const dryRubberUsedDiff = dryRubberUsedInput - oldData.dryRubberUsed;
+    const quantityDiff = quantityInput - oldData.quantity;
 
-      // Update the totals in the database
-      return await ProductTotalModel.findOneAndUpdate({}, updateData, {
-        new: true,
-        upsert: true,
-      });
-    }
-
+    console.log(dryRubberUsedDiff)
+    console.log(quantityDiff)
+    
     // Update totals if there are changes in dryRubberUsed or quantity
-    if (dryRubberUsed > 0 || quantity > 0) {
-      const total = await updateTotal(-dryRubberUsed, quantity);
+    if (dryRubberUsedDiff !== 0 || quantityDiff !== 0) {
+      const total = await updateTotal(-dryRubberUsedDiff, quantityDiff);
       if (!total) {
         return handleResponse(
           req,
@@ -214,25 +197,27 @@ async function updateProduct(req, res) {
           404,
           'fail',
           'Cập nhật dữ liệu tổng thất bại',
-          '/quan-ly-hang-hoa',
+          req.headers.referer,
         );
       }
     }
 
     // Respond with success message
-    handleResponse(
+    return handleResponse(
       req,
       res,
       200,
       'success',
       'Cập nhật hàng hóa thành công',
-      '/quan-ly-hang-hoa',
+      req.headers.referer,
     );
   } catch (error) {
     // Handle any errors that occur during the update process
     res.status(500).render('partials/500', {layout: false});
   }
 }
+
+
 
 async function deleteProduct(req, res) {
   try {
@@ -258,7 +243,7 @@ async function deleteProduct(req, res) {
         404,
         'fail',
         'Xóa hàng hóa thất bại',
-        '/quan-ly-hang-hoa',
+        req.headers.referer,
       );
     }
 
@@ -277,7 +262,7 @@ async function deleteProduct(req, res) {
         404,
         'fail',
         'Cập nhật dữ liệu tổng thất bại',
-        '/quan-ly-hang-hoa',
+        req.headers.referer,
       );
     }
 
@@ -287,7 +272,7 @@ async function deleteProduct(req, res) {
       200,
       'success',
       'Xóa hàng hóa thành công',
-      '/quan-ly-hang-hoa',
+      req.headers.referer,
     );
   } catch {
     res.status(500).render('partials/500', {layout: false});
@@ -303,7 +288,7 @@ async function deleteAllProducts(req, res) {
       200,
       'success',
       'Xóa tất cả hàng hóa thành công',
-      '/quan-ly-hang-hoa',
+      req.headers.referer,
     );
   } catch {
     res.status(500).render('partials/500', {layout: false});
@@ -413,7 +398,7 @@ async function deleteAll(req,res){
       200,
       'success',
       'Xóa tất cả hàng hóa thành công !',
-      '/quan-ly-hang-hoa',
+      req.headers.referer,
     );
   } catch {
     res.status(500).render('partials/500', {layout: false});
