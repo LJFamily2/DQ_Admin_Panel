@@ -249,12 +249,18 @@ async function updateData(req, res) {
   const { id } = req.params;
 
   try {
+    const date = await RawMaterialModel.findOne({date: req.body.date})
+    if(date){
+      return handleResponse(req,res, 404, "fail", "Đã có dữ liệu ngày này. Không thể chọn trùng !",req.headers.referer);
+    }
+
+
     const products = {
       dryQuantity: convertToDecimal(req.body.dryQuantity) || 0,
-      dryPercentage: convertToDecimal(req.body.dryPercentage || 0),
+      dryPercentage: convertToDecimal(req.body.dryPercentage) || 0,
       keQuantity: convertToDecimal(req.body.keQuantity) || 0,
-      kePercentage: convertToDecimal(req.body.dryPercentage || 0),
-      mixedQuantity: convertToDecimal(req.body.mixedQuantity || 0),
+      kePercentage: convertToDecimal(req.body.dryPercentage) || 0,
+      mixedQuantity: convertToDecimal(req.body.mixedQuantity) || 0,
     };
 
     // Prepare the fields to be updated
