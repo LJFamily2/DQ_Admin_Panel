@@ -160,10 +160,23 @@ async function createProduct(req, res) {
 
 async function updateProduct(req, res) {
   try {
+    const date = await ProductModel.findOne({date: req.body.date})
+    if (date) {
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Đã có dữ liệu ngày này. Hãy chọn ngày khác!',
+        req.headers.referer,
+      );
+    }
+    
+
     const { id } = req.params;
     // Convert input values to decimals
-    const dryRubberUsedInput = convertToDecimal(req.body.dryRubberUsed) ;
-    const quantityInput = convertToDecimal(req.body.quantity) ;
+    const dryRubberUsedInput = convertToDecimal(req.body.dryRubberUsed) || 0 ;
+    const quantityInput = convertToDecimal(req.body.quantity) || 0;
 
     // Prepare the fields to be updated
     const updateFields = {

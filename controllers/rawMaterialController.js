@@ -251,7 +251,7 @@ async function updateData(req, res) {
   try {
     const date = await RawMaterialModel.findOne({date: req.body.date})
     if(date){
-      return handleResponse(req,res, 404, "fail", "Đã có dữ liệu ngày này. Không thể chọn trùng !",req.headers.referer);
+      return handleResponse(req,res, 404, "fail", "Đã có dữ liệu ngày này. Hãy chọn ngày khác !",req.headers.referer);
     }
 
 
