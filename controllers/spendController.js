@@ -169,19 +169,28 @@ async function getData(req, res) {
 }
 
 async function updateData(req, res) {
-  req.body = trimStringFields(req.body);
   try {
+
     const id = req.params.id;
-    // Combine finding and updating into a single operation if possible
     const product = await SpendModel.findById(id);
     if (!product) {
       return handleResponse(req, res, 404, 'fail', 'Không tìm thấy sản phẩm !', req.headers.referer);
+    }
+
+    if (req.body.date && req.body.product) {
+      const regexProduct = new RegExp(req.body.product, "i");
+      const checkExistedProduct = await SpendModel.findOne({ date: req.body.date, product: { $regex: regexProduct } });
+    
+      if (checkExistedProduct) {
+        return handleResponse(req, res, 400, 'fail', 'Sản phẩm đã bị trùng lập vào cùng ngày!', req.headers.referer);
+      }
     }
 
     const updateFields = {
       ...req.body,
       quantity: convertToDecimal(req.body.quantity) || 0,
       price: convertToDecimal(req.body.price) || 0,
+      notes: req.body.notes
     };
 
     const newSpend = await SpendModel.findByIdAndUpdate(id, updateFields, { new: true });

@@ -328,8 +328,6 @@ async function getProducts(req, res) {
     const searchQuery = searchValue
       ? {
           $or: [
-            { code: { $regex: searchValue, $options: 'i' } },
-            { status: { $regex: searchValue, $options: 'i' } },
             { notes: { $regex: searchValue, $options: 'i' } },
           ],
         }

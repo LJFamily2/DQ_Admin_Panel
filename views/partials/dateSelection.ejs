@@ -4,7 +4,7 @@
   data-bs-toggle="modal"
   data-bs-target="#staticBackdrop"
 >
-  <strong>Chọn ngày: </strong><span> </span>
+  <strong>Chọn ngày</strong><span></span>
 </div>
 
 <div
@@ -34,7 +34,14 @@
               type="date"
               id="startDate"
               class="form-control"
-              onchange="document.getElementById('endDate').min = this.value;updateDateDisplay(); "
+              onchange="
+               let endDateField = document.getElementById('endDate'); 
+               endDateField.min = this.value;
+               updateDateDisplay(); 
+               if(!endDateField.value){
+                 endDateField.focus();
+               }
+              "
             />
           </div>
           <div class="col">
@@ -43,7 +50,14 @@
               type="date"
               id="endDate"
               class="form-control"
-              onchange="updateDateDisplay()"
+              onchange="               
+              let startDateField = document.getElementById('startDate'); 
+              startDateField.min = this.value;
+              updateDateDisplay(); 
+              if(!startDateField.value){
+                startDateField.focus();
+              }
+              "
             />
           </div>
         </div>
@@ -79,12 +93,22 @@
     let endDate = document.getElementById('endDate').value;
     let dateDisplay = document.querySelector('.dateSelectionSelector span');
 
-    if (startDate || endDate) {
+    // Format the dates if they exist
+    if (startDate) {
       startDate = startDate.split('-').reverse().join('-');
+    }
+    if (endDate) {
       endDate = endDate.split('-').reverse().join('-');
-      dateDisplay.textContent = `${startDate} - ${endDate}`;
+    }
+
+    if (startDate && endDate) {
+        dateDisplay.innerHTML = `: ${startDate} <i class="ri-arrow-right-line"></i> ${endDate}`;
+    } else if (startDate) {
+        dateDisplay.textContent = `: ${startDate}`;
+    } else if (endDate) {
+        dateDisplay.textContent = `: ${endDate}`;
     } else {
-      dateDisplay.textContent = '';
+        dateDisplay.textContent = '';
     }
   }
 </script>

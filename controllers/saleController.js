@@ -203,26 +203,22 @@ async function getDatas(req, res) {
 
     if (startDate || endDate) {
       filter.date = {};
-      if (startDate) {
-        const filterStartDate = new Date(startDate);
-        filterStartDate.setHours(0, 0, 0, 0);
-        filter.date.$gte = filterStartDate;
-      }
-      if (endDate) {
-        const filterEndDate = new Date(endDate);
-        filterEndDate.setHours(23, 59, 59, 999);
-        filter.date.$lte = filterEndDate;
-      }
+    
+      const filterStartDate = new Date(startDate || endDate);
+      filterStartDate.setHours(0, 0, 0, 0);
+      filter.date.$gte = filterStartDate;
+    
+      const filterEndDate = new Date(endDate || startDate);
+      filterEndDate.setHours(23, 59, 59, 999);
+      filter.date.$lte = filterEndDate;
     }
 
-    // Update sortObject to include sorting by the "active" column
-    let sortObject = {};
-    if (sortColumn) {
-      sortObject[sortColumn] = sortDirection;
-    } else {
-      // Default sorting if no column is specified
-      sortObject = { date: -1 };
-    }
+    // Determine if the sort column is 'date'
+    const isSortingByDate = sortColumn === 'date';
+
+    const sortObject = isSortingByDate
+      ? { [sortColumn]: sortDirection }
+      : { date: -1 };
 
     const totalRecords = await SaleModel.countDocuments();
     const filteredRecords = await SaleModel.countDocuments(filter);
@@ -261,7 +257,6 @@ async function getDatas(req, res) {
 }
 
 async function updateData(req, res) {
-  req.body = trimStringFields(req.body);
   try {
     const { id } = req.params;
     if (!id)
@@ -280,31 +275,12 @@ async function updateData(req, res) {
     const products = convertProductData(names, quantities, prices);
 
     let oldSale = await SaleModel.findById(id);
-    if (!oldSale)
-      return handleResponse(
-        req,
-        res,
-        404,
-        'fail',
-        'Không tìm thấy hợp đồng',
-        req.headers.referer,
-      );
 
-    // Identify and set removed fields to undefined
-    const updateField = { ...req.body, products };
+    const updateField = { ...req.body, products, notes: req.body.notes };
 
-    const newSale = await SaleModel.findByIdAndUpdate(id, updateField, {
+    await SaleModel.findByIdAndUpdate(id, updateField, {
       new: true,
     });
-    if (!newSale)
-      return handleResponse(
-        req,
-        res,
-        404,
-        'fail',
-        'Cập nhật hợp đồng thất bại!',
-        req.headers.referer,
-      );
 
     let {
       totalProductDiff,
