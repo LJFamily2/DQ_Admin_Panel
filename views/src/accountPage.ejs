@@ -48,7 +48,7 @@
         <!-- Modal for updating -->
         <div
           class="modal fade"
-          id="staticBackdrop<%= index + 1%>"
+          id="staticBackdrop<%= user._id %>"
           data-bs-backdrop="static"
           data-bs-keyboard="false"
           tabindex="-1"
@@ -115,7 +115,7 @@
         <!-- Delete confirming modal  -->
         <div
           class="modal fade"
-          id="deleteModalToggle<%= index + 1 %>"
+          id="deleteModalToggle<%= user._id %>"
           aria-hidden="true"
           aria-labelledby="exampleModalToggleLabel"
           tabindex="-1"
@@ -261,7 +261,7 @@
 
 <script>
   const userColumns = [
-    { data: "no", orderable: false, width:"25%" },
+    { data: "no", orderable: false, visible: false },
     { data: "username", width:"25%" },
     { data: "password", orderable: false, width:"25%" },
     { data: "role", width:"15%", 
