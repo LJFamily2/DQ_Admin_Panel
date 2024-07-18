@@ -141,7 +141,6 @@ async function getDataTotal(req, res) {
     const {
       draw,
       start = 0,
-      length = 10,
       search,
       order,
       columns,
@@ -174,8 +173,7 @@ async function getDataTotal(req, res) {
 
     if (searchValue) {
       filter.$or = [
-        { name: new RegExp(searchValue, 'i') },
-        { code: new RegExp(searchValue, 'i') },
+        { notes: new RegExp(searchValue, 'i') },
       ];
     }
 
@@ -183,16 +181,13 @@ async function getDataTotal(req, res) {
     const plantations = await RawMaterialModel.find(filter)
       .sort({ [sortColumn]: sortDirection })
       .skip(start)
-      .limit(length)
       .exec();
 
     const data = plantations.map((plantation, index) => {
       let dryQuantityTotal = 0;
       let keQuantityTotal = 0;
       let mixedQuantityTotal = 0;
-      let notes = [];
 
-      // Assuming each plantation is a single document, not an array
       const dataDate = new Date(plantation.date);
       if (dataDate >= new Date(startDate) && dataDate <= new Date(endDate)) {
         dryQuantityTotal +=
@@ -204,7 +199,6 @@ async function getDataTotal(req, res) {
             plantation.products.dryPercentage) /
           100;
         mixedQuantityTotal += plantation.products.mixedQuantity;
-        if (plantation.notes) notes.push(plantation.notes);
       }
 
       const dryPriceValue = convertToDecimal(dryPrice) || 0;
@@ -227,7 +221,7 @@ async function getDataTotal(req, res) {
         keQuantity: keQuantityTotal.toLocaleString('vi-VN'),
         kePrice: kePriceValue.toLocaleString('vi-VN'),
         keTotal: keTotalValue.toLocaleString('vi-VN'),
-        notes: notes.join(', '),
+        notes: plantation.notes || "",
         totalMoney: totalMoneyValue.toLocaleString('vi-VN'),
       };
     });
