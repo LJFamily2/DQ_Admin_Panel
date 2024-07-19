@@ -12,7 +12,7 @@ module.exports = {
   getData,
   updateData,
   deleteData,
-  deleteAll
+  deleteAll,
 };
 
 async function updateProductTotal(amount, isCreating = true) {
@@ -22,7 +22,10 @@ async function updateProductTotal(amount, isCreating = true) {
       profit: isCreating ? -amount : amount,
     },
   };
-  await ProductTotalModel.findOneAndUpdate({}, updateData, { new: true, upsert: true });
+  await ProductTotalModel.findOneAndUpdate({}, updateData, {
+    new: true,
+    upsert: true,
+  });
 }
 
 async function renderPage(req, res) {
@@ -50,7 +53,7 @@ async function createData(req, res) {
   try {
     let checkExistedProduct = await SpendModel.findOne({
       date: req.body.date,
-      product: {$regex: new RegExp(req.body.product, "i")},
+      product: { $regex: new RegExp(req.body.product, 'i') },
     });
     if (checkExistedProduct) {
       return handleResponse(
@@ -170,19 +173,36 @@ async function getData(req, res) {
 
 async function updateData(req, res) {
   try {
-
     const id = req.params.id;
     const product = await SpendModel.findById(id);
     if (!product) {
-      return handleResponse(req, res, 404, 'fail', 'Không tìm thấy sản phẩm !', req.headers.referer);
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Không tìm thấy sản phẩm !',
+        req.headers.referer,
+      );
     }
 
     if (req.body.date && req.body.product) {
-      const regexProduct = new RegExp(req.body.product, "i");
-      const checkExistedProduct = await SpendModel.findOne({ date: req.body.date, product: { $regex: regexProduct } });
-    
+      const regexProduct = new RegExp(req.body.product, 'i');
+      const checkExistedProduct = await SpendModel.findOne({
+        _id: { $ne: id }, // Exclude the current product
+        date: req.body.date,
+        product: { $regex: regexProduct },
+      });
+
       if (checkExistedProduct) {
-        return handleResponse(req, res, 400, 'fail', 'Sản phẩm đã bị trùng lập vào cùng ngày!', req.headers.referer);
+        return handleResponse(
+          req,
+          res,
+          400,
+          'fail',
+          'Sản phẩm đã bị trùng lập vào cùng ngày!',
+          req.headers.referer,
+        );
       }
     }
 
@@ -190,10 +210,12 @@ async function updateData(req, res) {
       ...req.body,
       quantity: convertToDecimal(req.body.quantity) || 0,
       price: convertToDecimal(req.body.price) || 0,
-      notes: req.body.notes
+      notes: req.body.notes,
     };
 
-    const newSpend = await SpendModel.findByIdAndUpdate(id, updateFields, { new: true });
+    const newSpend = await SpendModel.findByIdAndUpdate(id, updateFields, {
+      new: true,
+    });
     const oldTotalPrice = product.price * product.quantity;
     const newTotalPrice = newSpend.price * newSpend.quantity;
     const diff = newTotalPrice - oldTotalPrice;
@@ -202,35 +224,52 @@ async function updateData(req, res) {
       const updateData = {
         $inc: {
           spend: diff,
-          profit: -diff, 
+          profit: -diff,
         },
       };
       await ProductTotalModel.findOneAndUpdate({}, updateData, { new: true });
     }
 
-    return handleResponse(req, res, 200, "success", "Cập nhật thông tin chi tiêu thành công!", req.headers.referer);
+    return handleResponse(
+      req,
+      res,
+      200,
+      'success',
+      'Cập nhật thông tin chi tiêu thành công!',
+      req.headers.referer,
+    );
   } catch (err) {
     console.log(err);
     res.status(500).render('partials/500', { layout: false });
   }
 }
 
-async function deleteData(req,res){
-  try{
+async function deleteData(req, res) {
+  try {
     const id = req.params.id;
     let product = await SpendModel.findByIdAndDelete(id);
-    if(!product){
-      return handleResponse(req, res, 404, 'fail', 'Không tìm thấy sản phẩm !', req.headers.referer);
+    if (!product) {
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Không tìm thấy sản phẩm !',
+        req.headers.referer,
+      );
     }
 
     await updateProductTotal(product.price * product.quantity, false);
 
-
     return handleResponse(
-      req,res, 200, "success", "Xóa thông tin chi tiêu thành công!", req.headers.referer
-    )
-
-  }catch(err){
+      req,
+      res,
+      200,
+      'success',
+      'Xóa thông tin chi tiêu thành công!',
+      req.headers.referer,
+    );
+  } catch (err) {
     console.log(err);
     res.status(500).render('partials/500', { layout: false });
   }
@@ -242,13 +281,23 @@ async function deleteAll(req, res) {
 
     const productTotal = await ProductTotalModel.findOne({});
     const currentSpend = productTotal ? productTotal.spend : 0;
-    
-    await ProductTotalModel.findOneAndUpdate({}, { 
-      $set: { spend: 0 },
-      $inc: { profit: currentSpend }
-    });
 
-    return handleResponse(req, res, 200, "success", "Xóa tất cả thông tin chi tiêu thành công!", req.headers.referer);
+    await ProductTotalModel.findOneAndUpdate(
+      {},
+      {
+        $set: { spend: 0 },
+        $inc: { profit: currentSpend },
+      },
+    );
+
+    return handleResponse(
+      req,
+      res,
+      200,
+      'success',
+      'Xóa tất cả thông tin chi tiêu thành công!',
+      req.headers.referer,
+    );
   } catch (err) {
     console.log(err);
     res.status(500).render('partials/500', { layout: false });
