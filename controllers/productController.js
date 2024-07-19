@@ -161,7 +161,7 @@ async function createProduct(req, res) {
 async function updateProduct(req, res) {
   try {
     const date = await ProductModel.findOne({date: req.body.date})
-    if (date) {
+    if (date && date._id.toString() !== id) {
       return handleResponse(
         req,
         res,

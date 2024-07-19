@@ -30,19 +30,21 @@ async function renderPage(req, res) {
       title: 'Dữ liệu',
     });
   } catch {
-    res.status(500).render('partials/500', {layout: false});
+    res.status(500).render('partials/500', { layout: false });
   }
 }
 
 function calculateTotalDryRubber(product) {
-  return ((product.dryQuantity * product.dryPercentage) / 100);
+  return (product.dryQuantity * product.dryPercentage) / 100;
 }
 async function updateProductTotal(data, operation) {
   const multiplier = operation === 'add' ? 1 : -1;
   const totalDryRubber = calculateTotalDryRubber(data.products) * multiplier;
   const mixedQuantityRounded = data.products.mixedQuantity * multiplier;
-  const keQuantity = ((data.products.keQuantity * data.products.dryPercentage) / 100) * multiplier;
-  
+  const keQuantity =
+    ((data.products.keQuantity * data.products.dryPercentage) / 100) *
+    multiplier;
+
   const updateData = {
     $inc: {
       dryRubber: totalDryRubber,
@@ -50,13 +52,16 @@ async function updateProductTotal(data, operation) {
     },
   };
 
-  const total = await ProductTotalModel.findOneAndUpdate({}, updateData, { new: true, upsert: true });
+  const total = await ProductTotalModel.findOneAndUpdate({}, updateData, {
+    new: true,
+    upsert: true,
+  });
   return total;
 }
 
 async function createData(req, res) {
   req.body = trimStringFields(req.body);
-  console.log(req.body)
+  console.log(req.body);
   try {
     let date = await RawMaterialModel.findOne({ date: req.body.date });
     if (date) {
@@ -143,11 +148,11 @@ async function getDatas(req, res) {
 
     if (startDate || endDate) {
       filter.date = {};
-    
+
       const filterStartDate = new Date(startDate || endDate);
       filterStartDate.setHours(0, 0, 0, 0);
       filter.date.$gte = filterStartDate;
-    
+
       const filterEndDate = new Date(endDate || startDate);
       filterEndDate.setHours(23, 59, 59, 999);
       filter.date.$lte = filterEndDate;
@@ -241,7 +246,7 @@ async function getDatas(req, res) {
       data: formattedData,
     });
   } catch {
-    res.status(500).render('partials/500', {layout: false});
+    res.status(500).render('partials/500', { layout: false });
   }
 }
 
@@ -249,11 +254,17 @@ async function updateData(req, res) {
   const { id } = req.params;
 
   try {
-    const date = await RawMaterialModel.findOne({date: req.body.date})
-    if(date){
-      return handleResponse(req,res, 404, "fail", "Đã có dữ liệu ngày này. Hãy chọn ngày khác !",req.headers.referer);
+    const date = await RawMaterialModel.findOne({ date: req.body.date });
+    if (date && date._id.toString() !== id) {
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Đã có dữ liệu ngày này. Hãy chọn ngày khác !',
+        req.headers.referer,
+      );
     }
-
 
     const products = {
       dryQuantity: convertToDecimal(req.body.dryQuantity) || 0,
@@ -315,13 +326,12 @@ async function updateData(req, res) {
 
     // Initialize update object with mixedQuantity difference
     const updateData = {
-      $inc: { mixedQuantity: mixedQuantityDiff + keRubberDiff},
+      $inc: { mixedQuantity: mixedQuantityDiff + keRubberDiff },
     };
 
     if (Math.abs(dryRubberDiff) >= 0.01) {
       updateData.$inc.dryRubber = dryRubberDiff;
     }
-
 
     // Perform the update
     const total = await ProductTotalModel.findOneAndUpdate({}, updateData, {
@@ -349,7 +359,7 @@ async function updateData(req, res) {
       req.headers.referer,
     );
   } catch {
-    res.status(500).render('partials/500', {layout: false});
+    res.status(500).render('partials/500', { layout: false });
   }
 }
 
@@ -386,49 +396,76 @@ async function deleteData(req, res) {
       req.headers.referer,
     );
   } catch {
-    res.status(500).render('partials/500', {layout: false});
+    res.status(500).render('partials/500', { layout: false });
   }
 }
 
 async function deleteAll(req, res) {
   try {
-    const [{ totalDryQuantity = 0, totalMixedQuantity = 0, totalKeQuantity = 0 } = {}] = await RawMaterialModel.aggregate([
+    const [
+      {
+        totalDryQuantity = 0,
+        totalMixedQuantity = 0,
+        totalKeQuantity = 0,
+      } = {},
+    ] = await RawMaterialModel.aggregate([
       {
         $group: {
           _id: null,
           totalDryQuantity: {
             $sum: {
               $divide: [
-                { $multiply: ["$products.dryQuantity", "$products.dryPercentage"] },
-                100
-              ]
-            }
+                {
+                  $multiply: [
+                    '$products.dryQuantity',
+                    '$products.dryPercentage',
+                  ],
+                },
+                100,
+              ],
+            },
           },
           totalKeQuantity: {
             $sum: {
               $divide: [
-                { $multiply: ["$products.keQuantity", "$products.dryPercentage"] },
-                100
-              ]
-            }
+                {
+                  $multiply: [
+                    '$products.keQuantity',
+                    '$products.dryPercentage',
+                  ],
+                },
+                100,
+              ],
+            },
           },
-          totalMixedQuantity: { $sum: "$products.mixedQuantity" },
-        }
-      }
+          totalMixedQuantity: { $sum: '$products.mixedQuantity' },
+        },
+      },
     ]);
 
-    console.log(totalDryQuantity,totalMixedQuantity,totalKeQuantity  )
+    console.log(totalDryQuantity, totalMixedQuantity, totalKeQuantity);
 
-    await ProductTotalModel.findOneAndUpdate({}, {
-      $inc: {
-        dryRubber: -totalDryQuantity,
-        mixedQuantity: -(totalMixedQuantity + totalKeQuantity)
-      }
-    }, { new: true });
+    await ProductTotalModel.findOneAndUpdate(
+      {},
+      {
+        $inc: {
+          dryRubber: -totalDryQuantity,
+          mixedQuantity: -(totalMixedQuantity + totalKeQuantity),
+        },
+      },
+      { new: true },
+    );
 
     await RawMaterialModel.deleteMany({});
 
-    return handleResponse(req, res, 200, 'success', 'Xóa tất cả dữ liệu thành công !', req.headers.referer);
+    return handleResponse(
+      req,
+      res,
+      200,
+      'success',
+      'Xóa tất cả dữ liệu thành công !',
+      req.headers.referer,
+    );
   } catch (err) {
     console.log(err);
     res.status(500).render('partials/500', { layout: false });
