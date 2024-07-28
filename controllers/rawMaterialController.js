@@ -223,7 +223,7 @@ async function getDatas(req, res) {
       .slice(start, start + length)
       .map((item, index) => ({
         no: parseInt(start, 10) + index + 1,
-        date: new Date(item.date).toLocaleDateString(),
+        date: new Date(item.date).toLocaleDateString('vi-VN'),
         dryQuantity: formatNumberForDisplay(item.products.dryQuantity),
         dryPercentage: formatNumberForDisplay(item.products.dryPercentage),
         dryTotal: formatNumberForDisplay(

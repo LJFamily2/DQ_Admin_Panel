@@ -150,7 +150,7 @@ async function getData(req, res) {
 
     const data = products.map((product, index) => ({
       no: parseInt(start, 10) + index + 1,
-      date: product.date.toLocaleDateString(),
+      date: product.date.toLocaleDateString('vi-VN'),
       product: product.product || '',
       quantity: formatNumberForDisplay(product.quantity) || 0,
       price: formatNumberForDisplay(product.price) || 0,

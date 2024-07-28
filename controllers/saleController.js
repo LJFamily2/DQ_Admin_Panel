@@ -235,7 +235,7 @@ async function getDatas(req, res) {
       );
       return {
         no: parseInt(start, 10) + index + 1,
-        date: sale.date.toLocaleDateString(),
+        date: sale.date.toLocaleDateString('vi-VN'),
         code: sale.code || '',
         products: sale.slug,
         notes: sale.notes || '',

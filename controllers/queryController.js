@@ -211,7 +211,7 @@ async function getDataTotal(req, res) {
 
       return {
         no: parseInt(start, 10) + index + 1,
-        date: plantation.date.toLocaleDateString(),
+        date: plantation.date.toLocaleDateString('vi-VN'),
         dryQuantity: dryQuantityTotal.toLocaleString('vi-VN'),
         dryPrice: dryPrice,
         dryTotal: dryTotalValue.toLocaleString('vi-VN'),

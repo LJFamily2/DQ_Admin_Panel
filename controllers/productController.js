@@ -363,7 +363,7 @@ async function getProducts(req, res) {
 
     const data = products.map((product, index) => ({
       no: parseInt(start, 10) + index + 1,
-      date: product.date.toLocaleDateString(),
+      date: product.date.toLocaleDateString('vi-VN'),
       dryRubberUsed: product.dryRubberUsed.toLocaleString('vi-VN') || 0,
       quantity: product.quantity.toLocaleString('vi-VN') || 0,
       notes: product.notes || '',
