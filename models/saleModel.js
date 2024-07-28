@@ -8,6 +8,7 @@ const saleSchema = new mongoose.Schema({
         name: String, 
         quantity: Number,
         price: Number,
+        date: Date, 
     }],
     date: Date, 
     status: {

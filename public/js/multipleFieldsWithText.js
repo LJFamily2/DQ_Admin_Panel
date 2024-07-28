@@ -7,7 +7,7 @@ function addInputField(selector, child) {
   const clonedProductList = allProductLists[allProductLists.length - 1].cloneNode(true);
 
   // Update newIndex directly without intermediate variable
-  clonedProductList.querySelector('label[for="name"]').innerHTML = `${allProductLists.length + 1}. Tên hàng hóa <span><i class="ri-close-line" style="cursor: pointer;" onclick="removeProduct(${allProductLists.length + 1}, this)"></i></span>`;
+  clonedProductList.querySelector('label[for="name"]').innerHTML = `${allProductLists.length + 1}. Tên hàng hóa`;
 
   // Reset input values in the cloned element
   clonedProductList.querySelectorAll('input').forEach(input => input.value = '');

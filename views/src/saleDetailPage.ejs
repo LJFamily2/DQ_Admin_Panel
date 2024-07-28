@@ -34,7 +34,7 @@
         </div>
   
       <div class="my-3">
-        <label for="date" class="form-label fw-bold">Ngày nhập</label>
+        <label for="date" class="form-label fw-bold">Ngày</label>
         <input
           type="date"
           class="form-control"
@@ -89,18 +89,30 @@
           <div class="productLists">
             <% sale.products.forEach((product, index) => { %>
               <div class="productList">
-                  <div class="row my-3">
-                    <div class="row m-0 p-0">
-                      <div class="col">
-                        <label for="name" class="form-label fw-bold w-100 d-flex justify-content-between"><%= index + 1 %>. Tên hàng hóa <span><i class="ri-close-line" style="cursor: pointer;" onclick="removeProduct(<%= index + 1 %>, this)"></i></span></label>
+                  <div class="row">
+                    <div class="row my-2 m-0 p-0">
+                      <div class="col-6">
+                        <label for="name" class="form-label fw-bold w-100 d-flex justify-content-between"><%= index + 1 %>. Tên hàng hóa </label>
                         <select class="form-control" name="name" id="name">
                           <option value="product" <%= product.name === "product" ? "selected" : "" %>>Thành phẩm</option>
                           <option value="mixedQuantity" <%= product.name === "mixedQuantity" ? "selected" : "" %>>Mủ tạp</option>
                           <option value="dryRubber" <%= product.name === "dryRubber" ? "selected" : "" %>>Quy khô</option>
                         </select>
                       </div>
+
+                      <div class="col-6">
+                        <label for="date" class="form-label fw-bold w-100 d-flex justify-content-between">Ngày nhập <span><i class="ri-close-line" style="cursor: pointer;" onclick="removeProduct(<%= index + 1 %>, this)"></i></span></label>
+                        <input
+                        type="date"
+                        class="form-control"
+                        id="date"
+                        name="date"
+                        required
+                        value="<%= sale.date.toISOString().slice(0,10) %>"
+                        />
+                      </div>
                     </div>
-                    <div class="row my-3 m-0 p-0">
+                    <div class="row my-2 m-0 p-0">
                       <div class="col col-md-6">
                         <label for="quantity" class="form-label fw-bold"
                           >Số lượng</label

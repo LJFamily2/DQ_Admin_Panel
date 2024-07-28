@@ -25,7 +25,8 @@ const convertProductData = (names, quantities, prices) =>
     name,
     quantity: parseFloat(convertToDecimal(quantities[index])) || 0,
     price: parseFloat(convertToDecimal(prices[index])) || 0,
-  }));
+    date: req.body.date
+}));
 
 // Calculate differences
 const calculateDifferences = (newProducts, oldSale) => {
@@ -203,11 +204,11 @@ async function getDatas(req, res) {
 
     if (startDate || endDate) {
       filter.date = {};
-    
+
       const filterStartDate = new Date(startDate || endDate);
       filterStartDate.setHours(0, 0, 0, 0);
       filter.date.$gte = filterStartDate;
-    
+
       const filterEndDate = new Date(endDate || startDate);
       filterEndDate.setHours(23, 59, 59, 999);
       filter.date.$lte = filterEndDate;
@@ -459,7 +460,7 @@ async function deleteAll(req, res) {
     });
 
     const productTotal = await ProductTotalModel.findOne({});
-    let currentIncome = productTotal ? productTotal.income : 0; 
+    let currentIncome = productTotal ? productTotal.income : 0;
 
     await ProductTotalModel.findOneAndUpdate(
       {},
