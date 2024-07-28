@@ -15,19 +15,17 @@
     }
   </style>
 </head>
-<%- include('../partials/totalValue.ejs') %>
-
-<% if(user.role === true){ %>
-  <button
-    type="button"
-    class="btn btn-danger mx-2 mx-md-3 mt-2"
-    data-bs-toggle="modal"
-    data-bs-target="#deleteAll"
-    style="width: max-content"
-  >
-    Xóa tất cả thông tin
-  </button>
-  <% } %>
+<%- include('../partials/totalValue.ejs') %> <% if(user.role === true){ %>
+<button
+  type="button"
+  class="btn btn-danger mx-2 mx-md-3 mt-2"
+  data-bs-toggle="modal"
+  data-bs-target="#deleteAll"
+  style="width: max-content"
+>
+  Xóa tất cả thông tin
+</button>
+<% } %>
 
 <div class="row m-0 m-md-2 g-3 mb-4">
   <div class="col-12 col-md-9 mt-2">
@@ -79,19 +77,20 @@
                   <div class="modal-body">
                     <div class="productLists">
                       <% sale.products.forEach((product, index) => { %>
-                      <div class="productList">
+                      <div class="item">
                         <div class="row my-3">
                           <div class="row m-0 p-0">
                             <div class="col">
                               <label
                                 for="name"
                                 class="form-label fw-bold w-100 d-flex justify-content-between"
-                                ><%= index + 1 %>. Tên hàng hóa
+                              >
+                                <%= index + 1 %>. Tên hàng hóa
                               </label>
                               <input
                                 type="text"
                                 class="form-control"
-                                value="<%= product.name === "product" ? "Thành phẩm" :  product.name  === "mixedQuantity" ? "Mủ tạp" : "Quy khô" %>"
+                                value="<%= product.name === 'product' ? 'Thành phẩm' : product.name === 'mixedQuantity' ? 'Mủ tạp' : 'Quy khô' %>"
                                 disabled
                               />
                             </div>
@@ -218,14 +217,16 @@
                     <label
                       for="name"
                       class="form-label fw-bold w-100 d-flex justify-content-between"
-                      ><%= index + 1 %>. Tên hàng hóa
-                      <span
-                        ><i
+                    >
+                      1. Tên hàng hóa
+                      <span>
+                        <i
                           class="ri-close-line"
                           style="cursor: pointer"
-                          onclick="removeProduct(<%= index + 1 %>, this)"
-                        ></i></span
-                    ></label>
+                          onclick="removeProduct(this)"
+                        ></i>
+                      </span>
+                    </label>
                     <select class="form-control" name="name" id="name">
                       <option value="product" selected>Thành phẩm</option>
                       <option value="mixedQuantity">Mủ tạp</option>
@@ -235,9 +236,7 @@
                 </div>
                 <div class="row my-3 m-0 p-0">
                   <div class="col col-md-6">
-                    <label for="quantity" class="form-label fw-bold"
-                      >Số lượng</label
-                    >
+                    <label for="quantity" class="form-label fw-bold">Số lượng</label>
                     <input
                       type="text"
                       class="form-control"
@@ -248,9 +247,7 @@
                     />
                   </div>
                   <div class="col col-md-6">
-                    <label for="price" class="form-label fw-bold"
-                      >Đơn giá</label
-                    >
+                    <label for="price" class="form-label fw-bold">Đơn giá</label>
                     <input
                       type="text"
                       class="form-control"
@@ -269,7 +266,7 @@
             <button
               type="button"
               class="btn btn-outline-secondary btn-sm"
-              onclick="addInputField('form .productLists', '.productList')"
+              onclick="addInputField('form .productLists', '.productList', false)"
             >
               +
             </button>
@@ -309,7 +306,7 @@
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="deleteUsers">Xóa tất cả hợp đồng </h1>
+        <h1 class="modal-title fs-5" id="deleteUsers">Xóa tất cả hợp đồng</h1>
         <button
           type="button"
           class="btn-close"
@@ -405,18 +402,6 @@
     false,
     false,
     false,
-    true
+    true,
   );
-
-  document.addEventListener('DOMContentLoaded', () => {
-      document.querySelectorAll('.productLists').forEach(list => {
-        const items = list.querySelectorAll('.productList');
-        items.forEach(item => {
-          const closeButton = item.querySelector('.ri-close-line');
-          if (closeButton) { // Check if the element exists
-            closeButton.style.display = items.length > 1 ? 'block' : 'none';
-          }
-        });
-      });
-    });
 </script>

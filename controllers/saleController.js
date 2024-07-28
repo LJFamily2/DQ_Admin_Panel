@@ -20,12 +20,12 @@ module.exports = {
 const ensureArray = input => (Array.isArray(input) ? input : [input]);
 
 // Helper to convert product data
-const convertProductData = (names, quantities, prices) =>
+const convertProductData = (names, quantities, prices, inputDates) =>
   names.map((name, index) => ({
     name,
     quantity: parseFloat(convertToDecimal(quantities[index])) || 0,
     price: parseFloat(convertToDecimal(prices[index])) || 0,
-    date: req.body.date
+    date:inputDates
 }));
 
 // Calculate differences
@@ -110,7 +110,8 @@ async function createData(req, res) {
     const names = ensureArray(req.body.name);
     const quantities = ensureArray(req.body.quantity);
     const prices = ensureArray(req.body.price);
-    const products = convertProductData(names, quantities, prices);
+    const inputDate = req.body.date
+    const products = convertProductData(names, quantities, prices, inputDate);
 
     const newSale = await SaleModel.create({
       ...req.body,
@@ -168,7 +169,8 @@ async function createData(req, res) {
         : 'Thêm hợp đồng bán mủ thất bại',
       req.headers.referer,
     );
-  } catch {
+  } catch (err) {
+    console.log(err)
     res.status(500).render('partials/500', { layout: false });
   }
 }
@@ -273,7 +275,8 @@ async function updateData(req, res) {
     const names = ensureArray(req.body.name) || '';
     const quantities = ensureArray(req.body.quantity) || 0;
     const prices = ensureArray(req.body.price) || 0;
-    const products = convertProductData(names, quantities, prices);
+    const inputDates = req.body.inputDate;
+    const products = convertProductData(names, quantities, prices, inputDates);
 
     let oldSale = await SaleModel.findById(id);
 
