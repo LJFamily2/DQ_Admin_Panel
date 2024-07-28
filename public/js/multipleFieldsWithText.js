@@ -1,5 +1,4 @@
 // Toggle buttons
-const deleteButton = document.querySelector('.btnController .btn-danger');
 
 function addInputField(selector, child) {
   const productLists = document.querySelector(selector);
@@ -16,7 +15,6 @@ function addInputField(selector, child) {
   updateCloseLineIconsVisibility(productLists, child);
 
   // Directly check and update deleteButton's display property
-  document.querySelector('.btnController .btn-danger').style.display = allProductLists.length > 0 ? 'inline' : 'none';
 }
 function updateCloseLineIconsVisibility(productLists, child) {
   const allProductLists = productLists.querySelectorAll(child);
