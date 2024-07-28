@@ -42,7 +42,7 @@ function removeProduct(element) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  document.querySelectorAll('.productLists .productList .ri-close-line').forEach(closeButton => {
-    closeButton.style.display = 'none';
-  });
+  const productLists = document.querySelectorAll('.productLists .productList');
+  const displayStyle = productLists.length > 1 ? 'block' : 'none';
+  productLists.forEach(el => el.querySelector('.ri-close-line').style.display = displayStyle);
 });

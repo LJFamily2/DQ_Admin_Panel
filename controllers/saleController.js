@@ -25,7 +25,7 @@ const convertProductData = (names, quantities, prices, inputDates) =>
     name,
     quantity: parseFloat(convertToDecimal(quantities[index])) || 0,
     price: parseFloat(convertToDecimal(prices[index])) || 0,
-    date:inputDates
+    date: inputDates[index]
 }));
 
 // Calculate differences
@@ -260,6 +260,7 @@ async function getDatas(req, res) {
 }
 
 async function updateData(req, res) {
+  console.log(req.body)
   try {
     const { id } = req.params;
     if (!id)
@@ -275,7 +276,7 @@ async function updateData(req, res) {
     const names = ensureArray(req.body.name) || '';
     const quantities = ensureArray(req.body.quantity) || 0;
     const prices = ensureArray(req.body.price) || 0;
-    const inputDates = req.body.inputDate;
+    const inputDates = ensureArray(req.body.inputDate);
     const products = convertProductData(names, quantities, prices, inputDates);
 
     let oldSale = await SaleModel.findById(id);
@@ -324,7 +325,8 @@ async function updateData(req, res) {
       'Cập nhật hợp đồng thành công!',
       req.headers.referer,
     );
-  } catch {
+  } catch(err) {
+    console.log(err)
     res.status(500).render('partials/500', { layout: false });
   }
 }

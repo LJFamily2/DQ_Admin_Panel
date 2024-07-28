@@ -80,7 +80,7 @@
                       <div class="item">
                         <div class="row my-3">
                           <div class="row m-0 p-0">
-                            <div class="col">
+                            <div class="col-6">
                               <label
                                 for="name"
                                 class="form-label fw-bold w-100 d-flex justify-content-between"
@@ -92,6 +92,17 @@
                                 class="form-control"
                                 value="<%= product.name === 'product' ? 'Thành phẩm' : product.name === 'mixedQuantity' ? 'Mủ tạp' : 'Quy khô' %>"
                                 disabled
+                              />
+                            </div>
+                            <div class="col-6">
+                              <label  class="form-label fw-bold w-100 d-flex justify-content-between">Ngày nhập </label>
+                              <input
+                              type="date"
+                              class="form-control"
+                              name="inputDate"
+                              required
+                              disabled
+                              value="<%= sale.date.toISOString().slice(0,10) %>"
                               />
                             </div>
                           </div>
@@ -330,16 +341,16 @@
 
 <script>
   let columns = [
-    { data: 'no', orderable: false, width: '5%', visible: false },
-    { data: 'date', searchable: true, width: '15%' },
+    { data: 'no', orderable: false, width: '1%', visible: false },
+    { data: 'date', searchable: true, width: '10%' },
     { data: 'code', orderable: false, width: '15%' },
     {
       data: 'products',
       orderable: false,
-      width: '10%',
+      width: '12%',
       render: function (data, row, type) {
         return `
-          <a class="link-opacity-75-hover" data-bs-toggle="modal" data-bs-target="#productList${data}" style="cursor: pointer;" >Xem</a>
+          <a class="link-opacity-50-hover" data-bs-toggle="modal" data-bs-target="#productList${data}" style="cursor: pointer;" >Xem</a>
         `;
       },
     },
@@ -347,7 +358,7 @@
     { data: 'total', orderable: false, width: '17%' },
     {
       data: 'status',
-      width: '13%',
+      width: '15%',
       render: function (data) {
         return data === 'active'
           ? `  <div class="row">
@@ -370,7 +381,7 @@
     },
     {
       data: 'slug',
-      width: '11%',
+      width: '13%',
       orderable: false,
       render: function (data, type, row) {
         return `<div class="d-flex justify-content-between fs-5">
