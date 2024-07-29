@@ -97,52 +97,30 @@ async function createProduct(req, res) {
       );
     }
 
-    // Ensure quantity and dryRubberUsed are defined, else default to "0"
-    let quantityStr = req.body.quantity
-      ? convertToDecimal(req.body.quantity)
-      : 0;
-    let dryRubberUsedStr = req.body.dryRubberUsed
-      ? convertToDecimal(req.body.dryRubberUsed)
-      : 0;
+    
+    let quantity = convertToDecimal(req.body.quantity) || 0;
+    let dryRubberUsed = convertToDecimal(req.body.dryRubberUsed) || 0;
+    let dryPercentage = convertToDecimal(req.body.dryPercentage) || 0;
 
-    let quantity = quantityStr;
-    let dryRubberUsed = dryRubberUsedStr;
-
-    const newProduct = await ProductModel.create({
+    await ProductModel.create({
       ...req.body,
-      quantity: quantity,
-      dryRubberUsed: dryRubberUsed,
+      quantity,
+      dryRubberUsed,
+      dryPercentage
     });
-    if (!newProduct) {
-      return handleResponse(
-        req,
-        res,
-        404,
-        'fail',
-        'Thêm hàng hóa thất bại',
-        req.headers.referer,
-      );
-    }
 
+
+    let totalDryRubber = (dryRubberUsed * dryPercentage) / 100;
+
+    console.log(totalDryRubber)
     // Calculate adjustments
-    let dryRubberAdjustment = -dryRubberUsed;
+    let dryRubberAdjustment = -totalDryRubber;
     let productAdjustment = quantity;
 
-    // Update totals
-    const total = await updateProductTotals(
+    await updateProductTotals(
       dryRubberAdjustment,
       productAdjustment,
     );
-    if (!total) {
-      return handleResponse(
-        req,
-        res,
-        404,
-        'fail',
-        'Cập nhật dữ liệu tổng thất bại',
-        req.headers.referer,
-      );
-    }
 
     handleResponse(
       req,
@@ -364,7 +342,7 @@ async function getProducts(req, res) {
     const data = products.map((product, index) => ({
       no: parseInt(start, 10) + index + 1,
       date: product.date.toLocaleDateString('vi-VN'),
-      dryRubberUsed: product.dryRubberUsed.toLocaleString('vi-VN') || 0,
+      dryRubberUsed: ((product.dryRubberUsed * product.dryPercentage) / 100).toLocaleString('vi-VN'),
       quantity: product.quantity.toLocaleString('vi-VN') || 0,
       notes: product.notes || '',
       id: product._id,

@@ -2,8 +2,9 @@ const mongoose = require("mongoose");
 
 const productSchema = new mongoose.Schema({
     date: Date, 
-    quantity: Number,
     dryRubberUsed: Number,
+    dryPercentage: Number,
+    quantity: Number,
     notes: String,
 });
 
