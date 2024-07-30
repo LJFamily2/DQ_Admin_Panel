@@ -17,24 +17,17 @@ module.exports = {
 
 
 async function updateTotal(dryRubberAdjustment, productAdjustment) {
-  let updateData = {};
+  const updateData = { $inc: {} };
+
   if (dryRubberAdjustment !== 0) {
-    updateData.$inc = {
-      ...updateData.$inc,
-      dryRubber: dryRubberAdjustment,
-    };
+    updateData.$inc.dryRubber = dryRubberAdjustment;
   }
   if (productAdjustment !== 0) {
-    updateData.$inc = {
-      ...updateData.$inc,
-      product: productAdjustment,
-    };
+    updateData.$inc.product = productAdjustment;
   }
 
   // Update the totals in the database
-  return await ProductTotalModel.findOneAndUpdate({}, updateData, {
-    new: true,
-  });
+  return await ProductTotalModel.findOneAndUpdate({}, updateData, { new: true });
 }
 
 async function renderPage(req, res) {
@@ -138,33 +131,26 @@ async function createProduct(req, res) {
 
 async function updateProduct(req, res) {
   try {
-    const date = await ProductModel.findOne({date: req.body.date})
-    if (date && date._id.toString() !== id) {
-      return handleResponse(
-        req,
-        res,
-        404,
-        'fail',
-        'Đã có dữ liệu ngày này. Hãy chọn ngày khác!',
-        req.headers.referer,
-      );
-    }
-    
-
     const { id } = req.params;
-    // Convert input values to decimals
-    const dryRubberUsedInput = convertToDecimal(req.body.dryRubberUsed) || 0 ;
-    const quantityInput = convertToDecimal(req.body.quantity) || 0;
+    const { date, dryRubberUsed, dryPercentage, quantity, notes } = req.body;
 
-    // Prepare the fields to be updated
+    const existingDate = await ProductModel.findOne({ date });
+    if (existingDate && existingDate._id.toString() !== id) {
+      return handleResponse(req, res, 404, 'fail', 'Đã có dữ liệu ngày này. Hãy chọn ngày khác!', req.headers.referer);
+    }
+
+    const dryRubberUsedInput = convertToDecimal(dryRubberUsed || 0);
+    const dryPercentageInput = convertToDecimal(dryPercentage || 0);
+    const quantityInput = convertToDecimal(quantity || 0);
+
     const updateFields = {
-      date: req.body.date,
+      date,
+      dryPercentage: dryPercentageInput,
       dryRubberUsed: dryRubberUsedInput,
       quantity: quantityInput,
-      notes: req.body.notes.trim(),
+      notes: notes.trim(),
     };
 
-    // Check if the product exists before attempting to update
     const oldData = await ProductModel.findById(id);
     if (!oldData) {
       return res.status(404).send('Product not found');
@@ -172,39 +158,17 @@ async function updateProduct(req, res) {
 
     await ProductModel.findByIdAndUpdate(id, updateFields, { new: true });
 
-    const dryRubberUsedDiff = dryRubberUsedInput - oldData.dryRubberUsed;
+    const dryRubberUsedDiff = ((dryRubberUsedInput * dryPercentageInput) / 100) - ((oldData.dryRubberUsed * oldData.dryPercentage) / 100);
     const quantityDiff = quantityInput - oldData.quantity;
 
-    console.log(dryRubberUsedDiff)
-    console.log(quantityDiff)
-    
-    // Update totals if there are changes in dryRubberUsed or quantity
     if (dryRubberUsedDiff !== 0 || quantityDiff !== 0) {
-      const total = await updateTotal(-dryRubberUsedDiff, quantityDiff);
-      if (!total) {
-        return handleResponse(
-          req,
-          res,
-          404,
-          'fail',
-          'Cập nhật dữ liệu tổng thất bại',
-          req.headers.referer,
-        );
-      }
+      await updateTotal(-dryRubberUsedDiff, quantityDiff);
     }
 
-    // Respond with success message
-    return handleResponse(
-      req,
-      res,
-      200,
-      'success',
-      'Cập nhật hàng hóa thành công',
-      req.headers.referer,
-    );
+    return handleResponse(req, res, 200, 'success', 'Cập nhật hàng hóa thành công', req.headers.referer);
   } catch (error) {
-    // Handle any errors that occur during the update process
-    res.status(500).render('partials/500', {layout: false});
+    console.log(error);
+    res.status(500).render('partials/500', { layout: false });
   }
 }
 
@@ -342,7 +306,10 @@ async function getProducts(req, res) {
     const data = products.map((product, index) => ({
       no: parseInt(start, 10) + index + 1,
       date: product.date.toLocaleDateString('vi-VN'),
-      dryRubberUsed: ((product.dryRubberUsed * product.dryPercentage) / 100).toLocaleString('vi-VN'),
+      dryRubberUsed: {
+        value: ((product.dryRubberUsed * product.dryPercentage) / 100).toLocaleString('vi-VN'),
+        id: product._id
+      },
       quantity: product.quantity.toLocaleString('vi-VN') || 0,
       notes: product.notes || '',
       id: product._id,

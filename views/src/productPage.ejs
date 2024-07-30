@@ -4,6 +4,16 @@
   <script src="/js/inputFieldRestriction.js" defer></script>
   <!-- Slim select -->
   <script src="/js/slim-select.js" defer></script>
+  <style>
+    .rawMaterial{
+      &:hover{
+        cursor: pointer;
+        text-decoration: underline;
+        color: blue;
+
+      }
+    }
+  </style>
 </head>
 
 <%- include('../partials/totalValue.ejs') %>
@@ -29,7 +39,7 @@
             <tr>
               <th>STT</th>
               <th>Ngày chạy lò</th>
-              <th>Quy khô sử dụng</th>
+              <th>Quy khô </th>
               <th>Thành phẩm</th>
               <th>Ghi chú</th>
               <th>Chỉnh sửa</th>
@@ -86,17 +96,36 @@
                       </div>
 
                       <div class="my-3">
-                        <label  class="form-label fw-bold"
-                          >Quy khô sử dụng</label
+                        <div class="row">
+                          <div class="col-6">
+                        <label for="dryRubberUsed" class="form-label fw-bold"
+                          >Mủ nước</label
                         >
-                        <input
-                          type="text"
-                          class="form-control"
-                          name="dryRubberUsed"
-                          placeholder="123,45"
-                          value="<%= product.dryRubberUsed.toLocaleString('vi-VN') %>"
-                          oninput="handleQuantityInput(this)"
-                        />
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="dryRubberUsed"
+                              name="dryRubberUsed"
+                              placeholder="123,45"
+                              oninput="handleQuantityInput(this)"
+                              value="<%= product.dryRubberUsed.toLocaleString('vi-VN') %>"
+                            />
+                          </div>
+                          <div class="col-6">
+                            <label for="dryPercentage" class="form-label fw-bold"
+                            >Hàm lượng</label
+                          >
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="dryPercentage"
+                              name="dryPercentage"
+                              placeholder="23,04"
+                              oninput="handlePercentageInput(this)"
+                              value="<%= product.dryPercentage.toLocaleString('vi-VN') %>"
+                            />
+                          </div>
+                        </div>
                       </div>
 
                       <div class="my-3">
@@ -136,6 +165,49 @@
                       </button>
                     </div>
                   </form>
+                </div>
+              </div>
+            </div>
+
+            <!-- Modal for raw material -->
+            <div class="modal fade" id="rawMaterial<%= product._id %>">
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h1 class="modal-title fs-5" >Nguyên Liệu</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="my-3">
+                      <div class="row">
+                        <div class="col-6">
+                      <label  class="form-label fw-bold"
+                        >Mủ nước</label
+                      >
+                          <input
+                            type="text"
+                            class="form-control"
+                            value="<%= product.dryRubberUsed.toLocaleString('vi-VN') %>"
+                            disabled
+                          />
+                        </div>
+                        <div class="col-6">
+                          <label for="dryPercentage" class="form-label fw-bold"
+                          >Hàm lượng</label
+                        >
+                          <input
+                            type="text"
+                            class="form-control"
+                            value="<%= product.dryPercentage.toLocaleString('vi-VN') %>"
+                            disabled
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -314,11 +386,19 @@
     </div>
   </div>
 </div>
+
+
+
 <script>
   const productColumns = [
     { data: 'no', orderable: false, width: '10%', visible: false },
     { data: 'date', width: '15%' },
-    { data: 'dryRubberUsed', orderable: false, width: '20%' },
+    { data: 'dryRubberUsed', orderable: false, width: '20%',
+      render: function(data){
+        console.log(data)
+        return `<span class="rawMaterial" data-bs-toggle="modal" data-bs-target="#rawMaterial${data.id}">${data.value}</span>`;
+      }
+     },
     { data: 'quantity', orderable: false, width: '20%' },
     { data: 'notes', orderable: false, width: '20%' },
     { data: 'id', orderable: false, width: '15%' },
