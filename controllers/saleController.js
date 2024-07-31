@@ -20,17 +20,28 @@ module.exports = {
 const ensureArray = input => (Array.isArray(input) ? input : [input]);
 
 // Helper to convert product data
-const convertProductData = (names, quantities, prices, inputDates) =>
-  names.map((name, index) => ({
-    name,
-    quantity: parseFloat(convertToDecimal(quantities[index])) || 0,
-    price: parseFloat(convertToDecimal(prices[index])) || 0,
-    date: inputDates[index]
-}));
+const convertProductData = (names, quantities, prices, percentages, inputDates) => {
+  let dryRubberIndex = 0;
+
+  return names.map((name, index) => {
+    const productData = {
+      name,
+      quantity: convertToDecimal(quantities[index]),
+      price: convertToDecimal(prices[index]),
+      date: inputDates[index],
+    };
+
+    if (name === "dryRubber") {
+      productData.percentage = convertToDecimal(percentages[dryRubberIndex]) ;
+      dryRubberIndex++;
+    }
+
+    return productData;
+  });
+};
 
 // Calculate differences
 const calculateDifferences = (newProducts, oldSale) => {
-  // Initialize accumulators for old sale totals
   let oldTotals = {
     product: 0,
     dryRubber: 0,
@@ -38,13 +49,15 @@ const calculateDifferences = (newProducts, oldSale) => {
     income: 0,
   };
 
-  // Accumulate totals for old sale
   oldSale.products.forEach(product => {
-    oldTotals[product.name] += product.quantity;
+    if (product.name === 'dryRubber') {
+      oldTotals.dryRubber += (product.quantity * product.percentage) / 100;
+    } else {
+      oldTotals[product.name] += product.quantity;
+    }
     oldTotals.income += product.quantity * product.price;
   });
 
-  // Initialize accumulators for new sale totals
   let newTotals = {
     product: 0,
     dryRubber: 0,
@@ -54,7 +67,11 @@ const calculateDifferences = (newProducts, oldSale) => {
 
   // Accumulate totals for new sale
   newProducts.forEach(product => {
-    newTotals[product.name] += product.quantity;
+    if (product.name === 'dryRubber') {
+      newTotals.dryRubber += (product.quantity * product.percentage) / 100;
+    } else {
+      newTotals[product.name] += product.quantity;
+    }
     newTotals.income += product.quantity * product.price;
   });
 
@@ -90,7 +107,9 @@ async function renderPage(req, res) {
 }
 
 async function createData(req, res) {
+  console.log(req.body)
   req.body = trimStringFields(req.body);
+  console.log(req.body)
   try {
     let checkExistedData = await SaleModel.findOne({
       code: { $regex: new RegExp(req.body.code, 'i') },
@@ -110,8 +129,9 @@ async function createData(req, res) {
     const names = ensureArray(req.body.name);
     const quantities = ensureArray(req.body.quantity);
     const prices = ensureArray(req.body.price);
+    const percentage = ensureArray(req.body.percentage)
     const inputDate = req.body.date
-    const products = convertProductData(names, quantities, prices, inputDate);
+    const products = convertProductData(names, quantities, prices, percentage, inputDate);
 
     const newSale = await SaleModel.create({
       ...req.body,
@@ -121,13 +141,18 @@ async function createData(req, res) {
 
     // Calculate totals and prepare updateData in a single step
     const totals = products.reduce(
-      (acc, { name, quantity, price }) => {
-        acc[name] = (acc[name] || 0) + quantity;
+      (acc, { name, quantity, price, percentage }) => {
+        if (name === 'dryRubber') {
+          acc.dryRubber += (quantity * percentage) / 100;
+        } else {
+          acc[name] = (acc[name] || 0) + quantity;
+        }
         acc.totalIncome += quantity * price;
         return acc;
       },
       { product: 0, dryRubber: 0, mixedQuantity: 0, totalIncome: 0 },
     );
+
 
     let updateData = {
       $inc: {
@@ -277,7 +302,8 @@ async function updateData(req, res) {
     const quantities = ensureArray(req.body.quantity) || 0;
     const prices = ensureArray(req.body.price) || 0;
     const inputDates = ensureArray(req.body.inputDate);
-    const products = convertProductData(names, quantities, prices, inputDates);
+    const percentages = ensureArray(req.body.percentage) || 0;
+    const products = convertProductData(names, quantities, prices, percentages, inputDates);
 
     let oldSale = await SaleModel.findById(id);
 
@@ -359,11 +385,16 @@ async function deleteData(req, res) {
     }
 
     const totals = sale.products.reduce(
-      (acc, { name, quantity, price }) => {
-        // Assuming quantity and price are already numbers
+      (acc, { name, quantity, price, percentage }) => {
+        // Assuming quantity, price, and percentage are already numbers
         const totalForProduct = quantity * price;
         acc[name] = (acc[name] || 0) + quantity;
         acc.totalIncome += totalForProduct;
+    
+        if (name === 'dryRubber') {
+          acc.dryRubber += (quantity * percentage) / 100;
+        }
+    
         return acc;
       },
       { product: 0, dryRubber: 0, mixedQuantity: 0, totalIncome: 0 },
@@ -442,47 +473,47 @@ async function deleteAll(req, res) {
   try {
     const sales = await SaleModel.find({});
 
-    let dryrubberQuantity = 0;
-    let productQuantity = 0;
-    let mixedQuantity = 0;
+    const { dryrubberQuantity, productQuantity, mixedQuantity } = sales.reduce(
+      (acc, sale) => {
+        sale.products.forEach(product => {
+          switch (product.name) {
+            case 'dryRubber':
+              acc.dryrubberQuantity += (product.quantity * product.percentage) / 100;
+              break;
+            case 'product':
+              acc.productQuantity += product.quantity;
+              break;
+            case 'mixedQuantity':
+              acc.mixedQuantity += product.quantity;
+              break;
+            default:
+              break;
+          }
+        });
+        return acc;
+      },
+      { dryrubberQuantity: 0, productQuantity: 0, mixedQuantity: 0 }
+    );
 
-    sales.forEach(sale => {
-      sale.products.forEach(product => {
-        switch (product.name) {
-          case 'dryRubber':
-            dryrubberQuantity += product.quantity;
-            break;
-          case 'product':
-            productQuantity += product.quantity;
-            break;
-          case 'mixedQuantity':
-            mixedQuantity += product.quantity;
-            break;
-          default:
-            break;
-        }
-      });
-    });
+    console.log(dryrubberQuantity)
+    console.log(productQuantity)
+    console.log(mixedQuantity)
 
     const productTotal = await ProductTotalModel.findOne({});
-    let currentIncome = productTotal ? productTotal.income : 0;
+    const currentIncome = productTotal ? productTotal.income : 0;
 
     await ProductTotalModel.findOneAndUpdate(
       {},
       {
-        $set: {
-          income: 0,
-        },
+        $set: { income: 0 },
         $inc: {
           product: productQuantity,
-          dryrubber: dryrubberQuantity,
+          dryRubber: dryrubberQuantity,
           mixedQuantity: mixedQuantity,
           profit: -currentIncome,
         },
       },
-      {
-        new: true,
-      },
+      { new: true }
     );
 
     // Delete all sales
@@ -494,7 +525,7 @@ async function deleteAll(req, res) {
       200,
       'success',
       'Xóa tất cả hợp đồng thành công!',
-      req.headers.referer,
+      req.headers.referer
     );
   } catch (err) {
     console.log(err);

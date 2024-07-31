@@ -3,6 +3,7 @@
   <script src="/js/datatable.js"></script>
   <script src="/js/inputFieldRestriction.js" defer></script>
   <script src="/js/multipleFieldsWithText.js" defer></script>
+  <script src="/js/handleSelectField.js" defer></script>
 
   <!-- Css -->
   <style>
@@ -70,7 +71,7 @@
               aria-labelledby="productList"
               tabindex="-1"
             >
-              <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                 <div class="modal-content">
                   <div class="modal-header">
                     <h1 class="modal-title fs-5" id="productList">
@@ -94,7 +95,7 @@
                                 for="name"
                                 class="form-label fw-bold w-100 d-flex justify-content-between"
                               >
-                                <%= index + 1 %>. Tên hàng hóa
+                                <%= index + 1 %>. Hàng hóa
                               </label>
                               <input
                                 type="text"
@@ -116,15 +117,36 @@
                             </div>
                           </div>
                           <div class="row my-3 m-0 p-0">
-                            <div class="col col-md-6">
-                              <label class="form-label fw-bold">Số lượng</label>
-                              <input
-                                type="text"
-                                class="form-control"
-                                value="<%= product.quantity.toLocaleString('vi-VN') %>"
-                                disabled
-                              />
-                            </div>
+                            <% if(product.name === "dryRubber"){ %>
+                              <div class="col col-md-3">
+                                <label class="form-label fw-bold">Số lượng</label>
+                                <input
+                                  type="text"
+                                  class="form-control"
+                                  value="<%= product.quantity.toLocaleString('vi-VN') %>"
+                                  disabled
+                                />
+                              </div>
+                              <div class="col col-md-3">
+                                <label class="form-label fw-bold">Hàm lượng</label>
+                                <input
+                                  type="text"
+                                  class="form-control"
+                                  value="<%= product.percentage %>"
+                                  disabled
+                                />
+                              </div>
+                              <% }else{ %>
+                                <div class="col col-md-6">
+                                  <label class="form-label fw-bold">Số lượng</label>
+                                  <input
+                                    type="text"
+                                    class="form-control"
+                                    value="<%= product.quantity.toLocaleString('vi-VN') %>"
+                                    disabled
+                                  />
+                                </div>  
+                              <% } %>
                             <div class="col col-md-6">
                               <label class="form-label fw-bold">Đơn giá</label>
                               <input
@@ -135,6 +157,19 @@
                               />
                             </div>
                           </div>
+                          <% if(product.name === 'dryRubber'){ %>
+                            <div class="row m-0 p-0">
+                              <div class="col col-md-6">
+                                <label class="form-label fw-bold">Tổng</label>
+                                  <input
+                                    type="text"
+                                    class="form-control"
+                                    value="<%= ((product.quantity * product.percentage) / 100).toLocaleString('vi-VN') %>"
+                                    disabled
+                                  />
+                              </div>
+                            </div>
+                          <% } %>
                         </div>
                         <hr />
                       </div>
@@ -238,7 +273,7 @@
                       for="name"
                       class="form-label fw-bold w-100 d-flex justify-content-between"
                     >
-                      1. Tên hàng hóa
+                      1. Hàng hóa
                       <span>
                         <i
                           class="ri-close-line"
@@ -247,14 +282,14 @@
                         ></i>
                       </span>
                     </label>
-                    <select class="form-control" name="name" id="name">
+                    <select class="form-control" name="name" id="name" onchange="handleProductChange(this, this.closest('.productList'), false)">
                       <option value="product" selected>Thành phẩm</option>
                       <option value="mixedQuantity">Mủ tạp</option>
                       <option value="dryRubber">Quy khô</option>
                     </select>
                   </div>
                 </div>
-                <div class="row my-3 m-0 p-0">
+                <div class="row normalFields my-3 m-0 p-0">
                   <div class="col col-md-6">
                     <label for="quantity" class="form-label fw-bold">Số lượng</label>
                     <input
@@ -278,6 +313,7 @@
                     />
                   </div>
                 </div>
+                <div class="additionalFields my-3 m-0 p-0" style="display: none;"></div>
               </div>
             </div>
           </div>

@@ -11,8 +11,6 @@ function addInputField(selector, child, detailPage) {
 
   productLists.appendChild(clonedProductList);
   updateCloseLineIconsVisibility(productLists, child);
-
-  // Directly check and update deleteButton's display property
 }
 function updateCloseLineIconsVisibility(productLists, child) {
   const allProductLists = productLists.querySelectorAll(child);
