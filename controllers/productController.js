@@ -9,7 +9,6 @@ module.exports = {
   createProduct,
   updateProduct,
   deleteProduct,
-  deleteAllProducts,
   getProducts,
   renderPage,
   deleteAll
@@ -202,24 +201,14 @@ async function deleteProduct(req, res) {
       );
     }
 
-    let dryRubberAdjustment = deletedProduct.dryRubberUsed;
+    let dryRubberAdjustment = deletedProduct.dryRubberUsed * deletedProduct.dryPercentage / 100;
     let productAdjustment = -deletedProduct.quantity;
 
     // Update totals
-    const total = await updateProductTotals(
+    await updateProductTotals(
       dryRubberAdjustment,
       productAdjustment,
     );
-    if (!total) {
-      return handleResponse(
-        req,
-        res,
-        404,
-        'fail',
-        'Cập nhật dữ liệu tổng thất bại',
-        req.headers.referer,
-      );
-    }
 
     handleResponse(
       req,
@@ -227,22 +216,6 @@ async function deleteProduct(req, res) {
       200,
       'success',
       'Xóa hàng hóa thành công',
-      req.headers.referer,
-    );
-  } catch {
-    res.status(500).render('partials/500', {layout: false});
-  }
-}
-
-async function deleteAllProducts(req, res) {
-  try {
-    await ProductModel.deleteMany({});
-    return handleResponse(
-      req,
-      res,
-      200,
-      'success',
-      'Xóa tất cả hàng hóa thành công',
       req.headers.referer,
     );
   } catch {
@@ -326,25 +299,29 @@ async function getProducts(req, res) {
   }
 }
 
-async function deleteAll(req,res){
+async function deleteAll(req, res) {
   try {
-    const [{totalDryQuantity = 0, totalProduct = 0} ={}] = await ProductModel.aggregate([
+    const [{ totalDryQuantity = 0, totalProduct = 0 } = {}] = await ProductModel.aggregate([
       {
-        $group:{
-          _id:null,
-          totalDryQuantity:{$sum:"$dryRubberUsed"},
-          totalProduct:{$sum:"$quantity"}
+        $group: {
+          _id: null,
+          totalDryQuantity: {
+            $sum: {
+              $multiply: ["$dryRubberUsed", { $divide: ["$dryPercentage", 100] }]
+            }
+          },
+          totalProduct: { $sum: "$quantity" }
         }
       }
-    ])
+    ]);
 
-    await ProductTotalModel.findOneAndUpdate({},{
+    await ProductTotalModel.findOneAndUpdate({}, {
       $inc: {
         dryRubber: totalDryQuantity,
         product: -totalProduct
       }
-    },{
-      new:true,
+    }, {
+      new: true,
     });
 
     await ProductModel.deleteMany({});
@@ -356,7 +333,8 @@ async function deleteAll(req,res){
       'Xóa tất cả hàng hóa thành công !',
       req.headers.referer,
     );
-  } catch {
-    res.status(500).render('partials/500', {layout: false});
+  } catch (err) {
+    console.log(err);
+    res.status(500).render('partials/500', { layout: false });
   }
 }
