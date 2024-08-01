@@ -20,19 +20,25 @@ module.exports = {
 const ensureArray = input => (Array.isArray(input) ? input : [input]);
 
 // Helper to convert product data
-const convertProductData = (names, quantities, prices, percentages, inputDates) => {
+const convertProductData = (
+  names,
+  quantities,
+  prices,
+  percentages,
+  inputDates,
+) => {
   let dryRubberIndex = 0;
 
   return names.map((name, index) => {
     const productData = {
       name,
-      quantity: convertToDecimal(quantities[index]),
-      price: convertToDecimal(prices[index]),
+      quantity: convertToDecimal(quantities[index])  || 0,
+      price: convertToDecimal(prices[index]) || 0,
       date: inputDates[index],
     };
 
-    if (name === "dryRubber") {
-      productData.percentage = convertToDecimal(percentages[dryRubberIndex]) ;
+    if (name === 'dryRubber') {
+      productData.percentage = convertToDecimal(percentages[dryRubberIndex]) || 0;
       dryRubberIndex++;
     }
 
@@ -107,9 +113,9 @@ async function renderPage(req, res) {
 }
 
 async function createData(req, res) {
-  console.log(req.body)
+  console.log(req.body);
   req.body = trimStringFields(req.body);
-  console.log(req.body)
+  console.log(req.body);
   try {
     let checkExistedData = await SaleModel.findOne({
       code: { $regex: new RegExp(req.body.code, 'i') },
@@ -126,12 +132,18 @@ async function createData(req, res) {
       );
     }
 
-    const names = ensureArray(req.body.name);
-    const quantities = ensureArray(req.body.quantity);
-    const prices = ensureArray(req.body.price);
-    const percentage = ensureArray(req.body.percentage)
-    const inputDate = req.body.date
-    const products = convertProductData(names, quantities, prices, percentage, inputDate);
+    const names = ensureArray(req.body.name ) ;
+    const quantities = ensureArray(req.body.quantity ) ;
+    const prices = ensureArray(req.body.price ) ;
+    const percentage = ensureArray(req.body.percentage ) ;
+    const inputDate = req.body.date;
+    const products = convertProductData(
+      names,
+      quantities,
+      prices,
+      percentage,
+      inputDate,
+    );
 
     const newSale = await SaleModel.create({
       ...req.body,
@@ -152,7 +164,6 @@ async function createData(req, res) {
       },
       { product: 0, dryRubber: 0, mixedQuantity: 0, totalIncome: 0 },
     );
-
 
     let updateData = {
       $inc: {
@@ -195,7 +206,7 @@ async function createData(req, res) {
       req.headers.referer,
     );
   } catch (err) {
-    console.log(err)
+    console.log(err);
     res.status(500).render('partials/500', { layout: false });
   }
 }
@@ -285,7 +296,7 @@ async function getDatas(req, res) {
 }
 
 async function updateData(req, res) {
-  console.log(req.body)
+  console.log(req.body);
   try {
     const { id } = req.params;
     if (!id)
@@ -298,12 +309,18 @@ async function updateData(req, res) {
         req.headers.referer,
       );
 
-    const names = ensureArray(req.body.name) || '';
-    const quantities = ensureArray(req.body.quantity) || 0;
-    const prices = ensureArray(req.body.price) || 0;
+    const names = ensureArray(req.body.name);
+    const quantities = ensureArray(req.body.quantity) ;
+    const prices = ensureArray(req.body.price) ;
     const inputDates = ensureArray(req.body.inputDate);
-    const percentages = ensureArray(req.body.percentage) || 0;
-    const products = convertProductData(names, quantities, prices, percentages, inputDates);
+    const percentages = ensureArray(req.body.percentage) ;
+    const products = convertProductData(
+      names,
+      quantities,
+      prices,
+      percentages,
+      inputDates,
+    );
 
     let oldSale = await SaleModel.findById(id);
 
@@ -351,8 +368,8 @@ async function updateData(req, res) {
       'Cập nhật hợp đồng thành công!',
       req.headers.referer,
     );
-  } catch(err) {
-    console.log(err)
+  } catch (err) {
+    console.log(err);
     res.status(500).render('partials/500', { layout: false });
   }
 }
@@ -386,19 +403,18 @@ async function deleteData(req, res) {
 
     const totals = sale.products.reduce(
       (acc, { name, quantity, price, percentage }) => {
-        // Assuming quantity, price, and percentage are already numbers
-        const totalForProduct = quantity * price;
-        acc[name] = (acc[name] || 0) + quantity;
-        acc.totalIncome += totalForProduct;
-    
         if (name === 'dryRubber') {
           acc.dryRubber += (quantity * percentage) / 100;
+        } else {
+          acc[name] = (acc[name] || 0) + quantity;
         }
-    
+        acc.totalIncome += quantity * price;
         return acc;
       },
       { product: 0, dryRubber: 0, mixedQuantity: 0, totalIncome: 0 },
     );
+
+    console.log(totals.dryRubber)
 
     let updateData = {
       $inc: {
@@ -406,27 +422,13 @@ async function deleteData(req, res) {
         profit: -totals.totalIncome,
         ...(totals.product > 0 && { product: totals.product }),
         ...(totals.dryRubber > 0 && { dryRubber: totals.dryRubber }),
-        ...(totals.mixedQuantity > 0 && {
-          mixedQuantity: totals.mixedQuantity,
-        }),
+        ...(totals.mixedQuantity > 0 && { mixedQuantity: totals.mixedQuantity }),
       },
     };
 
-    const total = await ProductTotalModel.findOneAndUpdate({}, updateData, {
+    await ProductTotalModel.findOneAndUpdate({}, updateData, {
       new: true,
-      upsert: true,
     });
-
-    if (!total) {
-      return handleResponse(
-        req,
-        res,
-        404,
-        'fail',
-        'Cập nhật dữ liệu tổng thất bại',
-        req.headers.referer,
-      );
-    }
 
     handleResponse(
       req,
@@ -436,10 +438,12 @@ async function deleteData(req, res) {
       'Xóa hợp đồng thành công!',
       req.headers.referer,
     );
-  } catch {
+  } catch (err) {
+    console.log(err);
     res.status(500).render('partials/500', { layout: false });
   }
 }
+
 async function renderDetailPage(req, res) {
   try {
     const { slug } = req.params;
@@ -478,7 +482,8 @@ async function deleteAll(req, res) {
         sale.products.forEach(product => {
           switch (product.name) {
             case 'dryRubber':
-              acc.dryrubberQuantity += (product.quantity * product.percentage) / 100;
+              acc.dryrubberQuantity +=
+                (product.quantity * product.percentage) / 100;
               break;
             case 'product':
               acc.productQuantity += product.quantity;
@@ -492,12 +497,12 @@ async function deleteAll(req, res) {
         });
         return acc;
       },
-      { dryrubberQuantity: 0, productQuantity: 0, mixedQuantity: 0 }
+      { dryrubberQuantity: 0, productQuantity: 0, mixedQuantity: 0 },
     );
 
-    console.log(dryrubberQuantity)
-    console.log(productQuantity)
-    console.log(mixedQuantity)
+    console.log(dryrubberQuantity);
+    console.log(productQuantity);
+    console.log(mixedQuantity);
 
     const productTotal = await ProductTotalModel.findOne({});
     const currentIncome = productTotal ? productTotal.income : 0;
@@ -513,7 +518,7 @@ async function deleteAll(req, res) {
           profit: -currentIncome,
         },
       },
-      { new: true }
+      { new: true },
     );
 
     // Delete all sales
@@ -525,7 +530,7 @@ async function deleteAll(req, res) {
       200,
       'success',
       'Xóa tất cả hợp đồng thành công!',
-      req.headers.referer
+      req.headers.referer,
     );
   } catch (err) {
     console.log(err);
