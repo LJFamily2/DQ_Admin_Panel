@@ -27,10 +27,10 @@ async function renderPage(req, res) {
       total,
       user: req.user,
       messages: req.flash(),
-      title: 'Dữ liệu',
+      title: 'Nguyên liệu',
     });
   } catch {
-    res.status(500).render('partials/500', { layout: false });
+    return res.status(500).render('partials/500', { layout: false });
   }
 }
 

@@ -37,7 +37,7 @@ async function renderPage(req, res) {
     const products = await ProductModel.find({});
     res.render('src/productPage', {
       layout: './layouts/defaultLayout',
-      title: 'Quản lý hàng hóa',
+      title: 'Dữ liệu chạy lò',
       products,
       user: req.user,
       total,
