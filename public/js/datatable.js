@@ -83,7 +83,7 @@ function initializeDataTable(
     }
 
     if (productPageFooter) {
-      const columns = [2, 3];
+      const columns = [3];
       footerCallbackOptions = {
         footerCallback: function () {
           setupFooterCallback(columns, this.api());
