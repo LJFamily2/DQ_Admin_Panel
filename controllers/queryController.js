@@ -203,10 +203,10 @@ async function getDataTotal(req, res) {
 
       const dryPriceValue = convertToDecimal(dryPrice) || 0;
       const mixedPriceValue = convertToDecimal(mixedPrice) || 0;
-      const dryTotalValue = dryQuantityTotal * dryPriceValue || "";
-      const kePriceValue = convertToDecimal(dryPrice) - 4000 || '';
-      const keTotalValue = keQuantityTotal * kePriceValue || "";
-      const mixedTotalValue = mixedQuantityTotal * mixedPriceValue || "";
+      const dryTotalValue = dryQuantityTotal * dryPriceValue || 0;
+      const kePriceValue = convertToDecimal(dryPrice) - 4000 || 0;
+      const keTotalValue = keQuantityTotal * kePriceValue || 0;
+      const mixedTotalValue = mixedQuantityTotal * mixedPriceValue || 0;
       const totalMoneyValue = dryTotalValue + mixedTotalValue + keTotalValue;
 
       return {
