@@ -8,7 +8,7 @@
   <!-- add button -->
   <button
   type="button"
-  class="btn btn-primary"
+  class="btn btn-secondary"
   data-bs-toggle="modal"
   data-bs-target="#add-admin-user"
   style="width: max-content"
@@ -16,19 +16,7 @@
   Tạo tài khoản
 </button>
 
-<!-- Delete all button -->
-<!-- <% if(user.role){ %>
-  <button
-  type="button"
-  class="btn btn-danger mx-3"
-  data-bs-toggle="modal"
-  data-bs-target="#deleteAll-admin-user"
-  style="width: max-content"
-  >
-  Xóa tất cả tài khoản 
-</button>
-<% } %> -->
-  <div class="position-absolute" style="right: 10px; top: -3px;width: max-content;">
+<div class="position-absolute" style="right: 10px; top: -3px;width: max-content;">
     <%- include('../partials/notificationMessage.ejs') %>
   </div>
 </section>
@@ -105,7 +93,7 @@
                  </div>
                 </div>
                 <div class="modal-footer">
-                <button type="submit" class="btn btn-success">Lưu mới</button>
+                <button type="submit" class="btn btn-success">Lưu</button>
               </div>
             </form>
             </div>
@@ -215,7 +203,7 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="submit" class="btn btn-success">Tạo</button>
+          <button type="submit" class="btn btn-primary">Tạo</button>
         </div>
       </form>
     </div>
