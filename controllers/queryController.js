@@ -233,7 +233,6 @@ async function getDataTotal(req, res) {
       data,
     });
   } catch (err) {
-    console.log(err)
     res.status(500).render('partials/500', {layout: false});
   }
 }

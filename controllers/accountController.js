@@ -4,6 +4,8 @@ const handleResponse = require('./utils/handleResponse');
 const trimStringFields = require('./utils/trimStringFields');
 
 module.exports = {
+  initialSetupPage,
+  initialSetupCreateAccount,
   createUser,
   getUsers,
   updateUser,
@@ -12,6 +14,35 @@ module.exports = {
   renderPage,
   deleteAllUsers,
 };
+
+async function isDatabaseEmpty() {
+  const userCount = await UserModel.countDocuments();
+  return userCount === 0;
+}
+
+async function initialSetupPage(req, res) {
+  try {
+    if (await isDatabaseEmpty()) {
+      res.render('src/signUpPage', { layout: false, messages: req.flash() });
+    } else {
+      res.status(404).redirect('/dang-nhap');
+    }
+  } catch (error) {
+    res.status(404).render('partials/404', { layout: false });
+  }
+}
+
+async function initialSetupCreateAccount(req, res) {
+  try {
+    if (await isDatabaseEmpty()) {
+      await createUser(req, res);
+    } else {
+      res.status(404).redirect('/dang-nhap');
+    }
+  } catch (error) {
+    res.status(500).render('partials/500', { layout: false });
+  }
+}
 
 async function renderPage(req, res) {
   try {
@@ -24,7 +55,7 @@ async function renderPage(req, res) {
       title: 'Quản lý tài khoản',
     });
   } catch {
-    res.status(500).render('partials/500', {layout: false});
+    res.status(500).render('partials/500', { layout: false });
   }
 }
 
@@ -49,7 +80,7 @@ async function createUser(req, res) {
     const user = await UserModel.create({
       username: req.body.username,
       password: hashedPassword,
-      role: req.body.role,
+      role: req.body.role || true,
     });
     if (!user) {
       return handleResponse(
@@ -68,10 +99,10 @@ async function createUser(req, res) {
       201,
       'success',
       'Tạo tài khoản thành công',
-      req.headers.referer,
+      '/dang-nhap',
     );
   } catch {
-    res.status(500).render('partials/500', {layout: false});
+    res.status(500).render('partials/500', { layout: false });
   }
 }
 
@@ -108,7 +139,7 @@ async function getUsers(req, res) {
       data,
     });
   } catch {
-    res.status(500).render('partials/500', {layout: false});
+    res.status(500).render('partials/500', { layout: false });
   }
 }
 
@@ -174,13 +205,13 @@ async function updateUser(req, res) {
     if (passwordChanged) {
       req.session.regenerate(function (err) {
         if (err) {
-          return res.status(500).render('partials/500', {layout: false}); 
+          return res.status(500).render('partials/500', { layout: false });
         }
 
         // Save the session after modifications
         req.session.save(function (saveErr) {
           if (saveErr) {
-            return res.status(500).render('partials/500', {layout: false}); 
+            return res.status(500).render('partials/500', { layout: false });
           }
         });
       });
@@ -194,7 +225,7 @@ async function updateUser(req, res) {
       req.headers.referer,
     );
   } catch (error) {
-    res.status(500).render('partials/500', {layout: false});
+    res.status(500).render('partials/500', { layout: false });
   }
 }
 
@@ -234,7 +265,7 @@ async function deleteUser(req, res) {
       req.headers.referer,
     );
   } catch {
-    res.status(500).render('partials/500', {layout: false});
+    res.status(500).render('partials/500', { layout: false });
   }
 }
 
@@ -242,7 +273,6 @@ async function deleteAllUsers(req, res) {
   try {
     // Delete all users with role false
     const deletionResult = await UserModel.deleteMany({ role: false });
-
 
     if (deletionResult.deletedCount === 0) {
       return handleResponse(
@@ -264,7 +294,7 @@ async function deleteAllUsers(req, res) {
       req.headers.referer,
     );
   } catch {
-    res.status(500).render('partials/500', {layout: false});
+    res.status(500).render('partials/500', { layout: false });
   }
 }
 

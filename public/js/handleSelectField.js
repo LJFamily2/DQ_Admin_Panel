@@ -83,7 +83,7 @@ function getDryRubberFields(detailPage) {
           oninput="handlePercentageInput(this)"
         />
       </div>
-      <div class="row m-0 p-0">
+      <div class="row m-0 my-2 p-0">
         <div class="col">
           <label for="price" class="form-label fw-bold">Đơn giá</label>
           <input

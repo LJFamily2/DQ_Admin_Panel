@@ -42,14 +42,12 @@ async function renderPage(req, res) {
       messages: req.flash(),
     });
   } catch (err) {
-    console.log(err);
     res.status(500).render('partials/500', { layout: false });
   }
 }
 
 async function createData(req, res) {
   req.body = trimStringFields(req.body);
-  console.log(req.body);
   try {
     let checkExistedProduct = await SpendModel.findOne({
       date: req.body.date,
@@ -88,7 +86,6 @@ async function createData(req, res) {
       req.headers.referer,
     );
   } catch (err) {
-    console.log(err);
     // Error response
     res.status(500).render('partials/500', { layout: false });
   }
@@ -166,7 +163,6 @@ async function getData(req, res) {
       data,
     });
   } catch (err) {
-    console.log(err);
     res.status(500).render('partials/500', { layout: false });
   }
 }
@@ -239,7 +235,6 @@ async function updateData(req, res) {
       req.headers.referer,
     );
   } catch (err) {
-    console.log(err);
     res.status(500).render('partials/500', { layout: false });
   }
 }
@@ -270,7 +265,6 @@ async function deleteData(req, res) {
       req.headers.referer,
     );
   } catch (err) {
-    console.log(err);
     res.status(500).render('partials/500', { layout: false });
   }
 }
@@ -299,7 +293,6 @@ async function deleteAll(req, res) {
       req.headers.referer,
     );
   } catch (err) {
-    console.log(err);
     res.status(500).render('partials/500', { layout: false });
   }
 }

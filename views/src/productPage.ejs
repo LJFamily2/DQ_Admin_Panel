@@ -18,6 +18,7 @@
 
 <%- include('../partials/totalValue.ejs') %>
 
+<% if(user.role){ %>
 <button
   type="button"
   class="btn btn-danger mx-2 mx-md-3 mt-2"
@@ -27,6 +28,8 @@
 >
   Xóa tất cả thông tin
 </button>
+<% } %>
+
 <div class="row m-0 m-md-2 g-3 mb-4">
   <div class="col-12 col-md-9 mt-2">
     <div class="card" style="box-shadow: 0 1px 2px">

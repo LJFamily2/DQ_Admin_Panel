@@ -104,7 +104,6 @@ async function createProduct(req, res) {
 
     let totalDryRubber = (dryRubberUsed * dryPercentage) / 100;
 
-    console.log(totalDryRubber)
     // Calculate adjustments
     let dryRubberAdjustment = -totalDryRubber;
     let productAdjustment = quantity;
@@ -123,7 +122,6 @@ async function createProduct(req, res) {
       req.headers.referer,
     );
   } catch (err) {
-    console.log(err);
     res.status(500).render('partials/500', {layout: false});
   }
 }
@@ -166,7 +164,6 @@ async function updateProduct(req, res) {
 
     return handleResponse(req, res, 200, 'success', 'Cập nhật hàng hóa thành công', req.headers.referer);
   } catch (error) {
-    console.log(error);
     res.status(500).render('partials/500', { layout: false });
   }
 }
@@ -334,7 +331,6 @@ async function deleteAll(req, res) {
       req.headers.referer,
     );
   } catch (err) {
-    console.log(err);
     res.status(500).render('partials/500', { layout: false });
   }
 }

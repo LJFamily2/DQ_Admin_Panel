@@ -46,6 +46,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
 async function fetchData(url) {
   const response = await fetch(url);
+  console.log(response)
   return response.json();
 }
 
@@ -53,6 +54,7 @@ function createDatasets(data, datasetsConfig) {
   const datasets = datasetsConfig.map(config => {
     const dataArray = new Array(12).fill(0);
     data.forEach(item => {
+      console.log(item)
       dataArray[item.month - 1] = item[config.key];
     });
     return {

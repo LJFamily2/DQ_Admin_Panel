@@ -1,8 +1,8 @@
 const RawMaterialModel = require('../models/rawMaterialModel');
-const ProductModel = require('../models/productModel')
-const SpendModel = require('../models/spendModel')
-const SaleModel = require('../models/saleModel')
-const ProductTotalModel = require('../models/productTotalModel')
+const ProductModel = require('../models/productModel');
+const SpendModel = require('../models/spendModel');
+const SaleModel = require('../models/saleModel');
+const ProductTotalModel = require('../models/productTotalModel');
 
 const formatTotalData = require('./utils/formatTotalData');
 
@@ -10,10 +10,8 @@ module.exports = {
   renderPage,
   getRawMaterial,
   getProductData,
-  getRevenueAndSpending
+  getRevenueAndSpending,
 };
-
-
 
 async function renderPage(req, res) {
   try {
@@ -26,41 +24,45 @@ async function renderPage(req, res) {
       user: req.user,
     });
   } catch (err) {
-    console.log(err);
     res.status(500).render('partials/500', { layout: false });
   }
 }
- 
+
 const currentYear = new Date().getFullYear();
 
 async function getRawMaterial(req, res) {
   try {
-
-
     const rawMaterialData = await RawMaterialModel.aggregate([
       {
         $project: {
-          month: { $month: "$date" },
-          year: { $year: "$date" },
-          dryRubber: { $divide: [{ $multiply: ["$products.dryQuantity", "$products.dryPercentage"] }, 100] },
-          keQuantity: "$products.keQuantity",
-          mixedQuantity: "$products.mixedQuantity"
-        }
+          month: { $month: '$date' },
+          year: { $year: '$date' },
+          dryRubber: {
+            $divide: [
+              {
+                $multiply: ['$products.dryQuantity', '$products.dryPercentage'],
+              },
+              100,
+            ],
+          },
+          keQuantity: '$products.keQuantity',
+          mixedQuantity: '$products.mixedQuantity',
+        },
       },
       {
-        $match: { year: currentYear }
+        $match: { year: currentYear },
       },
       {
         $group: {
-          _id: { month: "$month", year: "$year" },
-          totalDryRubber: { $sum: "$dryRubber" },
-          totalKeQuantity: { $sum: "$keQuantity" },
-          totalMixedQuantity: { $sum: "$mixedQuantity" }
-        }
+          _id: { month: '$month', year: '$year' },
+          totalDryRubber: { $sum: '$dryRubber' },
+          totalKeQuantity: { $sum: '$keQuantity' },
+          totalMixedQuantity: { $sum: '$mixedQuantity' },
+        },
       },
       {
-        $sort: { "_id.year": 1, "_id.month": 1 }
-      }
+        $sort: { '_id.year': 1, '_id.month': 1 },
+      },
     ]);
 
     const result = rawMaterialData.map(item => ({
@@ -68,49 +70,48 @@ async function getRawMaterial(req, res) {
       month: item._id.month,
       totalDryRubber: item.totalDryRubber,
       totalKeQuantity: item.totalKeQuantity,
-      totalMixedQuantity: item.totalMixedQuantity
+      totalMixedQuantity: item.totalMixedQuantity,
     }));
 
     res.json(result);
   } catch (err) {
-    console.log(err);
     res.status(500).send('Internal Server Error');
   }
 }
 
 async function getProductData(req, res) {
   try {
-
-
     const productData = await ProductModel.aggregate([
       {
         $project: {
-          month: { $month: "$date" },
-          year: { $year: "$date" },
-          dryRubber: { $divide: [{ $multiply: ["$dryRubberUsed", "$dryPercentage"] }, 100] },
-          quantity: "$quantity"
-        }
+          month: { $month: '$date' },
+          year: { $year: '$date' },
+          dryRubber: {
+            $divide: [{ $multiply: ['$dryRubberUsed', '$dryPercentage'] }, 100],
+          },
+          quantity: '$quantity',
+        },
       },
       {
-        $match: { year: currentYear }
+        $match: { year: currentYear },
       },
       {
         $group: {
-          _id: { month: "$month", year: "$year" },
-          totalDryRubber: { $sum: "$dryRubber" },
-          totalQuantity: { $sum: "$quantity" }
-        }
+          _id: { month: '$month', year: '$year' },
+          totalDryRubber: { $sum: '$dryRubber' },
+          totalQuantity: { $sum: '$quantity' },
+        },
       },
       {
-        $sort: { "_id.year": 1, "_id.month": 1 }
-      }
+        $sort: { '_id.year': 1, '_id.month': 1 },
+      },
     ]);
 
     const result = productData.map(item => ({
       year: item._id.year,
       month: item._id.month,
       totalDryRubber: item.totalDryRubber,
-      totalQuantity: item.totalQuantity
+      totalQuantity: item.totalQuantity,
     }));
 
     res.json(result);
@@ -122,59 +123,72 @@ async function getProductData(req, res) {
 
 async function getRevenueAndSpending(req, res) {
   try {
-
-
     // Aggregate spending data
     const spendData = await SpendModel.aggregate([
       {
         $project: {
-          month: { $month: "$date" },
-          year: { $year: "$date" },
-          total: { $multiply: ["$quantity", "$price"] }
-        }
+          month: { $month: '$date' },
+          year: { $year: '$date' },
+          total: { $multiply: ['$quantity', '$price'] },
+        },
       },
       {
-        $match: { year: currentYear }
+        $match: { year: currentYear },
       },
       {
         $group: {
-          _id: { month: "$month", year: "$year" },
-          totalSpending: { $sum: "$total" }
-        }
+          _id: { month: '$month', year: '$year' },
+          totalSpending: { $sum: '$total' },
+        },
       },
       {
-        $sort: { "_id.year": 1, "_id.month": 1 }
-      }
+        $sort: { '_id.year': 1, '_id.month': 1 },
+      },
     ]);
 
     // Aggregate sales data
     const saleData = await SaleModel.aggregate([
-      { $unwind: "$products" },
+      { $unwind: '$products' },
       {
         $project: {
-          month: { $month: "$products.date" },
-          year: { $year: "$products.date" },
+          month: { $month: '$products.date' },
+          year: { $year: '$products.date' },
           total: {
             $cond: {
-              if: { $eq: ["$products.name", "dryRubber"] },
-              then: { $multiply: [{ $divide: ["$products.quantity", 100] }, "$products.percentage", "$products.price"] },
-              else: { $multiply: ["$products.quantity", "$products.price"] }
-            }
-          }
-        }
+              if: { $eq: ['$products.name', 'dryRubber'] },
+              then: {
+                $multiply: [
+                  {
+                    $divide: [
+                      {
+                        $multiply: [
+                          '$products.quantity',
+                          '$products.percentage',
+                        ],
+                      },
+                      100,
+                    ],
+                  },
+                  '$products.price',
+                ],
+              },
+              else: { $multiply: ['$products.quantity', '$products.price'] },
+            },
+          },
+        },
       },
       {
-        $match: { year: currentYear }
+        $match: { year: currentYear },
       },
       {
         $group: {
-          _id: { month: "$month", year: "$year" },
-          totalRevenue: { $sum: "$total" }
-        }
+          _id: { month: '$month', year: '$year' },
+          totalRevenue: { $sum: '$total' },
+        },
       },
       {
-        $sort: { "_id.year": 1, "_id.month": 1 }
-      }
+        $sort: { '_id.year': 1, '_id.month': 1 },
+      },
     ]);
 
     // Combine the results
@@ -203,7 +217,7 @@ async function getRevenueAndSpending(req, res) {
         year: parseInt(year),
         month: parseInt(month),
         totalSpending: combinedData[key].totalSpending,
-        totalRevenue: combinedData[key].totalRevenue
+        totalRevenue: combinedData[key].totalRevenue,
       };
     });
 

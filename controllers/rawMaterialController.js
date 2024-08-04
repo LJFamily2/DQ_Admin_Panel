@@ -61,7 +61,6 @@ async function updateProductTotal(data, operation) {
 
 async function createData(req, res) {
   req.body = trimStringFields(req.body);
-  console.log(req.body);
   try {
     let date = await RawMaterialModel.findOne({ date: req.body.date });
     if (date) {
@@ -121,7 +120,6 @@ async function createData(req, res) {
       req.headers.referer,
     );
   } catch (err) {
-    console.log(err);
     return res.status(500).render('partials/500', { layout: false });
   }
 }
@@ -443,7 +441,6 @@ async function deleteAll(req, res) {
       },
     ]);
 
-    console.log(totalDryQuantity, totalMixedQuantity, totalKeQuantity);
 
     await ProductTotalModel.findOneAndUpdate(
       {},
@@ -467,7 +464,6 @@ async function deleteAll(req, res) {
       req.headers.referer,
     );
   } catch (err) {
-    console.log(err);
     res.status(500).render('partials/500', { layout: false });
   }
 }

@@ -26,19 +26,21 @@ const convertProductData = (
   prices,
   percentages,
   inputDates,
+  createData,
 ) => {
   let dryRubberIndex = 0;
 
   return names.map((name, index) => {
     const productData = {
       name,
-      quantity: convertToDecimal(quantities[index])  || 0,
+      quantity: convertToDecimal(quantities[index]) || 0,
       price: convertToDecimal(prices[index]) || 0,
-      date: inputDates[index],
+      date: createData ? inputDates : inputDates[index],
     };
 
     if (name === 'dryRubber') {
-      productData.percentage = convertToDecimal(percentages[dryRubberIndex]) || 0;
+      productData.percentage =
+        convertToDecimal(percentages[dryRubberIndex]) || 0;
       dryRubberIndex++;
     }
 
@@ -113,9 +115,7 @@ async function renderPage(req, res) {
 }
 
 async function createData(req, res) {
-  console.log(req.body);
   req.body = trimStringFields(req.body);
-  console.log(req.body);
   try {
     let checkExistedData = await SaleModel.findOne({
       code: { $regex: new RegExp(req.body.code, 'i') },
@@ -132,10 +132,10 @@ async function createData(req, res) {
       );
     }
 
-    const names = ensureArray(req.body.name ) ;
-    const quantities = ensureArray(req.body.quantity ) ;
-    const prices = ensureArray(req.body.price ) ;
-    const percentage = ensureArray(req.body.percentage ) ;
+    const names = ensureArray(req.body.name);
+    const quantities = ensureArray(req.body.quantity);
+    const prices = ensureArray(req.body.price);
+    const percentage = ensureArray(req.body.percentage);
     const inputDate = req.body.date;
     const products = convertProductData(
       names,
@@ -143,6 +143,7 @@ async function createData(req, res) {
       prices,
       percentage,
       inputDate,
+      true,
     );
 
     const newSale = await SaleModel.create({
@@ -206,7 +207,6 @@ async function createData(req, res) {
       req.headers.referer,
     );
   } catch (err) {
-    console.log(err);
     res.status(500).render('partials/500', { layout: false });
   }
 }
@@ -296,7 +296,6 @@ async function getDatas(req, res) {
 }
 
 async function updateData(req, res) {
-  console.log(req.body);
   try {
     const { id } = req.params;
     if (!id)
@@ -310,10 +309,10 @@ async function updateData(req, res) {
       );
 
     const names = ensureArray(req.body.name);
-    const quantities = ensureArray(req.body.quantity) ;
-    const prices = ensureArray(req.body.price) ;
+    const quantities = ensureArray(req.body.quantity);
+    const prices = ensureArray(req.body.price);
     const inputDates = ensureArray(req.body.inputDate);
-    const percentages = ensureArray(req.body.percentage) ;
+    const percentages = ensureArray(req.body.percentage);
     const products = convertProductData(
       names,
       quantities,
@@ -369,7 +368,6 @@ async function updateData(req, res) {
       req.headers.referer,
     );
   } catch (err) {
-    console.log(err);
     res.status(500).render('partials/500', { layout: false });
   }
 }
@@ -414,15 +412,15 @@ async function deleteData(req, res) {
       { product: 0, dryRubber: 0, mixedQuantity: 0, totalIncome: 0 },
     );
 
-    console.log(totals.dryRubber)
-
     let updateData = {
       $inc: {
         income: -totals.totalIncome,
         profit: -totals.totalIncome,
         ...(totals.product > 0 && { product: totals.product }),
         ...(totals.dryRubber > 0 && { dryRubber: totals.dryRubber }),
-        ...(totals.mixedQuantity > 0 && { mixedQuantity: totals.mixedQuantity }),
+        ...(totals.mixedQuantity > 0 && {
+          mixedQuantity: totals.mixedQuantity,
+        }),
       },
     };
 
@@ -439,7 +437,6 @@ async function deleteData(req, res) {
       req.headers.referer,
     );
   } catch (err) {
-    console.log(err);
     res.status(500).render('partials/500', { layout: false });
   }
 }
@@ -500,10 +497,6 @@ async function deleteAll(req, res) {
       { dryrubberQuantity: 0, productQuantity: 0, mixedQuantity: 0 },
     );
 
-    console.log(dryrubberQuantity);
-    console.log(productQuantity);
-    console.log(mixedQuantity);
-
     const productTotal = await ProductTotalModel.findOne({});
     const currentIncome = productTotal ? productTotal.income : 0;
 
@@ -533,7 +526,6 @@ async function deleteAll(req, res) {
       req.headers.referer,
     );
   } catch (err) {
-    console.log(err);
     res.status(500).render('partials/500', { layout: false });
   }
 }
