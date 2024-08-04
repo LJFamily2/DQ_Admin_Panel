@@ -9,9 +9,11 @@ const queryRoute = require("./src/queryRoute")
 const rawMaterialRoute = require("./src/rawMaterialRoute")
 const saleRoute = require("./src/saleRoute")
 const spendRoute = require("./src/spendRoute")
+const dashboard = require("./src/dashboardRoute")
 
 
 const routes = [
+    {path: "/tong", route: dashboard},
     {path: "/dang-nhap", route: signInRoute},
     {path: "/ho-so", route: profileRoute},
     {path: "/quan-ly-tai-khoan", route: accountRoute},
