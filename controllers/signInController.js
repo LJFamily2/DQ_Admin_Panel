@@ -24,7 +24,7 @@ function handleLogin(req, res, next) {
             } else {
                 req.session.cookie.expires = false;
             }
-            return res.redirect('/truy-van');
+            return res.redirect('/tong');
         });
     })(req, res, next);
 }
