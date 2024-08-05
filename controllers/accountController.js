@@ -99,7 +99,7 @@ async function createUser(req, res) {
       201,
       'success',
       'Tạo tài khoản thành công',
-      '/dang-nhap',
+      req.user ? req.headers.referer : '/dang-nhap',
     );
   } catch {
     res.status(500).render('partials/500', { layout: false });
