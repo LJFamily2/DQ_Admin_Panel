@@ -8,12 +8,8 @@
   <!-- Css -->
   <style>
     .data{ 
-      text-decoration: none;
-      color: black;
       &:hover{
         cursor: pointer;
-        text-decoration: underline;
-        color: blue;
       }
     }
     .updateButton {
@@ -25,7 +21,7 @@
     }
   </style>
 </head>
-<%- include('../partials/totalValue.ejs') %> <% if(user.role === true){ %>
+<% if(user.role === true){ %>
 <button
   type="button"
   class="btn btn-danger mx-2 mx-md-3 mt-2"
@@ -54,7 +50,7 @@
               <th>Mã hợp đồng</th>
               <th>Hàng hóa</th>
               <th>Ghi chú</th>
-              <th>Tổng</th>
+              <th>Tổng (vnd)</th>
               <th>Tình trạng</th>
               <th>Chỉnh sửa</th>
             </tr>
@@ -263,10 +259,10 @@
             />
           </div>
 
-          <div class="productLists my-3">
+          <div class="productLists mt-3">
             <div class="productList">
               <hr />
-              <div class="row my-3">
+              <div class="row mt-3">
                 <div class="row m-0 p-0">
                   <div class="col">
                     <label
@@ -318,13 +314,15 @@
             </div>
           </div>
 
-          <div class="btnController my-3">
+          <div class="btnController">
             <button
               type="button"
-              class="btn btn-outline-secondary btn-sm"
               onclick="addInputField('form .productLists', '.productList', false)"
+              style="background: transparent; border: none;"
+              title="Thêm hàng hóa"
             >
-              +
+              <i class="ri-add-circle-line fs-5"></i>
+
             </button>
           </div>
 

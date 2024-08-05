@@ -20,7 +20,7 @@
     }
   </style>
 </head>
-<%- include('../partials/totalValue.ejs') %> <% if(user.role === true){ %>
+ <% if(user.role === true){ %>
 <button
   type="button"
   class="btn btn-danger mx-2 mx-md-3 mt-2"
@@ -220,13 +220,13 @@
                     </div>
                     <div class="modal-footer">
                       <!-- Buttons -->
-                      <button type="submit" class="btn btn-success">Lưu</button>
+                      <button type="submit" class="btn btn-primary">Lưu</button>
                       <button
                         type="reset"
                         class="btn text-dark"
                         onclick="resetInput()"
                       >
-                        Reset
+                        Đặt lại
                       </button>
                     </div>
                   </form>

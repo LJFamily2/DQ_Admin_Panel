@@ -278,7 +278,7 @@ async function getDatas(req, res) {
         code: sale.code || '',
         products: sale.slug,
         notes: sale.notes || '',
-        total: formatNumberForDisplay(totalPrice) + ' VND',
+        total: formatNumberForDisplay(totalPrice),
         status: sale.status,
         slug: sale.slug,
       };

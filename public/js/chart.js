@@ -40,9 +40,7 @@ document.addEventListener('DOMContentLoaded', async function () {
   ];
 
   for (const config of chartConfigs) {
-    console.log(`Fetching data from ${config.url}`);
     const data = await fetchData(config.url);
-    console.log(`Data fetched for ${config.chartId}:`, data);
     const datasets = createDatasets(data, config.datasetsConfig);
     createProductsChart(config.chartId, config.title, labels, datasets);
     document.getElementById(config.spinnerId).classList.add('hidden');
@@ -109,4 +107,27 @@ function createProductsChart(chartId, title, labels, datasets) {
       },
     },
   });
+}
+
+function downloadChart(chartId, filename) {
+  const chartCanvas = document.getElementById(chartId);
+  const tempCanvas = document.createElement('canvas');
+  const tempContext = tempCanvas.getContext('2d');
+
+  // Set the dimensions of the temporary canvas to match the chart canvas
+  tempCanvas.width = chartCanvas.width;
+  tempCanvas.height = chartCanvas.height;
+
+  // Draw a white rectangle as the background
+  tempContext.fillStyle = 'white';
+  tempContext.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+
+  // Draw the chart on top of the white background
+  tempContext.drawImage(chartCanvas, 0, 0);
+
+  // Create a download link
+  const link = document.createElement('a');
+  link.href = tempCanvas.toDataURL('image/png');
+  link.download = filename;
+  link.click();
 }

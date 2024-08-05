@@ -33,21 +33,20 @@
 <div class="row m-0 m-md-2 g-3">
   <div class="col-12 col-md-6 d-flex flex-column">
     <div class="card flex-grow-1" style="box-shadow: 0 1px 2px">
-      <div class="card-header">
-        <button
-          class="btn btn-secondary"
-          onclick="downloadChart('revenueAndSpendChart', 'Thu_Nhập_Chi_Tiêu.png')"
-        >
-          Tải xuống
-        </button>
-      </div>
       <div class="card-body position-relative">
         <div
           class="spinner-border text-dark position-absolute top-50 start-50"
           id="spinner-revenueAndSpendChart"
-          
         ></div>
         <canvas id="revenueAndSpendChart"></canvas>
+      </div>
+      <div class="card-footer">
+        <button
+          class="btn btn-secondary float-end"
+          onclick="downloadChart('revenueAndSpendChart', 'Thu_Nhập_Chi_Tiêu.png')"
+        >
+          Tải xuống
+        </button>
       </div>
     </div>
   </div>
@@ -55,43 +54,41 @@
     <div class="row g-3">
       <div class="col-12">
         <div class="card" style="box-shadow: 0 1px 2px">
-          <div class="card-header">
+          <div class="card-body position-relative">
+            <div
+              class="spinner-border text-dark position-absolute top-50 start-50"
+              id="spinner-myChart"
+            ></div>
+
+            <canvas id="myChart"></canvas>
+          </div>
+          <div class="card-footer">
             <button
-              class="btn btn-secondary"
+              class="btn btn-secondary float-end"
               onclick="downloadChart('myChart', 'Nguyên_Liệu_Mủ.png')"
             >
               Tải xuống
             </button>
           </div>
-          <div class="card-body position-relative">
-            <div
-              class="spinner-border text-dark position-absolute top-50 start-50"
-              id="spinner-myChart"
-              
-            ></div>
-
-            <canvas id="myChart"></canvas>
-          </div>
         </div>
       </div>
       <div class="col-12">
         <div class="card" style="box-shadow: 0 1px 2px">
-          <div class="card-header">
-            <button
-              class="btn btn-secondary"
-              onclick="downloadChart('productChart', 'Dữ_Liệu_Chạy_Lò.png')"
-            >
-              Tải xuống
-            </button>
-          </div>
           <div class="card-body position-relative">
             <div
               class="spinner-border text-dark position-absolute top-50 start-50"
               id="spinner-productChart"
-              
             ></div>
 
             <canvas id="productChart"></canvas>
+          </div>
+          <div class="card-footer">
+            <button
+              class="btn btn-secondary float-end"
+              onclick="downloadChart('productChart', 'Dữ_Liệu_Chạy_Lò.png')"
+            >
+              Tải xuống
+            </button>
           </div>
         </div>
       </div>

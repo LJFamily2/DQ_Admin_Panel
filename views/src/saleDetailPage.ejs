@@ -15,7 +15,6 @@
   </ol>
 </nav>
 
-<%- include('../partials/totalValue.ejs') %>
 
 <form action="/quan-ly-hop-dong/update/<%= sale._id %>" method="post">
   <div class="row m-2 g-3">
@@ -75,8 +74,8 @@
       </div>
       <div class="card-footer bg-transparent">
         <!-- Buttons -->
-        <button type="submit" class="btn btn-success">Lưu</button>
-        <button type="reset" class="btn text-dark">Làm mới</button>
+        <button type="submit" class="btn btn-primary">Lưu</button>
+        <button type="reset" class="btn text-dark">Đặt lại</button>
       </div>
     </div>
     </div>
@@ -217,10 +216,11 @@
         <div class="btnController my-3">
           <button
             type="button"
-            class="btn btn-outline-secondary btn-sm"
             onclick="addInputField('.productLists', '.productList', true)"
+            style="background: transparent; border: none;"
+            title="Thêm hàng hóa"
           >
-            +
+            <i class="ri-add-circle-line fs-4"></i>
           </button>
         </div>
         </div>

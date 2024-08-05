@@ -60,7 +60,7 @@ function initializeDataTable(
         .data()
         .reduce((acc, val) => acc + parseNumber(val), 0);
       const formatted = formatNumberForDisplay(total);
-      $(api.column(colIndex).footer()).html(`<strong>${formatted}</strong>`);
+      $(api.column(colIndex).footer()).html(`<strong style='float: left'>${formatted}</strong>`);
     });
   };
 

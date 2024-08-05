@@ -6,7 +6,6 @@
   <script src="/js/slim-select.js" defer></script>
 </head>
 
-<%- include('../partials/totalValue.ejs') %>
 
 <% if(user.role === true){ %>
 <button
@@ -32,7 +31,7 @@
               <th>STT</th>
               <th>Ngày</th>
               <th>Hàng hóa</th>
-              <th>Số lượng</th>
+              <th>Số lượng (KG)</th>
               <th>Đơn giá</th>
               <th>Tổng</th>
               <th>Ghi chú</th>
@@ -104,7 +103,7 @@
                       </div>
             
                       <div class="my-3">
-                        <label for="quantity" class="form-label fw-bold">Số lượng</label>
+                        <label for="quantity" class="form-label fw-bold">Số lượng (KG)</label>
                         <input
                           type="text"
                           class="form-control"
@@ -142,9 +141,9 @@
                     </div>
                     <div class="modal-footer">
                       <!-- Buttons -->
-                      <button type="submit" class="btn btn-success">Lưu</button>
+                      <button type="submit" class="btn btn-primary">Lưu</button>
                       <button type="reset" class="btn text-dark">
-                        Làm mới
+                        Đặt lại
                       </button>
                     </div>
                   </form>
@@ -240,7 +239,7 @@
           </div>
 
           <div class="my-3">
-            <label for="quantity" class="form-label fw-bold">Số lượng</label>
+            <label for="quantity" class="form-label fw-bold">Số lượng (KG)</label>
             <input
               type="text"
               class="form-control"
