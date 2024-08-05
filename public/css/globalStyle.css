@@ -9,7 +9,8 @@
   --background_color: #caf4ff;
 }
 
-table thead th, table tfoot th {
+table thead th,
+table tfoot th {
   border: 1px solid rgba(0, 0, 0, 0.5);
 }
 
@@ -17,5 +18,8 @@ table td {
   word-wrap: break-word;
   border-right: 1px solid rgba(0, 0, 0, 0.5);
   border-left: 1px solid rgba(0, 0, 0, 0.5);
+}
 
+body .modal-backdrop.show {
+  opacity: 0.8;
 }

@@ -18,9 +18,10 @@
       transform: rotate(180deg);
       transition: all 200ms linear;
     }
+
   </style>
 </head>
- <% if(user.role === true){ %>
+<% if(user.role === true){ %>
 <button
   type="button"
   class="btn btn-danger mx-2 mx-md-3 mt-2"
@@ -184,8 +185,12 @@
                           <div class="row my-3">
                             <label class="form-label fw-bold">Mủ Ké</label>
                             <input type="text" class="form-control" hidden />
-                            <div class="col ">
-                              <label for="keQuantity<%= index + 1 %>" class="form-label">Số lượng</label>
+                            <div class="col">
+                              <label
+                                for="keQuantity<%= index + 1 %>"
+                                class="form-label"
+                                >Số lượng</label
+                              >
                               <input
                                 type="text"
                                 class="form-control"
@@ -214,7 +219,8 @@
                           id="note<%= index + 1 %>"
                           name="notes"
                           onchange="newInput(this)"
-                        ><%= data.notes %></textarea
+                        >
+<%= data.notes %></textarea
                         >
                       </div>
                     </div>

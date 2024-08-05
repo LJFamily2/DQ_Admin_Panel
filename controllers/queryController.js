@@ -29,7 +29,6 @@ async function getDataTotal(req, res) {
   try {
     const {
       draw,
-      start = 0,
       search,
       order,
       columns,
@@ -45,15 +44,12 @@ async function getDataTotal(req, res) {
 
     const filter = {};
 
-    // Initialize today's date and reset hours to start of the day for comparison
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     
-    // If reqStartDate is provided, use it; otherwise, use today
     const startDate = reqStartDate ? new Date(reqStartDate) : new Date(today);
     startDate.setHours(0, 0, 0, 0); // Ensure start of the day
     
-    // If reqEndDate is provided, use it; otherwise, use startDate
     const endDate = reqEndDate ? new Date(reqEndDate) : new Date(startDate);
     endDate.setHours(23, 59, 59, 999); // Ensure end of the day
     
@@ -69,7 +65,6 @@ async function getDataTotal(req, res) {
     const totalRecords = await RawMaterialModel.countDocuments(filter);
     const plantations = await RawMaterialModel.find(filter)
       .sort({ [sortColumn]: sortDirection })
-      .skip(start)
       .exec();
 
     const data = plantations.map((plantation, index) => {
@@ -83,7 +78,7 @@ async function getDataTotal(req, res) {
           (plantation.products.dryQuantity *
             plantation.products.dryPercentage) /
           100;
-          keQuantityTotal +=
+        keQuantityTotal +=
           (plantation.products.keQuantity *
             plantation.products.dryPercentage) /
           100;
@@ -99,7 +94,7 @@ async function getDataTotal(req, res) {
       const totalMoneyValue = dryTotalValue + mixedTotalValue + keTotalValue;
 
       return {
-        no: parseInt(start, 10) + index + 1,
+        no: index + 1,
         date: plantation.date.toLocaleDateString('vi-VN'),
         dryQuantity: dryQuantityTotal.toLocaleString('vi-VN'),
         dryPrice: dryPrice,
@@ -118,7 +113,7 @@ async function getDataTotal(req, res) {
     res.json({
       draw,
       recordsTotal: totalRecords,
-      recordsFiltered: plantations.length,
+      recordsFiltered: totalRecords, // Set recordsFiltered to totalRecords
       data,
     });
   } catch (err) {

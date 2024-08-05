@@ -130,6 +130,7 @@ function initializeDataTable(
     serverSide: true,
     processing: true,
     responsive: true,
+    paging: !queryPageFooter,
     scrollX: isMobile,
     pagingType: 'first_last_numbers',
     rowGroup: rowGroupOptions,

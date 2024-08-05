@@ -4,16 +4,6 @@
   <script src="/js/inputFieldRestriction.js" defer></script>
   <!-- Slim select -->
   <script src="/js/slim-select.js" defer></script>
-  <style>
-    .rawMaterial{
-      &:hover{
-        cursor: pointer;
-        text-decoration: underline;
-        color: blue;
-
-      }
-    }
-  </style>
 </head>
 
 
@@ -403,7 +393,7 @@
     { data: 'dryRubberUsed', orderable: false, width: '20%',
       render: function(data){
         console.log(data)
-        return `<span class="rawMaterial" data-bs-toggle="modal" data-bs-target="#rawMaterial${data.id}">${data.value}</span>`;
+        return `<a class="link-opacity-50-hover" data-bs-toggle="modal" data-bs-target="#rawMaterial${data.id}" style="cursor: pointer">${data.value}</a>`;
       }
      },
     { data: 'quantity', orderable: false, width: '20%' },

@@ -7,11 +7,6 @@
 
   <!-- Css -->
   <style>
-    .data{ 
-      &:hover{
-        cursor: pointer;
-      }
-    }
     .updateButton {
       transition: all 200ms linear;
     }
@@ -393,7 +388,7 @@
       width: '12%',
       render: function (data, row, type) {
         return `
-          <a class="data" data-bs-toggle="modal" data-bs-target="#productList${data}" >Xem</a>
+          <a class="link-opacity-50-hover" data-bs-toggle="modal" data-bs-target="#productList${data}" style="cursor: pointer">Xem</a>
         `;
       },
     },
