@@ -1,6 +1,5 @@
 const trimStringFields = require('./utils/trimStringFields');
 const handleResponse = require('./utils/handleResponse');
-const formatNumberForDisplay = require('./utils/formatNumberForDisplay');
 const RawMaterialModel = require('../models/rawMaterialModel');
 const ProductTotalModel = require('../models/productTotalModel');
 const convertToDecimal = require('./utils/convertToDecimal');
@@ -120,6 +119,7 @@ async function createData(req, res) {
       req.headers.referer,
     );
   } catch (err) {
+    console.log(err);
     return res.status(500).render('partials/500', { layout: false });
   }
 }
@@ -222,17 +222,19 @@ async function getDatas(req, res) {
       .map((item, index) => ({
         no: parseInt(start, 10) + index + 1,
         date: new Date(item.date).toLocaleDateString('vi-VN'),
-        dryQuantity: formatNumberForDisplay(item.products.dryQuantity),
-        dryPercentage: formatNumberForDisplay(item.products.dryPercentage),
-        dryTotal: formatNumberForDisplay(
-          (item.products.dryQuantity * item.products.dryPercentage) / 100,
-        ),
-        mixedQuantity: formatNumberForDisplay(item.products.mixedQuantity),
-        keQuantity: formatNumberForDisplay(item.products.keQuantity),
-        kePercentage: formatNumberForDisplay(item.products.dryPercentage),
-        keTotal: formatNumberForDisplay(
-          (item.products.keQuantity * item.products.dryPercentage) / 100,
-        ),
+        dryQuantity: item.products.dryQuantity.toLocaleString('en-EN'),
+        dryPercentage: item.products.dryPercentage.toLocaleString('en-EN'),
+        dryTotal: (
+          (item.products.dryQuantity * item.products.dryPercentage) /
+          100
+        ).toLocaleString('en-EN'),
+        mixedQuantity: item.products.mixedQuantity.toLocaleString('en-EN'),
+        keQuantity: item.products.keQuantity.toLocaleString('en-EN'),
+        kePercentage: item.products.dryPercentage.toLocaleString('en-EN'),
+        keTotal: (
+          (item.products.keQuantity * item.products.dryPercentage) /
+          100
+        ).toLocaleString('en-EN'),
         notes: item.notes || '',
         id: item._id,
       }));
@@ -440,7 +442,6 @@ async function deleteAll(req, res) {
         },
       },
     ]);
-
 
     await ProductTotalModel.findOneAndUpdate(
       {},

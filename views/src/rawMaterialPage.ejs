@@ -18,7 +18,9 @@
       transform: rotate(180deg);
       transition: all 200ms linear;
     }
-
+    td{
+      word-break: break-all;
+    }
   </style>
 </head>
 <% if(user.role === true){ %>
@@ -129,10 +131,10 @@
                                 class="form-control"
                                 id="dryQuantity<%= index + 1 %>"
                                 name="dryQuantity"
-                                placeholder="1234,34"
+                                placeholder="1,234.34"
                                 oninput="handleQuantityInput(this)"
                                 onchange="newInput(this)"
-                                value="<%= data.products.dryQuantity.toLocaleString('vi-VN')  %>"
+                                value="<%= data.products.dryQuantity  %>"
                               />
                             </div>
                             <div class="col col-md-6">
@@ -149,7 +151,7 @@
                                 placeholder="23,04"
                                 oninput="handlePercentageInput(this)"
                                 onchange="newInput(this)"
-                                value="<%= data.products.dryPercentage.toLocaleString('vi-VN')  %>"
+                                value="<%= data.products.dryPercentage  %>"
                               />
                             </div>
                           </div>
@@ -171,11 +173,11 @@
                                 class="form-control"
                                 id="mixedQuantity<%= index + 1 %>"
                                 name="mixedQuantity"
-                                placeholder="1234,34"
+                                placeholder="1,234.34"
                                 min="0"
                                 oninput="handleQuantityInput(this)"
                                 onchange="newInput(this)"
-                                value="<%= data.products.mixedQuantity.toLocaleString('vi-VN')  %>"
+                                value="<%= data.products.mixedQuantity  %>"
                               />
                             </div>
                           </div>
@@ -196,9 +198,9 @@
                                 class="form-control"
                                 id="keQuantity<%= index + 1 %>"
                                 name="keQuantity"
-                                placeholder="1234,34"
+                                placeholder="1,234.34"
                                 oninput="handleQuantityInput(this)"
-                                value="<%= data.products.keQuantity.toLocaleString('vi-VN')  %>"
+                                value="<%= data.products.keQuantity  %>"
                               />
                             </div>
                           </div>
@@ -329,7 +331,7 @@
                     class="form-control"
                     id="dryQuantity"
                     name="dryQuantity"
-                    placeholder="1234,34"
+                    placeholder="1,234.34"
                     oninput="handleQuantityInput(this)"
                   />
                 </div>
@@ -342,7 +344,7 @@
                     class="form-control"
                     id="dryPercentage"
                     name="dryPercentage"
-                    placeholder="23,04"
+                    placeholder="23.043"
                     oninput="handlePercentageInput(this)"
                   />
                 </div>
@@ -361,7 +363,7 @@
                     class="form-control"
                     id="mixedQuantity"
                     name="mixedQuantity"
-                    placeholder="1234,34"
+                    placeholder="1,234.34"
                     min="0"
                     oninput="handleQuantityInput(this)"
                   />
@@ -380,7 +382,7 @@
                     class="form-control"
                     id="keQuantity"
                     name="keQuantity"
-                    placeholder="1234,34"
+                    placeholder="1,234.34"
                     oninput="handleQuantityInput(this)"
                   />
                 </div>

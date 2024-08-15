@@ -1,11 +1,11 @@
 function convertToDecimal(input) {
   if (input) {
-    // First, remove all periods assuming they are used as thousand separators
-    let result = input.replace(/\./g, '');
-    // Then, replace the first comma with a period to handle decimal separator
-    result = result.replace(',', '.');
+    // Assign input to result
+    let result = input;
+    // Remove all commas
+    result = result.replace(/,/g, '');
     // Convert the string to a floating-point number
-    return parseFloat(result).toFixed(2);
+    return parseFloat(result);
   }
 }
 
