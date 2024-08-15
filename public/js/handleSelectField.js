@@ -53,7 +53,7 @@ function getDryRubberFields(detailPage) {
           id="price"
           name="price"
           placeholder="20.000"
-          oninput="handleQuantityInput(this)"
+          oninput="handlePriceInput(this)"
         />
       </div>
     </div>
@@ -92,7 +92,7 @@ function getDryRubberFields(detailPage) {
             id="price"
             name="price"
             placeholder="20.000"
-            oninput="handleQuantityInput(this)"
+            oninput="handlePriceInput(this)"
           />
         </div>
       </div>
@@ -121,7 +121,7 @@ function getNormalFields() {
           class="form-control"
           name="price"
           placeholder="20.000"
-          oninput="handleQuantityInput(this)"
+          oninput="handlePriceInput(this)"
         />
       </div>
     </div>
