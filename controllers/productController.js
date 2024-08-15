@@ -277,10 +277,10 @@ async function getProducts(req, res) {
       no: parseInt(start, 10) + index + 1,
       date: product.date.toLocaleDateString('vi-VN'),
       dryRubberUsed: {
-        value: ((product.dryRubberUsed * product.dryPercentage) / 100).toLocaleString('vi-VN'),
+        value: ((product.dryRubberUsed * product.dryPercentage) / 100).toLocaleString('en-EN'),
         id: product._id
       },
-      quantity: product.quantity.toLocaleString('vi-VN') || 0,
+      quantity: product.quantity.toLocaleString('en-EN') || 0,
       notes: product.notes || '',
       id: product._id,
     }));
