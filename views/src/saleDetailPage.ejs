@@ -15,6 +15,8 @@
   </ol>
 </nav>
 
+<%- include('../partials/totalValue') %>
+
 
 <form action="/quan-ly-hop-dong/update/<%= sale._id %>" method="post">
   <div class="row m-2 g-3">
@@ -121,7 +123,7 @@
                             class="form-control"
                             id="quantity"
                             name="quantity"
-                            placeholder="1234,34"
+                            placeholder="1.234,34"
                             oninput="handleQuantityInput(this)"
                             value="<%= product.quantity.toLocaleString('vi-VN') %>"
                           />
@@ -179,7 +181,7 @@
                           type="text"
                           class="form-control"
                           name="quantity"
-                          placeholder="1234,34"
+                          placeholder="1.234,34"
                           oninput="handleQuantityInput(this)"
                           value="<%= product.quantity.toLocaleString('vi-VN') %>"
                         />
@@ -190,7 +192,7 @@
                           type="text"
                           class="form-control"
                           name="price"
-                          placeholder="20000"
+                          placeholder="20.000"
                           oninput="handleQuantityInput(this)"
                           value="<%= product.price.toLocaleString('vi-VN') %>"
                         />

@@ -6,6 +6,7 @@
   <script src="/js/slim-select.js" defer></script>
 </head>
 
+<%- include('../partials/totalValue') %>
 
 <% if(user.role === true){ %>
 <button
@@ -258,7 +259,7 @@
               id="price"
               name="price"
               placeholder="20.000"
-              oninput="handleQuantityInput(this)"
+              oninput="handlePriceInput(this)"
             />
           </div>
 

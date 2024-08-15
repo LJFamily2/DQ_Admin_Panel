@@ -4,7 +4,6 @@ const AreaModel = require('../models/areaModel');
 const ManagerModel = require('../models/managerModel');
 const ProductModel = require('../models/productModel');
 const trimStringFields = require('./utils/trimStringFields');
-const formatNumberForDisplay = require("./utils/formatNumberForDisplay")
 
 module.exports = {
   // Main page
@@ -111,7 +110,7 @@ async function createPlantation(req, res) {
       '/quan-ly-vuon',
     );
   } catch {
-    res.status(500).render('partials/500', {layout: false});
+    res.status(500).render('partials/500', { layout: false });
   }
 }
 
@@ -199,8 +198,8 @@ async function updatePlantation(req, res) {
       'Thay đổi thông tin thành công',
       req.headers.referer,
     );
-  } catch{
-    res.status(500).render('partials/500', {layout: false});
+  } catch {
+    res.status(500).render('partials/500', { layout: false });
   }
 }
 
@@ -232,8 +231,8 @@ async function deletePlantation(req, res) {
         ? 'Xóa vườn và người quản lý thành công!'
         : 'Xóa vườn thành công!';
     return handleResponse(req, res, 200, 'success', message, '/quan-ly-vuon');
-  } catch{
-    res.status(500).render('partials/500', {layout: false});
+  } catch {
+    res.status(500).render('partials/500', { layout: false });
   }
 }
 
@@ -258,8 +257,8 @@ async function deleteAllPlantation(req, res) {
       'Xóa tất cả vườn và người quản lý thành công!',
       '/quan-ly-vuon',
     );
-  } catch  {
-    res.status(500).render('partials/500', {layout: false});
+  } catch {
+    res.status(500).render('partials/500', { layout: false });
   }
 }
 
@@ -328,7 +327,7 @@ async function getPlantations(req, res) {
       data,
     });
   } catch {
-    res.status(500).render('partials/500', {layout: false});
+    res.status(500).render('partials/500', { layout: false });
   }
 }
 async function renderPage(req, res) {
@@ -348,7 +347,7 @@ async function renderPage(req, res) {
       messages: req.flash(),
     });
   } catch {
-    res.status(500).render('partials/500', {layout: false});
+    res.status(500).render('partials/500', { layout: false });
   }
 }
 
@@ -382,8 +381,8 @@ async function renderDetailPage(req, res) {
       managers,
       messages: req.flash(),
     });
-  } catch{
-    res.status(500).render('partials/500', {layout: false});
+  } catch {
+    res.status(500).render('partials/500', { layout: false });
   }
 }
 
@@ -457,10 +456,9 @@ async function addData(req, res) {
       req.headers.referer,
     );
   } catch {
-    res.status(500).render('partials/500', {layout: false});
+    res.status(500).render('partials/500', { layout: false });
   }
 }
-
 
 async function getDatas(req, res) {
   try {
@@ -588,23 +586,16 @@ async function getDatas(req, res) {
     const data = paginatedData.map((record, index) => ({
       no: parseInt(start, 10) + index + 1,
       date: record.date.toLocaleDateString(),
-      dryQuantity: formatNumberForDisplay(
-        (record.products && record.products.dryQuantity) || 0,
-      ),
-      dryPercentage: formatNumberForDisplay(
-        (record.products && record.products.dryPercentage) || 0,
-      ),
-      dryTotal: formatNumberForDisplay(
+      dryQuantity: (record.products && record.products.dryQuantity) || 0,
+      dryPercentage: (record.products && record.products.dryPercentage) || 0,
+      dryTotal:
         (record.products &&
           record.products.dryQuantity &&
           record.products.dryPercentage &&
           (record.products.dryQuantity * record.products.dryPercentage) /
             100) ||
-          0,
-      ),
-      mixedQuantity: formatNumberForDisplay(
-        (record.products && record.products.mixedQuantity) || 0,
-      ),
+        0,
+      mixedQuantity: (record.products && record.products.mixedQuantity) || 0,
       notes: record.notes || '',
       id: record._id,
     }));
@@ -683,7 +674,7 @@ async function updateData(req, res) {
       req.headers.referer,
     );
   } catch {
-    res.status(500).render('partials/500', {layout: false});
+    res.status(500).render('partials/500', { layout: false });
   }
 }
 
@@ -714,6 +705,6 @@ async function deleteData(req, res) {
       req.headers.referer,
     );
   } catch {
-    res.status(500).render('partials/500', {layout: false});
+    res.status(500).render('partials/500', { layout: false });
   }
 }

@@ -164,6 +164,7 @@ async function updateProduct(req, res) {
 
     return handleResponse(req, res, 200, 'success', 'Cập nhật hàng hóa thành công', req.headers.referer);
   } catch (error) {
+    console.log(error)
     res.status(500).render('partials/500', { layout: false });
   }
 }
@@ -277,10 +278,10 @@ async function getProducts(req, res) {
       no: parseInt(start, 10) + index + 1,
       date: product.date.toLocaleDateString('vi-VN'),
       dryRubberUsed: {
-        value: ((product.dryRubberUsed * product.dryPercentage) / 100).toLocaleString('en-EN'),
+        value: ((product.dryRubberUsed * product.dryPercentage) / 100).toLocaleString('vi-VN'),
         id: product._id
       },
-      quantity: product.quantity.toLocaleString('en-EN') || 0,
+      quantity: product.quantity.toLocaleString('vi-VN') || 0,
       notes: product.notes || '',
       id: product._id,
     }));

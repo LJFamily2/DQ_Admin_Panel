@@ -3,7 +3,6 @@ const ProductTotalModel = require('../models/productTotalModel');
 const formatTotalData = require('./utils/formatTotalData');
 const trimStringFields = require('./utils/trimStringFields');
 const handleResponse = require('./utils/handleResponse');
-const formatNumberForDisplay = require('./utils/formatNumberForDisplay');
 const convertToDecimal = require('./utils/convertToDecimal');
 
 module.exports = {
@@ -148,10 +147,10 @@ async function getData(req, res) {
     const data = products.map((product, index) => ({
       no: parseInt(start, 10) + index + 1,
       date: product.date.toLocaleDateString('vi-VN'),
-      product: product.product || '',
-      quantity: formatNumberForDisplay(product.quantity) || 0,
-      price: formatNumberForDisplay(product.price) || 0,
-      total: formatNumberForDisplay(product.price * product.quantity) || 0,
+      product: product.product.toLocaleString('vi-VN') || '',
+      quantity: product.quantity.toLocaleString('vi-VN') || 0,
+      price: product.price.toLocaleString('vi-VN') || 0,
+      total: (product.price * product.quantity).toLocaleString('vi-VN') || 0,
       notes: product.notes || '',
       id: product._id,
     }));
@@ -163,6 +162,7 @@ async function getData(req, res) {
       data,
     });
   } catch (err) {
+    console.log(err);
     res.status(500).render('partials/500', { layout: false });
   }
 }
@@ -185,7 +185,7 @@ async function updateData(req, res) {
     if (req.body.date && req.body.product) {
       const regexProduct = new RegExp(req.body.product, 'i');
       const checkExistedProduct = await SpendModel.findOne({
-        _id: { $ne: id }, // Exclude the current product
+        _id: { $ne: id },
         date: req.body.date,
         product: { $regex: regexProduct },
       });

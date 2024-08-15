@@ -6,6 +6,7 @@
   <script src="/js/slim-select.js" defer></script>
 </head>
 
+<%- include('../partials/totalValue') %>
 
 <% if(user.role){ %>
 <button
@@ -103,7 +104,7 @@
                               name="dryRubberUsed"
                               placeholder="1,234.5"
                               oninput="handleQuantityInput(this)"
-                              value="<%= product.dryRubberUsed.toLocaleString('en-EN') %>"
+                              value="<%= product.dryRubberUsed.toLocaleString('vi-VN') %>"
                             />
                           </div>
                           <div class="col-6">
@@ -117,7 +118,7 @@
                               name="dryPercentage"
                               placeholder="23,04"
                               oninput="handlePercentageInput(this)"
-                              value="<%= product.dryPercentage.toLocaleString('en-EN') %>"
+                              value="<%= product.dryPercentage.toLocaleString('vi-VN') %>"
                             />
                           </div>
                         </div>
@@ -134,7 +135,7 @@
                           name="quantity"
                           placeholder="1,234.5"
                           oninput="handleQuantityInput(this)"
-                          value="<%= product.quantity.toLocaleString('en-EN') %>"
+                          value="<%= product.quantity.toLocaleString('vi-VN') %>"
                         />
                       </div>
 
@@ -182,7 +183,7 @@
                           <input
                             type="text"
                             class="form-control"
-                            value="<%= product.dryRubberUsed.toLocaleString('en-EN') %>"
+                            value="<%= product.dryRubberUsed.toLocaleString('vi-VN') %>"
                             disabled
                           />
                         </div>
@@ -193,7 +194,7 @@
                           <input
                             type="text"
                             class="form-control"
-                            value="<%= product.dryPercentage.toLocaleString('en-EN') %>"
+                            value="<%= product.dryPercentage.toLocaleString('vi-VN') %>"
                             disabled
                           />
                         </div>

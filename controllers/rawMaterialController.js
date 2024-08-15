@@ -2,7 +2,7 @@ const trimStringFields = require('./utils/trimStringFields');
 const handleResponse = require('./utils/handleResponse');
 const RawMaterialModel = require('../models/rawMaterialModel');
 const ProductTotalModel = require('../models/productTotalModel');
-const convertToDecimal = require('./utils/convertToDecimal');
+const  convertToDecimal  = require('./utils/convertToDecimal');
 const formatTotalData = require('./utils/formatTotalData');
 
 module.exports = {
@@ -222,19 +222,19 @@ async function getDatas(req, res) {
       .map((item, index) => ({
         no: parseInt(start, 10) + index + 1,
         date: new Date(item.date).toLocaleDateString('vi-VN'),
-        dryQuantity: item.products.dryQuantity.toLocaleString('en-EN'),
-        dryPercentage: item.products.dryPercentage.toLocaleString('en-EN'),
+        dryQuantity: item.products.dryQuantity.toLocaleString('vi-VN'),
+        dryPercentage: item.products.dryPercentage.toLocaleString('vi-VN'),
         dryTotal: (
           (item.products.dryQuantity * item.products.dryPercentage) /
           100
-        ).toLocaleString('en-EN'),
-        mixedQuantity: item.products.mixedQuantity.toLocaleString('en-EN'),
-        keQuantity: item.products.keQuantity.toLocaleString('en-EN'),
-        kePercentage: item.products.dryPercentage.toLocaleString('en-EN'),
+        ).toLocaleString('vi-VN'),
+        mixedQuantity: item.products.mixedQuantity.toLocaleString('vi-VN'),
+        keQuantity: item.products.keQuantity.toLocaleString('vi-VN'),
+        kePercentage: item.products.dryPercentage.toLocaleString('vi-VN'),
         keTotal: (
           (item.products.keQuantity * item.products.dryPercentage) /
           100
-        ).toLocaleString('en-EN'),
+        ).toLocaleString('vi-VN'),
         notes: item.notes || '',
         id: item._id,
       }));

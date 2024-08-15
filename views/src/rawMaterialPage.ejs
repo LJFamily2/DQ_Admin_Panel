@@ -23,6 +23,9 @@
     }
   </style>
 </head>
+
+<%- include('../partials/totalValue') %>
+
 <% if(user.role === true){ %>
 <button
   type="button"
@@ -131,10 +134,10 @@
                                 class="form-control"
                                 id="dryQuantity<%= index + 1 %>"
                                 name="dryQuantity"
-                                placeholder="1,234.34"
+                                placeholder="1.234,34"
                                 oninput="handleQuantityInput(this)"
                                 onchange="newInput(this)"
-                                value="<%= data.products.dryQuantity  %>"
+                                value="<%= data.products.dryQuantity.toLocaleString('vi-VN')  %>"
                               />
                             </div>
                             <div class="col col-md-6">
@@ -151,7 +154,7 @@
                                 placeholder="23,04"
                                 oninput="handlePercentageInput(this)"
                                 onchange="newInput(this)"
-                                value="<%= data.products.dryPercentage  %>"
+                                value="<%= data.products.dryPercentage.toLocaleString('vi-VN')   %>"
                               />
                             </div>
                           </div>
@@ -173,11 +176,11 @@
                                 class="form-control"
                                 id="mixedQuantity<%= index + 1 %>"
                                 name="mixedQuantity"
-                                placeholder="1,234.34"
+                                placeholder="1.234,34"
                                 min="0"
                                 oninput="handleQuantityInput(this)"
                                 onchange="newInput(this)"
-                                value="<%= data.products.mixedQuantity  %>"
+                                value="<%= data.products.mixedQuantity.toLocaleString('vi-VN')   %>"
                               />
                             </div>
                           </div>
@@ -198,9 +201,9 @@
                                 class="form-control"
                                 id="keQuantity<%= index + 1 %>"
                                 name="keQuantity"
-                                placeholder="1,234.34"
+                                placeholder="1.234,34"
                                 oninput="handleQuantityInput(this)"
-                                value="<%= data.products.keQuantity  %>"
+                                value="<%= data.products.keQuantity.toLocaleString('vi-VN')   %>"
                               />
                             </div>
                           </div>
@@ -331,7 +334,7 @@
                     class="form-control"
                     id="dryQuantity"
                     name="dryQuantity"
-                    placeholder="1,234.34"
+                    placeholder="1.234,34"
                     oninput="handleQuantityInput(this)"
                   />
                 </div>
@@ -363,7 +366,7 @@
                     class="form-control"
                     id="mixedQuantity"
                     name="mixedQuantity"
-                    placeholder="1,234.34"
+                    placeholder="1.234,34"
                     min="0"
                     oninput="handleQuantityInput(this)"
                   />
@@ -382,7 +385,7 @@
                     class="form-control"
                     id="keQuantity"
                     name="keQuantity"
-                    placeholder="1,234.34"
+                    placeholder="1.234,34"
                     oninput="handleQuantityInput(this)"
                   />
                 </div>

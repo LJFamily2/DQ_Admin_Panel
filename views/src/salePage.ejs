@@ -16,6 +16,10 @@
     }
   </style>
 </head>
+
+<%- include('../partials/totalValue') %>
+
+
 <% if(user.role === true){ %>
 <button
   type="button"
@@ -114,7 +118,7 @@
                                 <input
                                   type="text"
                                   class="form-control"
-                                  value="<%= product.quantity.toLocaleString('en-EN') %>"
+                                  value="<%= product.quantity.toLocaleString('vi-VN') %>"
                                   disabled
                                 />
                               </div>
@@ -133,7 +137,7 @@
                                   <input
                                     type="text"
                                     class="form-control"
-                                    value="<%= product.quantity.toLocaleString('en-EN') %>"
+                                    value="<%= product.quantity.toLocaleString('vi-VN') %>"
                                     disabled
                                   />
                                 </div>  
@@ -143,7 +147,7 @@
                               <input
                                 type="text"
                                 class="form-control"
-                                value="<%= product.price.toLocaleString('en-EN') %>"
+                                value="<%= product.price.toLocaleString('vi-VN') %>"
                                 disabled
                               />
                             </div>
@@ -155,7 +159,7 @@
                                   <input
                                     type="text"
                                     class="form-control"
-                                    value="<%= ((product.quantity * product.percentage) / 100).toLocaleString('en-EN') %>"
+                                    value="<%= ((product.quantity * product.percentage) / 100).toLocaleString('vi-VN') %>"
                                     disabled
                                   />
                               </div>
@@ -288,7 +292,7 @@
                       class="form-control"
                       id="quantity"
                       name="quantity"
-                      placeholder="1234,34"
+                      placeholder="1.234,56"
                       oninput="handleQuantityInput(this)"
                     />
                   </div>

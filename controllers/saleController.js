@@ -3,7 +3,6 @@ const ProductTotalModel = require('../models/productTotalModel');
 const handleResponse = require('./utils/handleResponse');
 const trimStringFields = require('./utils/trimStringFields');
 const formatTotalData = require('./utils/formatTotalData');
-const formatNumberForDisplay = require('./utils/formatNumberForDisplay');
 const convertToDecimal = require('./utils/convertToDecimal');
 
 module.exports = {
@@ -278,7 +277,7 @@ async function getDatas(req, res) {
         code: sale.code || '',
         products: sale.slug,
         notes: sale.notes || '',
-        total: formatNumberForDisplay(totalPrice),
+        total: totalPrice.toLocaleString('vi-VN'),
         status: sale.status,
         slug: sale.slug,
       };
