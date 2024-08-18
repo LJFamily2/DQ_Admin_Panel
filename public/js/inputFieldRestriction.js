@@ -18,14 +18,6 @@ function handleQuantityInput(input) {
   }
 }
 
-function handlePriceInput(input) {
-  // Step 1: Allow only numbers
-  input.value = input.value.replace(/[^0-9]/g, '');
-
-  // Step 2: Format the whole part with periods as thousand separators
-  input.value = input.value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-}
-
 function handlePercentageInput(input) {
   input.value = input.value.replace(/[^0-9,]/g, ''); 
   if ((input.value.match(/,/g) || []).length > 1) {
