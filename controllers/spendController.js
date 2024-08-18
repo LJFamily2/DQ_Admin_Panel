@@ -63,7 +63,7 @@ async function createData(req, res) {
       );
     }
 
-    let quantity = convertToDecimal(req.body.quantity) || 0;
+    let quantity = convertToDecimal(req.body.quantity) || 1;
     let price = convertToDecimal(req.body.price) || 0;
 
     // Create spend document
@@ -85,7 +85,6 @@ async function createData(req, res) {
       req.headers.referer,
     );
   } catch (err) {
-    // Error response
     res.status(500).render('partials/500', { layout: false });
   }
 }
@@ -148,8 +147,8 @@ async function getData(req, res) {
       no: parseInt(start, 10) + index + 1,
       date: product.date.toLocaleDateString('vi-VN'),
       product: product.product.toLocaleString('vi-VN') || '',
-      quantity: product.quantity.toLocaleString('vi-VN') || 0,
-      price: product.price.toLocaleString('vi-VN') || 0,
+      quantity: product.product === 'lương' ? 0 : product.quantity.toLocaleString('vi-VN') || 0,
+      price: product.product === 'lương' ? 0 : product.price.toLocaleString('vi-VN') || 0,
       total: (product.price * product.quantity).toLocaleString('vi-VN') || 0,
       notes: product.notes || '',
       id: product._id,
@@ -204,7 +203,7 @@ async function updateData(req, res) {
 
     const updateFields = {
       ...req.body,
-      quantity: convertToDecimal(req.body.quantity) || 0,
+      quantity: convertToDecimal(req.body.quantity) || 1,
       price: convertToDecimal(req.body.price) || 0,
       notes: req.body.notes,
     };
