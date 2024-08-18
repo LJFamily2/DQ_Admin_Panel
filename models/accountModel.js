@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema({
     required: true,
   },
   role: {
-    type: Boolean,
+    type: String,
     required: true,
   },
   createdAt: {
