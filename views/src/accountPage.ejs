@@ -87,8 +87,10 @@
                   <div class="mb-3">
                     <label for="role<%= index %>" class="form-label" style="float: left;">Vai trò</label>
                     <select class="form-select" id="role<%= index %>" name="role" aria-label="Default select example">
-                       <option value="true" <%= (user.role === true) ? 'selected' : '' %>>Admin</option>
-                       <option value="false" <%= (user.role === false) ? 'selected' : '' %>>Nhân viên</option>
+                      <% const roles = ['Admin', 'Giám đốc']; %>
+                      <% roles.forEach(role => { %>
+                        <option value="<%= role %>" <%= (user.role === role) ? 'selected' : '' %>><%= role %></option>
+                      <% }); %>
                        </select>
                  </div>
                 </div>
@@ -255,20 +257,20 @@
     { data: "password", orderable: false, width:"25%" },
     { data: "role", width:"15%", 
     render: function (data) {
-        return data  ? `  <div class="row">
+        return data === 'Admin'  ? `  <div class="row">
           <div class="col text-center "  >
           <div class="badge bg-primary"  >
-              Admin
+              ${data}
           </div>
         </div>
-      </div>` : `  <div class="row">
+      </div>` : data === 'Giám đốc' ? `  <div class="row">
           <div class="col text-center "  >
-          <div class="badge bg-light text-dark "  >
-              Nhân viên
+          <div class="badge bg-success text-light "  >
+              ${data}
           </div>
           </div>
         </div>
-      `;
+      `: ``;
       },
      },
     { data: "id", orderable: false, width:"28%" },

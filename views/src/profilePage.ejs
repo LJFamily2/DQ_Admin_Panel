@@ -26,7 +26,7 @@
           <div class="mb-3">
             <label for="role" class="form-label">Vai trò</label>
             <input type="text" class="form-control" id="role" value="<%=
-            user.role ? "Admin" : "Nhân viên" %>" disabled />
+            user.role === 'Admin' ? "Admin" : "Giám đốc" %>" disabled />
           </div>
           <div class="mb-3">
             <a

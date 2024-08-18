@@ -104,7 +104,7 @@
         <i class="ri-bill-line"></i>
       </a>
     </li>
-    <% if(user.role){ %>
+    <% if(user.role === 'Admin'){ %>
     <li>
       <a
         href="/quan-ly-tai-khoan"
@@ -161,7 +161,7 @@
     <a class="nav-link link-dark p-1" href="/quan-ly-chi-tieu" style=" text-align: center;font-size: 0.8rem;">
       <i class="ri-bill-line" style="font-size: 1.4rem; display: block"></i>Chi tiêu
     </a>
-    <% if(user.role){ %>
+    <% if(user.role === 'Admin'){ %>
     <a class="nav-link link-dark p-1" href="/quan-ly-tai-khoan" style=" text-align: center;font-size: 0.8rem;">
       <i class="ri-group-line" style="font-size: 1.4rem; display: block"></i>Tài khoản
     </a>
