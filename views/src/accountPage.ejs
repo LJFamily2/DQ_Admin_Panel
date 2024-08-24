@@ -200,8 +200,10 @@
               >Vai trò</label
             >
             <select class="form-control" name="role" id="role">
-              <option value="true">Admin</option>
-              <option value="false" selected>Nhân viên</option>
+              <option value="Admin">Admin</option>
+              <option value="Giám đốc" selected>Giám đốc</option>
+              <option value="Văn phòng" selected>Văn phòng</option>
+              <option value="Hàm lượng" selected>Hàm lượng</option>
             </select>
           </div>
         </div>
@@ -266,6 +268,20 @@
       </div>` : data === 'Giám đốc' ? `  <div class="row">
           <div class="col text-center "  >
           <div class="badge bg-success text-light "  >
+              ${data}
+          </div>
+          </div>
+        </div>
+      `: data === 'Văn phòng' ? `  <div class="row">
+          <div class="col text-center "  >
+          <div class="badge bg-light text-dark "  >
+              ${data}
+          </div>
+          </div>
+        </div>
+      `: data === 'Hàm lượng' ? `  <div class="row">
+          <div class="col text-center "  >
+          <div class="badge bg-warning text-light "  >
               ${data}
           </div>
           </div>

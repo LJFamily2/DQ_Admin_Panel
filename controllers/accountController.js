@@ -242,7 +242,7 @@ async function deleteUser(req, res) {
         req.headers.referer,
       );
     }
-    if (user.role) {
+    if (user.role === "Admin") {
       return handleResponse(
         req,
         res,
