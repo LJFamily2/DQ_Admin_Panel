@@ -14,22 +14,10 @@
     }
   </style>
 </head>
-<button
-  type="button"
-  class="btn btn-danger mx-2 mx-md-3 mt-2"
-  data-bs-toggle="modal"
-  data-bs-target="#deleteAll"
-  style="width: max-content"
->
-  Xóa tất cả thông tin
-</button>
 
 <div class="row m-0 m-md-2 g-3 mb-4">
   <div class="col-12 col-md-9 mt-2">
     <div class="card" style="box-shadow: 0 1px 2px">
-      <div class="card-header bg-transparent">
-        <%- include('../partials/dateSelection.ejs') %>
-      </div>
       <div class="card-body">
         <table class="table table-striped" id="datatable">
           <thead>
@@ -44,46 +32,46 @@
           <tbody>
             <% areas.forEach( (area,index) => { %>
 
-              <!-- Delete confirming modal  -->
-              <div
-                class="modal fade"
-                id="deleteModalToggle<%= area._id %>"
-                aria-hidden="true"
-                aria-labelledby="exampleModalToggleLabel"
-                tabindex="-1"
-              >
-                <div class="modal-dialog modal-dialog-centered">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h1 class="modal-title fs-5" id="exampleModalToggleLabel">
-                        Xóa hợp đồng <%= area.code %>
-                      </h1>
-                      <button
-                        type="button"
-                        class="btn-close"
-                        data-bs-dismiss="modal"
-                        aria-label="Close"
-                      ></button>
-                    </div>
-                    <form
-                      action="/quan-ly-hop-dong/delete/<%= area._id %>"
-                      method="post"
-                    >
-                      <div class="modal-body">
-                        Bạn có muốn xóa hợp đồng mã
-                        <strong><%= area.code %></strong> ? Hành động này không
-                        thể hoàn tác.
-                      </div>
-                      <div class="modal-footer">
-                        <button type="submit" class="btn btn-danger">
-                          Xác nhận
-                        </button>
-                      </div>
-                    </form>
+            <!-- Delete confirming modal  -->
+            <div
+              class="modal fade"
+              id="deleteModalToggle<%= area._id %>"
+              aria-hidden="true"
+              aria-labelledby="exampleModalToggleLabel"
+              tabindex="-1"
+            >
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalToggleLabel">
+                      Xóa hợp đồng <%= area.code %>
+                    </h1>
+                    <button
+                      type="button"
+                      class="btn-close"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"
+                    ></button>
                   </div>
+                  <form
+                    action="/du-lieu-hang-ngay/deleteArea/<%= area._id %>"
+                    method="post"
+                  >
+                    <div class="modal-body">
+                      Bạn có muốn xóa hợp đồng mã
+                      <strong><%= area.code %></strong> ? Hành động này không
+                      thể hoàn tác.
+                    </div>
+                    <div class="modal-footer">
+                      <button type="submit" class="btn btn-danger">
+                        Xác nhận
+                      </button>
+                    </div>
+                  </form>
                 </div>
               </div>
-              <% }) %>
+            </div>
+            <% }) %>
           </tbody>
         </table>
       </div>
@@ -94,7 +82,7 @@
       <div class="card-header bg-transparent">
         <h4 class="m-0">Tạo khu vực</h4>
       </div>
-      <form action="/du-lieu-hang-ngay/addData" method="post">
+      <form action="/du-lieu-hang-ngay/addArea" method="post">
         <div class="card-body">
           <%- include('../partials/notificationMessage.ejs') %>
           <div>
@@ -116,9 +104,11 @@
               class="form-control slim-select"
               id="accountID"
               name="accountID"
+              required
             >
-              <% hamLuongAccounts.forEach(account => { %>
-              <option selected disabled>Chọn người nướng hàm lượng</option>
+            <option disabled selected>Chọn tài khoản</option>
+
+              <% unassignedHamLuongAccounts.forEach(account => { %>
               <option value="<%= account._id %>">
                 <%= account.username %>
               </option>
@@ -199,80 +189,6 @@
   </div>
 </div>
 
-<!-- Modal for deleting all products -->
-<div
-  class="modal fade"
-  id="deleteAll-admin-user"
-  data-bs-backdrop="static"
-  data-bs-keyboard="false"
-  tabindex="-1"
-  aria-labelledby="deleteUsers"
-  aria-hidden="true"
->
-  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="deleteUsers">Xóa tất cả khu vực</h1>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
-      </div>
-      <form action="/quan-ly-khu-vuc/deleteAll" method="post">
-        <div class="modal-body">
-          Bạn có muốn xóa <strong>tất cả</strong> khu vực? Những không tin của
-          vườn sẽ dc giữ. Hành động này không thể hoàn tác.
-        </div>
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-danger">Xác nhận</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-<!-- Delete plantation Confirmation Modal -->
-<div
-  class="modal fade"
-  id="deleteConfirmModal"
-  tabindex="-1"
-  aria-labelledby="deleteConfirmModalLabel"
-  aria-hidden="true"
->
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="deleteConfirmModalLabel">Xác nhận xóa?</h5>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
-      </div>
-      <form action="/quan-ly-khu-vuc/removePlantaion" method="post">
-        <input type="hidden" id="deleteAreaId" name="areaId" value="" />
-        <input type="hidden" id="deleteId" name="plantationId" value="" />
-        <div class="modal-body">
-          Bạn có muốn xóa <strong id="deleteName"></strong>? Hành động này không
-          thể hoàn tác.
-        </div>
-        <div class="modal-footer">
-          <button
-            type="button"
-            class="btn btn-secondary"
-            data-bs-dismiss="modal"
-          >
-            Hủy
-          </button>
-          <button type="submit" class="btn btn-danger">Xác nhận</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     const productLists = document.querySelectorAll('.supplierInfor .supplier');

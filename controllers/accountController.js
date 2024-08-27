@@ -2,6 +2,7 @@ const UserModel = require('../models/accountModel');
 const bcrypt = require('bcryptjs');
 const handleResponse = require('./utils/handleResponse');
 const trimStringFields = require('./utils/trimStringFields');
+const { DailySupply } = require('../models/dailySupplyModel');
 
 module.exports = {
   initialSetupPage,
@@ -242,7 +243,7 @@ async function deleteUser(req, res) {
         req.headers.referer,
       );
     }
-    if (user.role === "Admin") {
+    if (user.role === 'Admin') {
       return handleResponse(
         req,
         res,
@@ -255,8 +256,13 @@ async function deleteUser(req, res) {
 
     // Proceed to delete the user from the database
     await UserModel.findByIdAndDelete(req.params.id);
+    // Remove the accountID from the DailySupply collection
+    await DailySupply.updateMany(
+      { accountID: req.params.id },
+      { $unset: { accountID: '' } },
+    );
 
-    handleResponse(
+    return handleResponse(
       req,
       res,
       200,
@@ -271,10 +277,10 @@ async function deleteUser(req, res) {
 
 async function deleteAllUsers(req, res) {
   try {
-    // Delete all users with role false
-    const deletionResult = await UserModel.deleteMany({ role: false });
+    // Find all users with role not equal to 'Admin'
+    const usersToDelete = await UserModel.find({ role: { $ne: 'Admin' } });
 
-    if (deletionResult.deletedCount === 0) {
+    if (usersToDelete.length === 0) {
       return handleResponse(
         req,
         res,
@@ -285,7 +291,19 @@ async function deleteAllUsers(req, res) {
       );
     }
 
-    handleResponse(
+    // Extract user IDs
+    const userIds = usersToDelete.map(user => user._id);
+
+    // Delete all users with role not equal to 'Admin'
+    await UserModel.deleteMany({ _id: { $in: userIds } });
+
+    // Remove the accountID from the DailySupply collection
+    await DailySupply.updateMany(
+      { accountID: { $in: userIds } },
+      { $unset: { accountID: "" } }
+    );
+
+    return handleResponse(
       req,
       res,
       200,
@@ -293,7 +311,8 @@ async function deleteAllUsers(req, res) {
       'Xóa tất cả tài khoản nhân viên thành công',
       req.headers.referer,
     );
-  } catch {
+  } catch (error) {
+    console.error(error);
     res.status(500).render('partials/500', { layout: false });
   }
 }

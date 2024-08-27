@@ -2,7 +2,7 @@ const trimStringFields = require('./utils/trimStringFields');
 const handleResponse = require('./utils/handleResponse');
 const RawMaterialModel = require('../models/rawMaterialModel');
 const ProductTotalModel = require('../models/productTotalModel');
-const  convertToDecimal  = require('./utils/convertToDecimal');
+const convertToDecimal = require('./utils/convertToDecimal');
 const formatTotalData = require('./utils/formatTotalData');
 
 module.exports = {

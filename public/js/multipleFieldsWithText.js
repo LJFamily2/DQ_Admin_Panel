@@ -28,7 +28,7 @@ function updateCloseLineIconsVisibility(parentElement, child) {
   });
 }
 
-function removeProduct(element, childSelector) {
+function removeProduct(element, childSelector, detailPage) {
   // Remove the closest parent element
   element.closest(childSelector)?.remove();
 
@@ -38,8 +38,10 @@ function removeProduct(element, childSelector) {
     label.innerHTML = label.innerHTML.replace(/^\d+/, newIndex + 1);
   });
 
-  // Hide or show the remove buttons based on the number of remaining elements
-  const displayStyle = document.querySelectorAll(childSelector).length <= 1 ? 'none' : '';
-  document.querySelectorAll('.ri-close-line').forEach(button => button.style.display = displayStyle);
+  if(!detailPage){
+    // Hide or show the remove buttons based on the number of remaining elements
+    const displayStyle = document.querySelectorAll(childSelector).length <= 1 ? 'none' : '';
+    document.querySelectorAll('.ri-close-line').forEach(button => button.style.display = displayStyle);
+  }
 }
 

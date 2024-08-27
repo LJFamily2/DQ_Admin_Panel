@@ -12,8 +12,24 @@
       transform: rotate(180deg);
       transition: transform 0.3s ease-in-out;
     }
+    .btn-light[aria-expanded="true"] {
+    font-weight: bold;
+    color: #ffffff;
+    background: #007bff !important;
+  }
   </style>
 </head>
+
+<!-- breadcrumb -->
+<nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: '>';" class="mx-2 mx-md-4">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/du-lieu-hang-ngay">Dự liệu hằng ngày</a></li>
+    <li class="breadcrumb-item active" aria-current="page">
+      <%= area.slug %>
+    </li>
+  </ol>
+</nav>
+
 <button
   type="button"
   class="btn btn-danger mx-2 mx-md-3 mt-2"
@@ -94,17 +110,17 @@
       <div class="card-header bg-transparent">
         <div class="d-flex d-flex flex-wrap gap-2">
           <button
-            class="btn btn-primary"
+            class="btn btn-light"
             type="button"
             data-bs-toggle="collapse"
             data-bs-target="#suppliers"
-            aria-expanded="false"
+            aria-expanded="true"
             aria-controls="suppliers"
           >
             Nhà vườn
           </button>
           <button
-            class="btn btn-secondary"
+            class="btn btn-light"
             type="button"
             data-bs-toggle="collapse"
             data-bs-target="#updateArea"
@@ -147,7 +163,7 @@
               data-bs-parent="#areaAccordion"
             >
               <h4>Chỉnh sửa</h4>
-              <form action="" method="post">
+              <form action="/du-lieu-hang-ngay/update/<%= area._id %>" method="post" onchange="this.querySelector('button[type=submit]').style.display = 'block';">
                 <div class="mb-3">
                   <label for="areaName" class="form-label">Khu vực</label>
                   <input
@@ -167,7 +183,11 @@
                     class="form-control slim-select"
                     id="accountID"
                     name="accountID"
+                    onchange="this.closest('form').querySelector('button[type=submit]').style.display = this.value ? 'block' : 'none';"
                   >
+                    <% if (!area.accountID) { %>
+                      <option disabled selected>Chọn tài khoản</option>
+                    <% } %>
                     <% hamLuongAccounts.forEach(account => { %>
                       <option value="<%= account._id %>" <%= account._id.equals(area.accountID) ? 'selected' : '' %>>
                         <%= account.username %>
@@ -175,10 +195,10 @@
                     <% }) %>
                   </select>
                 </div>
-                <button type="submit" class="btn btn-primary">Thêm</button>
-
+                <button type="submit" class="btn btn-primary" style="display: none;">Lưu</button>
               </form>
 
+              <!-- Suppliers -->
                 <h5 class="my-2">Nhà vườn</h5>
                 <ol class="list-group list-group-numbered my-2">
                   <% area.suppliers.forEach((supplier, index) =>{ %>
@@ -202,7 +222,7 @@
                   </li>
 
                   <!-- Edit supplier modal -->
-                  <form action="" method="post">
+                  <form action="/du-lieu-hang-ngay/updateSupplier/<%= supplier._id %>" method="post">
                     <div
                       class="modal fade"
                       id="editSupplier<%= supplier._id %>"
@@ -259,7 +279,7 @@
                             <div class="modal-footer
                             ">
                               <button type="submit" class="btn btn-primary
-                              ">Lưu</button>
+                              ">Thêm</button>
                             </div>
                           </form>
                         </div>
@@ -268,7 +288,7 @@
                   </form>
 
                   <!-- Delete supplier modal -->
-                  <form action="" method="post">
+                  <form action="/du-lieu-hang-ngay/deleteSupplier/<%= supplier._id %>" method="post">
 
                     <div
                       class="modal fade"
@@ -313,13 +333,15 @@
 
                   <% }) %>
                 </ol>
-              <i class="ri-add-circle-line fs-5" style="cursor: pointer;"></i>
-
+                <form action="/du-lieu-hang-ngay/addSupplier/<%= area._id %>" method="post" id="dynamicForm" onchange="this.querySelector('button[type=submit]').style.display = 'block';">
+                  <div class="additionalField"></div>
+                  <button type="submit" class="btn btn-primary" style="display: none;">Lưu</button>
+                </form>
+              <i class="ri-add-circle-line fs-5" onclick="addFields('.additionalField')" style="cursor: pointer;"></i>
             </div>
           </div>
         </div>
     </div>
-
   </div>
 </div>
 
@@ -408,4 +430,67 @@
   //   false,
   //   false,
   // );
+        function addFields(container) {
+      const additionalContainer = document.querySelector(container);
+      const newFields = document.createElement('div');
+      newFields.className = 'supplierInfor my-3';
+      newFields.innerHTML = `
+        <div class="supplier">
+          <div class="row mt-3">
+            <div class="row m-0 p-0">
+              <div class="col">
+                <label
+                  for="name"
+                  class="form-label fw-bold w-100 d-flex justify-content-between"
+                >
+                  Nhà vườn mới
+                  <span>
+                    <i
+                      class="ri-close-line"
+                      style="cursor: pointer"
+                      onclick="removeProduct(this, '.supplier', true); checkAdditionalFields()"
+                    ></i>
+                  </span>
+                </label>
+              </div>
+            </div>
+            <div class="row normalFields m-0 p-0">
+              <div class="col col-md-6">
+                <label for="supplierName" class="form-label fw-bold">Tên</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  name="supplierName"
+                  placeholder="Văn A"
+                  required
+                />
+              </div>
+              <div class="col col-md-6">
+                <label for="code" class="form-label fw-bold">Mã</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  name="code"
+                  placeholder="Van20"
+                  required
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    
+      additionalContainer.appendChild(newFields);
+    }
+
+    function checkAdditionalFields() {
+    const suppliers = document.querySelectorAll('.additionalField .supplier');
+    const submitButton = document.querySelector('#dynamicForm button[type="submit"]');
+    if (suppliers.length === 0) {
+      submitButton.style.display = 'none';
+    } else {
+      submitButton.style.display = 'block';
+    }
+  }
+
 </script>
