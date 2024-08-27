@@ -1,0 +1,411 @@
+<head>
+  <!-- js -->
+  <script src="/js/datatable.js"></script>
+  <script src="/js/multipleFieldsWithText.js"></script>
+  <script src="/js/slim-select.js" defer></script>
+  <script src="/js/toggleButtons.js" defer></script>
+  <style>
+    .hide {
+      display: none;
+    }
+    .rotate {
+      transform: rotate(180deg);
+      transition: transform 0.3s ease-in-out;
+    }
+  </style>
+</head>
+<button
+  type="button"
+  class="btn btn-danger mx-2 mx-md-3 mt-2"
+  data-bs-toggle="modal"
+  data-bs-target="#deleteAll"
+  style="width: max-content"
+>
+  Xóa tất cả thông tin
+</button>
+
+<div class="row m-0 m-md-2 g-3 mb-4">
+  <div class="col-12 col-md-9 mt-2">
+    <div class="card" style="box-shadow: 0 1px 2px">
+      <div class="card-header bg-transparent">
+        <%- include('../partials/dateSelection.ejs') %>
+      </div>
+      <div class="card-body">
+        <table class="table table-striped" id="datatable">
+          <thead>
+            <tr>
+              <th>STT</th>
+              <th>Khu vực</th>
+              <th>Nướng hàm lượng</th>
+              <th>Chỉnh sửa</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <% area.data.forEach( (eachData,index) => { %>
+
+            <!-- Delete confirming modal  -->
+            <div
+              class="modal fade"
+              id="deleteModalToggle<%= eachData._id %>"
+              aria-hidden="true"
+              aria-labelledby="exampleModalToggleLabel"
+              tabindex="-1"
+            >
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalToggleLabel">
+                      Xóa hợp đồng <%= eachData.code %>
+                    </h1>
+                    <button
+                      type="button"
+                      class="btn-close"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"
+                    ></button>
+                  </div>
+                  <form
+                    action="/quan-ly-hop-dong/delete/<%= eachData._id %>"
+                    method="post"
+                  >
+                    <div class="modal-body">
+                      Bạn có muốn xóa hợp đồng mã
+                      <strong><%= eachData.code %></strong> ? Hành động này
+                      không thể hoàn tác.
+                    </div>
+                    <div class="modal-footer">
+                      <button type="submit" class="btn btn-danger">
+                        Xác nhận
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-12 col-md-3 mt-2">
+    <div class="card" style="box-shadow: 0 1px 2px">
+      <div class="card-header bg-transparent">
+        <div class="d-flex d-flex flex-wrap gap-2">
+          <button
+            class="btn btn-primary"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#suppliers"
+            aria-expanded="false"
+            aria-controls="suppliers"
+          >
+            Nhà vườn
+          </button>
+          <button
+            class="btn btn-secondary"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#updateArea"
+            aria-expanded="false"
+            aria-controls="updateArea"
+          >
+            Chỉnh sửa
+          </button>
+        </div>
+      </div>
+        <div class="card-body">
+          <%- include('../partials/notificationMessage.ejs') %>
+          <div class="accordion" id="areaAccordion">
+            <!-- Supplier details -->
+            <div
+              id="suppliers"
+              class="collapse show"
+              aria-labelledby="suppliersHeading"
+              data-bs-parent="#areaAccordion"
+            >
+              <h4>Nhà vườn</h4>
+              <ol class="list-group list-group-numbered my-2">
+                <% area.suppliers.forEach((supplier, index) =>{ %>
+                <li
+                  class="list-group-item d-flex justify-content-between align-items-start"
+                >
+                  <div class="ms-2 me-auto">
+                    <div class="fw-bold"><%= supplier.name %></div>
+                    <%= supplier.code %>
+                  </div>
+                </li>
+                <% }) %>
+              </ol>
+            </div>
+            <!-- Update Area -->
+            <div
+              id="updateArea"
+              class="collapse"
+              aria-labelledby="updateAreaHeading"
+              data-bs-parent="#areaAccordion"
+            >
+              <h4>Chỉnh sửa</h4>
+              <form action="" method="post">
+                <div class="mb-3">
+                  <label for="areaName" class="form-label">Khu vực</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="areaName"
+                    name="areaName"
+                    value="<%= area.name %>"
+                    required
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="accountID" class="form-label"
+                    >Nướng hàm lượng</label
+                  >
+                  <select
+                    class="form-control slim-select"
+                    id="accountID"
+                    name="accountID"
+                  >
+                    <% hamLuongAccounts.forEach(account => { %>
+                      <option value="<%= account._id %>" <%= account._id.equals(area.accountID) ? 'selected' : '' %>>
+                        <%= account.username %>
+                      </option>
+                    <% }) %>
+                  </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Thêm</button>
+
+              </form>
+
+                <h5 class="my-2">Nhà vườn</h5>
+                <ol class="list-group list-group-numbered my-2">
+                  <% area.suppliers.forEach((supplier, index) =>{ %>
+                  <li
+                    class="list-group-item d-flex justify-content-between align-items-center"
+                  >
+                    <div class="ms-2 me-auto">
+                      <div class="fw-bold"><%= supplier.name %></div>
+                      <%= supplier.code %>
+                    </div>
+                    <div>
+                    <span class="mx-2">
+                      <i class="ri-edit-box-line fs-5" data-bs-toggle="modal"
+                      data-bs-target="#editSupplier<%= supplier._id %>" style="cursor: pointer;"></i>
+                    </span>
+                    <span class="mx-2">
+                      <i class="ri-delete-bin-line fs-5" data-bs-toggle="modal"
+                      data-bs-target="#deleteSupplier<%= supplier._id %>" style="cursor: pointer;"></i>
+                    </span>
+                  </div>
+                  </li>
+
+                  <!-- Edit supplier modal -->
+                  <form action="" method="post">
+                    <div
+                      class="modal fade"
+                      id="editSupplier<%= supplier._id %>"
+                      aria-hidden="true"
+                      aria-labelledby="staticBackdropLabel"
+                      tabindex="-1"
+                    >
+                      <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="staticBackdropLabel">
+                              Chỉnh sửa nhà vườn
+                            </h1>
+                            <button
+                              type="button"
+                              class="btn-close"
+                              data-bs-dismiss="modal"
+                              aria-label="Close"
+                            ></button>
+                          </div>
+                          <form
+                            action="/quan-ly-nha-vuon/edit/<%= supplier._id %>"
+                            method="post"
+                          >
+                            <div class="modal-body
+                            ">
+                              <div class="mb-3">
+                                <label for="supplierName" class="form-label
+                                ">Tên nhà vườn</label>
+                                <input
+                                  type="text"
+                                  class="form-control
+                                  "
+                                  id="supplierName"
+                                  name="supplierName"
+                                  value="<%= supplier.name %>"
+                                  required
+                                />
+                              </div>
+                              <div class="mb-3">
+                                <label for="supplierCode" class="form-label
+                                ">Mã nhà vườn</label>
+                                <input
+                                  type="text"
+                                  class="form-control
+                                  "
+                                  id="supplierCode"
+                                  name="supplierCode"
+                                  value="<%= supplier.code %>"
+                                  required
+                                />
+                              </div>
+                            </div>
+                            <div class="modal-footer
+                            ">
+                              <button type="submit" class="btn btn-primary
+                              ">Lưu</button>
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+
+                  <!-- Delete supplier modal -->
+                  <form action="" method="post">
+
+                    <div
+                      class="modal fade"
+                      id="deleteSupplier<%= supplier._id %>"
+                      aria-hidden="true"
+                      aria-labelledby="title"
+                      tabindex="-1"
+                    >
+                      <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="title">
+                              Xóa nhà vườn
+                            </h1>
+                            <button
+                              type="button"
+                              class="btn-close"
+                              data-bs-dismiss="modal"
+                              aria-label="Close"
+                            ></button>
+                          </div>
+                          <form
+                            action="/quan-ly-nha-vuon/delete/<%= supplier._id %>"
+                            method="post"
+                          >
+                            <div class="modal-body
+                            ">
+                              Bạn có muốn xóa nhà vườn
+                              <strong><%= supplier.name %></strong> ? Hành động này
+                              không thể hoàn tác.
+                            </div>
+                            <div class="modal-footer
+                            ">
+                              <button type="submit" class="btn btn-danger
+                              ">Xác nhận</button>
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+
+                  <% }) %>
+                </ol>
+              <i class="ri-add-circle-line fs-5" style="cursor: pointer;"></i>
+
+            </div>
+          </div>
+        </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Modal for deleting all products -->
+<div
+  class="modal fade"
+  id="deleteAll"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="deleteUsers"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="deleteUsers">Xóa tất cả khu vực</h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <form action="/quan-ly-khu-vuc/deleteAll" method="post">
+        <div class="modal-body">
+          Bạn có muốn xóa <strong>tất cả</strong> khu vực? Những không tin của
+          vườn sẽ dc giữ. Hành động này không thể hoàn tác.
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-danger">Xác nhận</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  // let columns = [
+  //   { data: 'no', orderable: false, width: '1%' },
+  //   { data: 'eachData', orderable: false, width: '1%' },
+  //   { data: 'accountID', orderable: false, width: '1%' },
+  //   {
+  //     data: 'link',
+  //     orderable: false,
+  //     width: '1%',
+  //     render: function (data, type, row) {
+  //       return `
+  //           <div class="d-flex justify-content-between fs-5">
+  //             <a href="/du-lieu-hang-ngay/${row.link.slug}" class="text-decoration-none text-dark">
+  //               <i
+  //                   class="ri-edit-box-line"
+  //                   style="cursor: pointer;"
+  //               ></i>
+  //             </a>
+  //             <i
+  //                 class="ri-delete-bin-line"
+  //                 data-bs-toggle="modal"
+  //                 data-bs-target="#deleteModalToggle${row.link._id}"
+  //                 style="cursor: pointer;"
+  //             ></i>
+  //           </div>
+  //           `;
+  //     },
+  //   },
+  // ];
+
+  // initializeDataTable(
+  //   '#datatable',
+  //   '/du-lieu-hang-ngay/getData',
+  //   '#staticBackdrop',
+  //   '#deleteModalToggle',
+  //   columns,
+  //   false,
+  //   false,
+  //   false,
+  //   false,
+  //   false,
+  //   false,
+  //   false,
+  //   false,
+  //   false,
+  //   false,
+  //   false,
+  //   false,
+  //   false,
+  // );
+</script>

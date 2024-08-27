@@ -17,10 +17,7 @@
   </style>
 </head>
 
-<%- include('../partials/totalValue') %>
-
-
-<% if(user.role === 'Admin'){ %>
+<%- include('../partials/totalValue') %> <% if(user.role === 'Admin'){ %>
 <button
   type="button"
   class="btn btn-danger mx-2 mx-md-3 mt-2"
@@ -66,7 +63,9 @@
               aria-labelledby="productList"
               tabindex="-1"
             >
-              <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+              <div
+                class="modal-dialog modal-dialog-centered modal-dialog-scrollable"
+              >
                 <div class="modal-content">
                   <div class="modal-header">
                     <h1 class="modal-title fs-5" id="productList">
@@ -100,48 +99,53 @@
                               />
                             </div>
                             <div class="col-6">
-                              <label  class="form-label fw-bold w-100 d-flex justify-content-between">Ngày nhập </label>
+                              <label
+                                class="form-label fw-bold w-100 d-flex justify-content-between"
+                                >Ngày nhập
+                              </label>
                               <input
-                              type="date"
-                              class="form-control"
-                              name="inputDate"
-                              required
-                              disabled
-                              value="<%= sale.date.toISOString().slice(0,10) %>"
+                                type="date"
+                                class="form-control"
+                                name="inputDate"
+                                required
+                                disabled
+                                value="<%= sale.date.toISOString().slice(0,10) %>"
                               />
                             </div>
                           </div>
                           <div class="row my-3 m-0 p-0">
                             <% if(product.name === "dryRubber"){ %>
-                              <div class="col col-md-3">
-                                <label class="form-label fw-bold">Số lượng</label>
-                                <input
-                                  type="text"
-                                  class="form-control"
-                                  value="<%= product.quantity.toLocaleString('vi-VN') %>"
-                                  disabled
-                                />
-                              </div>
-                              <div class="col col-md-3">
-                                <label class="form-label fw-bold">Hàm lượng</label>
-                                <input
-                                  type="text"
-                                  class="form-control"
-                                  value="<%= product.percentage %>"
-                                  disabled
-                                />
-                              </div>
-                              <% }else{ %>
-                                <div class="col col-md-6">
-                                  <label class="form-label fw-bold">Số lượng</label>
-                                  <input
-                                    type="text"
-                                    class="form-control"
-                                    value="<%= product.quantity.toLocaleString('vi-VN') %>"
-                                    disabled
-                                  />
-                                </div>  
-                              <% } %>
+                            <div class="col col-md-3">
+                              <label class="form-label fw-bold">Số lượng</label>
+                              <input
+                                type="text"
+                                class="form-control"
+                                value="<%= product.quantity.toLocaleString('vi-VN') %>"
+                                disabled
+                              />
+                            </div>
+                            <div class="col col-md-3">
+                              <label class="form-label fw-bold"
+                                >Hàm lượng</label
+                              >
+                              <input
+                                type="text"
+                                class="form-control"
+                                value="<%= product.percentage %>"
+                                disabled
+                              />
+                            </div>
+                            <% }else{ %>
+                            <div class="col col-md-6">
+                              <label class="form-label fw-bold">Số lượng</label>
+                              <input
+                                type="text"
+                                class="form-control"
+                                value="<%= product.quantity.toLocaleString('vi-VN') %>"
+                                disabled
+                              />
+                            </div>
+                            <% } %>
                             <div class="col col-md-6">
                               <label class="form-label fw-bold">Đơn giá</label>
                               <input
@@ -153,17 +157,17 @@
                             </div>
                           </div>
                           <% if(product.name === 'dryRubber'){ %>
-                            <div class="row m-0 p-0">
-                              <div class="col col-md-6">
-                                <label class="form-label fw-bold">Tổng</label>
-                                  <input
-                                    type="text"
-                                    class="form-control"
-                                    value="<%= ((product.quantity * product.percentage) / 100).toLocaleString('vi-VN') %>"
-                                    disabled
-                                  />
-                              </div>
+                          <div class="row m-0 p-0">
+                            <div class="col col-md-6">
+                              <label class="form-label fw-bold">Tổng</label>
+                              <input
+                                type="text"
+                                class="form-control"
+                                value="<%= ((product.quantity * product.percentage) / 100).toLocaleString('vi-VN') %>"
+                                disabled
+                              />
                             </div>
+                          </div>
                           <% } %>
                         </div>
                         <hr />
@@ -273,11 +277,16 @@
                         <i
                           class="ri-close-line"
                           style="cursor: pointer"
-                          onclick="removeProduct(this)"
+                          onclick="removeProduct(this,'.productList')"
                         ></i>
                       </span>
                     </label>
-                    <select class="form-control" name="name" id="name" onchange="handleProductChange(this, this.closest('.productList'), false)">
+                    <select
+                      class="form-control"
+                      name="name"
+                      id="name"
+                      onchange="handleProductChange(this, this.closest('.productList'), false)"
+                    >
                       <option value="product" selected>Thành phẩm</option>
                       <option value="mixedQuantity">Mủ tạp</option>
                       <option value="dryRubber">Quy khô</option>
@@ -286,7 +295,9 @@
                 </div>
                 <div class="row normalFields my-3 m-0 p-0">
                   <div class="col col-md-6">
-                    <label for="quantity" class="form-label fw-bold">Số lượng</label>
+                    <label for="quantity" class="form-label fw-bold"
+                      >Số lượng</label
+                    >
                     <input
                       type="text"
                       class="form-control"
@@ -297,7 +308,9 @@
                     />
                   </div>
                   <div class="col col-md-6">
-                    <label for="price" class="form-label fw-bold">Đơn giá</label>
+                    <label for="price" class="form-label fw-bold"
+                      >Đơn giá</label
+                    >
                     <input
                       type="text"
                       class="form-control"
@@ -308,7 +321,10 @@
                     />
                   </div>
                 </div>
-                <div class="additionalFields my-3 m-0 p-0" style="display: none;"></div>
+                <div
+                  class="additionalFields my-3 m-0 p-0"
+                  style="display: none"
+                ></div>
               </div>
             </div>
           </div>
@@ -316,12 +332,11 @@
           <div class="btnController">
             <button
               type="button"
-              onclick="addInputField('form .productLists', '.productList', false)"
-              style="background: transparent; border: none;"
+              onclick="addInputField('form .productLists', '.productList', false, 'Hàng hóa')"
+              style="background: transparent; border: none"
               title="Thêm hàng hóa"
             >
               <i class="ri-add-circle-line fs-5"></i>
-
             </button>
           </div>
 
@@ -457,4 +472,14 @@
     false,
     true,
   );
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const productLists = document.querySelectorAll(
+      '.productLists .productList',
+    );
+    const displayStyle = productLists.length > 1 ? 'block' : 'none';
+    productLists.forEach(
+      el => (el.querySelector('.ri-close-line').style.display = displayStyle),
+    );
+  });
 </script>

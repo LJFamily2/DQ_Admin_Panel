@@ -1,9 +1,9 @@
 <head>
   <!-- js -->
-  <script src="/js/multipleFieldsWithDatalist.js"></script>
+  <script src="/js/datatable.js"></script>
+  <script src="/js/multipleFieldsWithText.js"></script>
   <script src="/js/slim-select.js" defer></script>
   <script src="/js/toggleButtons.js" defer></script>
-  <script src="/js/areaPageJS.js" defer></script>
   <style>
     .hide {
       display: none;
@@ -16,240 +16,185 @@
 </head>
 <button
   type="button"
-  class="btn btn-danger mx-2 mx-md-4 my-3"
+  class="btn btn-danger mx-2 mx-md-3 mt-2"
   data-bs-toggle="modal"
-  data-bs-target="#deleteAll-admin-user"
+  data-bs-target="#deleteAll"
   style="width: max-content"
 >
-  Xóa tất cả khu vực
+  Xóa tất cả thông tin
 </button>
 
-<div class="row m-0 px-2">
-  <div class="col-12 col-md-9 p-0 px-md-3">
-    <div
-      class="col rounded-2 p-1"
-      style="box-shadow: 0 0 10px; max-height: 80dvh; overflow-y: auto"
-    >
-      <h4 class="my-3">Danh sách khu vực</h4>
-      <% areas.forEach((area, index) => { %>
-      <div class="areaList">
-        <button
-          class="btn <%= area.plantations.length === 0 ? 'btn-danger' : 'btn-secondary' %> w-100 d-flex justify-content-between my-2"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#area<%= index %>"
-          aria-expanded="false"
-          aria-controls="area<%= index %>"
-        >
-          <%= area.name %> (<%= area.plantations.length %> vườn)
-          <i
-            class="ri-arrow-up-s-line"
-            style="transition: transform 0.3s ease-in-out"
-          ></i>
-        </button>
-        <div class="collapse my-1" id="area<%= index %>">
-          <div class="card card-body">
-            <ol class="gap-5 h-100 m-0" style="display: flex; flex-wrap: wrap">
-              <% if (area.plantations.length === 0) { %>
-              <li class="d-block w-100 text-center">Không có vườn</li>
-              <% } else { %> <% area.plantations.forEach(plantation => { %>
-              <li><%=  plantation.code || plantation.name %></li>
-              <% }) %> <% } %>
-            </ol>
-          </div>
-        </div>
+<div class="row m-0 m-md-2 g-3 mb-4">
+  <div class="col-12 col-md-9 mt-2">
+    <div class="card" style="box-shadow: 0 1px 2px">
+      <div class="card-header bg-transparent">
+        <%- include('../partials/dateSelection.ejs') %>
       </div>
-      <% }) %>
+      <div class="card-body">
+        <table class="table table-striped" id="datatable">
+          <thead>
+            <tr>
+              <th>STT</th>
+              <th>Khu vực</th>
+              <th>Nướng hàm lượng</th>
+              <th>Chỉnh sửa</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <% areas.forEach( (area,index) => { %>
+
+              <!-- Delete confirming modal  -->
+              <div
+                class="modal fade"
+                id="deleteModalToggle<%= area._id %>"
+                aria-hidden="true"
+                aria-labelledby="exampleModalToggleLabel"
+                tabindex="-1"
+              >
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5" id="exampleModalToggleLabel">
+                        Xóa hợp đồng <%= area.code %>
+                      </h1>
+                      <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                      ></button>
+                    </div>
+                    <form
+                      action="/quan-ly-hop-dong/delete/<%= area._id %>"
+                      method="post"
+                    >
+                      <div class="modal-body">
+                        Bạn có muốn xóa hợp đồng mã
+                        <strong><%= area.code %></strong> ? Hành động này không
+                        thể hoàn tác.
+                      </div>
+                      <div class="modal-footer">
+                        <button type="submit" class="btn btn-danger">
+                          Xác nhận
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+              <% }) %>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
-  <div
-    class="col-12 col-md-3 rounded-2 my-5 m-md-0 py-3"
-    style="box-shadow: 0 0 10px; background: var(--background_color)"
-  >
-    <%- include('../partials/notificationMessage.ejs') %>
-    <div class="accordion" id="areaAccordion">
-      <div class="d-flex d-flex flex-wrap gap-2">
-        <button
-          class="btn btn-primary"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#createArea"
-          aria-expanded="false"
-          aria-controls="createArea"
-        >
-          Tạo khu vực
-        </button>
-        <button
-          class="btn btn-secondary"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#updateArea"
-          aria-expanded="false"
-          aria-controls="updateArea"
-        >
-          Chỉnh sửa
-        </button>
-        <button
-          class="btn btn-danger"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#deleteArea"
-          aria-expanded="false"
-          aria-controls="deleteArea"
-        >
-          Xóa khu vực
-        </button>
+  <div class="col-12 col-md-3 mt-2">
+    <div class="card" style="box-shadow: 0 1px 2px">
+      <div class="card-header bg-transparent">
+        <h4 class="m-0">Tạo khu vực</h4>
       </div>
-      <hr />
-      <!-- Create Area -->
-      <div
-        id="createArea"
-        class="collapse show"
-        aria-labelledby="createAreaHeading"
-        data-bs-parent="#areaAccordion"
-      >
-        <form action="/quan-ly-khu-vuc/addArea" method="post">
-          <h5>Tạo khu vực</h5>
-          <div class="my-3">
-            <label for="name" class="form-label">Tên khu vực</label>
+      <form action="/du-lieu-hang-ngay/addData" method="post">
+        <div class="card-body">
+          <%- include('../partials/notificationMessage.ejs') %>
+          <div>
+            <label for="areaName" class="form-label fw-bold">Tên khu vực</label>
             <input
               type="text"
               class="form-control"
-              id="name"
-              name="name"
+              id="areaName"
+              name="areaName"
               placeholder="Nhập tên khu vực"
               required
             />
           </div>
-          <div class="my-3" id="plantation-fields">
-            <label for="plantation" class="form-label">Vườn</label>
-            <div class="input_field d-flex align-items-center">
-              <input
-                type="text"
-                id="plantation"
-                class="form-control"
-                name="plantation"
-                list="plantations"
-                placeholder="Chọn hoặc tạo vườn"
-              />
-              <datalist id="plantations">
-                <% plantations.forEach(plantation => { %>
-                <option value="<%= plantation.name %>"></option>
-                <% }) %>
-              </datalist>
-
-              <i
-                class="ri-add-line fs-4 mx-1"
-                onclick="addInputField('#plantation-fields', 'plantations')"
-                style="cursor: pointer"
-              ></i>
-            </div>
-          </div>
-          <!-- Buttons -->
-          <button type="submit" class="btn btn-success">Tạo mới</button>
-        </form>
-      </div>
-      <!-- Update Area -->
-      <div
-        id="updateArea"
-        class="collapse"
-        aria-labelledby="updateAreaHeading"
-        data-bs-parent="#areaAccordion"
-      >
-        <form action="/quan-ly-khu-vuc/updateArea" method="post">
-          <h5>Chỉnh sửa khu vực</h5>
           <div class="my-3">
-            <label for="area" class="form-label">Chọn khu vực</label>
-            <select class="form-control slim-select" id="area" name="area">
-              <option selected disabled>Chọn khu vực</option>
-              <% areas.forEach((area) => { %>
-              <option value="<%= area._id %>"><%= area.name %></option>
-              <% }) %>
-            </select>
-          </div>
-          <div class="my-3">
-            <label for="updateName" class="form-label">Tên khu vực</label>
-            <input
-              type="text"
-              class="form-control"
-              id="updateName"
-              name="name"
-              placeholder="Nhập tên khu vực"
-              oninput="toggleButtons(true, '#updateArea button')"
-              disabled
-            />
-          </div>
-          <div class="my-3">
-            <ul class="list-group"></ul>
-          </div>
-          <!-- Buttons -->
-          <button type="submit" class="btn btn-success hide">Lưu mới</button>
-        </form>
-      </div>
-      <!-- Delete Area -->
-      <div
-        id="deleteArea"
-        class="collapse"
-        aria-labelledby="deleteAreaHeading"
-        data-bs-parent="#areaAccordion"
-      >
-        <form action="/quan-ly-khu-vuc/deleteAreas" method="post">
-          <h5>Xóa khu vực</h5>
-          <div class="my-3">
-            <label for="deleteAreaField" class="form-label">Chọn khu vực</label>
-            <select
-              class="form-control slim-select-multi"
-              multiple
-              id="deleteAreaField"
-              name="areaID"
+            <label for="accountID" class="form-label fw-bold"
+              >Người nướng hàm lượng</label
             >
-              <% areas.forEach((area) => { %>
-              <option value="<%= area._id %>"><%= area.name %></option>
+            <select
+              class="form-control slim-select"
+              id="accountID"
+              name="accountID"
+            >
+              <% hamLuongAccounts.forEach(account => { %>
+              <option selected disabled>Chọn người nướng hàm lượng</option>
+              <option value="<%= account._id %>">
+                <%= account.username %>
+              </option>
               <% }) %>
             </select>
           </div>
-          <!-- Buttons -->
-          <button
-            type="button"
-            class="btn btn-danger"
-            data-bs-toggle="modal"
-            data-bs-target="#deleteModalToggle"
-          >
-            Xóa
-          </button>
-          <!-- Delete confirming modal  -->
-          <div
-            class="modal fade"
-            id="deleteModalToggle"
-            aria-hidden="true"
-            aria-labelledby="exampleModalToggleLabel"
-            tabindex="-1"
-          >
-            <div class="modal-dialog modal-dialog-centered">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h1 class="modal-title fs-5" id="exampleModalToggleLabel">
-                    Xác nhận xóa ?
-                  </h1>
-                  <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal"
-                    aria-label="Close"
-                  ></button>
+
+          <div class="supplierInfor my-3">
+            <div class="supplier">
+              <div class="row mt-3">
+                <div class="row m-0 p-0">
+                  <div class="col">
+                    <label
+                      for="name"
+                      class="form-label fw-bold w-100 d-flex justify-content-between"
+                    >
+                      1. Nhà vườn
+                      <span>
+                        <i
+                          class="ri-close-line"
+                          style="cursor: pointer"
+                          onclick="removeProduct(this, '.supplier')"
+                        ></i>
+                      </span>
+                    </label>
+                  </div>
                 </div>
-                <div class="modal-body">
-                  Bạn có muốn xóa khu vực này không? Hành động này không thể
-                  hoàn tác.
+                <div class="row normalFields m-0 p-0">
+                  <div class="col col-md-6">
+                    <label for="supplierName" class="form-label fw-bold"
+                      >Tên</label
+                    >
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="supplierName"
+                      name="supplierName"
+                      placeholder="Văn A"
+                    />
+                  </div>
+                  <div class="col col-md-6">
+                    <label for="code" class="form-label fw-bold">Mã</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="code"
+                      name="code"
+                      placeholder="Van20"
+                    />
+                  </div>
                 </div>
-                <div class="modal-footer">
-                  <button type="submit" class="btn btn-danger">Xác nhận</button>
-                </div>
+                <div
+                  class="additionalFields my-3 m-0 p-0"
+                  style="display: none"
+                ></div>
               </div>
             </div>
           </div>
-        </form>
-      </div>
+
+          <div class="btnController my-3">
+            <button
+              type="button"
+              onclick="addInputField('.supplierInfor', '.supplier', false, 'Nhà vườn');"
+              style="background: transparent; border: none"
+              title="Thêm hàng hóa"
+            >
+              <i class="ri-add-circle-line fs-5"></i>
+            </button>
+          </div>
+
+          <div class="card-footer bg-transparent">
+            <!-- Buttons -->
+            <button type="submit" class="btn btn-primary">Tạo mới</button>
+          </div>
+        </div>
+      </form>
     </div>
   </div>
 </div>
@@ -328,3 +273,62 @@
     </div>
   </div>
 </div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const productLists = document.querySelectorAll('.supplierInfor .supplier');
+    const displayStyle = productLists.length > 1 ? 'block' : 'none';
+    productLists.forEach(
+      el => (el.querySelector('.ri-close-line').style.display = displayStyle),
+    );
+  });
+
+  let columns = [
+    { data: 'no', orderable: false, width: '1%' },
+    { data: 'area', orderable: false, width: '1%' },
+    { data: 'accountID', orderable: false, width: '1%' },
+    {
+      data: 'link',
+      orderable: false,
+      width: '1%',
+      render: function (data, type, row) {
+        return `
+            <div class="d-flex justify-content-between fs-5">
+              <a href="/du-lieu-hang-ngay/${row.link.slug}" class="text-decoration-none text-dark">
+                <i
+                    class="ri-edit-box-line"
+                    style="cursor: pointer;"
+                ></i>
+              </a>
+              <i
+                  class="ri-delete-bin-line"
+                  data-bs-toggle="modal"
+                  data-bs-target="#deleteModalToggle${row.link._id}"
+                  style="cursor: pointer;"
+              ></i>
+            </div>
+            `;
+      },
+    },
+  ];
+
+  initializeDataTable(
+    '#datatable',
+    '/du-lieu-hang-ngay/getData',
+    '#staticBackdrop',
+    '#deleteModalToggle',
+    columns,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+  );
+</script>

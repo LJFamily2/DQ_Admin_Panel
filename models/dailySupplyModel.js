@@ -1,24 +1,42 @@
 const mongoose = require("mongoose");
+const slug = require('mongoose-slug-generator');
+mongoose.plugin(slug);
 
 const supplierSchema = new mongoose.Schema({
     name: String,
     code: String
-})
+});
 
 const dailySupplySchema = new mongoose.Schema({
-    accountID: mongoose.Schema.Types.ObjectId,
+    accountID: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Accounts',
+    },
     name: String,
     data: [{
         date: Date,
         quantity: Number,
         price: Number,
-        supplier: mongoose.Schema.Types.ObjectId,
+        supplier: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Supplier' 
+        },
     }],
-    suppliers: [supplierSchema],
+    suppliers: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Supplier' 
+    }],
+    slug: {
+        type: String,
+        slug: 'name'
+    }
+
 });
 
+const Supplier = mongoose.model("Supplier", supplierSchema);
+const DailySupply = mongoose.model("DailySupply", dailySupplySchema);
 
-const dailySupplyModel = mongoose.model("Daily Supplies", dailySupplySchema);
-
-
-module.exports = dailySupplyModel;
+module.exports = {
+    Supplier,
+    DailySupply
+};

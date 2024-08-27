@@ -103,7 +103,7 @@
                       </div>
 
                       <div class="col-6">
-                        <label  class="form-label fw-bold w-100 d-flex justify-content-between">Ngày nhập <span><i class="ri-close-line" style="cursor: pointer;" onclick="removeProduct(this)"></i></span></label>
+                        <label  class="form-label fw-bold w-100 d-flex justify-content-between">Ngày nhập <span><i class="ri-close-line" style="cursor: pointer;" onclick="removeProduct(this, '.productList')"></i></span></label>
                         <input
                         type="date"
                         class="form-control"
@@ -218,7 +218,7 @@
         <div class="btnController my-3">
           <button
             type="button"
-            onclick="addInputField('.productLists', '.productList', true)"
+            onclick="addInputField('.productLists', '.productList', true, 'Hàng hóa')"
             style="background: transparent; border: none;"
             title="Thêm hàng hóa"
           >
@@ -231,3 +231,11 @@
   </div>
 
 </form>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+  const productLists = document.querySelectorAll('.productLists .productList');
+  const displayStyle = productLists.length > 1 ? 'block' : 'none';
+  productLists.forEach(el => el.querySelector('.ri-close-line').style.display = displayStyle);
+});
+</script>
