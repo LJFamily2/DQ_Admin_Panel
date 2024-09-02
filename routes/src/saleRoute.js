@@ -1,15 +1,18 @@
 const express = require("express");
 const router = express.Router();
 const saleController = require('../../controllers/saleController')
-const connectEnsureLogin =  require('connect-ensure-login');
+const authMiddlewares = require('../../middlewares/authMiddlewares');
 
-router.get('/',connectEnsureLogin.ensureLoggedIn({redirectTo:'/dang-nhap'}), saleController.renderPage)
-router.post('/createData',connectEnsureLogin.ensureLoggedIn({redirectTo:'/dang-nhap'}), saleController.createData)
-router.post('/getDatas',connectEnsureLogin.ensureLoggedIn({redirectTo:'/dang-nhap'}), saleController.getDatas)
-router.post('/update/:id',connectEnsureLogin.ensureLoggedIn({redirectTo:'/dang-nhap'}), saleController.updateData )
-router.post('/delete/:id',connectEnsureLogin.ensureLoggedIn({redirectTo:'/dang-nhap'}), saleController.deleteData )
-router.post('/deleteAll',connectEnsureLogin.ensureLoggedIn({redirectTo:'/dang-nhap'}), saleController.deleteAll)
+// Apply ensureLoggedIn middleware to all routes
+router.use(authMiddlewares.ensureLoggedIn);
 
-router.get('/hop-dong/:slug',connectEnsureLogin.ensureLoggedIn({redirectTo:'/dang-nhap'}), saleController.renderDetailPage)
+router.get('/', authMiddlewares.ensureRoles(['Admin', 'Giám đốc']), saleController.renderPage)
+router.post('/createData', authMiddlewares.ensureRoles(['Admin', 'Giám đốc']), saleController.createData)
+router.post('/getDatas', authMiddlewares.ensureRoles(['Admin', 'Giám đốc']), saleController.getDatas)
+router.post('/update/:id', authMiddlewares.ensureRoles(['Admin', 'Giám đốc']), saleController.updateData )
+router.post('/delete/:id', authMiddlewares.ensureRoles(['Admin', 'Giám đốc']), saleController.deleteData )
+router.post('/deleteAll', authMiddlewares.ensureRoles(['Admin', 'Giám đốc']), saleController.deleteAll)
+
+router.get('/hop-dong/:slug', saleController.renderDetailPage)
 
 module.exports = router;

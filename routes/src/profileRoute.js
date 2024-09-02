@@ -1,9 +1,12 @@
 const express = require("express");
-const connectEnsureLogin =  require('connect-ensure-login');
 const router = express.Router();
 const profileController = require('../../controllers/profileController')
+const authMiddlewares = require('../../middlewares/authMiddlewares');
 
-router.get("/",connectEnsureLogin.ensureLoggedIn({redirectTo:'/dang-nhap'}), profileController.renderPage )
+// Apply ensureLoggedIn middleware to all routes
+router.use(authMiddlewares.ensureLoggedIn);
+
+router.get("/", profileController.renderPage )
 
 
 module.exports = router;

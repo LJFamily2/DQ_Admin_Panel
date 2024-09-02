@@ -1,21 +1,30 @@
-const ProductTotalModel = require('../models/productTotalModel');
 const AccountModel = require('../models/accountModel');
 const { Supplier, DailySupply } = require('../models/dailySupplyModel');
 
 const trimStringFields = require('./utils/trimStringFields');
-const formatTotalData = require('./utils/formatTotalData');
 const handleResponse = require('./utils/handleResponse');
 
 module.exports = {
   renderPage,
-  renderDetailPage,
   addArea,
   deleteArea,
   getData,
+
+  // DetailPage
+  renderDetailPage,
   updateArea,
   addSupplier,
+  getAreaSupplierData,
   deleteSupplier,
   editSupplier,
+
+  // User side for input data
+  renderInputDataDashboardPage,
+  renderInputDataPage,
+  addData,
+  getSupplierData,
+  updateSupplierData,
+  deleteSupplierData,
 };
 
 const ensureArray = input => (Array.isArray(input) ? input : [input]);
@@ -33,14 +42,11 @@ async function renderPage(req, res) {
           .includes(account._id.toString()),
     );
 
-    let totalData = await ProductTotalModel.find();
-    const total = formatTotalData(totalData);
     res.render('src/dailySupplyPage', {
       layout: './layouts/defaultLayout',
       title: 'Dữ liệu mủ hằng ngày',
       unassignedHamLuongAccounts,
       areas,
-      total,
       user: req.user,
       messages: req.flash(),
     });
@@ -54,16 +60,14 @@ async function renderDetailPage(req, res) {
   try {
     const area = await DailySupply.findOne({ slug: req.params.slug })
       .populate('accountID')
-      .populate('suppliers');
+      .populate('suppliers').populate('data.supplier');
     const hamLuongAccounts = await AccountModel.find({ role: 'Hàm lượng' });
-    let totalData = await ProductTotalModel.find();
-    const total = formatTotalData(totalData);
+
     res.render('src/dailySupplyDetailPage', {
       layout: './layouts/defaultLayout',
-      title: `Dữ liệu mủ hằng ngày của ${area.name}`,
+      title: `Dữ liệu mủ của ${area.name}`,
       hamLuongAccounts,
       area,
-      total,
       user: req.user,
       messages: req.flash(),
     });
@@ -165,7 +169,7 @@ async function deleteArea(req, res) {
 
 async function getData(req, res) {
   try {
-    const { draw, start = 0, length = 10, search, order, columns } = req.body;
+    const { draw, start, length , search, order, columns } = req.body;
 
     const searchValue = search?.value || '';
     const sortColumn = columns?.[order?.[0]?.column]?.data;
@@ -218,7 +222,10 @@ async function updateArea(req, res) {
     const { accountID, areaName } = req.body;
 
     // Check if the accountID is already assigned to another area
-    const existingArea = await DailySupply.findOne({ accountID, _id: { $ne: id } });
+    const existingArea = await DailySupply.findOne({
+      accountID,
+      _id: { $ne: id },
+    });
     if (existingArea) {
       return handleResponse(
         req,
@@ -331,6 +338,8 @@ async function addSupplier(req, res) {
   }
 }
 
+
+
 async function deleteSupplier(req, res) {
   req.body = trimStringFields(req.body);
   try {
@@ -387,6 +396,424 @@ async function editSupplier(req, res) {
     );
   } catch (error) {
     console.error('Error adding suppliers:', error);
+    res.status(500).render('partials/500', { layout: false });
+  }
+}
+
+// User side for input data
+async function renderInputDataDashboardPage(req, res) {
+  try {
+    let areas;
+
+    if (req.user.role === 'Admin') {
+      // Fetch all areas if the user is an Admin
+      areas = await DailySupply.find()
+        .populate('suppliers')
+        .populate('data.supplier');
+    } else {
+      // Fetch only the areas assigned to the user by accountID
+      const area = await DailySupply.findOne({
+        accountID: req.user._id,
+      })
+        .populate('suppliers')
+        .populate('data.supplier');
+
+      // Ensure areas is an array
+      areas = area ? [area] : [];
+    }
+
+    res.render('src/dailySupplyInputDashboardPage', {
+      layout: './layouts/defaultLayout',
+      title: `Nguyên liệu hằng ngày`,
+      areas,
+      user: req.user,
+      messages: req.flash(),
+    });
+  } catch (error) {
+    console.error('Error adding suppliers:', error);
+    res.status(500).render('partials/500', { layout: false });
+  }
+}
+
+async function renderInputDataPage(req, res) {
+  try {
+    // Check if the user has the 'Admin' role
+    const isAdmin = req.user.role === 'Admin';
+
+    // Find the DailySupply document based on the slug and accountID
+    const area = await DailySupply.findOne({
+      slug: req.params.slug,
+      ...(isAdmin ? {} : { accountID: req.user._id }), // If not admin, add accountID to the query
+    })
+      .populate('suppliers')
+      .populate('data.supplier');
+
+    if (!area) {
+      return res.status(404).render('partials/404', { layout: false });
+    }
+
+    // Get today's start and end dates
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+    const endOfToday = new Date();
+    endOfToday.setHours(23, 59, 59, 999);
+
+    // Count the number of entries for today
+    const todayEntriesCount = await DailySupply.aggregate([
+      { $match: { _id: area._id } },
+      { $unwind: '$data' },
+      { $match: { 'data.date': { $gte: startOfToday, $lte: endOfToday } } },
+      { $count: 'count' }
+    ]);
+
+    const limitReached = todayEntriesCount.length > 0 ? todayEntriesCount[0].count >= area.limitData : false;
+
+    res.render('src/dailySupplyInputPage', {
+      layout: './layouts/defaultLayout',
+      title: `Nguyên liệu hằng ngày ${area.name}`,
+      area,
+      user: req.user,
+      messages: req.flash(),
+      limitReached, 
+    });
+  } catch (error) {
+    console.error('Error rendering input data page:', error);
+    res.status(500).render('partials/500', { layout: false });
+  }
+}
+
+async function addData(req, res) {
+  try {
+    // Get today's date at midnight
+    const today = new Date().setHours(0, 0, 0, 0);
+    
+    console.log(today)
+    // Check the number of entries for today
+    const dailySupply = await DailySupply.findById(req.params.id);
+    const todayEntries = dailySupply.data.filter(entry => 
+      new Date(entry.date).setHours(0, 0, 0, 0) === today
+    );
+
+    console.log(todayEntries.length)
+    
+    
+    if (todayEntries.length >= dailySupply.limitData) {
+      return handleResponse(
+        req,
+        res,
+        400,
+        'fail',
+        'Đã đạt giới hạn dữ liệu hàng ngày!',
+        req.headers.referer,
+      );
+    }
+
+    console.log(dailySupply.limitData)
+
+    // Check for existing supplier
+    let supplier = await Supplier.findOne({ name: req.body.supplier });
+
+    if (!supplier) {
+      // Create new supplier if it doesn't exist
+      supplier = new Supplier({ name: req.body.supplier });
+      const saveSupplierPromise = supplier.save();
+      const updateDailySupplyPromise = DailySupply.findByIdAndUpdate(
+        req.params.id,
+        { $push: { suppliers: supplier._id } },
+        { new: true },
+      );
+
+      // Wait for both operations to complete
+      await Promise.all([saveSupplierPromise, updateDailySupplyPromise]);
+    }
+
+    // Prepare the input data
+    const inputedData = {
+      date: new Date(),
+      dryQuantity: req.body.dryQuantity || 0,
+      percentage: req.body.percentage || 0,
+      keQuantity: req.body.keQuantity || 0,
+      mixedQuantity: req.body.mixedQuantity || 0,
+      supplier: supplier._id,
+    };
+
+    const newData = await DailySupply.findByIdAndUpdate(
+      req.params.id,
+      { $push: { data: inputedData } },
+      { new: true },
+    );
+
+    if (!newData) {
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Thêm dữ liệu thất bại!',
+        req.headers.referer,
+      );
+    }
+
+    return handleResponse(
+      req,
+      res,
+      200,
+      'success',
+      'Thêm dữ liệu thành công!',
+      req.headers.referer,
+    );
+  } catch (error) {
+    console.error('Error adding suppliers:', error);
+    res.status(500).render('partials/500', { layout: false });
+  }
+}
+async function getSupplierData(req, res) {
+  await getSupplierInputData(req, res, false);
+}
+
+async function getAreaSupplierData(req, res) {
+  await getSupplierInputData(req, res, true);
+}
+
+async function getSupplierInputData(req, res, isArea) {
+  try {
+    const {
+      draw,
+      start,
+      length,
+      search,
+      startDate,
+      endDate,
+    } = req.body;
+
+    const searchValue = search?.value?.toLowerCase() || '';
+
+    const { startDateUTC, endDateUTC } = parseDates(startDate, endDate);
+    const dateFilter = createDateFilter(startDateUTC, endDateUTC);
+
+    const matchStage = createMatchStage(req.params.slug, dateFilter, searchValue);
+    const sortStage = { $sort: { 'data.date': -1 } };
+
+    const pipeline = createPipeline(req.params.slug, matchStage, sortStage, start, length);
+
+    const result = await DailySupply.aggregate(pipeline);
+
+    const totalRecords = result[0].totalRecords[0]?.count || 0;
+    const data = result[0].data;
+
+    const flattenedData = flattenData(data, isArea);
+
+    res.json({
+      draw,
+      recordsTotal: totalRecords,
+      recordsFiltered: totalRecords,
+      data: flattenedData,
+    });
+  } catch (error) {
+    console.error('Error fetching supplier data:', error);
+    res.status(500).render('partials/500', { layout: false });
+  }
+
+  function parseDates(startDate, endDate) {
+    return {
+      startDateUTC: startDate ? new Date(startDate).setUTCHours(0, 0, 0, 0) : null,
+      endDateUTC: endDate ? new Date(endDate).setUTCHours(23, 59, 59, 999) : null,
+    };
+  }
+
+  function createDateFilter(startDateUTC, endDateUTC) {
+    const today = new Date().setUTCHours(0, 0, 0, 0);
+    const tomorrow = new Date().setUTCHours(23, 59, 59, 999);
+
+    return startDateUTC || endDateUTC
+      ? {
+          'data.date': {
+            ...(startDateUTC && { $gte: new Date(startDateUTC) }),
+            ...(endDateUTC && { $lte: new Date(endDateUTC) }),
+          },
+        }
+      : {
+          'data.date': { $gte: new Date(today), $lte: new Date(tomorrow) },
+        };
+  }
+
+  function createMatchStage(slug, dateFilter, searchValue) {
+    return {
+      $match: {
+        slug,
+        ...dateFilter,
+        ...(searchValue && {
+          $or: [
+            { 'supplier.name': { $regex: searchValue, $options: 'i' } },
+            { 'supplier.code': { $regex: searchValue, $options: 'i' } },
+          ],
+        }),
+      },
+    };
+  }
+
+  function createPipeline(slug, matchStage, sortStage, start, length) {
+    return [
+      { $match: { slug } },
+      { $unwind: '$data' },
+      {
+        $lookup: {
+          from: 'suppliers',
+          localField: 'data.supplier',
+          foreignField: '_id',
+          as: 'supplier',
+        },
+      },
+      { $unwind: '$supplier' },
+      matchStage,
+      sortStage,
+      {
+        $facet: {
+          data: [
+            { $skip: parseInt(start, 10) },
+            { $limit: parseInt(length, 10) },
+          ],
+          totalRecords: [{ $count: 'count' }],
+        },
+      },
+    ];
+  }
+
+  function flattenData(data, isArea) {
+    return data.map((item, index) => ({
+      no: index + 1,
+      date: new Date(item.data.date).toLocaleDateString('vi-VN'),
+      supplier: item.supplier.name || '',
+      ...(isArea && { code: item.supplier.code || '' }),
+      dryQuantity: item.data.dryQuantity.toLocaleString('vi-VN'),
+      percentage: item.data.percentage.toLocaleString('vi-VN'),
+      dryTotal: (
+        (item.data.dryQuantity * item.data.percentage) /
+        100
+      ).toLocaleString('vi-VN'),
+      mixedQuantity: item.data.mixedQuantity.toLocaleString('vi-VN'),
+      keQuantity: item.data.keQuantity.toLocaleString('vi-VN'),
+      keTotal: (
+        (item.data.keQuantity * item.data.percentage) /
+        100
+      ).toLocaleString('vi-VN'),
+      id: item.data._id,
+    }));
+  }
+}
+
+
+async function updateSupplierData(req, res) {
+  try {
+    const { id } = req.params;
+    const {
+      date,
+      supplier,
+      dryQuantity,
+      percentage,
+      keQuantity,
+      mixedQuantity,
+    } = req.body;
+
+    // Find the supplier by name
+    let supplierDoc = await Supplier.findOne({ name: supplier });
+
+    let supplierId;
+    if (supplierDoc) {
+      // If the supplier exists, use the existing supplier's ID
+      supplierId = supplierDoc._id;
+    } else {
+      // If the supplier does not exist, get the current supplier ID from the document
+      const currentData = await DailySupply.findOne(
+        { 'data._id': id },
+        { 'data.$': 1 },
+      );
+      const currentSupplierId = currentData.data[0].supplier;
+
+      // Update the current supplier's name to the inputted supplier name
+      await Supplier.updateOne(
+        { _id: currentSupplierId },
+        { $set: { name: supplier } },
+      );
+
+      supplierId = currentSupplierId;
+    }
+
+    // Update the daily supply data with the new values
+    const updatedData = await DailySupply.findOneAndUpdate(
+      { 'data._id': id },
+      {
+        $set: {
+          'data.$.date': new Date(date),
+          'data.$.supplier': supplierId,
+          'data.$.dryQuantity': dryQuantity,
+          'data.$.percentage': percentage,
+          'data.$.keQuantity': keQuantity,
+          'data.$.mixedQuantity': mixedQuantity,
+        },
+      },
+      { new: true },
+    );
+
+    if (!updatedData) {
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Cập nhật dữ liệu thất bại!',
+        req.headers.referer,
+      );
+    }
+
+    return handleResponse(
+      req,
+      res,
+      200,
+      'success',
+      'Cập nhật dữ liệu thành công!',
+      req.headers.referer,
+    );
+  } catch (err) {
+    console.error('Error updating supplier data:', err);
+    res.status(500).render('partials/500', { layout: false });
+  }
+}
+
+async function deleteSupplierData(req, res) {
+  try {
+    const { id } = req.params;
+    
+    // Find and delete the sub-document by ID
+    const updatedData = await DailySupply.findOneAndUpdate(
+      { 'data._id': id },
+      {
+        $pull: { data: { _id: id } },
+      },
+      { new: true },
+    );
+
+    if (!updatedData) {
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Xóa dữ liệu thất bại!',
+        req.headers.referer,
+      );
+    }
+
+    return handleResponse(
+      req,
+      res,
+      200,
+      'success',
+      'Xóa dữ liệu thành công!',
+      req.headers.referer,
+    );
+  } catch (err) {
+    console.error('Error deleting supplier data:', err);
     res.status(500).render('partials/500', { layout: false });
   }
 }

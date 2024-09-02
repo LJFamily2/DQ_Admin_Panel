@@ -24,7 +24,19 @@ function handleLogin(req, res, next) {
             } else {
                 req.session.cookie.expires = false;
             }
-            return res.redirect('/tong');
+             // Redirect based on user role
+             switch (user.role) {
+                case 'Admin':
+                    return res.redirect('/tong');
+                case 'Giám đốc':
+                    return res.redirect('/tong');
+                case 'Văn phòng':
+                    return res.redirect('/du-lieu-hang-ngay');
+                case 'Hàm lượng':
+                    return res.redirect('/nhap-du-lieu/nguyen-lieu');
+                default:
+                    return res.status(500).render('partials/500', { layout: false });
+            }
         });
     })(req, res, next);
 }

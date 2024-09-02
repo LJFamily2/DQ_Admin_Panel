@@ -27,6 +27,7 @@ const routes = [
     {path: "/quan-ly-hop-dong", route: saleRoute},
     {path: "/quan-ly-chi-tieu", route: spendRoute},
     {path: "/du-lieu-hang-ngay", route: dailySupplyRoute},
+    {path: "/nhap-du-lieu", route: dailySupplyRoute},
 
 ]
 

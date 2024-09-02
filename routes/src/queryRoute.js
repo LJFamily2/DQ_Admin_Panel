@@ -1,10 +1,21 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const queryController = require("../../controllers/queryController")
-const connectEnsureLogin =  require('connect-ensure-login');
+const queryController = require('../../controllers/queryController');
+const authMiddlewares = require('../../middlewares/authMiddlewares');
 
-router.get('/', connectEnsureLogin.ensureLoggedIn({redirectTo:'/dang-nhap'}), queryController.renderPage )
-// router.post('/getQuery',connectEnsureLogin.ensureLoggedIn({redirectTo:'/dang-nhap'}), queryController.getQuery)
-router.post('/getDataTotal',connectEnsureLogin.ensureLoggedIn({redirectTo:'/dang-nhap'}), queryController.getDataTotal)
+// Apply ensureLoggedIn middleware to all routes
+router.use(authMiddlewares.ensureLoggedIn);
+
+router.get(
+  '/',
+  authMiddlewares.ensureRoles(['Admin', 'Giám đốc']),
+  queryController.renderPage,
+);
+// router.post('/getQuery', queryController.getQuery)
+router.post(
+  '/getDataTotal',
+  authMiddlewares.ensureRoles(['Admin', 'Giám đốc']),
+  queryController.getDataTotal,
+);
 
 module.exports = router;

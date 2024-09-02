@@ -1,11 +1,15 @@
 const express = require("express");
 const router = express.Router();
 const dashboardController = require('../../controllers/dashboardController')
+const authMiddlewares = require('../../middlewares/authMiddlewares');
+
+// Apply ensureLoggedIn middleware to all routes
+router.use(authMiddlewares.ensureLoggedIn);
 
 // Render the page
-router.get('/', dashboardController.renderPage)
-router.get('/getRawMaterial', dashboardController.getRawMaterial)
-router.get('/getProductData', dashboardController.getProductData)
-router.get('/getRevenueAndSpending', dashboardController.getRevenueAndSpending)
+router.get('/', authMiddlewares.ensureRoles(['Admin', 'Giám đốc']), dashboardController.renderPage)
+router.get('/getRawMaterial', authMiddlewares.ensureRoles(['Admin', 'Giám đốc']), dashboardController.getRawMaterial)
+router.get('/getProductData', authMiddlewares.ensureRoles(['Admin', 'Giám đốc']), dashboardController.getProductData)
+router.get('/getRevenueAndSpending', authMiddlewares.ensureRoles(['Admin', 'Giám đốc']), dashboardController.getRevenueAndSpending)
 
 module.exports = router;

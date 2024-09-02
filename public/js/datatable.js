@@ -38,11 +38,12 @@ function initializeDataTable(
   dataPageFooter,
   salePageFooter,
   spendPageFooter,
+  dailySupplyFooter,
 ) {
 
   let rowGroupOptions ={};
 
-  if(rowGroup !== null){
+  if(rowGroup !== false || rowGroup !== null ){
     rowGroupOptions = {
       dataSrc: rowGroup,
     };
@@ -99,6 +100,14 @@ function initializeDataTable(
     }
     if (spendPageFooter) {
       const columns = [5];
+      footerCallbackOptions = {
+        footerCallback: function () {
+          setupFooterCallback(columns, this.api());
+        },
+      };
+    }
+    if (dailySupplyFooter) {
+      const columns = [5,6,9];
       footerCallbackOptions = {
         footerCallback: function () {
           setupFooterCallback(columns, this.api());
@@ -172,7 +181,6 @@ function initializeDataTable(
         return {
           ...column,
           render: function (data, type, row) {
-            console.log(row)
             return `
             <div class="d-flex justify-content-between fs-5">
               <i

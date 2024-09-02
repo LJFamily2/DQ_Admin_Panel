@@ -87,7 +87,7 @@
                   <div class="mb-3">
                     <label for="role<%= index %>" class="form-label" style="float: left;">Vai trò</label>
                     <select class="form-select" id="role<%= index %>" name="role" aria-label="Default select example">
-                      <% const roles = ['Admin', 'Giám đốc']; %>
+                      <% const roles = ['Admin', 'Giám đốc', 'Văn phòng', 'Hàm lượng']; %>
                       <% roles.forEach(role => { %>
                         <option value="<%= role %>" <%= (user.role === role) ? 'selected' : '' %>><%= role %></option>
                       <% }); %>
@@ -158,7 +158,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="AddUser">
-          Tạo tài khoản nhân viên
+          Tạo tài khoản Văn phòng
         </h1>
         <button
           type="button"

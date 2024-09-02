@@ -13,10 +13,13 @@ const dailySupplySchema = new mongoose.Schema({
         ref: 'Accounts',
     },
     name: String,
+    limitData: Number,
     data: [{
         date: Date,
-        quantity: Number,
-        price: Number,
+        dryQuantity: Number,
+        percentage: Number,
+        keQuantity: Number, 
+        mixedQuantity: Number,
         supplier: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Supplier' 

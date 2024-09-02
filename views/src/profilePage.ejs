@@ -25,8 +25,7 @@
           </div>
           <div class="mb-3">
             <label for="role" class="form-label">Vai trò</label>
-            <input type="text" class="form-control" id="role" value="<%=
-            user.role === 'Admin' ? "Admin" : "Giám đốc" %>" disabled />
+            <input type="text" class="form-control" id="role" value="<%= user.role  %>" disabled />
           </div>
           <div class="mb-3">
             <a
@@ -75,6 +74,7 @@
               class="form-control"
               id="oldPassword"
               name="oldPassword"
+              minlength="8"
               required
             />
           </div>
@@ -86,6 +86,7 @@
               id="newPassword"
               name="newPassword"
               onkeyup="checkPasswordsMatch()"
+              minlength="8"
               required
             />
           </div>
@@ -97,6 +98,7 @@
               type="password"
               class="form-control"
               id="reEnterPassword"
+              minlength="8"
               onkeyup="checkPasswordsMatch()"
               required
             />

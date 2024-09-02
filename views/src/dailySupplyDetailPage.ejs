@@ -4,6 +4,7 @@
   <script src="/js/multipleFieldsWithText.js"></script>
   <script src="/js/slim-select.js" defer></script>
   <script src="/js/toggleButtons.js" defer></script>
+  <script src="https://cdn.datatables.net/rowgroup/1.5.0/js/dataTables.rowGroup.js"></script>
   <style>
     .hide {
       display: none;
@@ -17,6 +18,17 @@
     color: #ffffff;
     background: #007bff !important;
   }
+    /* Hide the spinners in input type number for Chrome, Safari, Edge, and Opera */
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+  
+    /* Hide the spinners in input type number for Firefox */
+    input[type="number"] {
+      -moz-appearance: textfield;
+    }
   </style>
 </head>
 
@@ -30,16 +42,6 @@
   </ol>
 </nav>
 
-<button
-  type="button"
-  class="btn btn-danger mx-2 mx-md-3 mt-2"
-  data-bs-toggle="modal"
-  data-bs-target="#deleteAll"
-  style="width: max-content"
->
-  Xóa tất cả thông tin
-</button>
-
 <div class="row m-0 m-md-2 g-3 mb-4">
   <div class="col-12 col-md-9 mt-2">
     <div class="card" style="box-shadow: 0 1px 2px">
@@ -47,19 +49,176 @@
         <%- include('../partials/dateSelection.ejs') %>
       </div>
       <div class="card-body">
-        <table class="table table-striped" id="datatable">
+        <table class="table table-striped" id="table">
           <thead>
             <tr>
-              <th>STT</th>
-              <th>Khu vực</th>
-              <th>Nướng hàm lượng</th>
-              <th>Chỉnh sửa</th>
+              <th rowspan="2">STT</th>
+              <th rowspan="2">Ngày</th>
+              <th rowspan="2">Nhà vườn</th>
+              <th rowspan="2">Mã</th>
+              <th colspan="3">Mủ quy khô</th>
+              <th>Mủ tạp</th>
+              <th colspan="3">Mủ ké</th>
+              <th rowspan="2">Chỉnh sửa</th>
+            </tr>
+            <tr>
+              <th>SL</th>
+              <th>Hàm lượng</th>
+              <th>Tổng</th>
+              <th>SL</th>
+              <th>SL</th>
+              <th>Hàm lượng</th>
+              <th>Tổng</th>
             </tr>
           </thead>
 
           <tbody>
             <% area.data.forEach( (eachData,index) => { %>
+            <!-- Modal for updating -->
+            <div
+              class="modal fade"
+              id="staticBackdrop<%= eachData._id %>"
+              data-bs-backdrop="static"
+              data-bs-keyboard="false"
+              tabindex="-1"
+              aria-hidden="true"
+            >
+              <div
+                class="modal-dialog modal-dialog-centered modal-dialog-scrollable"
+              >
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h1 class="modal-title fs-5" >
+                      Cập nhật thông tin <%= eachData.supplier.name %>
+                    </h1>
+                    <button
+                      type="button"
+                      class="btn-close"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"
+                    ></button>
+                  </div>
 
+                  <form
+                    action="/nhap-du-lieu/nguyen-lieu/updateData/<%= eachData._id %>"
+                    method="post"
+                  >
+                    <div class="card-body">
+                      <%- include('../partials/notificationMessage.ejs') %>
+
+                      <div>
+                        <label for="date" class="form-label fw-bold"
+                          >Ngày nhập</label
+                        >
+                        <input
+                          type="date"
+                          class="form-control"
+                          id="date"
+                          name="date"
+                          value="<%= eachData.date.toISOString().slice(0,10) %>"
+                          required
+                        />
+                      </div>
+
+                      <div class="my-3">
+                        <label for="supplier" class="form-label fw-bold"
+                          >Nhà vườn</label
+                        >
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="supplier"
+                          name="supplier"
+                          placeholder="Văn A"
+                          value="<%= eachData.supplier.name %>"
+                          disabled
+                          required
+                        />
+                      </div>
+
+                      <div class="itemLists my-3">
+                        <div class="itemList">
+                          <div class="row my-3">
+                            <label class="form-label fw-bold">Mủ nước</label>
+                            <div class="col col-md-6">
+                              <label for="dryQuantity" class="form-label"
+                                >Số lượng</label
+                              >
+                              <input
+                                type="number"
+                                class="form-control"
+                                id="dryQuantity"
+                                name="dryQuantity"
+                                placeholder="123.45"
+                                value="<%= eachData.dryQuantity %>"
+                              />
+                            </div>
+                            <div class="col col-md-6">
+                              <label for="percentage" class="form-label"
+                                >Hàm lượng</label
+                              >
+                              <input
+                                type="number"
+                                class="form-control"
+                                id="percentage"
+                                name="percentage"
+                                placeholder="23.043"
+                                max="100"
+                                value="<%= eachData.percentage %>"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="itemList">
+                          <div class="row my-3">
+                            <label class="form-label fw-bold">Mủ tạp</label>
+                            <div class="col-12">
+                              <label for="mixedQuantity" class="form-label"
+                                >Số lượng</label
+                              >
+                              <input
+                                type="number"
+                                class="form-control"
+                                id="mixedQuantity"
+                                name="mixedQuantity"
+                                placeholder="123.45"
+                                value="<%= eachData.mixedQuantity %>"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div class="itemList">
+                          <div class="row my-3">
+                            <label class="form-label fw-bold">Mủ Ké</label>
+                            <div class="col">
+                              <label for="keQuantity" class="form-label"
+                                >Số lượng</label
+                              >
+                              <input
+                                type="number"
+                                class="form-control"
+                                id="keQuantity"
+                                name="keQuantity"
+                                placeholder="123.45"
+                                value="<%= eachData.keQuantity %>"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                      <!-- Buttons -->
+                      <button type="submit" class="btn btn-primary">Lưu</button>
+                      <button type="reset" class="btn text-dark">
+                        Làm mới
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
             <!-- Delete confirming modal  -->
             <div
               class="modal fade"
@@ -72,7 +231,7 @@
                 <div class="modal-content">
                   <div class="modal-header">
                     <h1 class="modal-title fs-5" id="exampleModalToggleLabel">
-                      Xóa hợp đồng <%= eachData.code %>
+                      Xóa dữ liệu của <%= eachData.supplier.name %>
                     </h1>
                     <button
                       type="button"
@@ -82,12 +241,12 @@
                     ></button>
                   </div>
                   <form
-                    action="/quan-ly-hop-dong/delete/<%= eachData._id %>"
+                    action="/nhap-du-lieu/nguyen-lieu/deleteData/<%= eachData._id %>"
                     method="post"
                   >
                     <div class="modal-body">
-                      Bạn có muốn xóa hợp đồng mã
-                      <strong><%= eachData.code %></strong> ? Hành động này
+                      Bạn có muốn xóa dữ liệu của
+                      <strong><%= eachData.supplier.name %></strong> ? Hành động này
                       không thể hoàn tác.
                     </div>
                     <div class="modal-footer">
@@ -128,6 +287,16 @@
             aria-controls="updateArea"
           >
             Chỉnh sửa
+          </button>
+          <button
+            class="btn btn-light"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#setting"
+            aria-expanded="false"
+            aria-controls="setting"
+          >
+            Cài đặt
           </button>
         </div>
       </div>
@@ -339,97 +508,75 @@
                 </form>
               <i class="ri-add-circle-line fs-5" onclick="addFields('.additionalField')" style="cursor: pointer;"></i>
             </div>
+            <!-- Setting -->
+            <div
+            id="setting"
+            class="collapse"
+            aria-labelledby="suppliersHeading"
+            data-bs-parent="#areaAccordion"
+            >
+              <h4>Cài đặt</h4>
+              <form action="/du-lieu-hang-ngay/update/<%= area._id %>" method="post" onchange="this.querySelector('button[type=submit]').style.display = 'block';">
+                <div class="mb-3">
+                  <label for="limitData" class="form-label">Giới hạn dữ liệu/ngày</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="limitData"
+                    name="limitData"
+                    required
+                    value="<%= area.limitData ?  area.limitData : '' %>"
+                  />
+                </div>
+                <button type="submit" class="btn btn-primary
+                ">Lưu</button>
+              </form>
+            </div>
           </div>
-        </div>
-    </div>
-  </div>
-</div>
-
-<!-- Modal for deleting all products -->
-<div
-  class="modal fade"
-  id="deleteAll"
-  data-bs-backdrop="static"
-  data-bs-keyboard="false"
-  tabindex="-1"
-  aria-labelledby="deleteUsers"
-  aria-hidden="true"
->
-  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="deleteUsers">Xóa tất cả khu vực</h1>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
       </div>
-      <form action="/quan-ly-khu-vuc/deleteAll" method="post">
-        <div class="modal-body">
-          Bạn có muốn xóa <strong>tất cả</strong> khu vực? Những không tin của
-          vườn sẽ dc giữ. Hành động này không thể hoàn tác.
-        </div>
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-danger">Xác nhận</button>
-        </div>
-      </form>
     </div>
   </div>
 </div>
 
 
 <script>
-  // let columns = [
-  //   { data: 'no', orderable: false, width: '1%' },
-  //   { data: 'eachData', orderable: false, width: '1%' },
-  //   { data: 'accountID', orderable: false, width: '1%' },
-  //   {
-  //     data: 'link',
-  //     orderable: false,
-  //     width: '1%',
-  //     render: function (data, type, row) {
-  //       return `
-  //           <div class="d-flex justify-content-between fs-5">
-  //             <a href="/du-lieu-hang-ngay/${row.link.slug}" class="text-decoration-none text-dark">
-  //               <i
-  //                   class="ri-edit-box-line"
-  //                   style="cursor: pointer;"
-  //               ></i>
-  //             </a>
-  //             <i
-  //                 class="ri-delete-bin-line"
-  //                 data-bs-toggle="modal"
-  //                 data-bs-target="#deleteModalToggle${row.link._id}"
-  //                 style="cursor: pointer;"
-  //             ></i>
-  //           </div>
-  //           `;
-  //     },
-  //   },
-  // ];
+  const columns = [
+    { data: 'no', visible: false, orderable: false },
+    { data: 'date', visible: false },
+    { data: 'supplier', orderable: false },
+    { data: 'code', orderable: false },
+    { data: 'dryQuantity', orderable: false },
+    { data: 'percentage', orderable: false },
+    { data: 'dryTotal', orderable: false },
+    { data: 'mixedQuantity', orderable: false },
+    { data: 'keQuantity', orderable: false },
+    { data: 'percentage', orderable: false },
+    { data: 'keTotal', orderable: false },
+    { data: 'id', orderable: false },
+  ];
 
-  // initializeDataTable(
-  //   '#datatable',
-  //   '/du-lieu-hang-ngay/getData',
-  //   '#staticBackdrop',
-  //   '#deleteModalToggle',
-  //   columns,
-  //   false,
-  //   false,
-  //   false,
-  //   false,
-  //   false,
-  //   false,
-  //   false,
-  //   false,
-  //   false,
-  //   false,
-  //   false,
-  //   false,
-  //   false,
-  // );
+  initializeDataTable(
+    '#table',
+    `/du-lieu-hang-ngay/getAreaSupplierData/<%= area.slug %>`,
+    '#staticBackdrop',
+    '#deleteModalToggle',
+    columns,
+    'date',
+    '#filterButton',
+    '#startDate',
+    '#endDate',
+    '#clearFilterButton',
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    true,
+  );
         function addFields(container) {
       const additionalContainer = document.querySelector(container);
       const newFields = document.createElement('div');

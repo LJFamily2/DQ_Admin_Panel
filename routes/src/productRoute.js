@@ -1,13 +1,16 @@
 const express = require("express");
 const router = express.Router();
-const productController = require('../../controllers/productController')
-const connectEnsureLogin =  require('connect-ensure-login');
+const productController = require('../../controllers/productController');
+const authMiddlewares = require('../../middlewares/authMiddlewares');
 
-router.get("/",connectEnsureLogin.ensureLoggedIn({redirectTo:'/dang-nhap'}), productController.renderPage )
-router.post("/addProduct",connectEnsureLogin.ensureLoggedIn({redirectTo:'/dang-nhap'}), productController.createProduct )
-router.post("/getProducts",connectEnsureLogin.ensureLoggedIn({redirectTo:'/dang-nhap'}), productController.getProducts )
-router.post("/update/:id",connectEnsureLogin.ensureLoggedIn({redirectTo:'/dang-nhap'}), productController.updateProduct )
-router.post("/delete/:id",connectEnsureLogin.ensureLoggedIn({redirectTo:'/dang-nhap'}), productController.deleteProduct )
-router.post("/deleteAll",connectEnsureLogin.ensureLoggedIn({redirectTo:'/dang-nhap'}), productController.deleteAll )
+// Apply ensureLoggedIn middleware to all routes
+router.use(authMiddlewares.ensureLoggedIn);
+
+router.get("/" , authMiddlewares.ensureRoles(['Admin', 'Giám đốc']), productController.renderPage);
+router.post("/addProduct" , authMiddlewares.ensureRoles(['Admin', 'Giám đốc']), productController.createProduct);
+router.post("/getProducts" , authMiddlewares.ensureRoles(['Admin', 'Giám đốc']), productController.getProducts);
+router.post("/update/:id" , authMiddlewares.ensureRoles(['Admin', 'Giám đốc']), productController.updateProduct);
+router.post("/delete/:id" , authMiddlewares.ensureRoles(['Admin', 'Giám đốc']), productController.deleteProduct);
+router.post("/deleteAll" , authMiddlewares.ensureRoles(['Admin', 'Giám đốc']), productController.deleteAll);
 
 module.exports = router;
