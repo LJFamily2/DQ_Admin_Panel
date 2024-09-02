@@ -125,12 +125,10 @@ function initializeDataTable(
       ? [
           {
             extend: 'csv',
-            title: 'NHẬP MỦ NGUYÊN LIỆU CỬ ',
             className: 'btn btn-secondary',
           },
           {
             extend: 'excel',
-            title: 'NHẬP MỦ NGUYÊN LIỆU CỬ ',
             className: 'btn btn-secondary',
           },
         ]
