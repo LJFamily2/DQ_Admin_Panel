@@ -4,7 +4,11 @@ mongoose.plugin(slug);
 
 const supplierSchema = new mongoose.Schema({
     name: String,
-    code: String
+    code: String,
+    address: String,
+    phone: String,
+    identification: String,
+    issueDate: String
 });
 
 const dailySupplySchema = new mongoose.Schema({

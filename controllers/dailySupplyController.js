@@ -27,6 +27,27 @@ module.exports = {
   deleteSupplierData,
 };
 
+// Helper function 
+async function createSuppliers(req) {
+  const supplierNames = ensureArray(req.body.supplierName);
+  let supplierCode = ensureArray(req.body.code);
+  let supplierPhone = ensureArray(req.body.phone);
+  let supplierIdentification = ensureArray(req.body.identification);
+  let supplierIssueDate = ensureArray(req.body.issueDate);
+  let supplierAddress = ensureArray(req.body.address) || '';
+
+  const suppliers = supplierNames.map((name, index) => ({
+    name: name,
+    code: supplierCode[index],
+    phone: supplierPhone[index],
+    identification: supplierIdentification[index],
+    issueDate: supplierIssueDate[index],
+    address: supplierAddress[index] || '',
+  }));
+
+  return suppliers;
+}
+
 const ensureArray = input => (Array.isArray(input) ? input : [input]);
 
 async function renderPage(req, res) {
@@ -60,7 +81,8 @@ async function renderDetailPage(req, res) {
   try {
     const area = await DailySupply.findOne({ slug: req.params.slug })
       .populate('accountID')
-      .populate('suppliers').populate('data.supplier');
+      .populate('suppliers')
+      .populate('data.supplier');
     const hamLuongAccounts = await AccountModel.find({ role: 'Hàm lượng' });
 
     res.render('src/dailySupplyDetailPage', {
@@ -80,9 +102,6 @@ async function renderDetailPage(req, res) {
 async function addArea(req, res) {
   req.body = trimStringFields(req.body);
   try {
-    const supplierNames = ensureArray(req.body.supplierName);
-    const codes = ensureArray(req.body.code);
-
     const existingArea = await DailySupply.findOne({ name: req.body.areaName });
     if (existingArea) {
       return handleResponse(
@@ -95,10 +114,7 @@ async function addArea(req, res) {
       );
     }
 
-    const suppliers = supplierNames.map((name, index) => ({
-      name: name || '',
-      code: codes[index] || '',
-    }));
+    const suppliers = await createSuppliers(req);
 
     const createdSuppliers = await Supplier.create(suppliers);
 
@@ -169,7 +185,7 @@ async function deleteArea(req, res) {
 
 async function getData(req, res) {
   try {
-    const { draw, start, length , search, order, columns } = req.body;
+    const { draw, start, length, search, order, columns } = req.body;
 
     const searchValue = search?.value || '';
     const sortColumn = columns?.[order?.[0]?.column]?.data;
@@ -283,15 +299,12 @@ async function addSupplier(req, res) {
         req.headers.referer,
       );
     }
-    let supplierName = ensureArray(req.body.supplierName);
-    let code = ensureArray(req.body.code);
 
-    for (let i = 0; i < supplierName.length; i++) {
-      const name = supplierName[i];
-      const supplierCode = code[i];
+    const suppliers = await createSuppliers(req);
 
+    for (const supplier of suppliers) {
       const existingSupplier = await Supplier.findOne({
-        $or: [{ name }, { code: supplierCode }],
+        $or: [{ name: supplier.name }, { code: supplier.code }],
       });
 
       if (existingSupplier) {
@@ -305,11 +318,8 @@ async function addSupplier(req, res) {
         );
       }
 
-      // Create new supplier
-      const newSuppliers = await Supplier.create({ name, code: supplierCode });
-
-      // Add supplier to the area
-      area.suppliers.push(newSuppliers._id);
+      const newSupplier = await Supplier.create(supplier);
+      area.suppliers.push(newSupplier._id);
     }
 
     const updateData = await area.save();
@@ -337,8 +347,6 @@ async function addSupplier(req, res) {
     res.status(500).render('partials/500', { layout: false });
   }
 }
-
-
 
 async function deleteSupplier(req, res) {
   req.body = trimStringFields(req.body);
@@ -373,7 +381,7 @@ async function editSupplier(req, res) {
   try {
     const supplier = await Supplier.findByIdAndUpdate(
       req.params.id,
-      { name: req.body.supplierName, code: req.body.supplierCode },
+      { ...req.body },
       { new: true },
     );
     if (!supplier) {
@@ -463,10 +471,13 @@ async function renderInputDataPage(req, res) {
       { $match: { _id: area._id } },
       { $unwind: '$data' },
       { $match: { 'data.date': { $gte: startOfToday, $lte: endOfToday } } },
-      { $count: 'count' }
+      { $count: 'count' },
     ]);
 
-    const limitReached = todayEntriesCount.length > 0 ? todayEntriesCount[0].count >= area.limitData : false;
+    const limitReached =
+      todayEntriesCount.length > 0
+        ? todayEntriesCount[0].count >= area.limitData
+        : false;
 
     res.render('src/dailySupplyInputPage', {
       layout: './layouts/defaultLayout',
@@ -474,7 +485,7 @@ async function renderInputDataPage(req, res) {
       area,
       user: req.user,
       messages: req.flash(),
-      limitReached, 
+      limitReached,
     });
   } catch (error) {
     console.error('Error rendering input data page:', error);
@@ -486,17 +497,16 @@ async function addData(req, res) {
   try {
     // Get today's date at midnight
     const today = new Date().setHours(0, 0, 0, 0);
-    
-    console.log(today)
+
+    console.log(today);
     // Check the number of entries for today
     const dailySupply = await DailySupply.findById(req.params.id);
-    const todayEntries = dailySupply.data.filter(entry => 
-      new Date(entry.date).setHours(0, 0, 0, 0) === today
+    const todayEntries = dailySupply.data.filter(
+      entry => new Date(entry.date).setHours(0, 0, 0, 0) === today,
     );
 
-    console.log(todayEntries.length)
-    
-    
+    console.log(todayEntries.length);
+
     if (todayEntries.length >= dailySupply.limitData) {
       return handleResponse(
         req,
@@ -508,7 +518,7 @@ async function addData(req, res) {
       );
     }
 
-    console.log(dailySupply.limitData)
+    console.log(dailySupply.limitData);
 
     // Check for existing supplier
     let supplier = await Supplier.findOne({ name: req.body.supplier });
@@ -577,24 +587,27 @@ async function getAreaSupplierData(req, res) {
 
 async function getSupplierInputData(req, res, isArea) {
   try {
-    const {
-      draw,
-      start,
-      length,
-      search,
-      startDate,
-      endDate,
-    } = req.body;
+    const { draw, start, length, search, startDate, endDate } = req.body;
 
     const searchValue = search?.value?.toLowerCase() || '';
 
     const { startDateUTC, endDateUTC } = parseDates(startDate, endDate);
     const dateFilter = createDateFilter(startDateUTC, endDateUTC);
 
-    const matchStage = createMatchStage(req.params.slug, dateFilter, searchValue);
+    const matchStage = createMatchStage(
+      req.params.slug,
+      dateFilter,
+      searchValue,
+    );
     const sortStage = { $sort: { 'data.date': -1 } };
 
-    const pipeline = createPipeline(req.params.slug, matchStage, sortStage, start, length);
+    const pipeline = createPipeline(
+      req.params.slug,
+      matchStage,
+      sortStage,
+      start,
+      length,
+    );
 
     const result = await DailySupply.aggregate(pipeline);
 
@@ -616,8 +629,12 @@ async function getSupplierInputData(req, res, isArea) {
 
   function parseDates(startDate, endDate) {
     return {
-      startDateUTC: startDate ? new Date(startDate).setUTCHours(0, 0, 0, 0) : null,
-      endDateUTC: endDate ? new Date(endDate).setUTCHours(23, 59, 59, 999) : null,
+      startDateUTC: startDate
+        ? new Date(startDate).setUTCHours(0, 0, 0, 0)
+        : null,
+      endDateUTC: endDate
+        ? new Date(endDate).setUTCHours(23, 59, 59, 999)
+        : null,
     };
   }
 
@@ -702,7 +719,6 @@ async function getSupplierInputData(req, res, isArea) {
   }
 }
 
-
 async function updateSupplierData(req, res) {
   try {
     const { id } = req.params;
@@ -783,7 +799,7 @@ async function updateSupplierData(req, res) {
 async function deleteSupplierData(req, res) {
   try {
     const { id } = req.params;
-    
+
     // Find and delete the sub-document by ID
     const updatedData = await DailySupply.findOneAndUpdate(
       { 'data._id': id },

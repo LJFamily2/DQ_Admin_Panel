@@ -92,7 +92,6 @@
               class="form-control"
               id="areaName"
               name="areaName"
-              placeholder="Nhập tên khu vực"
               required
             />
           </div>
@@ -106,7 +105,7 @@
               name="accountID"
               required
             >
-            <option disabled selected>Chọn tài khoản</option>
+              <option disabled selected>Chọn tài khoản</option>
 
               <% unassignedHamLuongAccounts.forEach(account => { %>
               <option value="<%= account._id %>">
@@ -146,7 +145,8 @@
                       class="form-control"
                       id="supplierName"
                       name="supplierName"
-                      placeholder="Văn A"
+                      maxlength="30"
+                      required
                     />
                   </div>
                   <div class="col col-md-6">
@@ -156,9 +156,65 @@
                       class="form-control"
                       id="code"
                       name="code"
-                      placeholder="Van20"
+                      maxlength="20"
+                      required
                     />
                   </div>
+                </div>
+                <div class="mt-3">
+                  <label for="phone" class="form-label fw-bold"
+                    >Số điện thoại</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="phone"
+                    name="phone"
+                    maxlength="10"
+                    oninput="this.value = this.value.replace(/\D/g, '');"
+                    required
+                    />
+                </div>
+                <div class="row">
+                  <div class="col-7 mt-3">
+                    <label for="identification" class="form-label fw-bold"
+                      >Căn cước công dân</label
+                    >
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="identification"
+                      name="identification"
+                      maxlength="12"
+                      required
+                    />
+                  </div>
+                  <div class="col-5 mt-3">
+                    <label for="issueDate" class="form-label fw-bold"
+                      >Ngày cấp</label
+                    >
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="issueDate"
+                      name="issueDate"
+                      oninput="this.value = this.value.replace(/\D/g, '').replace(/(\d{2})(?=\d)/g, '$1/');"
+                      maxlength="8"
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="mt-3">
+                  <label for="address" class="form-label fw-bold"
+                    >Địa chỉ</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="address"
+                    name="address"
+                    maxlength="70"
+                  />
                 </div>
                 <div
                   class="additionalFields my-3 m-0 p-0"
