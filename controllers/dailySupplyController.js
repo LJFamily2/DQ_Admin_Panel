@@ -462,9 +462,9 @@ async function renderInputDataPage(req, res) {
 
     // Get today's start and end dates
     const startOfToday = new Date();
-    startOfToday.setHours(0, 0, 0, 0);
+    startOfToday.setUTCHours(0, 0, 0, 0);
     const endOfToday = new Date();
-    endOfToday.setHours(23, 59, 59, 999);
+    endOfToday.setUTCHours(23, 59, 59, 999);
 
     // Count the number of entries for today
     const todayEntriesCount = await DailySupply.aggregate([
@@ -496,13 +496,13 @@ async function renderInputDataPage(req, res) {
 async function addData(req, res) {
   try {
     // Get today's date at midnight
-    const today = new Date().setHours(0, 0, 0, 0);
+    const today = new Date().setUTCHours(0, 0, 0, 0);
 
     console.log(today);
     // Check the number of entries for today
     const dailySupply = await DailySupply.findById(req.params.id);
     const todayEntries = dailySupply.data.filter(
-      entry => new Date(entry.date).setHours(0, 0, 0, 0) === today,
+      entry => new Date(entry.date).setUTCHours(0, 0, 0, 0) === today,
     );
 
     console.log(todayEntries.length);
@@ -539,7 +539,7 @@ async function addData(req, res) {
 
     // Prepare the input data
     const inputedData = {
-      date: new Date(),
+      date: today,
       dryQuantity: req.body.dryQuantity || 0,
       percentage: req.body.percentage || 0,
       keQuantity: req.body.keQuantity || 0,
@@ -588,33 +588,34 @@ async function getAreaSupplierData(req, res) {
 async function getSupplierInputData(req, res, isArea) {
   try {
     const { draw, start, length, search, startDate, endDate } = req.body;
-
     const searchValue = search?.value?.toLowerCase() || '';
 
+    console.log({ draw, start, length, searchValue, startDate, endDate });
+
     const { startDateUTC, endDateUTC } = parseDates(startDate, endDate);
+    console.log({ startDateUTC, endDateUTC });
+
     const dateFilter = createDateFilter(startDateUTC, endDateUTC);
+    console.log(dateFilter);
 
-    const matchStage = createMatchStage(
-      req.params.slug,
-      dateFilter,
-      searchValue,
-    );
+    const matchStage = createMatchStage(req.params.slug, dateFilter, searchValue);
+    console.log(matchStage);
+
     const sortStage = { $sort: { 'data.date': -1 } };
+    console.log(sortStage);
 
-    const pipeline = createPipeline(
-      req.params.slug,
-      matchStage,
-      sortStage,
-      start,
-      length,
-    );
+    const pipeline = createPipeline(req.params.slug, matchStage, sortStage, start, length);
+    console.log(JSON.stringify(pipeline, null, 2));
 
     const result = await DailySupply.aggregate(pipeline);
+    console.log(result);
 
     const totalRecords = result[0].totalRecords[0]?.count || 0;
     const data = result[0].data;
+    console.log({ totalRecords, data });
 
     const flattenedData = flattenData(data, isArea);
+    console.log(flattenedData);
 
     res.json({
       draw,
