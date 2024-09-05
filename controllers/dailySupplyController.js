@@ -590,32 +590,17 @@ async function getSupplierInputData(req, res, isArea) {
     const { draw, start, length, search, startDate, endDate } = req.body;
     const searchValue = search?.value?.toLowerCase() || '';
 
-    console.log({ draw, start, length, searchValue, startDate, endDate });
-
     const { startDateUTC, endDateUTC } = parseDates(startDate, endDate);
-    console.log({ startDateUTC, endDateUTC });
-
     const dateFilter = createDateFilter(startDateUTC, endDateUTC);
-    console.log(dateFilter);
-
     const matchStage = createMatchStage(req.params.slug, dateFilter, searchValue);
-    console.log(matchStage);
-
     const sortStage = { $sort: { 'data.date': -1 } };
-    console.log(sortStage);
-
-    const pipeline = createPipeline(req.params.slug, matchStage, sortStage, start, length);
-    console.log(JSON.stringify(pipeline, null, 2));
+    const pipeline = createPipeline(req.params.slug, matchStage, sortStage);
 
     const result = await DailySupply.aggregate(pipeline);
-    console.log(result);
-
     const totalRecords = result[0].totalRecords[0]?.count || 0;
     const data = result[0].data;
-    console.log({ totalRecords, data });
 
     const flattenedData = flattenData(data, isArea);
-    console.log(flattenedData);
 
     res.json({
       draw,
@@ -642,7 +627,11 @@ async function getSupplierInputData(req, res, isArea) {
   function createDateFilter(startDateUTC, endDateUTC) {
     const today = new Date().setUTCHours(0, 0, 0, 0);
     const tomorrow = new Date().setUTCHours(23, 59, 59, 999);
-
+  
+    if (startDateUTC && !endDateUTC) {
+      endDateUTC = startDateUTC;
+    }
+  
     return startDateUTC || endDateUTC
       ? {
           'data.date': {
@@ -670,7 +659,7 @@ async function getSupplierInputData(req, res, isArea) {
     };
   }
 
-  function createPipeline(slug, matchStage, sortStage, start, length) {
+  function createPipeline(slug, matchStage, sortStage) {
     return [
       { $match: { slug } },
       { $unwind: '$data' },
@@ -687,10 +676,7 @@ async function getSupplierInputData(req, res, isArea) {
       sortStage,
       {
         $facet: {
-          data: [
-            { $skip: parseInt(start, 10) },
-            { $limit: parseInt(length, 10) },
-          ],
+          data: [],
           totalRecords: [{ $count: 'count' }],
         },
       },

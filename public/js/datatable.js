@@ -40,18 +40,15 @@ function initializeDataTable(
   spendPageFooter,
   dailySupplyFooter,
 ) {
+  let rowGroupOptions = {};
 
-  let rowGroupOptions ={};
-
-  if(rowGroup !== false || rowGroup !== null ){
+  if (rowGroup !== false || rowGroup !== null) {
     rowGroupOptions = {
       dataSrc: rowGroup,
     };
-
   }
 
   let footerCallbackOptions = {};
-
 
   const setupFooterCallback = (columns, api) => {
     columns.forEach(colIndex => {
@@ -60,61 +57,63 @@ function initializeDataTable(
         .data()
         .reduce((acc, val) => acc + parseNumber(val), 0);
       const formatted = formatNumberForDisplay(total);
-      $(api.column(colIndex).footer()).html(`<strong style='float: left'>${formatted}</strong>`);
+      $(api.column(colIndex).footer()).html(
+        `<strong style='float: left'>${formatted}</strong>`,
+      );
     });
   };
 
   if (queryPageFooter) {
-      const columns = [2, 4, 5, 7, 8, 10,12];
-      footerCallbackOptions = {
-        footerCallback: function () {
-          setupFooterCallback(columns, this.api());
-        },
-      };
-    }
-  
-    if (dataPageFooter) {
-      const columns = [2, 4, 5,6,8];
-      footerCallbackOptions = {
-        footerCallback: function () {
-          setupFooterCallback(columns, this.api());
-        },
-      };
-    }
+    const columns = [2, 4, 5, 7, 8, 10, 12];
+    footerCallbackOptions = {
+      footerCallback: function () {
+        setupFooterCallback(columns, this.api());
+      },
+    };
+  }
 
-    if (productPageFooter) {
-      const columns = [3];
-      footerCallbackOptions = {
-        footerCallback: function () {
-          setupFooterCallback(columns, this.api());
-        },
-      };
-    }
-    if (salePageFooter) {
-      const columns = [5];
-      footerCallbackOptions = {
-        footerCallback: function () {
-          setupFooterCallback(columns, this.api());
-        },
-      };
-    }
-    if (spendPageFooter) {
-      const columns = [5];
-      footerCallbackOptions = {
-        footerCallback: function () {
-          setupFooterCallback(columns, this.api());
-        },
-      };
-    }
-    if (dailySupplyFooter) {
-      const columns = [5,6,9];
-      footerCallbackOptions = {
-        footerCallback: function () {
-          setupFooterCallback(columns, this.api());
-        },
-      };
-    }
-    
+  if (dataPageFooter) {
+    const columns = [2, 4, 5, 6, 8];
+    footerCallbackOptions = {
+      footerCallback: function () {
+        setupFooterCallback(columns, this.api());
+      },
+    };
+  }
+
+  if (productPageFooter) {
+    const columns = [3];
+    footerCallbackOptions = {
+      footerCallback: function () {
+        setupFooterCallback(columns, this.api());
+      },
+    };
+  }
+  if (salePageFooter) {
+    const columns = [5];
+    footerCallbackOptions = {
+      footerCallback: function () {
+        setupFooterCallback(columns, this.api());
+      },
+    };
+  }
+  if (spendPageFooter) {
+    const columns = [5];
+    footerCallbackOptions = {
+      footerCallback: function () {
+        setupFooterCallback(columns, this.api());
+      },
+    };
+  }
+  if (dailySupplyFooter) {
+    const columns = [5, 6, 9];
+    footerCallbackOptions = {
+      footerCallback: function () {
+        setupFooterCallback(columns, this.api());
+      },
+    };
+  }
+
   var isMobile = window.innerWidth < 1300;
   const tableOptions = {
     dom:
@@ -136,7 +135,7 @@ function initializeDataTable(
     serverSide: true,
     processing: true,
     responsive: true,
-    paging: !queryPageFooter,
+    paging: !(queryPageFooter || dailySupplyFooter),
     scrollX: isMobile,
     pagingType: 'first_last_numbers',
     rowGroup: rowGroupOptions,

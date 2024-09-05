@@ -666,7 +666,7 @@
 <script>
   const columns = [
     { data: 'no', visible: false, orderable: false },
-    { data: 'date' },
+    { data: 'date', visible: false },
     { data: 'supplier', orderable: false },
     { data: 'dryQuantity', orderable: false },
     { data: 'percentage', orderable: false },
@@ -684,7 +684,7 @@
     '#staticBackdrop',
     '#deleteModalToggle',
     columns,
-    null,
+    'date',
     '#filterButton',
     '#startDate',
     '#endDate',
