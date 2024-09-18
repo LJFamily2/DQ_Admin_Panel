@@ -720,7 +720,6 @@ async function getSupplierInputData(req, res, isArea) {
 }
 
 async function updateSupplierData(req, res) {
-  console.log(req.body)
   try {
     const { id } = req.params;
     const {
