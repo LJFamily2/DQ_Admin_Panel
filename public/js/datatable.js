@@ -39,6 +39,7 @@ function initializeDataTable(
   salePageFooter,
   spendPageFooter,
   dailySupplyFooter,
+  dailySupplyDetailFooter
 ) {
   let rowGroupOptions = {};
 
@@ -105,8 +106,16 @@ function initializeDataTable(
       },
     };
   }
+  if (dailySupplyDetailFooter) {
+    const columns = [6, 7, 8,9];
+    footerCallbackOptions = {
+      footerCallback: function () {
+        setupFooterCallback(columns, this.api());
+      },
+    };
+  }
   if (dailySupplyFooter) {
-    const columns = [5, 6, 9];
+    const columns = [5, 6, 7,8];
     footerCallbackOptions = {
       footerCallback: function () {
         setupFooterCallback(columns, this.api());

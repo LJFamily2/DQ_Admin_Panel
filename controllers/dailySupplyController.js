@@ -27,7 +27,7 @@ module.exports = {
   deleteSupplierData,
 };
 
-// Helper function 
+// Helper function
 async function createSuppliers(req) {
   const supplierNames = ensureArray(req.body.supplierName);
   let supplierCode = ensureArray(req.body.code);
@@ -494,18 +494,16 @@ async function renderInputDataPage(req, res) {
 }
 
 async function addData(req, res) {
+  console.log(req.body);
   try {
     // Get today's date at midnight
     const today = new Date().setUTCHours(0, 0, 0, 0);
 
-    console.log(today);
     // Check the number of entries for today
     const dailySupply = await DailySupply.findById(req.params.id);
     const todayEntries = dailySupply.data.filter(
       entry => new Date(entry.date).setUTCHours(0, 0, 0, 0) === today,
     );
-
-    console.log(todayEntries.length);
 
     if (todayEntries.length >= dailySupply.limitData) {
       return handleResponse(
@@ -518,33 +516,38 @@ async function addData(req, res) {
       );
     }
 
-    console.log(dailySupply.limitData);
-
-    // Check for existing supplier
-    let supplier = await Supplier.findOne({ name: req.body.supplier });
-
-    if (!supplier) {
-      // Create new supplier if it doesn't exist
-      supplier = new Supplier({ name: req.body.supplier });
-      const saveSupplierPromise = supplier.save();
-      const updateDailySupplyPromise = DailySupply.findByIdAndUpdate(
-        req.params.id,
-        { $push: { suppliers: supplier._id } },
-        { new: true },
+    const existedSupplier = await Supplier.findOne({ name: req.body.supplier });
+    if (!existedSupplier) {
+      return handleResponse(
+        req,
+        res,
+        400,
+        'fail',
+        'Nhà vườn không tồn tại!',
+        req.headers.referer,
       );
-
-      // Wait for both operations to complete
-      await Promise.all([saveSupplierPromise, updateDailySupplyPromise]);
     }
 
     // Prepare the input data
+    const rawMaterials = req.body.name.map((name, index) => {
+      let percentage = 0;
+      if (name === 'Mủ nước') {
+        percentage = req.body.percentage[0] || 0;
+      } else if (name === 'Mủ ké' || name === 'Mủ đông') {
+        percentage = req.body.percentage[1] || 0;
+      }
+      return {
+        name: name,
+        percentage: name === 'Mủ tạp' ? undefined : percentage,
+        quantity: req.body.quantity[index] || 0,
+        price: 0, // Assuming price is not provided in req.body
+      };
+    });
+
     const inputedData = {
       date: today,
-      dryQuantity: req.body.dryQuantity || 0,
-      percentage: req.body.percentage || 0,
-      keQuantity: req.body.keQuantity || 0,
-      mixedQuantity: req.body.mixedQuantity || 0,
-      supplier: supplier._id,
+      rawMaterial: rawMaterials,
+      supplier: existedSupplier._id,
     };
 
     const newData = await DailySupply.findByIdAndUpdate(
@@ -577,6 +580,7 @@ async function addData(req, res) {
     res.status(500).render('partials/500', { layout: false });
   }
 }
+
 async function getSupplierData(req, res) {
   await getSupplierInputData(req, res, false);
 }
@@ -587,12 +591,16 @@ async function getAreaSupplierData(req, res) {
 
 async function getSupplierInputData(req, res, isArea) {
   try {
-    const { draw, start, length, search, startDate, endDate } = req.body;
+    const { draw, search, startDate, endDate } = req.body;
     const searchValue = search?.value?.toLowerCase() || '';
 
     const { startDateUTC, endDateUTC } = parseDates(startDate, endDate);
     const dateFilter = createDateFilter(startDateUTC, endDateUTC);
-    const matchStage = createMatchStage(req.params.slug, dateFilter, searchValue);
+    const matchStage = createMatchStage(
+      req.params.slug,
+      dateFilter,
+      searchValue,
+    );
     const sortStage = { $sort: { 'data.date': -1 } };
     const pipeline = createPipeline(req.params.slug, matchStage, sortStage);
 
@@ -627,11 +635,11 @@ async function getSupplierInputData(req, res, isArea) {
   function createDateFilter(startDateUTC, endDateUTC) {
     const today = new Date().setUTCHours(0, 0, 0, 0);
     const tomorrow = new Date().setUTCHours(23, 59, 59, 999);
-  
+
     if (startDateUTC && !endDateUTC) {
       endDateUTC = startDateUTC;
     }
-  
+
     return startDateUTC || endDateUTC
       ? {
           'data.date': {
@@ -684,38 +692,46 @@ async function getSupplierInputData(req, res, isArea) {
   }
 
   function flattenData(data, isArea) {
-    return data.map((item, index) => ({
-      no: index + 1,
-      date: new Date(item.data.date).toLocaleDateString('vi-VN'),
-      supplier: item.supplier.name || '',
-      ...(isArea && { code: item.supplier.code || '' }),
-      dryQuantity: item.data.dryQuantity.toLocaleString('vi-VN'),
-      percentage: item.data.percentage.toLocaleString('vi-VN'),
-      dryTotal: (
-        (item.data.dryQuantity * item.data.percentage) /
-        100
-      ).toLocaleString('vi-VN'),
-      mixedQuantity: item.data.mixedQuantity.toLocaleString('vi-VN'),
-      keQuantity: item.data.keQuantity.toLocaleString('vi-VN'),
-      keTotal: (
-        (item.data.keQuantity * item.data.percentage) /
-        100
-      ).toLocaleString('vi-VN'),
-      id: item.data._id,
-    }));
+    return data.map((item, index) => {
+      const rawMaterials = item.data.rawMaterial.reduce((acc, raw) => {
+        acc[raw.name] = {
+          quantity: raw.quantity?.toLocaleString('vi-VN') || '',
+          percentage: raw.percentage?.toLocaleString('vi-VN') || '',
+        };
+        return acc;
+      }, {});
+  
+      return {
+        no: index + 1,
+        date: new Date(item.data.date).toLocaleDateString('vi-VN'),
+        supplier: item.supplier.name || '',
+        ...(isArea && { code: item.supplier.code || '' }),
+        muNuocQuantity: rawMaterials['Mủ nước']?.quantity || '',
+        muNuocPercentage: rawMaterials['Mủ nước']?.percentage || '',
+        muNuocQuantityToTal: (rawMaterials['Mủ nước']?.quantity * rawMaterials['Mủ nước']?.percentage) /100  || '',
+        muTapQuantity: rawMaterials['Mủ tạp']?.quantity || '',
+        muKeQuantity: rawMaterials['Mủ ké']?.quantity || '',
+        muDongQuantity: rawMaterials['Mủ đông']?.quantity || '',
+        muDongPercentage: rawMaterials['Mủ đông']?.percentage || '',
+        id: item.data._id,
+      };
+    });
   }
 }
 
 async function updateSupplierData(req, res) {
+  console.log(req.body)
   try {
     const { id } = req.params;
     const {
       date,
       supplier,
-      dryQuantity,
-      percentage,
-      keQuantity,
-      mixedQuantity,
+      muNuocQuantity,
+      muNuocPercentage,
+      muTapQuantity,
+      muKeQuantity,
+      muKePercentage,
+      muDongQuantity,
     } = req.body;
 
     // Find the supplier by name
@@ -749,10 +765,12 @@ async function updateSupplierData(req, res) {
         $set: {
           'data.$.date': new Date(date),
           'data.$.supplier': supplierId,
-          'data.$.dryQuantity': dryQuantity,
-          'data.$.percentage': percentage,
-          'data.$.keQuantity': keQuantity,
-          'data.$.mixedQuantity': mixedQuantity,
+          'data.$.rawMaterial': [
+            { name: 'Mủ nước', quantity: muNuocQuantity, percentage: muNuocPercentage },
+            { name: 'Mủ tạp', quantity: muTapQuantity },
+            { name: 'Mủ ké', quantity: muKeQuantity, percentage: muKePercentage },
+            { name: 'Mủ đông', quantity: muDongQuantity, percentage: muKePercentage },
+          ],
         },
       },
       { new: true },
@@ -771,11 +789,11 @@ async function updateSupplierData(req, res) {
 
     return handleResponse(
       req,
-      res,
-      200,
-      'success',
-      'Cập nhật dữ liệu thành công!',
-      req.headers.referer,
+        res,
+        200,
+        'success',
+        'Cập nhật dữ liệu thành công!',
+        req.headers.referer,
     );
   } catch (err) {
     console.error('Error updating supplier data:', err);

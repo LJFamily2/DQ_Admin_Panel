@@ -65,7 +65,7 @@
               <th rowspan="2">Mã</th>
               <th colspan="3">Mủ quy khô</th>
               <th>Mủ tạp</th>
-              <th colspan="3">Mủ ké</th>
+              <th colspan="3">Mủ ké + đông</th>
               <th rowspan="2">Chỉnh sửa</th>
             </tr>
             <tr>
@@ -74,8 +74,8 @@
               <th>Tổng</th>
               <th>SL</th>
               <th>SL</th>
+              <th>SL</th>
               <th>Hàm lượng</th>
-              <th>Tổng</th>
             </tr>
           </thead>
 
@@ -268,13 +268,12 @@
             <% }) %>
           </tbody>
           <tfoot>
-            <th colspan="5">Tổng</th>
+            <th colspan="6">Tổng</th>
+            <th></th>
             <th></th>
             <th></th>
             <th></th>
             <th colspan="2"></th>
-            <th></th>
-            <th></th>
           </tfoot>
         </table>
       </div>
@@ -617,18 +616,18 @@
 
 
 <script>
-  const columns = [
+   const columns = [
     { data: 'no', visible: false, orderable: false },
-    { data: 'date', visible: false},
+    { data: 'date', visible: true },
     { data: 'supplier', orderable: false },
     { data: 'code', orderable: false },
-    { data: 'dryQuantity', orderable: false },
-    { data: 'percentage', orderable: false },
-    { data: 'dryTotal', orderable: false },
-    { data: 'mixedQuantity', orderable: false },
-    { data: 'keQuantity', orderable: false },
-    { data: 'percentage', orderable: false },
-    { data: 'keTotal', orderable: false },
+    { data: 'muNuocQuantity', orderable: false, title: 'Số lượng' },
+    { data: 'muNuocPercentage', orderable: false, title: 'Hàm lượng' },
+    { data: 'muNuocQuantityToTal', orderable: false, title: 'Quy khô' },
+    { data: 'muTapQuantity', orderable: false, title: 'Số lượng' },
+    { data: 'muKeQuantity', orderable: false, title: 'SL ké' },
+    { data: 'muDongQuantity', orderable: false, title: 'SL đông' },
+    { data: 'muDongPercentage', orderable: false, title: 'Hàm lượng' },
     { data: 'id', orderable: false },
   ];
 
@@ -645,6 +644,7 @@
     '#clearFilterButton',
     false,
     true,
+    false,
     false,
     false,
     false,
