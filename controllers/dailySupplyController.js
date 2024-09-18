@@ -488,7 +488,6 @@ async function renderInputDataPage(req, res) {
       limitReached,
     });
   } catch (error) {
-    console.error('Error rendering input data page:', error);
     res.status(500).render('partials/500', { layout: false });
   }
 }

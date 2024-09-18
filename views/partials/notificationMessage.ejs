@@ -1,7 +1,6 @@
 <% if (messages.fail) { %>
 <div
-  id="errorMessage"
-  class="alert alert-danger p-2 rounded-1"
+  class="errorMessage alert alert-danger p-2 rounded-1"
   role="alert"
   style="border-radius: 15px"
 >
@@ -10,8 +9,7 @@
 <% } %> 
 <% if (messages.success) { %>
 <div
-  id="successMessage"
-  class="alert alert-success p-2 rounded-1"
+  class="successMessage alert alert-success p-2 rounded-1"
   role="alert"
   style="border-radius: 15px"
 >
@@ -20,16 +18,19 @@
 <% } %>
 
 <script>
+  console.log("Logging message")
   setTimeout(function () {
-    var errorMessage = document.getElementById("errorMessage");
-    var acceptedMessage = document.getElementById("successMessage");
+    var errorMessages = document.getElementsByClassName("errorMessage");
+    var successMessages = document.getElementsByClassName("successMessage");
 
-    if (errorMessage) {
-      errorMessage.style.display = "none";
+    for (var i = 0; i < errorMessages.length; i++) {
+      errorMessages[i].style.display = "none";
+      console.log('success');
     }
 
-    if (acceptedMessage) {
-      acceptedMessage.style.display = "none";
+    for (var i = 0; i < successMessages.length; i++) {
+      successMessages[i].style.display = "none";
+      console.log('success accepted');
     }
   }, 5000);
 </script>
