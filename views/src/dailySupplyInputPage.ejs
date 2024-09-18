@@ -446,6 +446,7 @@
             <div class="itemList">
               <div class="row my-3">
                 <label class="form-label fw-bold">Mủ nước</label>
+                <input type="text" value="Mủ nước" hidden />
                 <div class="col col-md-6">
                   <label for="dryQuantity" class="form-label">Số lượng</label>
                   <input
@@ -473,6 +474,7 @@
             <div class="itemList">
               <div class="row my-3">
                 <label class="form-label fw-bold">Mủ tạp</label>
+                <input type="text" value="Mủ tạp" hidden />
                 <div class="col-12">
                   <label for="mixedQuantity" class="form-label">Số lượng</label>
                   <input
@@ -490,7 +492,11 @@
                 <label class="form-label fw-bold">Mủ Ké + Đông</label>
                 <div class="col-6">
                   <div class="col">
-                    <label for="keQuantity" class="form-label">Số lượng mủ ké</label>
+                    <label for="keQuantity" class="form-label"
+                      >Số lượng mủ ké</label
+                    >
+                    <input type="text" value="Mủ ké" hidden />
+
                     <input
                       type="number"
                       class="form-control"
@@ -499,11 +505,12 @@
                       required
                     />
                   </div>
-                  
                 </div>
                 <div class="col-6">
                   <div class="col">
-                    <label for="kePercentage" class="form-label">Hàm lượng</label>
+                    <label for="kePercentage" class="form-label"
+                      >Hàm lượng</label
+                    >
                     <input
                       type="number"
                       class="form-control"
@@ -515,7 +522,11 @@
                 </div>
                 <div class="col-6">
                   <div class="col mt-2">
-                    <label for="dongQuantity" class="form-label">Số lượng mủ đông</label>
+                    <label for="dongQuantity" class="form-label"
+                      >Số lượng mủ đông</label
+                    >
+                    <input type="text" value="Mủ đông" hidden />
+
                     <input
                       type="number"
                       class="form-control"
@@ -605,7 +616,10 @@
         ></button>
       </div>
 
-      <form action="/du-lieu-hang-ngay/addSupplier/<%= area._id %>" method="post">
+      <form
+        action="/du-lieu-hang-ngay/addSupplier/<%= area._id %>"
+        method="post"
+      >
         <div class="modal-body">
           <div class="row">
             <div class="col col-md-6">
