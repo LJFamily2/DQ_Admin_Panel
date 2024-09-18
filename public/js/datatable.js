@@ -123,12 +123,41 @@ function initializeDataTable(
     buttons: exportsOption
       ? [
           {
-            extend: 'csv',
+            extend: 'pdf',
             className: 'btn btn-secondary',
           },
           {
             extend: 'excel',
             className: 'btn btn-secondary',
+          },
+          {
+            extend: 'print',
+            className: 'btn btn-secondary',
+            exportOptions: {
+              columns: [1, 4,5 ,6 ,7,8,9,10] 
+            },
+            title: 'Mủ Nguyên Liệu ',
+            customize: function (win) {
+              // Center the title
+              $(win.document.body)
+                .css('text-align', 'center')
+                .find('h1')
+                .css('text-align', 'center');
+              // Add a subheader under the title
+              $(win.document.body)
+                .find('h1')
+                .after(
+                  `<h2 style="text-align: center;">Từ ngày </h2>`,
+                );
+                $(win.document.body)
+                .find('table')
+                .after(
+                  '<p style="text-align: left; margin-top: 20px;">Tổng cộng số tiền </p>',
+                  '<p style="text-align: left; margin-top: 20px;">Cộng</p>',
+                  '<p style="text-align: left; margin-top: 20px;">Trừ</p>',
+                  '<p style="text-align: left; margin-top: 20px;">Thực nhận</p>',
+                );
+            },
           },
         ]
       : [],

@@ -20,10 +20,12 @@ const dailySupplySchema = new mongoose.Schema({
     limitData: Number,
     data: [{
         date: Date,
-        dryQuantity: Number,
-        percentage: Number,
-        keQuantity: Number, 
-        mixedQuantity: Number,
+        rawMaterial:{
+            name: String, 
+            percentage: Number,
+            amount: Number,
+            price: Number,  
+        },
         supplier: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Supplier' 
