@@ -23,7 +23,7 @@ const dailySupplySchema = new mongoose.Schema({
         rawMaterial:{
             name: String, 
             percentage: Number,
-            amount: Number,
+            quantity: Number,
             price: Number,  
         },
         supplier: {
