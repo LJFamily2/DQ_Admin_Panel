@@ -824,8 +824,7 @@ async function deleteSupplierData(req, res) {
     }
 
     return handleResponse(
-      req,
-      res,
+      req,      res,
       200,
       'success',
       'Xóa dữ liệu thành công!',
