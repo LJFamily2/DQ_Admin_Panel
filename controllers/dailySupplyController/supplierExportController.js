@@ -6,7 +6,7 @@ const handleResponse = require('../utils/handleResponse');
 
 module.exports = {
   renderPage,
-  updatePrice
+  updatePrice,
 };
 async function renderPage(req, res) {
   try {
@@ -29,11 +29,64 @@ async function renderPage(req, res) {
 }
 
 async function updatePrice(req, res) {
-  console.log(req.body)
+  console.log(req.body);
+  
   try {
-    
+    const { startDate, endDate, dryPrice, mixedPrice, kePrice } = req.body;
+    // Find the area by slug
+    const area = await DailySupply.findOne({ slug: req.params.slug })
+      .populate('accountID')
+      .populate('suppliers')
+      .populate('data.supplier');
+
+    if (!area) {
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Không tìm thấy khu vực cung cấp',
+        req.headers.referer
+      );
+    }
+
+    // Convert dates to ISO format for comparison
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    // Iterate over the data and update prices within the date range
+    area.data.forEach(entry => {
+      const entryDate = new Date(entry.date);
+      if (entryDate >= start && entryDate <= end) {
+        entry.rawMaterial.forEach(material => {
+          const parsedDryPrice = parseFloat(dryPrice);
+          const parsedMixedPrice = parseFloat(mixedPrice);
+          const parsedKePrice = parseFloat(kePrice);
+
+          if (material.name === 'Mủ nước' && parsedDryPrice > 0) {
+            material.price = parsedDryPrice;
+          } else if (material.name === 'Mủ tạp' && parsedMixedPrice > 0) {
+            material.price = parsedMixedPrice;
+          } else if ((material.name === 'Mủ ké' || material.name === 'Mủ đông') && parsedKePrice > 0) {
+            material.price = parsedKePrice;
+          }
+        });
+      }
+    });
+
+    // Save the updated area
+    await area.save();
+
+    return handleResponse(
+      req,
+      res,
+      200,
+      'success',
+      'Cập nhật giá thành công',
+      req.headers.referer
+    );
   } catch (error) {
-    console.error('Error adding suppliers:', error);
+    console.error('Error updating prices:', error);
     res.status(500).render('partials/500', { layout: false });
   }
 }

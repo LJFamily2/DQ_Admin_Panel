@@ -67,6 +67,7 @@
       <div class="modal-footer">
         <div class="col my-2 d-flex align-items-end">
           <button
+            type="button"
             id="filterButton"
             class="btn btn-primary"
             data-bs-dismiss="modal"
@@ -75,6 +76,7 @@
             <i class="ri-menu-search-fill"></i>
           </button>
           <button
+            type="button"
             id="clearFilterButton"
             class="btn btn-secondary mx-2"
             style="display: none"
@@ -104,13 +106,13 @@
     }
 
     if (startDate && endDate) {
-        dateDisplay.innerHTML = `: ${startDate} <i class="ri-arrow-right-line"></i> ${endDate}`;
+      dateDisplay.innerHTML = `: ${startDate} <i class="ri-arrow-right-line"></i> ${endDate}`;
     } else if (startDate) {
-        dateDisplay.textContent = `: ${startDate}`;
+      dateDisplay.textContent = `: ${startDate}`;
     } else if (endDate) {
-        dateDisplay.textContent = `: ${endDate}`;
+      dateDisplay.textContent = `: ${endDate}`;
     } else {
-        dateDisplay.textContent = '';
+      dateDisplay.textContent = '';
     }
   }
 </script>
