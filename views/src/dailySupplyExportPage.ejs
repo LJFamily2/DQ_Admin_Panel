@@ -362,7 +362,9 @@
         <div class="card-header bg-transparent">
           <h4 class="m-0">Nhập nguyên liệu</h4>
         </div>
-          <div class="card-body">
+        
+        <div class="card-body">
+            <%- include('../partials/notificationMessage.ejs') %>
             <ol class="list-group list-group-numbered my-2">
                 <% area.suppliers.forEach((supplier, index) =>{ %>
                 <li
