@@ -7,25 +7,27 @@ const authMiddlewares = require('../../middlewares/authMiddlewares');
 router.use(authMiddlewares.ensureLoggedIn);
 
 // User side for input data
-router.get('/nguyen-lieu', authMiddlewares.ensureRoles(['Admin', 'Hàm lượng']), dailySupplyController.renderInputDataDashboardPage);
-router.get('/nguyen-lieu/:slug', authMiddlewares.ensureRoles(['Admin', 'Hàm lượng']), dailySupplyController.renderInputDataPage);
-router.post('/nguyen-lieu/addData/:id', authMiddlewares.ensureRoles(['Admin', 'Hàm lượng']), dailySupplyController.addData);
-router.post('/nguyen-lieu/getSupplierData/:slug', authMiddlewares.ensureRoles(['Admin', 'Hàm lượng']), dailySupplyController.getSupplierData);
-router.post('/nguyen-lieu/updateData/:id', authMiddlewares.ensureRoles(['Admin', 'Hàm lượng', 'Văn phòng']), dailySupplyController.updateSupplierData);
-router.post('/nguyen-lieu/deleteData/:id', authMiddlewares.ensureRoles(['Admin', 'Hàm lượng']), dailySupplyController.deleteSupplierData);
+router.get('/nguyen-lieu', authMiddlewares.ensureRoles(['Admin', 'Hàm lượng']), dailySupplyController.supplierInputController.renderInputDataDashboardPage);
+router.get('/nguyen-lieu/:slug', authMiddlewares.ensureRoles(['Admin', 'Hàm lượng']), dailySupplyController.supplierInputController.renderInputDataPage);
+router.post('/nguyen-lieu/addData/:id', authMiddlewares.ensureRoles(['Admin', 'Hàm lượng']), dailySupplyController.supplierInputController.addData);
+router.post('/nguyen-lieu/getSupplierData/:slug', authMiddlewares.ensureRoles(['Admin', 'Hàm lượng']), dailySupplyController.getSupplierDataController.getSupplierData);
+router.post('/nguyen-lieu/updateData/:id', authMiddlewares.ensureRoles(['Admin', 'Hàm lượng', 'Văn phòng']), dailySupplyController.supplierInputController.updateSupplierData);
+router.post('/nguyen-lieu/deleteData/:id', authMiddlewares.ensureRoles(['Admin', 'Hàm lượng']), dailySupplyController.supplierInputController.deleteSupplierData);
 
 // Admin side
-router.get('/', authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.renderPage);
-router.post('/addArea', authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.addArea);
-router.post('/deleteArea/:id', authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.deleteArea);
-router.post('/getData', authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.getData);
+router.get('/', authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.supplierAreaController.renderPage);
+router.post('/addArea', authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.supplierAreaController.addArea);
+router.post('/deleteArea/:id', authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.supplierAreaController.deleteArea);
+router.post('/getData', authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.getSupplierDataController.getData);
 
 // Admin side for detail page
-router.get('/:slug', authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.renderDetailPage);
-router.post('/update/:id', authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.updateArea);
-router.post('/addSupplier/:id', authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.addSupplier);
-router.post('/deleteSupplier/:id', authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.deleteSupplier);
-router.post('/updateSupplier/:id', authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.editSupplier);
-router.post('/getAreaSupplierData/:slug', authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.getAreaSupplierData);
+router.get('/:slug', authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.supplierController.renderDetailPage);
+router.post('/update/:id', authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.supplierController.updateArea);
+router.post('/addSupplier/:id', authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.supplierController.addSupplier);
+router.post('/deleteSupplier/:id', authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.supplierController.deleteSupplier);
+router.post('/updateSupplier/:id', authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.supplierController.editSupplier);
+router.post('/getAreaSupplierData/:slug', authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.getSupplierDataController.getAreaSupplierData);
 
+// Admin side for export
+router.get("/:slug/xuat-file", authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.supplierExportController.renderPage)
 module.exports = router;

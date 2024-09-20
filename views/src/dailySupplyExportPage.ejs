@@ -1,0 +1,432 @@
+<head>
+    <!-- js -->
+    <script src="/js/datatable.js"></script>
+    <script src="https://cdn.datatables.net/rowgroup/1.5.0/js/dataTables.rowGroup.js"></script>
+    <script src="/js/inputFieldRestriction.js" defer></script>
+    <!-- Slim select -->
+    <script src="/js/slim-select.js" defer></script>
+    <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css" />
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://unpkg.com/tippy.js@6"></script>
+  
+    <style>
+      /* Hide the spinners in input type number for Chrome, Safari, Edge, and Opera */
+      input[type='number']::-webkit-outer-spin-button,
+      input[type='number']::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+  
+      /* Hide the spinners in input type number for Firefox */
+      input[type='number'] {
+        -moz-appearance: textfield;
+      }
+      .tooltip-wrapper {
+        display: inline-block; /* Ensure the wrapper does not take full width */
+      }
+    </style>
+  </head>
+
+<!-- breadcrumb -->
+<nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: '>';" class="mx-2 mx-md-4">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/du-lieu-hang-ngay">Dự liệu hằng ngày</a></li>
+      <li class="breadcrumb-item active" aria-current="page">
+        <a href="/du-lieu-hang-ngay/<%= area.slug %>"><%= area.name %></a>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">
+        Xuất file
+      </li>
+    </ol>
+</nav>
+  
+  <div class="row m-0 m-md-2 g-3 mb-4">
+    <div class="col-12 col-md-9 mt-2">
+      <div class="card" style="box-shadow: 0 1px 2px">
+        <div class="card-header bg-transparent">
+          <div class="row">
+            <div class="col-12 col-md-6">
+              <h5 class="p-0">Chọn ngày và nhập số tiền</h5>
+              <form action="" method="post">
+                <%- include('../partials/dateSelection.ejs') %>
+                <div class="p-0 d-flex mt-2">            
+                  <div>
+                    <label for="dryPrice">Mủ quy khô</label>
+                    <input
+                      type="text"
+                      class="form-control form-control-sm"
+                      id="dryPrice"
+                      placeholder="99.000"
+                      oninput="handleQuantityInput(this)"
+                    />
+                  </div>
+                  <div class="mx-2">
+                    <label for="mixedPrice">Mủ tạp</label>
+                    <input
+                      type="text"
+                      class="form-control form-control-sm"
+                      id="mixedPrice"
+                      placeholder="19.000"
+                      oninput="handleQuantityInput(this)"
+                    />
+                  </div>
+
+                  <div class="mx-2">
+                    <label for="kePrice">Mủ ké + đông</label>
+                    <input
+                      type="text"
+                      class="form-control form-control-sm"
+                      id="kePrice"
+                      placeholder="19.000"
+                      oninput="handleQuantityInput(this)"
+                    />
+                  </div>
+                  <div class="d-flex align-items-end">
+                    <button class="btn btn-primary" id="inputPrice">Nhập</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <table class="table table-striped" id="table">
+            <thead>
+              <tr>
+                <th rowspan="2">STT</th>
+                <th rowspan="2">Ngày</th>
+                <th rowspan="2">Nhà vườn</th>
+                <th colspan="3">Mủ quy khô</th>
+                <th colspan="3">Mủ tạp</th>
+                <th colspan="4">Mủ ké + đông</th>
+                <th rowspan="2">Chỉnh sửa</th>
+              </tr>
+              <tr>
+                <th>Tổng</th>
+                <th>SL</th>
+                <th>SL</th>
+                <th>SL</th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+              </tr>
+            </thead>
+  
+            <tbody>
+              <% area.data.forEach((item, index) => { %>
+              <!-- Modal for updating -->
+              <div
+                class="modal fade"
+                id="staticBackdrop<%= item._id %>"
+                data-bs-backdrop="static"
+                data-bs-keyboard="false"
+                tabindex="-1"
+                aria-hidden="true"
+              >
+                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5">
+                        Cập nhật thông tin <%= item.supplier.name %>
+                      </h1>
+                      <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                      ></button>
+                    </div>
+              
+                    <form
+                      action="/nhap-du-lieu/nguyen-lieu/updateData/<%= item._id %>"
+                      method="post"
+                    >
+                      <div class="modal-body">
+                        <%- include('../partials/notificationMessage.ejs') %>
+              
+                        <div>
+                          <label for="date<%= index %>" class="form-label fw-bold">Ngày nhập</label>
+                          <input
+                            type="date"
+                            class="form-control"
+                            id="date<%= index %>"
+                            name="date"
+                            value="<%= item.date.toISOString().slice(0,10) %>"
+                            required
+                          />
+                        </div>
+              
+                        <div class="my-3">
+                          <label for="supplier<%= index %>" class="form-label fw-bold">Nhà vườn</label>
+                          <select
+                            type="text"
+                            class="form-control slim-select"
+                            id="supplier<%= index %>"
+                            name="supplier"
+                            required
+                          >
+                            <% area.suppliers.forEach(supplier => { %>
+                            <option value="<%= supplier.name %>" <%= supplier.name === item.supplier.name ? 'selected' : '' %>>
+                              <%= supplier.name %>
+                            </option>
+                            <% }) %>
+                          </select>
+                        </div>
+              
+                        <div class="itemLists my-3">
+                          <% item.rawMaterial.forEach((raw, rawIndex) => { %>
+                            <% if (raw.name === 'Mủ nước') { %>
+                              <div class="itemList">
+                                <div class="row my-3">
+                                  <label class="form-label fw-bold">Mủ nước</label>
+                                  <div class="col col-md-6">
+                                    <label for="muNuocQuantity<%= index %>" class="form-label">Số lượng</label>
+                                    <input
+                                      type="number"
+                                      class="form-control"
+                                      id="muNuocQuantity<%= index %>"
+                                      name="muNuocQuantity"
+                                      value="<%= raw.quantity %>"
+                                      required
+                                    />
+                                  </div>
+                                  <div class="col col-md-6">
+                                    <label for="muNuocPercentage<%= index %>" class="form-label">Hàm lượng</label>
+                                    <input
+                                      type="number"
+                                      class="form-control"
+                                      id="muNuocPercentage<%= index %>"
+                                      name="muNuocPercentage"
+                                      max="100"
+                                      value="<%= raw.percentage %>"
+                                      required
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            <% } else if (raw.name === 'Mủ tạp') { %>
+                              <div class="itemList">
+                                <div class="row my-3">
+                                  <label class="form-label fw-bold">Mủ tạp</label>
+                                  <div class="col">
+                                    <label for="muTapQuantity<%= index %>" class="form-label">Số lượng</label>
+                                    <input
+                                      type="number"
+                                      class="form-control"
+                                      id="muTapQuantity<%= index %>"
+                                      name="muTapQuantity"
+                                      value="<%= raw.quantity %>"
+                                      required
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            <% } else if (raw.name === 'Mủ ké') { %>
+                              <div class="itemList">
+                                <div class="row my-3">
+                                  <label class="form-label fw-bold">Mủ Ké + Đông</label>
+                                  <div class="col col-md-6">
+                                    <label for="muKeQuantity<%= index %>" class="form-label">Số lượng mủ ké</label>
+                                    <input
+                                      type="number"
+                                      class="form-control"
+                                      id="muKeQuantity<%= index %>"
+                                      name="muKeQuantity"
+                                      value="<%= raw.quantity %>"
+                                      required
+                                    />
+                                  </div>
+                                  <div class="col col-md-6">
+                                    <label for="muKePercentage<%= index %>" class="form-label">Hàm lượng</label>
+                                    <input
+                                      type="number"
+                                      class="form-control"
+                                      id="muKePercentage<%= index %>"
+                                      name="muKePercentage"
+                                      max="100"
+                                      value="<%= raw.percentage %>"
+                                      required
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            <% } else if (raw.name === 'Mủ đông') { %>
+                              <div class="itemList">
+                                <div class="row my-3">
+                                  <div class="col col-md-6">
+                                    <label for="muDongQuantity<%= index %>" class="form-label">Số lượng mủ đông</label>
+                                    <input
+                                      type="number"
+                                      class="form-control"
+                                      id="muDongQuantity<%= index %>"
+                                      name="muDongQuantity"
+                                      value="<%= raw.quantity %>"
+                                      required
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            <% } %>
+                          <% }) %>
+                        </div>
+                      </div>
+                      <div class="modal-footer bg-transparent">
+                        <!-- Buttons -->
+                        <button type="submit" class="btn btn-primary">Lưu</button>
+                        <button type="reset" class="btn text-dark">Làm mới</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+              <!-- Delete confirming modal  -->
+              <div
+                class="modal fade"
+                id="deleteModalToggle<%= item._id %>"
+                aria-hidden="true"
+                aria-labelledby="exampleModalToggleLabel"
+                tabindex="-1"
+              >
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5" id="exampleModalToggleLabel">
+                        Xóa thông tin ngày <%=
+                        item.date.toLocaleDateString("vi-VN") %> của <%=
+                        item.supplier.name %>
+                      </h1>
+                      <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                      ></button>
+                    </div>
+                    <form
+                      action="/nhap-du-lieu/nguyen-lieu/deleteData/<%= item._id %>"
+                      method="post"
+                    >
+                      <div class="modal-body">
+                        Bạn có muốn xóa thông tin của
+                        <strong><%= item.supplier.name %></strong>
+                        ? Hành động này không thể hoàn tác.
+                      </div>
+                      <div class="modal-footer">
+                        <% if(user.role === 'Admin'){ %>
+                        <button type="submit" class="btn btn-danger">
+                          Xác nhận
+                        </button>
+                        <% } else { %>
+                        <div
+                          class="tooltip-wrapper"
+                          data-tippy-content="Bạn không có quyền sử dụng"
+                          tabindex="0"
+                        >
+                          <button type="button" class="btn btn-danger" disabled>
+                            Xác nhận
+                          </button>
+                        </div>
+                        <% } %>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+              <% }) %>
+            </tbody>
+            <tfoot>
+              <th colspan="5">Tổng</th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-3 mt-2 d-none d-md-block">
+      <div class="card" style="box-shadow: 0 1px 2px">
+        <div class="card-header bg-transparent">
+          <h4 class="m-0">Nhập nguyên liệu</h4>
+        </div>
+          <div class="card-body">
+            <ol class="list-group list-group-numbered my-2">
+                <% area.suppliers.forEach((supplier, index) =>{ %>
+                <li
+                  class="list-group-item d-flex justify-content-between align-items-center "
+                >
+                  <div class="ms-2 me-auto ">
+                    <div class="fw-bold"><%= supplier.name %></div>
+                    <%= supplier.code %>
+                  </div>
+                  <div class="d-flex">
+                  <span class="mx-2 ">
+                    <i class="ri-edit-box-line fs-5" data-bs-toggle="modal"
+                    data-bs-target="#editSupplier<%= supplier._id %>" style="cursor: pointer;"></i>
+                  </span>
+                  <span class="mx-2">
+                    
+                  </span>
+                </div>
+                </li>
+
+                <% }) %>
+            </ol>
+          </div>
+        </div>
+    </div>
+  </div>
+
+  <script>
+     const columns = [
+      { data: 'no', visible: false, orderable: false },
+      { data: 'date', visible: false },
+      { data: 'supplier', orderable: false },
+      { data: 'muNuocQuantityToTal', orderable: false, title: 'Quy khô' },
+      { data: 'muNuocPrice', orderable: false, title: 'Đơn giá' },
+      { data: 'muNuocPriceTotal', orderable: false, title: 'Tổng' },
+      { data: 'muTapQuantity', orderable: false, },
+      { data: 'muTapPrice', orderable: false, title: 'Đơn giá' },
+      { data: 'muTapPrice', orderable: false, title: 'Tổng' },
+      { data: 'muKeDongQuantity', orderable: false, title: 'SL ké + đông' },
+      { data: 'muDongPercentage', orderable: false, title: 'Hàm lượng' },
+      { data: 'muKePrice', orderable: false, title: 'Đơn giá' },
+      { data: 'muKePriceTotal', orderable: false, title: 'Tổng' },
+      { data: 'id', orderable: false },
+    ];
+    
+    initializeDataTable(
+      '#table',
+      `/nhap-du-lieu/nguyen-lieu/getSupplierData/<%= area.slug %>`,
+      '#staticBackdrop',
+      '#deleteModalToggle',
+      columns,
+      'date',
+      '#filterButton',
+      '#startDate',
+      '#endDate',
+      '#clearFilterButton',
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+    );
+  
+    tippy('.tooltip-wrapper');
+  </script>
+  
