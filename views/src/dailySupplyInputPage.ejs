@@ -451,7 +451,7 @@
                 <label class="form-label fw-bold">Mủ nước</label>
                 <input type="text" name="name" value="Mủ nước" hidden />
                 <div class="col col-md-6">
-                  <label for="quantity" class="form-label">Số lượng</label>
+                  <label class="form-label">Số lượng</label>
                   <input
                     type="number"
                     class="form-control"
@@ -465,7 +465,6 @@
                   <input
                     type="number"
                     class="form-control"
-                    id="percentage"
                     name="percentage"
                     max="100"
                     required
@@ -479,11 +478,10 @@
                 <label class="form-label fw-bold">Mủ tạp</label>
                 <input type="text" name="name" value="Mủ tạp" hidden  />
                 <div class="col-12">
-                  <label for="quantity" class="form-label">Số lượng</label>
+                  <label  class="form-label">Số lượng</label>
                   <input
                     type="number"
                     class="form-control"
-                    id="quantity"
                     name="quantity"
                     required
                   />
@@ -492,51 +490,63 @@
             </div>
             <div class="itemList">
               <div class="row my-3">
-                <label class="form-label fw-bold">Mủ Ké + Đông</label>
+                <label class="form-label fw-bold">Mủ ké</label>
                 <div class="col-6">
-                  <div class="col">
-                    <label for="quantity" class="form-label"
+                    <label class="form-label"
                       >Số lượng mủ ké</label
-                    >
-                    <input type="text" name="name" value="Mủ ké" hidden />
-
-                    <input
-                      type="number"
-                      class="form-control"
-                      id="quantity"
-                      name="quantity"
-                      required
-                    />
-                  </div>
-                </div>
-                <div class="col-6">
-                  <div class="col">
-                    <label for="percentage" class="form-label"
-                      >Hàm lượng</label
-                    >
-                    <input
-                      type="number"
-                      class="form-control"
-                      id="percentage"
-                      name="percentage"
-                      max="100"
-                    required
-                    />
-                  </div>
-                </div>
-                <div class="col-6">
-                  <div class="col mt-2">
-                    <label for="quantity" class="form-label"
-                      >Số lượng mủ đông</label
                     >
                     <input type="text" name="name" value="Mủ đông" hidden />
 
                     <input
                       type="number"
                       class="form-control"
-                      id="quantity"
                       name="quantity"
                       required
+                    />
+                </div>
+                <div class="col-6">
+                  <div class="col">
+                    <label class="form-label"
+                      >Hàm lượng</label
+                    >
+                    <input
+                      type="number"
+                      class="form-control"
+                      name="percentage"
+                      max="100"
+                    required
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="itemList">
+              <div class="row my-3">
+                <label class="form-label fw-bold">Mủ đông</label>
+                <div class="col-6">
+                    <label class="form-label"
+                      >Số lượng mủ đông</label
+                    >
+                    <input type="text" name="name" value="Mủ ké" hidden />
+
+                    <input
+                      type="number"
+                      class="form-control"
+                      name="quantity"
+                      required
+                    />
+                </div>
+                <div class="col-6">
+                  <div class="col">
+                    <label class="form-label"
+                      >Hàm lượng</label
+                    >
+                    <input
+                      type="number"
+                      class="form-control"
+                      name="percentage"
+                      max="100"
+                    required
                     />
                   </div>
                 </div>
