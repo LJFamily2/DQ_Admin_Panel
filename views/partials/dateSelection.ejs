@@ -51,10 +51,10 @@
               type="date"
               id="endDate"
               class="form-control"
-              name="startDate"
+              name="endDate"
               onchange="               
               let startDateField = document.getElementById('startDate'); 
-              startDateField.min = this.value;
+              startDateField.max = this.value;
               updateDateDisplay(); 
               if(!startDateField.value){
                 startDateField.focus();

@@ -157,7 +157,8 @@
               <th rowspan="2">Nhà vườn</th>
               <th colspan="3">Mủ quy khô</th>
               <th>Mủ tạp</th>
-              <th colspan="3">Mủ ké + đông</th>
+              <th colspan="3">Mủ ké</th>
+              <th colspan="3">Mủ đông</th>
               <th rowspan="2">Chỉnh sửa</th>
             </tr>
             <tr>
@@ -166,8 +167,11 @@
               <th>Tổng</th>
               <th>SL</th>
               <th>SL</th>
+              <th>Hàm lượng</th>
+              <th>Tổng</th>
               <th>SL</th>
               <th>Hàm lượng</th>
+              <th>Tổng</th>
             </tr>
           </thead>
 
@@ -394,12 +398,18 @@
             <% }) %>
           </tbody>
           <tfoot>
-            <th colspan="5">Tổng</th>
+            <th colspan="3">Tổng</th>
             <th></th>
             <th></th>
             <th></th>
             <th></th>
-            <th colspan="2"></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
           </tfoot>
         </table>
       </div>
@@ -737,9 +747,12 @@
     { data: 'muNuocPercentage', orderable: false, title: 'Hàm lượng' },
     { data: 'muNuocQuantityToTal', orderable: false, title: 'Quy khô' },
     { data: 'muTapQuantity', orderable: false, },
-    { data: 'muKeQuantity', orderable: false, title: 'SL ké' },
-    { data: 'muDongQuantity', orderable: false, title: 'SL đông' },
+    { data: 'muKeQuantity', orderable: false, title: 'SL' },
+    { data: 'muKePercentage', orderable: false, title: 'Hàm lượng' },
+    { data: 'muKeTotal', orderable: false, title: 'Tổng' },
+    { data: 'muDongQuantity', orderable: false, title: 'SL ' },
     { data: 'muDongPercentage', orderable: false, title: 'Hàm lượng' },
+    { data: 'muDongTotal', orderable: false, title: 'Tổng' },
     { data: 'id', orderable: false },
   ];
   

@@ -18,19 +18,16 @@
 <% } %>
 
 <script>
-  console.log("Logging message")
   setTimeout(function () {
     var errorMessages = document.getElementsByClassName("errorMessage");
     var successMessages = document.getElementsByClassName("successMessage");
 
     for (var i = 0; i < errorMessages.length; i++) {
       errorMessages[i].style.display = "none";
-      console.log('success');
     }
 
     for (var i = 0; i < successMessages.length; i++) {
       successMessages[i].style.display = "none";
-      console.log('success accepted');
     }
   }, 5000);
 </script>

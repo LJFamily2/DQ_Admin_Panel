@@ -173,13 +173,167 @@ async function getSupplierInputData(req, res, isArea) {
         date: new Date(item.data.date).toLocaleDateString('vi-VN'),
         supplier: item.supplier.name || '',
         ...(isArea && { code: item.supplier.code || '' }),
+        muNuocQuantity: rawMaterials['Mủ nước']?.quantity || '',
+        muNuocPercentage: rawMaterials['Mủ nước']?.percentage || '',
         muNuocQuantityToTal:
           (rawMaterials['Mủ nước']?.quantity *
             rawMaterials['Mủ nước']?.percentage) /
             100 || '',
         muTapQuantity: rawMaterials['Mủ tạp']?.quantity || '',
-        muKeDongQuantity: rawMaterials['Mủ đông']?.quantity + rawMaterials['Mủ Ké']?.quantity  || '',
+        muKeQuantity: rawMaterials['Mủ ké']?.quantity || '',
+        muKePercentage: rawMaterials['Mủ ké']?.percentage || '',
+        muKeTotal:
+          (rawMaterials['Mủ ké']?.quantity *
+            rawMaterials['Mủ ké']?.percentage) /
+            100 || '',
+        muDongQuantity: rawMaterials['Mủ đông']?.quantity || '',
         muDongPercentage: rawMaterials['Mủ đông']?.percentage || '',
+        muDongTotal:
+          (rawMaterials['Mủ đông']?.quantity *
+            rawMaterials['Mủ đông']?.percentage) /
+            100 || '',
+        id: item.data._id,
+      };
+    });
+  }
+}
+
+async function getSupplierExportData(req, res, isArea) {
+  try {
+    const { draw, search, startDate, endDate } = req.body;
+    const searchValue = search?.value?.toLowerCase() || '';
+
+    const { startDateUTC, endDateUTC } = parseDates(startDate, endDate);
+    const dateFilter = createDateFilter(startDateUTC, endDateUTC);
+    const matchStage = createMatchStage(
+      req.params.slug,
+      dateFilter,
+      searchValue,
+    );
+    const sortStage = { $sort: { 'data.date': -1 } };
+    const pipeline = createPipeline(req.params.slug, matchStage, sortStage);
+
+    const result = await DailySupply.aggregate(pipeline);
+    const totalRecords = result[0].totalRecords[0]?.count || 0;
+    const data = result[0].data;
+
+    const flattenedData = flattenData(data, isArea);
+
+    res.json({
+      draw,
+      recordsTotal: totalRecords,
+      recordsFiltered: totalRecords,
+      data: flattenedData,
+    });
+  } catch (error) {
+    console.error('Error fetching supplier data:', error);
+    res.status(500).render('partials/500', { layout: false });
+  }
+
+  function parseDates(startDate, endDate) {
+    return {
+      startDateUTC: startDate
+        ? new Date(startDate).setUTCHours(0, 0, 0, 0)
+        : null,
+      endDateUTC: endDate
+        ? new Date(endDate).setUTCHours(23, 59, 59, 999)
+        : null,
+    };
+  }
+
+  function createDateFilter(startDateUTC, endDateUTC) {
+    const today = new Date().setUTCHours(0, 0, 0, 0);
+    const tomorrow = new Date().setUTCHours(23, 59, 59, 999);
+
+    if (startDateUTC && !endDateUTC) {
+      endDateUTC = startDateUTC;
+    }
+
+    return startDateUTC || endDateUTC
+      ? {
+          'data.date': {
+            ...(startDateUTC && { $gte: new Date(startDateUTC) }),
+            ...(endDateUTC && { $lte: new Date(endDateUTC) }),
+          },
+        }
+      : {
+          'data.date': { $gte: new Date(today), $lte: new Date(tomorrow) },
+        };
+  }
+
+  function createMatchStage(slug, dateFilter, searchValue) {
+    return {
+      $match: {
+        slug,
+        ...dateFilter,
+        ...(searchValue && {
+          $or: [
+            { 'supplier.name': { $regex: searchValue, $options: 'i' } },
+            { 'supplier.code': { $regex: searchValue, $options: 'i' } },
+          ],
+        }),
+      },
+    };
+  }
+
+  function createPipeline(slug, matchStage, sortStage) {
+    return [
+      { $match: { slug } },
+      { $unwind: '$data' },
+      {
+        $lookup: {
+          from: 'suppliers',
+          localField: 'data.supplier',
+          foreignField: '_id',
+          as: 'supplier',
+        },
+      },
+      { $unwind: '$supplier' },
+      matchStage,
+      sortStage,
+      {
+        $facet: {
+          data: [],
+          totalRecords: [{ $count: 'count' }],
+        },
+      },
+    ];
+  }
+
+  function flattenData(data, isArea) {
+    return data.map((item, index) => {
+      const rawMaterials = item.data.rawMaterial.reduce((acc, raw) => {
+        acc[raw.name] = {
+          quantity: raw.quantity ,
+          percentage: raw.percentage ,
+          price: raw.price ,
+        };
+        return acc;
+      }, {});
+  
+      const muQuyKhoQuantity = (rawMaterials['Mủ nước']?.quantity * rawMaterials['Mủ nước']?.percentage) / 100 ;
+      const muTapTotal = rawMaterials['Mủ tạp']?.quantity * rawMaterials['Mủ tạp']?.price ;
+      const muKeQuantity = (rawMaterials['Mủ ké']?.quantity * rawMaterials['Mủ ké']?.percentage) / 100 ;
+      const muDongQuantity = (rawMaterials['Mủ đông']?.quantity * rawMaterials['Mủ đông']?.percentage) / 100 ;
+  
+      const muKeDongQuantity = muKeQuantity + muDongQuantity;
+      const muKeDongDonGia = rawMaterials['Mủ ké']?.price;
+      const muKeDongTotal = muKeDongQuantity * muKeDongDonGia;
+  
+      return {
+        no: index + 1,
+        date: new Date(item.data.date).toLocaleDateString('vi-VN'),
+        supplier: item.supplier.name || '',
+        ...(isArea && { code: item.supplier.code || '' }),
+        muQuyKhoQuantity: muQuyKhoQuantity.toLocaleString('vi-VN') || '',
+        muQuyKhoDonGia: rawMaterials['Mủ nước']?.price.toLocaleString('vi-VN') || '',
+        muNuocToTal: rawMaterials['Mủ nước']?.quantity.toLocaleString('vi-VN') || '',
+        muTapQuantity: rawMaterials['Mủ tạp']?.quantity.toLocaleString('vi-VN') || '',
+        muTapDonGia: rawMaterials['Mủ tạp']?.price.toLocaleString('vi-VN') || '',
+        muTapTotal: muTapTotal.toLocaleString('vi-VN') || '',
+        muKeDongQuantity: muKeDongQuantity.toLocaleString('vi-VN') || '',
+        muKeDongDonGia: muKeDongDonGia.toLocaleString('vi-VN') || '',
+        muKeDongTotal: muKeDongTotal.toLocaleString('vi-VN') || '',
         id: item.data._id,
       };
     });
@@ -194,4 +348,7 @@ module.exports = {
 
   // User side for input data
   getSupplierData,
+
+  // Admin side for export data
+  getSupplierExportData
 };

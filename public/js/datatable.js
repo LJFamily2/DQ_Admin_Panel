@@ -1,14 +1,6 @@
-function formatNumberForDisplay(number) {
-  if (isNaN(number) || number === null || number === undefined) {
-    return ''; // Return empty string if the number is invalid
-  }
-
-  const formatter = new Intl.NumberFormat('vi-VN', {
-    minimumFractionDigits: 0,
-  });
-
-  return formatter.format(number);
-}
+const formatNumberForDisplay = (number, locale) => {
+  return new Intl.NumberFormat(locale).format(number);
+};
 
 const parseNumber = value => {
   if (typeof value === 'string') {
@@ -51,13 +43,13 @@ function initializeDataTable(
 
   let footerCallbackOptions = {};
 
-  const setupFooterCallback = (columns, api) => {
+  const setupFooterCallback = (columns, api, locale = 'vi-VN') => {
     columns.forEach(colIndex => {
       const total = api
         .column(colIndex, { search: 'applied' })
         .data()
         .reduce((acc, val) => acc + parseNumber(val), 0);
-      const formatted = formatNumberForDisplay(total);
+      const formatted = formatNumberForDisplay(total, locale);
       $(api.column(colIndex).footer()).html(
         `<strong style='float: left'>${formatted}</strong>`,
       );
@@ -115,10 +107,10 @@ function initializeDataTable(
     };
   }
   if (dailySupplyFooter) {
-    const columns = [5, 6, 7,8];
+    const columns = [3, 5, 6,7,9,10,12];
     footerCallbackOptions = {
       footerCallback: function () {
-        setupFooterCallback(columns, this.api());
+        setupFooterCallback(columns, this.api(), 'en-US');
       },
     };
   }

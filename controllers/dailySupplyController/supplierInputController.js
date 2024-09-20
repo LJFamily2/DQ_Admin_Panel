@@ -125,8 +125,10 @@ async function addData(req, res) {
       let percentage = 0;
       if (name === 'Mủ nước') {
         percentage = req.body.percentage[0] || 0;
-      } else if (name === 'Mủ ké' || name === 'Mủ đông') {
+      } else if (name === 'Mủ ké') {
         percentage = req.body.percentage[1] || 0;
+      }else{
+        percentage = req.body.percentage[2] || 0;
       }
       return {
         name: name,

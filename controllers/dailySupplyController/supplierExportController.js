@@ -3,10 +3,10 @@ const { Supplier, DailySupply } = require('../../models/dailySupplyModel');
 
 const trimStringFields = require('../utils/trimStringFields');
 const handleResponse = require('../utils/handleResponse');
-const createSuppliers = require('./helper/createSuppliers');
 
 module.exports = {
   renderPage,
+  updatePrice
 };
 async function renderPage(req, res) {
   try {
@@ -22,6 +22,16 @@ async function renderPage(req, res) {
       user: req.user,
       messages: req.flash(),
     });
+  } catch (error) {
+    console.error('Error adding suppliers:', error);
+    res.status(500).render('partials/500', { layout: false });
+  }
+}
+
+async function updatePrice(req, res) {
+  console.log(req.body)
+  try {
+    
   } catch (error) {
     console.error('Error adding suppliers:', error);
     res.status(500).render('partials/500', { layout: false });
