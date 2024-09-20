@@ -34,7 +34,8 @@ async function createSuppliers(req) {
   let supplierPhone = ensureArray(req.body.phone);
   let supplierIdentification = ensureArray(req.body.identification);
   let supplierIssueDate = ensureArray(req.body.issueDate);
-  let supplierAddress = ensureArray(req.body.address) || '';
+  let supplierAddress = ensureArray(req.body.address);
+  let supplierRatioSplit = ensureArray(req.body.ratioSplit);
 
   const suppliers = supplierNames.map((name, index) => ({
     name: name,
@@ -42,7 +43,8 @@ async function createSuppliers(req) {
     phone: supplierPhone[index],
     identification: supplierIdentification[index],
     issueDate: supplierIssueDate[index],
-    address: supplierAddress[index] || '',
+    address: supplierAddress[index],
+    ratioSplit: supplierRatioSplit[index],
   }));
 
   return suppliers;
@@ -699,7 +701,7 @@ async function getSupplierInputData(req, res, isArea) {
         };
         return acc;
       }, {});
-  
+
       return {
         no: index + 1,
         date: new Date(item.data.date).toLocaleDateString('vi-VN'),
@@ -707,7 +709,10 @@ async function getSupplierInputData(req, res, isArea) {
         ...(isArea && { code: item.supplier.code || '' }),
         muNuocQuantity: rawMaterials['Mủ nước']?.quantity || '',
         muNuocPercentage: rawMaterials['Mủ nước']?.percentage || '',
-        muNuocQuantityToTal: (rawMaterials['Mủ nước']?.quantity * rawMaterials['Mủ nước']?.percentage) /100  || '',
+        muNuocQuantityToTal:
+          (rawMaterials['Mủ nước']?.quantity *
+            rawMaterials['Mủ nước']?.percentage) /
+            100 || '',
         muTapQuantity: rawMaterials['Mủ tạp']?.quantity || '',
         muKeQuantity: rawMaterials['Mủ ké']?.quantity || '',
         muDongQuantity: rawMaterials['Mủ đông']?.quantity || '',
@@ -764,10 +769,22 @@ async function updateSupplierData(req, res) {
           'data.$.date': new Date(date),
           'data.$.supplier': supplierId,
           'data.$.rawMaterial': [
-            { name: 'Mủ nước', quantity: muNuocQuantity, percentage: muNuocPercentage },
+            {
+              name: 'Mủ nước',
+              quantity: muNuocQuantity,
+              percentage: muNuocPercentage,
+            },
             { name: 'Mủ tạp', quantity: muTapQuantity },
-            { name: 'Mủ ké', quantity: muKeQuantity, percentage: muKePercentage },
-            { name: 'Mủ đông', quantity: muDongQuantity, percentage: muKePercentage },
+            {
+              name: 'Mủ ké',
+              quantity: muKeQuantity,
+              percentage: muKePercentage,
+            },
+            {
+              name: 'Mủ đông',
+              quantity: muDongQuantity,
+              percentage: muKePercentage,
+            },
           ],
         },
       },
@@ -787,11 +804,11 @@ async function updateSupplierData(req, res) {
 
     return handleResponse(
       req,
-        res,
-        200,
-        'success',
-        'Cập nhật dữ liệu thành công!',
-        req.headers.referer,
+      res,
+      200,
+      'success',
+      'Cập nhật dữ liệu thành công!',
+      req.headers.referer,
     );
   } catch (err) {
     console.error('Error updating supplier data:', err);
@@ -824,7 +841,8 @@ async function deleteSupplierData(req, res) {
     }
 
     return handleResponse(
-      req,      res,
+      req,
+      res,
       200,
       'success',
       'Xóa dữ liệu thành công!',

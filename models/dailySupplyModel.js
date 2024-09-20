@@ -8,7 +8,8 @@ const supplierSchema = new mongoose.Schema({
     address: String,
     phone: String,
     identification: String,
-    issueDate: String
+    issueDate: String,
+    ratioSplit: Number,
 });
 
 const dailySupplySchema = new mongoose.Schema({
