@@ -60,38 +60,24 @@ async function updatePrice(req, res) {
     const parsedMixedPrice = convertToDecimal(mixedPrice);
     const parsedKePrice = convertToDecimal(kePrice);
 
-    // Prepare bulk update operations
-    const bulkOps = area.data.map(entry => {
+    // Iterate over the data and update prices within the date range
+    area.data.forEach(entry => {
       const entryDate = new Date(entry.date);
       if (entryDate >= start && entryDate <= end) {
-        const updates = {};
         entry.rawMaterial.forEach(material => {
           if (material.name === 'Mủ nước' && parsedDryPrice > 0) {
-            updates[`rawMaterial.$[elem].price`] = parsedDryPrice;
+            material.price = parsedDryPrice;
           } else if (material.name === 'Mủ tạp' && parsedMixedPrice > 0) {
-            updates[`rawMaterial.$[elem].price`] = parsedMixedPrice;
+            material.price = parsedMixedPrice;
           } else if ((material.name === 'Mủ ké' || material.name === 'Mủ đông') && parsedKePrice > 0) {
-            updates[`rawMaterial.$[elem].price`] = parsedKePrice;
+            material.price = parsedKePrice;
           }
         });
-
-        // Ensure updates object is not empty
-        if (Object.keys(updates).length > 0) {
-          return {
-            updateOne: {
-              filter: { _id: entry._id },
-              update: { $set: updates },
-              arrayFilters: [{ 'elem.name': { $in: ['Mủ nước', 'Mủ tạp', 'Mủ ké', 'Mủ đông'] } }]
-            }
-          };
-        }
       }
-    }).filter(Boolean);
+    });
 
-    // Execute bulk update
-    if (bulkOps.length > 0) {
-      await DailySupply.bulkWrite(bulkOps);
-    }
+    // Save the updated area
+    await area.save();
 
     return handleResponse(
       req,
