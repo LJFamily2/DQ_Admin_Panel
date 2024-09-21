@@ -3,6 +3,7 @@ const { Supplier, DailySupply } = require('../../models/dailySupplyModel');
 
 const trimStringFields = require('../utils/trimStringFields');
 const handleResponse = require('../utils/handleResponse');
+const convertToDecimal = require('../utils/convertToDecimal');
 
 module.exports = {
   renderPage,
@@ -50,32 +51,47 @@ async function updatePrice(req, res) {
       );
     }
 
-    // Convert dates to ISO format for comparison
-    const start = new Date(startDate);
-    const end = new Date(endDate);
+    // Set endDate to startDate if endDate is not provided, and vice versa
+    const start = new Date(startDate || endDate);
+    const end = new Date(endDate || startDate);
 
-    // Iterate over the data and update prices within the date range
-    area.data.forEach(entry => {
+    // Convert prices to decimal
+    const parsedDryPrice = convertToDecimal(dryPrice);
+    const parsedMixedPrice = convertToDecimal(mixedPrice);
+    const parsedKePrice = convertToDecimal(kePrice);
+
+    // Prepare bulk update operations
+    const bulkOps = area.data.map(entry => {
       const entryDate = new Date(entry.date);
       if (entryDate >= start && entryDate <= end) {
+        const updates = {};
         entry.rawMaterial.forEach(material => {
-          const parsedDryPrice = parseFloat(dryPrice);
-          const parsedMixedPrice = parseFloat(mixedPrice);
-          const parsedKePrice = parseFloat(kePrice);
-
           if (material.name === 'Mủ nước' && parsedDryPrice > 0) {
-            material.price = parsedDryPrice;
+            updates[`rawMaterial.$[elem].price`] = parsedDryPrice;
           } else if (material.name === 'Mủ tạp' && parsedMixedPrice > 0) {
-            material.price = parsedMixedPrice;
+            updates[`rawMaterial.$[elem].price`] = parsedMixedPrice;
           } else if ((material.name === 'Mủ ké' || material.name === 'Mủ đông') && parsedKePrice > 0) {
-            material.price = parsedKePrice;
+            updates[`rawMaterial.$[elem].price`] = parsedKePrice;
           }
         });
-      }
-    });
 
-    // Save the updated area
-    await area.save();
+        // Ensure updates object is not empty
+        if (Object.keys(updates).length > 0) {
+          return {
+            updateOne: {
+              filter: { _id: entry._id },
+              update: { $set: updates },
+              arrayFilters: [{ 'elem.name': { $in: ['Mủ nước', 'Mủ tạp', 'Mủ ké', 'Mủ đông'] } }]
+            }
+          };
+        }
+      }
+    }).filter(Boolean);
+
+    // Execute bulk update
+    if (bulkOps.length > 0) {
+      await DailySupply.bulkWrite(bulkOps);
+    }
 
     return handleResponse(
       req,
@@ -90,3 +106,4 @@ async function updatePrice(req, res) {
     res.status(500).render('partials/500', { layout: false });
   }
 }
+
