@@ -22,10 +22,7 @@ function initializeExportDataTable (
   endDateId,
   clearFilterButton,
   exportsOption,
-  inputPrice,
-  dryPriceID,
-  mixedPriceID,
-  queryPageFooter,
+  exportPageFooter,
 ) {
   const rowGroupOptions = rowGroup ? { dataSrc: rowGroup } : {};
 
@@ -42,11 +39,24 @@ function initializeExportDataTable (
     });
   };
 
-  const footerCallbackOptions = queryPageFooter ? {
+  const footerCallbackOptions = exportPageFooter ? {
     footerCallback: function () {
       setupFooterCallback([4, 6,7,9,10,12], this.api());
     },
   } : {};
+
+  const pdfButton = {
+    extend: 'pdf',
+    className: 'btn btn-secondary',
+  };
+  
+  if (exportPageFooter) {
+    pdfButton.orientation = 'landscape';
+    pdfButton.pageSize = 'A4'; 
+    pdfButton.exportOptions = {
+      columns: ':visible'
+    };
+  }
 
   const isMobile = window.innerWidth < 1300;
   const tableOptions = {
@@ -55,42 +65,39 @@ function initializeExportDataTable (
       "<'row m-0 p-0'<'col-sm-12 p-0'tr>>" +
       "<'row m-0 p-0 py-2'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7 d-flex justify-content-end'p>>",
     buttons: exportsOption ? [
-      {
-        extend: 'pdf',
-        className: 'btn btn-secondary',
-      },
+      pdfButton,
+      
       {
         extend: 'excel',
-        className: 'btn btn-secondary',
       },
       {
         extend: 'print',
-        className: 'btn btn-secondary',
-        exportOptions: {
-          columns: [1, 4, 5, 6, 7, 8, 9, 10],
-        },
         title: 'Mủ Nguyên Liệu',
         customize: function (win) {
           $(win.document.body)
-            .css('text-align', 'center')
-            .find('h1')
-            .css('text-align', 'center')
-            .after('<h2 style="text-align: center;">Từ ngày </h2>')
-            .end()
-            .find('table')
-            .after(
-              '<p style="text-align: left; margin-top: 20px;">Tổng cộng số tiền </p>',
-              '<p style="text-align: left; margin-top: 20px;">Cộng</p>',
-              '<p style="text-align: left; margin-top: 20px;">Trừ</p>',
-              '<p style="text-align: left; margin-top: 20px;">Thực nhận</p>',
-            );
+          .css('text-align', 'center')
+          .find('h1')
+          .css('text-align', 'center')
+          .after('<h2 style="text-align: center;">Từ ngày </h2>')
+          .end()
+          .find('table')
+          .after(
+            '<p style="text-align: left; margin-top: 20px;">Tổng cộng số tiền </p>',
+            '<p style="text-align: left; margin-top: 20px;">Cộng</p>',
+            '<p style="text-align: left; margin-top: 20px;">Trừ</p>',
+            '<p style="text-align: left; margin-top: 20px;">Thực nhận</p>',
+          );
         },
+      },
+      {
+        extend: 'colvis',
+        text: 'Chọn cột' 
       },
     ] : [],
     serverSide: true,
     processing: true,
     responsive: true,
-    paging: !queryPageFooter,
+    paging: !exportPageFooter,
     scrollX: isMobile,
     pagingType: 'first_last_numbers',
     rowGroup: rowGroupOptions,
@@ -100,10 +107,7 @@ function initializeExportDataTable (
       data: function (d) {
         d.startDate = $(startDateId).val();
         d.endDate = $(endDateId).val();
-        if (inputPrice) {
-          d.dryPrice = $(dryPriceID).val();
-          d.mixedPrice = $(mixedPriceID).val();
-        }
+
         return d;
       },
     },
@@ -165,7 +169,4 @@ function initializeExportDataTable (
     table.ajax.reload();
   });
 
-  $(inputPrice).on('click', function () {
-    table.ajax.reload();
-  });
 }

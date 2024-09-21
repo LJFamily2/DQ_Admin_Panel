@@ -125,15 +125,12 @@ function initializeDataTable(
       ? [
           {
             extend: 'pdf',
-            className: 'btn btn-secondary',
           },
           {
             extend: 'excel',
-            className: 'btn btn-secondary',
           },
           {
             extend: 'print',
-            className: 'btn btn-secondary',
             exportOptions: {
               columns: [1, 4,5 ,6 ,7,8,9,10] 
             },
