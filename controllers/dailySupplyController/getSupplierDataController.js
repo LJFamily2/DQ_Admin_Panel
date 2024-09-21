@@ -312,10 +312,12 @@ async function getSupplierExportData(req, res, isArea) {
       }, {});
   
       const muQuyKhoQuantity = (rawMaterials['Mủ nước']?.quantity * rawMaterials['Mủ nước']?.percentage) / 100 ;
+      const muQuyKhoPrice = rawMaterials['Mủ nước']?.price ;
+      const muQuyKhoToTal = rawMaterials['Mủ nước']?.price * muQuyKhoQuantity;
       const muTapTotal = rawMaterials['Mủ tạp']?.quantity * rawMaterials['Mủ tạp']?.price ;
+      
       const muKeQuantity = (rawMaterials['Mủ ké']?.quantity * rawMaterials['Mủ ké']?.percentage) / 100 ;
       const muDongQuantity = (rawMaterials['Mủ đông']?.quantity * rawMaterials['Mủ đông']?.percentage) / 100 ;
-  
       const muKeDongQuantity = muKeQuantity + muDongQuantity;
       const muKeDongDonGia = rawMaterials['Mủ ké']?.price;
       const muKeDongTotal = muKeDongQuantity * muKeDongDonGia;
@@ -326,8 +328,8 @@ async function getSupplierExportData(req, res, isArea) {
         supplier: item.supplier.name || '',
         ...(isArea && { code: item.supplier.code || '' }),
         muQuyKhoQuantity: muQuyKhoQuantity.toLocaleString('vi-VN') || '',
-        muQuyKhoDonGia: rawMaterials['Mủ nước']?.price.toLocaleString('vi-VN') || '',
-        muNuocToTal: rawMaterials['Mủ nước']?.quantity.toLocaleString('vi-VN') || '',
+        muQuyKhoDonGia: muQuyKhoPrice.toLocaleString('vi-VN') || '',
+        muQuyKhoToTal: muQuyKhoToTal.toLocaleString('vi-VN') || '',
         muTapQuantity: rawMaterials['Mủ tạp']?.quantity.toLocaleString('vi-VN') || '',
         muTapDonGia: rawMaterials['Mủ tạp']?.price.toLocaleString('vi-VN') || '',
         muTapTotal: muTapTotal.toLocaleString('vi-VN') || '',
