@@ -91,17 +91,17 @@ async function getSupplierInputData(req, res, isArea) {
   function parseDates(startDate, endDate) {
     return {
       startDateUTC: startDate
-        ? new Date(startDate).setUTCHours(0, 0, 0, 0)
+        ? new Date(startDate).setHours(0, 0, 0, 0)
         : null,
       endDateUTC: endDate
-        ? new Date(endDate).setUTCHours(23, 59, 59, 999)
+        ? new Date(endDate).setHours(23, 59, 59, 999)
         : null,
     };
   }
 
   function createDateFilter(startDateUTC, endDateUTC) {
-    const today = new Date().setUTCHours(0, 0, 0, 0);
-    const tomorrow = new Date().setUTCHours(23, 59, 59, 999);
+    const today = new Date().setHours(0, 0, 0, 0);
+    const tomorrow = new Date().setHours(23, 59, 59, 999);
 
     if (startDateUTC && !endDateUTC) {
       endDateUTC = startDateUTC;
@@ -233,17 +233,17 @@ async function getSupplierExportData(req, res, isArea) {
   function parseDates(startDate, endDate) {
     return {
       startDateUTC: startDate
-        ? new Date(startDate).setUTCHours(0, 0, 0, 0)
+        ? new Date(startDate).setHours(0, 0, 0, 0)
         : null,
       endDateUTC: endDate
-        ? new Date(endDate).setUTCHours(23, 59, 59, 999)
+        ? new Date(endDate).setHours(23, 59, 59, 999)
         : null,
     };
   }
 
   function createDateFilter(startDateUTC, endDateUTC) {
-    const today = new Date().setUTCHours(0, 0, 0, 0);
-    const tomorrow = new Date().setUTCHours(23, 59, 59, 999);
+    const today = new Date().setHours(0, 0, 0, 0);
+    const tomorrow = new Date().setHours(23, 59, 59, 999);
 
     if (startDateUTC && !endDateUTC) {
       endDateUTC = startDateUTC;
