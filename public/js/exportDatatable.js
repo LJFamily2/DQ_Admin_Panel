@@ -69,10 +69,16 @@ function initializeExportDataTable (
       
       {
         extend: 'excel',
+        exportOptions: {
+          columns: ':visible'
+        },
       },
       {
         extend: 'print',
         title: 'Mủ Nguyên Liệu',
+        exportOptions: {
+          columns: ':visible'
+        },
         customize: function (win) {
           $(win.document.body)
           .css('text-align', 'center')
