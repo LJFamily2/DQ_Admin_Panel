@@ -33,4 +33,6 @@ router.get("/:slug/xuat-file", authMiddlewares.ensureRoles(['Admin', 'Văn phòn
 router.post("/:slug/xuat-file", authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.getSupplierDataController.getSupplierExportData)
 router.post("/:slug/updatePrice", authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.supplierExportController.updatePrice)
 
+// Admin side for exporting individual
+// router.get()
 module.exports = router;

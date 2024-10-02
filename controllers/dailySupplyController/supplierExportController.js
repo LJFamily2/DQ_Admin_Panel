@@ -15,7 +15,7 @@ async function renderPage(req, res) {
       .populate('accountID')
       .populate('suppliers')
       .populate('data.supplier');
-
+    
     res.render('src/dailySupplyExportPage', {
       layout: './layouts/defaultLayout',
       title: `Xuất dữ liệu mủ của ${area.name}`,
