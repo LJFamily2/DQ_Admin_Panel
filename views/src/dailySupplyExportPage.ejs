@@ -385,8 +385,10 @@
                   </div>
                   <div class="d-flex">
                   <span class="mx-2 ">
-                    <i class="ri-edit-box-line fs-5" data-bs-toggle="modal"
-                    data-bs-target="#editSupplier<%= supplier._id %>" style="cursor: pointer;"></i>
+                    <a href="/du-lieu-hang-ngay/<%= area.slug %>/xuat-file/<%= supplier.supplierSlug %>" style="text-decoration: none; color: black;">
+                      <i class="ri-edit-box-line fs-5" data-bs-toggle="modal"
+                      data-bs-target="#editSupplier<%= supplier._id %>" style="cursor: pointer;"></i>
+                    </a>
                   </span>
                   <span class="mx-2">
                     

@@ -7,24 +7,43 @@ const convertToDecimal = require('../utils/convertToDecimal');
 
 module.exports = {
   renderPage,
-  updatePrice,
 };
+
 async function renderPage(req, res) {
   try {
-    const area = await DailySupply.findOne({ slug: req.params.slug })
+    const { slug, supplierSlug } = req.params;
+
+    // Find the supplier by supplierSlug
+    const supplier = await Supplier.findOne({ supplierSlug });
+    if (!supplier) {
+      return res.status(404).render('partials/404', { layout: false });
+    }
+
+    // Find the DailySupply document with the given slug
+    const area = await DailySupply.findOne({ slug })
       .populate('accountID')
-      .populate('suppliers')
-      .populate('data.supplier');
-    
-    res.render('src/dailySupplyExportPage', {
+      .populate('suppliers');
+
+    if (!area) {
+      return res.status(404).render('partials/404', { layout: false });
+    }
+
+    // Find the specific supplier's data in the suppliers array
+    const supplierData = area.suppliers.find(s => s._id.equals(supplier._id));
+    if (!supplierData) {
+      return res.status(404).render('partials/404', { layout: false });
+    }
+
+    res.render('src/dailySupplyIndividualExportPage', {
       layout: './layouts/defaultLayout',
-      title: `Xuất dữ liệu mủ của ${area.name}`,
+      title: `Xuất dữ liệu mủ của ${supplierData.name}`,
       area,
+      supplierData,
       user: req.user,
       messages: req.flash(),
     });
   } catch (error) {
-    console.error('Error adding suppliers:', error);
+    console.error('Error fetching area:', error);
     res.status(500).render('partials/500', { layout: false });
   }
 }

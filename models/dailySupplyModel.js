@@ -10,6 +10,10 @@ const supplierSchema = new mongoose.Schema({
     identification: String,
     issueDate: String,
     ratioSplit: Number,
+    supplierSlug: {
+        type: String,
+        slug: 'name'
+    }
 });
 
 const dailySupplySchema = new mongoose.Schema({
