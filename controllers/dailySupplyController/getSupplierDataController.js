@@ -1,4 +1,4 @@
-const { DailySupply } = require('../../models/dailySupplyModel');
+const { DailySupply, Supplier } = require('../../models/dailySupplyModel');
 
 async function getData(req, res) {
   try {
@@ -342,6 +342,151 @@ async function getSupplierExportData(req, res, isArea) {
   }
 }
 
+async function getIndividualSupplierExportData(req, res, isArea) {
+  try {
+    const { draw, search, startDate, endDate } = req.body;
+    const searchValue = search?.value?.toLowerCase() || '';
+
+    console.log('Request Parameters:', req.params);
+    console.log('Request Body:', req.body);
+
+    const { startDateUTC, endDateUTC } = parseDates(startDate, endDate);
+    const dateFilter = createDateFilter(startDateUTC, endDateUTC);
+
+    // Find the supplier ID based on the supplierSlug
+    const supplier = await Supplier.findOne({ supplierSlug: req.params.supplierSlug });
+    if (!supplier) {
+      return res.status(404).json({ error: 'Supplier not found' });
+    }
+
+    const supplierId = supplier._id;
+    const matchStage = createMatchStage(req.params.slug, supplierId, dateFilter, searchValue);
+    const pipeline = createPipeline(req.params.slug, matchStage);
+
+    console.log('Aggregation Pipeline:', JSON.stringify(pipeline, null, 2));
+
+    const result = await DailySupply.aggregate(pipeline);
+    if (!result || result.length === 0) {
+      return res.json({
+        draw,
+        recordsTotal: 0,
+        recordsFiltered: 0,
+        data: [],
+      });
+    }
+
+    const totalRecords = result[0].totalRecords[0]?.count || 0;
+    const data = result[0].data;
+    console.log('Aggregated Data:', data);
+
+    const flattenedData = flattenData(data);
+    console.log('Flattened Data:', flattenedData);
+
+    res.json({
+      draw,
+      recordsTotal: totalRecords,
+      recordsFiltered: totalRecords,
+      data: flattenedData,
+    });
+  } catch (error) {
+    console.error('Error fetching supplier data:', error);
+    res.status(500).render('partials/500', { layout: false });
+  }
+
+  function parseDates(startDate, endDate) {
+    return {
+      startDateUTC: startDate ? new Date(startDate).setHours(0, 0, 0, 0) : null,
+      endDateUTC: endDate ? new Date(endDate).setHours(23, 59, 59, 999) : null,
+    };
+  }
+
+  function createDateFilter(startDateUTC, endDateUTC) {
+    if (!startDateUTC && !endDateUTC) {
+      return {};
+    }
+
+    if (startDateUTC && !endDateUTC) {
+      endDateUTC = startDateUTC;
+    }
+
+    return {
+      'data.date': {
+        ...(startDateUTC && { $gte: new Date(startDateUTC) }),
+        ...(endDateUTC && { $lte: new Date(endDateUTC) }),
+      },
+    };
+  }
+
+  function createMatchStage(slug, supplierId, dateFilter, searchValue) {
+    return {
+      $match: {
+        slug,
+        'data.supplier': supplierId,
+        ...dateFilter,
+        ...(searchValue && {
+          $or: [
+            { 'supplier.name': { $regex: searchValue, $options: 'i' } },
+            { 'supplier.code': { $regex: searchValue, $options: 'i' } },
+          ],
+        }),
+      },
+    };
+  }
+
+  function createPipeline(slug, matchStage) {
+    return [
+      { $match: { slug } },
+      { $unwind: '$data' },
+      {
+        $lookup: {
+          from: 'suppliers',
+          localField: 'data.supplier',
+          foreignField: '_id',
+          as: 'supplier',
+        },
+      },
+      { $unwind: '$supplier' },
+      matchStage,
+      {
+        $facet: {
+          data: [{ $skip: 0 }, { $limit: 10 }], // Adjust skip and limit as needed
+          totalRecords: [{ $count: 'count' }],
+        },
+      },
+    ];
+  }
+
+  function flattenData(data) {
+    return data.map((item, index) => {
+      const rawMaterials = item.data.rawMaterial.reduce((acc, raw) => {
+        acc[raw.name] = {
+          quantity: raw.quantity,
+          percentage: raw.percentage,
+          price: raw.price,
+        };
+        return acc;
+      }, {});
+
+      const muNuocQuantity = rawMaterials['Mủ nước']?.quantity || 0;
+      const muHamLuong = rawMaterials['Mủ nước']?.percentage || 0;
+      const muQuyKhoToTal = (rawMaterials['Mủ nước']?.quantity * rawMaterials['Mủ nước']?.percentage) / 100 || 0;
+      const muTapQuantity = rawMaterials['Mủ tạp']?.quantity || 0;
+      const muDongQuantity = (rawMaterials['Mủ đông']?.quantity * rawMaterials['Mủ đông']?.percentage) / 100 || 0;
+
+      return {
+        no: index + 1,
+        date: new Date(item.data.date).toLocaleDateString('vi-VN'),
+        muNuocQuantity: muNuocQuantity.toLocaleString('vi-VN'),
+        muHamLuong: muHamLuong.toLocaleString('vi-VN'),
+        muQuyKhoTotal: muQuyKhoToTal.toLocaleString('vi-VN'),
+        muTapQuantity: muTapQuantity.toLocaleString('vi-VN'),
+        muDongQuantity: muDongQuantity.toLocaleString('vi-VN'),
+        id: item.data._id,
+      };
+    });
+  }
+}
+
 module.exports = {
   getData,
 
@@ -352,5 +497,8 @@ module.exports = {
   getSupplierData,
 
   // Admin side for export data
-  getSupplierExportData
+  getSupplierExportData,
+
+  // Admin side for exportin individual data
+  getIndividualSupplierExportData
 };
