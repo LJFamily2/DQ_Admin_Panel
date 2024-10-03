@@ -416,13 +416,14 @@ async function getIndividualSupplierExportData(req, res) {
       return sortOrder === 1 ? dateA - dateB : dateB - dateA;
     });
 
-    const flattenedData = flattenData(data);
+    const { data: flattenedData, latestPrices } = flattenData(data);
 
     res.json({
       draw: parseInt(draw),
       recordsTotal: totalRecords,
       recordsFiltered: totalRecords,
       data: flattenedData,
+      latestPrices: latestPrices
     });
   } catch (error) {
     res.status(500).json({ error: 'Internal Server Error', details: error.message });
@@ -448,7 +449,13 @@ async function getIndividualSupplierExportData(req, res) {
   }
 
   function flattenData(data) {
-    return data.map((item, index) => {
+    let latestPrices = {
+      muNuoc: 0,
+      muTap: 0,
+      muDong: 0
+    };
+
+    const flattenedData = data.map((item, index) => {
       const rawMaterials = item.rawMaterial.reduce((acc, raw) => {
         acc[raw.name] = {
           quantity: raw.quantity || 0,
@@ -457,6 +464,11 @@ async function getIndividualSupplierExportData(req, res) {
         };
         return acc;
       }, {});
+
+      // Update latest prices
+      if (rawMaterials['Mủ nước']?.price > 0) latestPrices.muNuoc = rawMaterials['Mủ nước'].price;
+      if (rawMaterials['Mủ tạp']?.price > 0) latestPrices.muTap = rawMaterials['Mủ tạp'].price;
+      if (rawMaterials['Mủ đông']?.price > 0) latestPrices.muDong = rawMaterials['Mủ đông'].price;
 
       const muNuoc = rawMaterials['Mủ nước'] || { quantity: 0, percentage: 0 };
       const muDong = rawMaterials['Mủ đông'] || { quantity: 0, percentage: 0 };
@@ -468,6 +480,7 @@ async function getIndividualSupplierExportData(req, res) {
       const muQuyKhoPriceTotal = muNuoc.price * muQuyKhoTotal;
       const muTapPriceTotal = muTap.quantity * muTap.price;
       const muDongPriceTotal = muDong.quantity * muDong.price;
+
       return {
         no: index + 1,
         date: item.date.toLocaleDateString('vi-VN'),
@@ -485,6 +498,11 @@ async function getIndividualSupplierExportData(req, res) {
         id: item.supplierId.toString(),
       };
     });
+
+    return {
+      data: flattenedData,
+      latestPrices: latestPrices
+    };
   }
 }
 

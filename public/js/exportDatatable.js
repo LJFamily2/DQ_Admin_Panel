@@ -28,36 +28,50 @@ function initializeExportDataTable (
   const rowGroupOptions = rowGroup ? { dataSrc: rowGroup } : {};
 
   const setupFooterCallback = (columns, api, locale = 'vi-VN') => {
-    columns.forEach(colIndex => {
-      const total = api
+    const calculateTotal = (colIndex) => {
+      return api
         .column(colIndex, { search: 'applied' })
         .data()
         .reduce((acc, val) => acc + parseNumber(val), 0);
-      const formatted = formatNumberForDisplay(total, locale);
-      $(api.column(colIndex).footer()).html(
-        `<strong style='float: left'>${formatted}</strong>`,
-      );
+    };
+
+    const updateFooterCell = (rowIndex, cellIndex, value) => {
+      $(api.table().footer().rows[rowIndex].cells[cellIndex]).html(formatNumberForDisplay(value, locale));
+    };
+
+    columns.forEach(colIndex => {
+      const total = calculateTotal(colIndex);
+      $(api.column(colIndex).footer()).html(`<strong style='float: left'>${formatNumberForDisplay(total, locale)}</strong>`);
     });
+
+    if (individualExportPage) {
+      const ajaxData = api.ajax.json();
+      const latestPrices = ajaxData?.latestPrices || { muNuoc: 0, muTap: 0, muDong: 0 };
+
+      const totals = [4, 7, 10].map(colIndex => parseNumber($(api.column(colIndex).footer()).text()));
+      const prices = ['muNuoc', 'muTap', 'muDong'].map(key => latestPrices[key] || 0);
+
+      prices.forEach((price, index) => {
+        updateFooterCell(1, index + 2, price);
+        updateFooterCell(2, index + 2, totals[index] * price);
+      });
+    }
   };
 
+  const setupFooterCallbackOptions = (columns) => ({
+    footerCallback: function () {
+      setupFooterCallback(columns, this.api());
+    },
+  });
+
+  let footerCallbackOptions;
   if (exportPageFooter) {
-    const columns = [4, 6,7,9,10,12];
-    footerCallbackOptions = {
-      footerCallback: function () {
-        setupFooterCallback(columns, this.api());
-      },
-    };
+    footerCallbackOptions = setupFooterCallbackOptions([4, 6, 7, 9, 10, 12]);
   }
 
   if (individualExportPage) {
-    const columns = [4, 6, 8];
-    footerCallbackOptions = {
-      footerCallback: function () {
-        setupFooterCallback(columns, this.api());
-      },
-    };
+    footerCallbackOptions = setupFooterCallbackOptions([4, 7, 10]);
   }
-
 
   const pdfButton = {
     extend: 'pdf',

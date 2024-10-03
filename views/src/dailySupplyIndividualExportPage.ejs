@@ -170,11 +170,13 @@
           <tfoot>
             <tr>
               <th colspan="2">Tổng số lượng</th>
+              <th colspan="2"></th>
               <th></th>
               <th></th>
-              <th id="dryTotal"></th>
-              <th id="mixedTotal"></th>
-              <th id="dongTotal"></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
               <th></th>
               <th></th>
               <th></th>
@@ -182,26 +184,22 @@
             </tr>
             <tr>
               <th colspan="2">Đơn giá</th>
+              <th colspan="2"></th>
               <th></th>
               <th></th>
               <th></th>
-              <th></th>
-              <th></th>
-              <th></th>
-              <th></th>
-              <th></th>
+              <th colspan="3"></th>
+              <th colspan="3"></th>
               <th></th>
             </tr>
             <tr>
               <th colspan="2">Thành tiền</th>
+              <th colspan="2"></th>
               <th></th>
               <th></th>
               <th></th>
-              <th></th>
-              <th></th>
-              <th></th>
-              <th></th>
-              <th></th>
+              <th colspan="3"></th>
+              <th colspan="3"></th>
               <th></th>
             </tr>
           </tfoot>
@@ -328,19 +326,19 @@
 
 <script>
   const columns = [
-    { data: 'no', orderable: false },
+    { data: 'no', orderable: false, visible: false },
     { data: 'date' },
     { data: 'muNuocQuantity', orderable: false },
     { data: 'muHamLuong', orderable: false },
     { data: 'muQuyKhoTotal', orderable: false },
-    { data: 'muQuyKhoPrice', orderable: false },
-    { data: 'muQuyKhoPriceTotal', orderable: false },
+    { data: 'muQuyKhoPrice', orderable: false, visible: false },
+    { data: 'muQuyKhoPriceTotal', orderable: false, visible: false },
     { data: 'muTapQuantity', orderable: false },
-    { data: 'muTapPrice', orderable: false },
-    { data: 'muTapPriceTotal', orderable: false },
+    { data: 'muTapPrice', orderable: false, visible: false },
+    { data: 'muTapPriceTotal', orderable: false, visible: false },
     { data: 'muDongQuantity', orderable: false },
-    { data: 'muDongPrice', orderable: false },
-    { data: 'muDongPriceTotal', orderable: false },
+    { data: 'muDongPrice', orderable: false, visible: false },
+    { data: 'muDongPriceTotal', orderable: false, visible: false },
     { data: 'id', orderable: false },
   ];
 
