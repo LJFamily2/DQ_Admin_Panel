@@ -48,12 +48,12 @@ function initializeExportDataTable (
       const ajaxData = api.ajax.json();
       const latestPrices = ajaxData?.latestPrices || { muNuoc: 0, muTap: 0, muDong: 0 };
 
-      const totals = [4, 7, 10].map(colIndex => parseNumber($(api.column(colIndex).footer()).text()));
+      const totals = [4, 6, 8].map(colIndex => parseNumber($(api.column(colIndex).footer()).text()));
       const prices = ['muNuoc', 'muTap', 'muDong'].map(key => latestPrices[key] || 0);
 
       prices.forEach((price, index) => {
-        updateFooterCell(1, index + 2, price);
-        updateFooterCell(2, index + 2, totals[index] * price);
+        updateFooterCell(1, index + 1, price);
+        updateFooterCell(2, index + 1, totals[index] * price);
       });
     }
   };
@@ -70,7 +70,7 @@ function initializeExportDataTable (
   }
 
   if (individualExportPage) {
-    footerCallbackOptions = setupFooterCallbackOptions([4, 7, 10]);
+    footerCallbackOptions = setupFooterCallbackOptions([4, 6, 8]);
   }
 
   const pdfButton = {

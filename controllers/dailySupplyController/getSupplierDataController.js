@@ -477,10 +477,6 @@ async function getIndividualSupplierExportData(req, res) {
       const muQuyKhoTotal = (muNuoc.quantity * muNuoc.percentage) / 100;
       const muDongTotal = (muDong.quantity * muDong.percentage) / 100;
 
-      const muQuyKhoPriceTotal = muNuoc.price * muQuyKhoTotal;
-      const muTapPriceTotal = muTap.quantity * muTap.price;
-      const muDongPriceTotal = muDong.quantity * muDong.price;
-
       return {
         no: index + 1,
         date: item.date.toLocaleDateString('vi-VN'),
@@ -488,13 +484,10 @@ async function getIndividualSupplierExportData(req, res) {
         muHamLuong: muNuoc.percentage.toLocaleString('vi-VN'),
         muQuyKhoTotal: muQuyKhoTotal.toLocaleString('vi-VN'),
         muQuyKhoPrice: rawMaterials['Mủ nước']?.price.toLocaleString('vi-VN'),
-        muQuyKhoPriceTotal: muQuyKhoPriceTotal.toLocaleString('vi-VN'),
         muTapQuantity: muTap.quantity.toLocaleString('vi-VN'),
         muTapPrice: rawMaterials['Mủ tạp']?.price.toLocaleString('vi-VN'),
-        muTapPriceTotal: muTapPriceTotal.toLocaleString('vi-VN'),
         muDongQuantity: muDongTotal.toLocaleString('vi-VN'),
         muDongPrice: rawMaterials['Mủ đông']?.price.toLocaleString('vi-VN'),
-        muDongPriceTotal: muDongPriceTotal.toLocaleString('vi-VN'),
         id: item.supplierId.toString(),
       };
     });
