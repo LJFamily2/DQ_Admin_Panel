@@ -90,12 +90,8 @@ async function getSupplierInputData(req, res, isArea) {
 
   function parseDates(startDate, endDate) {
     return {
-      startDateUTC: startDate
-        ? new Date(startDate).setHours(0, 0, 0, 0)
-        : null,
-      endDateUTC: endDate
-        ? new Date(endDate).setHours(23, 59, 59, 999)
-        : null,
+      startDateUTC: startDate ? new Date(startDate).setHours(0, 0, 0, 0) : null,
+      endDateUTC: endDate ? new Date(endDate).setHours(23, 59, 59, 999) : null,
     };
   }
 
@@ -232,12 +228,8 @@ async function getSupplierExportData(req, res, isArea) {
 
   function parseDates(startDate, endDate) {
     return {
-      startDateUTC: startDate
-        ? new Date(startDate).setHours(0, 0, 0, 0)
-        : null,
-      endDateUTC: endDate
-        ? new Date(endDate).setHours(23, 59, 59, 999)
-        : null,
+      startDateUTC: startDate ? new Date(startDate).setHours(0, 0, 0, 0) : null,
+      endDateUTC: endDate ? new Date(endDate).setHours(23, 59, 59, 999) : null,
     };
   }
 
@@ -304,24 +296,33 @@ async function getSupplierExportData(req, res, isArea) {
     return data.map((item, index) => {
       const rawMaterials = item.data.rawMaterial.reduce((acc, raw) => {
         acc[raw.name] = {
-          quantity: raw.quantity ,
-          percentage: raw.percentage ,
-          price: raw.price ,
+          quantity: raw.quantity,
+          percentage: raw.percentage,
+          price: raw.price,
         };
         return acc;
       }, {});
-  
-      const muQuyKhoQuantity = (rawMaterials['Mủ nước']?.quantity * rawMaterials['Mủ nước']?.percentage) / 100 ;
-      const muQuyKhoPrice = rawMaterials['Mủ nước']?.price ;
+
+      const muQuyKhoQuantity =
+        (rawMaterials['Mủ nước']?.quantity *
+          rawMaterials['Mủ nước']?.percentage) /
+        100;
+      const muQuyKhoPrice = rawMaterials['Mủ nước']?.price;
       const muQuyKhoToTal = rawMaterials['Mủ nước']?.price * muQuyKhoQuantity;
-      const muTapTotal = rawMaterials['Mủ tạp']?.quantity * rawMaterials['Mủ tạp']?.price ;
-      
-      const muKeQuantity = (rawMaterials['Mủ ké']?.quantity * rawMaterials['Mủ ké']?.percentage) / 100 ;
-      const muDongQuantity = (rawMaterials['Mủ đông']?.quantity * rawMaterials['Mủ đông']?.percentage) / 100 ;
+      const muTapTotal =
+        rawMaterials['Mủ tạp']?.quantity * rawMaterials['Mủ tạp']?.price;
+
+      const muKeQuantity =
+        (rawMaterials['Mủ ké']?.quantity * rawMaterials['Mủ ké']?.percentage) /
+        100;
+      const muDongQuantity =
+        (rawMaterials['Mủ đông']?.quantity *
+          rawMaterials['Mủ đông']?.percentage) /
+        100;
       const muKeDongQuantity = muKeQuantity + muDongQuantity;
       const muKeDongDonGia = rawMaterials['Mủ ké']?.price;
       const muKeDongTotal = muKeDongQuantity * muKeDongDonGia;
-  
+
       return {
         no: index + 1,
         date: new Date(item.data.date).toLocaleDateString('vi-VN'),
@@ -330,8 +331,10 @@ async function getSupplierExportData(req, res, isArea) {
         muQuyKhoQuantity: muQuyKhoQuantity.toLocaleString('vi-VN') || '',
         muQuyKhoDonGia: muQuyKhoPrice.toLocaleString('vi-VN') || '',
         muQuyKhoToTal: muQuyKhoToTal.toLocaleString('vi-VN') || '',
-        muTapQuantity: rawMaterials['Mủ tạp']?.quantity.toLocaleString('vi-VN') || '',
-        muTapDonGia: rawMaterials['Mủ tạp']?.price.toLocaleString('vi-VN') || '',
+        muTapQuantity:
+          rawMaterials['Mủ tạp']?.quantity.toLocaleString('vi-VN') || '',
+        muTapDonGia:
+          rawMaterials['Mủ tạp']?.price.toLocaleString('vi-VN') || '',
         muTapTotal: muTapTotal.toLocaleString('vi-VN') || '',
         muKeDongQuantity: muKeDongQuantity.toLocaleString('vi-VN') || '',
         muKeDongDonGia: muKeDongDonGia.toLocaleString('vi-VN') || '',
@@ -342,150 +345,150 @@ async function getSupplierExportData(req, res, isArea) {
   }
 }
 
-async function getIndividualSupplierExportData(req, res, isArea) {
+async function getIndividualSupplierExportData(req, res) {
   try {
-    const { draw, search, startDate, endDate } = req.body;
-    const searchValue = search?.value?.toLowerCase() || '';
+    const { slug, supplierSlug } = req.params;
+    const { draw, startDate, endDate, order } = req.body;
 
-    console.log('Request Parameters:', req.params);
-    console.log('Request Body:', req.body);
+    let effectiveStartDate = startDate;
+    let effectiveEndDate = endDate;
 
-    const { startDateUTC, endDateUTC } = parseDates(startDate, endDate);
-    const dateFilter = createDateFilter(startDateUTC, endDateUTC);
-
-    // Find the supplier ID based on the supplierSlug
-    const supplier = await Supplier.findOne({ supplierSlug: req.params.supplierSlug });
-    if (!supplier) {
-      return res.status(404).json({ error: 'Supplier not found' });
-    }
-
-    const supplierId = supplier._id;
-    const matchStage = createMatchStage(req.params.slug, supplierId, dateFilter, searchValue);
-    const pipeline = createPipeline(req.params.slug, matchStage);
-
-    console.log('Aggregation Pipeline:', JSON.stringify(pipeline, null, 2));
-
-    const result = await DailySupply.aggregate(pipeline);
-    if (!result || result.length === 0) {
+    // Handle date range scenarios
+    if (startDate && !endDate) {
+      effectiveEndDate = startDate;
+    } else if (!startDate && endDate) {
+      effectiveStartDate = new Date().toISOString().split('T')[0]; // Today's date in YYYY-MM-DD format
+    } else if (!startDate && !endDate) {
       return res.json({
-        draw,
+        draw: parseInt(draw),
         recordsTotal: 0,
         recordsFiltered: 0,
         data: [],
       });
     }
 
+    const { startDateUTC, endDateUTC } = parseDates(effectiveStartDate, effectiveEndDate);
+    const dateFilter = createDateFilter(startDateUTC, endDateUTC);
+
+    const supplier = await Supplier.findOne({ supplierSlug });
+    if (!supplier) {
+      return res.status(404).json({ error: 'Supplier not found' });
+    }
+
+    const sortOrder = order && order[0] ? (order[0].dir === 'desc' ? -1 : 1) : -1;
+
+    const pipeline = [
+      { $match: { slug: slug } },
+      { $unwind: '$data' },
+      {
+        $match: {
+          'data.supplier': supplier._id,
+          ...dateFilter,
+        },
+      },
+      { $sort: { 'data.date': sortOrder } },
+      {
+        $facet: {
+          totalRecords: [{ $count: 'count' }],
+          data: [
+            {
+              $project: {
+                _id: 0,
+                date: '$data.date',
+                rawMaterial: '$data.rawMaterial',
+                supplierId: '$data.supplier',
+              }
+            }
+          ],
+        },
+      },
+    ];
+
+    const result = await DailySupply.aggregate(pipeline);
+
     const totalRecords = result[0].totalRecords[0]?.count || 0;
     const data = result[0].data;
-    console.log('Aggregated Data:', data);
+
+    // Sort the data by date range
+    data.sort((a, b) => {
+      const dateA = new Date(a.date);
+      const dateB = new Date(b.date);
+      return sortOrder === 1 ? dateA - dateB : dateB - dateA;
+    });
 
     const flattenedData = flattenData(data);
-    console.log('Flattened Data:', flattenedData);
 
     res.json({
-      draw,
+      draw: parseInt(draw),
       recordsTotal: totalRecords,
       recordsFiltered: totalRecords,
       data: flattenedData,
     });
   } catch (error) {
-    console.error('Error fetching supplier data:', error);
-    res.status(500).render('partials/500', { layout: false });
+    res.status(500).json({ error: 'Internal Server Error', details: error.message });
   }
 
   function parseDates(startDate, endDate) {
     return {
-      startDateUTC: startDate ? new Date(startDate).setHours(0, 0, 0, 0) : null,
-      endDateUTC: endDate ? new Date(endDate).setHours(23, 59, 59, 999) : null,
+      startDateUTC: startDate ? new Date(startDate) : null,
+      endDateUTC: endDate ? new Date(endDate) : null,
     };
   }
 
   function createDateFilter(startDateUTC, endDateUTC) {
-    if (!startDateUTC && !endDateUTC) {
-      return {};
-    }
-
-    if (startDateUTC && !endDateUTC) {
-      endDateUTC = startDateUTC;
-    }
-
-    return {
-      'data.date': {
-        ...(startDateUTC && { $gte: new Date(startDateUTC) }),
-        ...(endDateUTC && { $lte: new Date(endDateUTC) }),
-      },
-    };
-  }
-
-  function createMatchStage(slug, supplierId, dateFilter, searchValue) {
-    return {
-      $match: {
-        slug,
-        'data.supplier': supplierId,
-        ...dateFilter,
-        ...(searchValue && {
-          $or: [
-            { 'supplier.name': { $regex: searchValue, $options: 'i' } },
-            { 'supplier.code': { $regex: searchValue, $options: 'i' } },
-          ],
-        }),
-      },
-    };
-  }
-
-  function createPipeline(slug, matchStage) {
-    return [
-      { $match: { slug } },
-      { $unwind: '$data' },
-      {
-        $lookup: {
-          from: 'suppliers',
-          localField: 'data.supplier',
-          foreignField: '_id',
-          as: 'supplier',
+    if (startDateUTC && endDateUTC) {
+      return {
+        'data.date': {
+          $gte: startDateUTC,
+          $lte: endDateUTC,
         },
-      },
-      { $unwind: '$supplier' },
-      matchStage,
-      {
-        $facet: {
-          data: [{ $skip: 0 }, { $limit: 10 }], // Adjust skip and limit as needed
-          totalRecords: [{ $count: 'count' }],
-        },
-      },
-    ];
+      };
+    }
+    return {};
   }
 
   function flattenData(data) {
     return data.map((item, index) => {
-      const rawMaterials = item.data.rawMaterial.reduce((acc, raw) => {
+      const rawMaterials = item.rawMaterial.reduce((acc, raw) => {
         acc[raw.name] = {
-          quantity: raw.quantity,
-          percentage: raw.percentage,
-          price: raw.price,
+          quantity: raw.quantity || 0,
+          percentage: raw.percentage || 0,
+          price: raw.price || 0,
         };
         return acc;
       }, {});
 
-      const muNuocQuantity = rawMaterials['Mủ nước']?.quantity || 0;
-      const muHamLuong = rawMaterials['Mủ nước']?.percentage || 0;
-      const muQuyKhoToTal = (rawMaterials['Mủ nước']?.quantity * rawMaterials['Mủ nước']?.percentage) / 100 || 0;
-      const muTapQuantity = rawMaterials['Mủ tạp']?.quantity || 0;
-      const muDongQuantity = (rawMaterials['Mủ đông']?.quantity * rawMaterials['Mủ đông']?.percentage) / 100 || 0;
+      const muNuoc = rawMaterials['Mủ nước'] || { quantity: 0, percentage: 0 };
+      const muDong = rawMaterials['Mủ đông'] || { quantity: 0, percentage: 0 };
+      const muTap = rawMaterials['Mủ tạp'] || { quantity: 0, percentage: 0 };
 
+      const muQuyKhoTotal = (muNuoc.quantity * muNuoc.percentage) / 100;
+      const muDongTotal = (muDong.quantity * muDong.percentage) / 100;
+
+      const muQuyKhoPriceTotal = muNuoc.price * muQuyKhoTotal;
+      const muTapPriceTotal = muTap.quantity * muTap.price;
+      const muDongPriceTotal = muDong.quantity * muDong.price;
       return {
         no: index + 1,
-        date: new Date(item.data.date).toLocaleDateString('vi-VN'),
-        muNuocQuantity: muNuocQuantity.toLocaleString('vi-VN'),
-        muHamLuong: muHamLuong.toLocaleString('vi-VN'),
-        muQuyKhoTotal: muQuyKhoToTal.toLocaleString('vi-VN'),
-        muTapQuantity: muTapQuantity.toLocaleString('vi-VN'),
-        muDongQuantity: muDongQuantity.toLocaleString('vi-VN'),
-        id: item.data._id,
+        date: item.date.toLocaleDateString('vi-VN'),
+        muNuocQuantity: muNuoc.quantity.toLocaleString('vi-VN'),
+        muHamLuong: muNuoc.percentage.toLocaleString('vi-VN'),
+        muQuyKhoTotal: muQuyKhoTotal.toLocaleString('vi-VN'),
+        muQuyKhoPrice: rawMaterials['Mủ nước']?.price.toLocaleString('vi-VN'),
+        muQuyKhoPriceTotal: muQuyKhoPriceTotal.toLocaleString('vi-VN'),
+        muTapQuantity: muTap.quantity.toLocaleString('vi-VN'),
+        muTapPrice: rawMaterials['Mủ tạp']?.price.toLocaleString('vi-VN'),
+        muTapPriceTotal: muTapPriceTotal.toLocaleString('vi-VN'),
+        muDongQuantity: muDongTotal.toLocaleString('vi-VN'),
+        muDongPrice: rawMaterials['Mủ đông']?.price.toLocaleString('vi-VN'),
+        muDongPriceTotal: muDongPriceTotal.toLocaleString('vi-VN'),
+        id: item.supplierId.toString(),
       };
     });
   }
 }
+
+
 
 module.exports = {
   getData,
@@ -500,5 +503,5 @@ module.exports = {
   getSupplierExportData,
 
   // Admin side for exportin individual data
-  getIndividualSupplierExportData
+  getIndividualSupplierExportData,
 };

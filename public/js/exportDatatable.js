@@ -23,6 +23,7 @@ function initializeExportDataTable (
   clearFilterButton,
   exportsOption,
   exportPageFooter,
+  individualExportPage
 ) {
   const rowGroupOptions = rowGroup ? { dataSrc: rowGroup } : {};
 
@@ -39,11 +40,24 @@ function initializeExportDataTable (
     });
   };
 
-  const footerCallbackOptions = exportPageFooter ? {
-    footerCallback: function () {
-      setupFooterCallback([4, 6,7,9,10,12], this.api());
-    },
-  } : {};
+  if (exportPageFooter) {
+    const columns = [4, 6,7,9,10,12];
+    footerCallbackOptions = {
+      footerCallback: function () {
+        setupFooterCallback(columns, this.api());
+      },
+    };
+  }
+
+  if (individualExportPage) {
+    const columns = [4, 6, 8];
+    footerCallbackOptions = {
+      footerCallback: function () {
+        setupFooterCallback(columns, this.api());
+      },
+    };
+  }
+
 
   const pdfButton = {
     extend: 'pdf',
