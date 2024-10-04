@@ -2,12 +2,6 @@
   <!-- js -->
   <!-- datatable -->
   <script src="https://cdn.datatables.net/rowgroup/1.5.0/js/dataTables.rowGroup.js"></script>
-  <script src="https://cdn.datatables.net/buttons/3.0.2/js/dataTables.buttons.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-  <script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.html5.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
-  <script src="https://cdn.datatables.net/buttons/3.1.2/js/buttons.print.min.js"></script>
   <script src="/js/datatable.js"></script>
   <script src="/js/multipleFieldsWithText.js"></script>
   <script src="/js/slim-select.js" defer></script>
@@ -71,8 +65,8 @@
               <th rowspan="2">Mã</th>
               <th colspan="3">Mủ quy khô</th>
               <th>Mủ tạp</th>
-              <th colspan="3">Mủ ké</th>
-              <th colspan="3">Mủ đông</th>
+              <th>Mủ ké</th>
+              <th>Mủ đông</th>
               <th rowspan="2">Chỉnh sửa</th>
             </tr>
             <tr>
@@ -81,11 +75,7 @@
               <th>Tổng</th>
               <th>SL</th>
               <th>SL</th>
-              <th>Hàm lượng</th>
-              <th>Tổng</th>
               <th>SL</th>
-              <th>Hàm lượng</th>
-              <th>Tổng</th>
             </tr>
           </thead>
 
@@ -303,18 +293,11 @@
             <% }) %>
           </tbody>
           <tfoot>
-            <th colspan="3">Tổng</th>
+            <th colspan="6">Tổng</th>
             <th></th>
             <th></th>
             <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
+            <th ></th>
             <th></th>
           </tfoot>
         </table>
@@ -673,19 +656,15 @@
 <script>
    const columns = [
    { data: 'no', visible: false, orderable: false },
-    { data: 'date', visible: true },
+    { data: 'date', visible: false },
     { data: 'supplier', orderable: false },
     { data: 'code', orderable: false },
-    { data: 'muNuocQuantity', orderable: false, title: 'Số lượng' },
-    { data: 'muNuocPercentage', orderable: false, title: 'Hàm lượng' },
-    { data: 'muNuocQuantityToTal', orderable: false, title: 'Quy khô' },
-    { data: 'muTapQuantity', orderable: false, },
-    { data: 'muKeQuantity', orderable: false, title: 'SL' },
-    { data: 'muKePercentage', orderable: false, title: 'Hàm lượng' },
-    { data: 'muKeTotal', orderable: false, title: 'Tổng' },
-    { data: 'muDongQuantity', orderable: false, title: 'SL ' },
-    { data: 'muDongPercentage', orderable: false, title: 'Hàm lượng' },
-    { data: 'muDongTotal', orderable: false, title: 'Tổng' },
+    { data: 'muNuocQuantity', orderable: false },
+    { data: 'muNuocPercentage', orderable: false },
+    { data: 'muNuocQuantityToTal', orderable: false },
+    { data: 'muTapQuantity', orderable: false },
+    { data: 'muKeQuantity', orderable: false },
+    { data: 'muDongQuantity', orderable: false },
     { data: 'id', orderable: false },
   ];
 
@@ -701,7 +680,7 @@
     '#endDate',
     '#clearFilterButton',
     false,
-    true,
+    false,
     false,
     false,
     false,
