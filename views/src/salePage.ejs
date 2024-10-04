@@ -58,7 +58,7 @@
             <!-- Products modal -->
             <div
               class="modal fade"
-              id="productList<%= sale.slug %>"
+              id="productList<%= sale._id %>"
               aria-hidden="true"
               aria-labelledby="productList"
               tabindex="-1"
@@ -183,7 +183,7 @@
             <!-- Delete confirming modal  -->
             <div
               class="modal fade"
-              id="deleteModalToggle<%= sale.slug %>"
+              id="deleteModalToggle<%= sale._id %>"
               aria-hidden="true"
               aria-labelledby="exampleModalToggleLabel"
               tabindex="-1"
@@ -192,7 +192,7 @@
                 <div class="modal-content">
                   <div class="modal-header">
                     <h1 class="modal-title fs-5" id="exampleModalToggleLabel">
-                      Xóa hợp đồng <%= sale.code %>
+                      Xóa hợp đồng <%= sale.code %> ngày <%= sale.date.toLocaleDateString() %>
                     </h1>
                     <button
                       type="button"
@@ -207,7 +207,7 @@
                   >
                     <div class="modal-body">
                       Bạn có muốn xóa hợp đồng mã
-                      <strong><%= sale.code %></strong> ? Hành động này không
+                      <strong><%= sale.code %></strong> ngày <strong><%= sale.date.toLocaleDateString() %></strong> ? Hành động này không
                       thể hoàn tác.
                     </div>
                     <div class="modal-footer">
@@ -303,7 +303,6 @@
                       class="form-control"
                       id="quantity"
                       name="quantity"
-                      placeholder="1.234,56"
                       oninput="handleQuantityInput(this)"
                     />
                   </div>
@@ -316,8 +315,7 @@
                       class="form-control"
                       id="price"
                       name="price"
-                      placeholder="20.000"
-                      oninput="handlePriceInput(this)"
+                      oninput="handleQuantityInput(this)"
                     />
                   </div>
                 </div>
@@ -442,11 +440,11 @@
       orderable: false,
       render: function (data, type, row) {
         return `<div class="d-flex justify-content-between fs-5">
-          <a href="/quan-ly-hop-dong/hop-dong/${data}" class="text-decoration-none text-dark">
+          <a href="/quan-ly-hop-dong/hop-dong/${data.id}" class="text-decoration-none text-dark">
             <i class="ri-edit-box-line" style="cursor: pointer;"></i>
           </a>
             
-          <i class="ri-delete-bin-line" data-bs-toggle="modal" data-bs-target="#deleteModalToggle${data}" style="cursor: pointer;"></i>
+          <i class="ri-delete-bin-line" data-bs-toggle="modal" data-bs-target="#deleteModalToggle${data.id}" style="cursor: pointer;"></i>
           </div>`;
       },
     },

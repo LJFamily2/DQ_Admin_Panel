@@ -114,7 +114,6 @@ async function renderPage(req, res) {
 }
 
 async function createData(req, res) {
-  req.body = trimStringFields(req.body);
   try {
     let checkExistedData = await SaleModel.findOne({
       code: { $regex: new RegExp(req.body.code, 'i') },
@@ -275,11 +274,11 @@ async function getDatas(req, res) {
         no: parseInt(start, 10) + index + 1,
         date: sale.date.toLocaleDateString('vi-VN'),
         code: sale.code || '',
-        products: sale.slug,
+        products: sale._id,
         notes: sale.notes || '',
         total: totalPrice.toLocaleString('vi-VN'),
         status: sale.status,
-        slug: sale.slug,
+        slug: { id: sale._id, slug: sale.slug },
       };
     });
 
@@ -442,8 +441,8 @@ async function deleteData(req, res) {
 
 async function renderDetailPage(req, res) {
   try {
-    const { slug } = req.params;
-    const sale = await SaleModel.findOne({ slug });
+    const { id } = req.params;
+    const sale = await SaleModel.findOne({ _id: id });
     let totalData = await ProductTotalModel.find({});
     const total = formatTotalData(totalData);
     if (!sale) {
