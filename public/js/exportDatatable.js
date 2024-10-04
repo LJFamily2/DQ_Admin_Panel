@@ -1,11 +1,14 @@
 const formatNumberForDisplay = (number, locale) => {
+  if (isNaN(number) || number === 0) {
+    return '';
+  }
   return new Intl.NumberFormat(locale).format(number);
 };
 
 const parseNumber = value => {
   if (typeof value === 'string') {
     value = value.replace(/\./g, '').replace(',', '.');
-    return parseFloat(value);
+    return isNaN(parseFloat(value)) ? 0 : parseFloat(value);
   }
   return typeof value === 'number' ? value : 0;
 };
@@ -41,14 +44,14 @@ function initializeExportDataTable(
 
     const updateFooterCell = (rowIndex, cellIndex, value) => {
       $(api.table().footer().rows[rowIndex].cells[cellIndex]).html(
-        value < 1 ? '' : formatNumberForDisplay(value, locale)
+        formatNumberForDisplay(value, locale)
       );
     };
 
     columns.forEach(colIndex => {
       const total = calculateTotal(colIndex);
       $(api.column(colIndex).footer()).html(
-        total < 1 ? '' : `<strong style='float: left'>${formatNumberForDisplay(total, locale)}</strong>`
+        `<strong style='float: left'>${formatNumberForDisplay(total, locale)}</strong>`
       );
     });
 
