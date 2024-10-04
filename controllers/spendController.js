@@ -46,36 +46,31 @@ async function renderPage(req, res) {
 }
 
 async function createData(req, res) {
-  req.body = trimStringFields(req.body);
   try {
-    let checkExistedProduct = await SpendModel.findOne({
-      date: req.body.date,
-      product: { $regex: new RegExp(req.body.product, 'i') },
-    });
-    if (checkExistedProduct) {
-      return handleResponse(
-        req,
-        res,
-        400,
-        'fail',
-        'Sản phẩm đã tồn tại !',
-        req.headers.referer,
-      );
-    }
-
     let quantity = convertToDecimal(req.body.quantity) || 1;
     let price = convertToDecimal(req.body.price) || 0;
 
     // Create spend document
-    await SpendModel.create({
+    const spend = await SpendModel.create({
       ...req.body,
       quantity,
       price,
     });
 
+
     await updateProductTotal(quantity * price);
 
-    // Success response
+    if(!spend) {
+      return handleResponse(
+        req,
+        res,
+        400,
+        'fail',
+        'Tạo chi tiêu thất bại !',
+        req.headers.referer,
+      );
+    }
+
     return handleResponse(
       req,
       res,
