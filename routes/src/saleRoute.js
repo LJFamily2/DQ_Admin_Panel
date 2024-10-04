@@ -13,6 +13,6 @@ router.post('/update/:id', authMiddlewares.ensureRoles(['Admin', 'Giám đốc']
 router.post('/delete/:id', authMiddlewares.ensureRoles(['Admin', 'Giám đốc']), saleController.deleteData )
 router.post('/deleteAll', authMiddlewares.ensureRoles(['Admin', 'Giám đốc']), saleController.deleteAll)
 
-router.get('/hop-dong/:id', saleController.renderDetailPage)
+router.get('/hop-dong/:slug', saleController.renderDetailPage)
 
 module.exports = router;

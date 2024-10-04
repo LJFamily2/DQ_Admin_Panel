@@ -441,8 +441,8 @@ async function deleteData(req, res) {
 
 async function renderDetailPage(req, res) {
   try {
-    const { id } = req.params;
-    const sale = await SaleModel.findOne({ _id: id });
+    const { slug } = req.params;
+    const sale = await SaleModel.findOne({ slug });
     let totalData = await ProductTotalModel.find({});
     const total = formatTotalData(totalData);
     if (!sale) {
