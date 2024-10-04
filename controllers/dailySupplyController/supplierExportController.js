@@ -51,9 +51,19 @@ async function updatePrice(req, res) {
       );
     }
 
-    // Set endDate to startDate if endDate is not provided, and vice versa
-    const start = new Date(startDate || endDate);
-    const end = new Date(endDate || startDate);
+    // Set date range
+    let start, end;
+    if (!startDate && !endDate) {
+      // If no dates are selected, set to today's date
+      start = new Date();
+      start.setHours(0, 0, 0, 0);
+      end = new Date();
+      end.setHours(23, 59, 59, 999);
+    } else {
+      // Set endDate to startDate if endDate is not provided, and vice versa
+      start = new Date(startDate || endDate);
+      end = new Date(endDate || startDate);
+    }
 
     // Convert prices to decimal
     const parsedDryPrice = convertToDecimal(dryPrice);
@@ -65,11 +75,11 @@ async function updatePrice(req, res) {
       const entryDate = new Date(entry.date);
       if (entryDate >= start && entryDate <= end) {
         entry.rawMaterial.forEach(material => {
-          if (material.name === 'Mủ nước' && parsedDryPrice > 0) {
+          if (material.name === 'Mủ nước') {
             material.price = parsedDryPrice;
-          } else if (material.name === 'Mủ tạp' && parsedMixedPrice > 0) {
+          } else if (material.name === 'Mủ tạp') {
             material.price = parsedMixedPrice;
-          } else if ((material.name === 'Mủ ké' || material.name === 'Mủ đông') && parsedKePrice > 0) {
+          } else if ((material.name === 'Mủ ké' || material.name === 'Mủ đông')) {
             material.price = parsedKePrice;
           }
         });
