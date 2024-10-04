@@ -185,7 +185,6 @@ async function updateSupplierData(req, res) {
       muNuocPercentage,
       muTapQuantity,
       muKeQuantity,
-      muKePercentage,
       muDongQuantity,
     } = req.body;
 
@@ -230,12 +229,10 @@ async function updateSupplierData(req, res) {
             {
               name: 'Mủ ké',
               quantity: muKeQuantity,
-              percentage: muKePercentage,
             },
             {
               name: 'Mủ đông',
               quantity: muDongQuantity,
-              percentage: muKePercentage,
             },
           ],
         },
