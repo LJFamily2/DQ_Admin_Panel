@@ -41,17 +41,14 @@ function initializeExportDataTable(
 
     const updateFooterCell = (rowIndex, cellIndex, value) => {
       $(api.table().footer().rows[rowIndex].cells[cellIndex]).html(
-        formatNumberForDisplay(value, locale),
+        value < 1 ? '' : formatNumberForDisplay(value, locale)
       );
     };
 
     columns.forEach(colIndex => {
       const total = calculateTotal(colIndex);
       $(api.column(colIndex).footer()).html(
-        `<strong style='float: left'>${formatNumberForDisplay(
-          total,
-          locale,
-        )}</strong>`,
+        total < 1 ? '' : `<strong style='float: left'>${formatNumberForDisplay(total, locale)}</strong>`
       );
     });
 
@@ -64,10 +61,10 @@ function initializeExportDataTable(
       };
 
       const totals = [4, 6, 8].map(colIndex =>
-        parseNumber($(api.column(colIndex).footer()).text()),
+        parseNumber($(api.column(colIndex).footer()).text())
       );
       const prices = ['muNuoc', 'muTap', 'muDong'].map(
-        key => latestPrices[key] || 0,
+        key => latestPrices[key] || 0
       );
 
       prices.forEach((price, index) => {

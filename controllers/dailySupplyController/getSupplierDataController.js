@@ -318,17 +318,15 @@ async function getSupplierExportData(req, res, isArea) {
         date: new Date(item.data.date).toLocaleDateString('vi-VN'),
         supplier: item.supplier.name || '',
         ...(isArea && { code: item.supplier.code || '' }),
-        muQuyKhoQuantity: muQuyKhoQuantity.toLocaleString('vi-VN') || '',
-        muQuyKhoDonGia: muQuyKhoPrice.toLocaleString('vi-VN') || '',
-        muQuyKhoToTal: muQuyKhoToTal.toLocaleString('vi-VN') || '',
-        muTapQuantity:
-          rawMaterials['Mủ tạp']?.quantity.toLocaleString('vi-VN') || '',
-        muTapDonGia:
-          rawMaterials['Mủ tạp']?.price.toLocaleString('vi-VN') || '',
-        muTapTotal: muTapTotal.toLocaleString('vi-VN') || '',
-        muKeDongQuantity: muKeDongQuantity.toLocaleString('vi-VN') || '',
-        muKeDongDonGia: muKeDongDonGia.toLocaleString('vi-VN') || '',
-        muKeDongTotal: muKeDongTotal.toLocaleString('vi-VN') || '',
+        muQuyKhoQuantity: muQuyKhoQuantity > 0 ? muQuyKhoQuantity.toLocaleString('vi-VN') : '',
+        muQuyKhoDonGia: muQuyKhoPrice >= 1 ? muQuyKhoPrice.toLocaleString('vi-VN') : '',
+        muQuyKhoToTal: muQuyKhoToTal > 0 ? muQuyKhoToTal.toLocaleString('vi-VN') : '',
+        muTapQuantity: rawMaterials['Mủ tạp']?.quantity > 0 ? rawMaterials['Mủ tạp'].quantity.toLocaleString('vi-VN') : '',
+        muTapDonGia: rawMaterials['Mủ tạp']?.price >= 1 ? rawMaterials['Mủ tạp'].price.toLocaleString('vi-VN') : '',
+        muTapTotal: muTapTotal > 0 ? muTapTotal.toLocaleString('vi-VN') : '',
+        muKeDongQuantity: muKeDongQuantity > 0 ? muKeDongQuantity.toLocaleString('vi-VN') : '',
+        muKeDongDonGia: muKeDongDonGia >= 1 ? muKeDongDonGia.toLocaleString('vi-VN') : '',
+        muKeDongTotal: muKeDongTotal > 0 ? muKeDongTotal.toLocaleString('vi-VN') : '',
         id: item.data._id,
       };
     });
