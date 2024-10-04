@@ -158,8 +158,8 @@ async function getSupplierInputData(req, res, isArea) {
     return data.map((item, index) => {
       const rawMaterials = item.data.rawMaterial.reduce((acc, raw) => {
         acc[raw.name] = {
-          quantity: raw.quantity?.toLocaleString('vi-VN') || '',
-          percentage: raw.percentage?.toLocaleString('vi-VN') || '',
+          quantity: raw.quantity || '',
+          percentage: raw.percentage || '',
         };
         return acc;
       }, {});
@@ -169,15 +169,15 @@ async function getSupplierInputData(req, res, isArea) {
         date: new Date(item.data.date).toLocaleDateString('vi-VN'),
         supplier: item.supplier.name || '',
         ...(isArea && { code: item.supplier.code || '' }),
-        muNuocQuantity: rawMaterials['Mủ nước']?.quantity || '',
-        muNuocPercentage: rawMaterials['Mủ nước']?.percentage || '',
+        muNuocQuantity: rawMaterials['Mủ nước']?.quantity?.toLocaleString('vi-VN') || '',
+        muNuocPercentage: rawMaterials['Mủ nước']?.percentage?.toLocaleString('vi-VN') || '',
         muNuocQuantityToTal:
           rawMaterials['Mủ nước']?.quantity && rawMaterials['Mủ nước']?.percentage
             ? Number(((rawMaterials['Mủ nước'].quantity * rawMaterials['Mủ nước'].percentage) / 100).toFixed(5))
             : '',
-        muTapQuantity: rawMaterials['Mủ tạp']?.quantity || '',
-        muKeQuantity: rawMaterials['Mủ ké']?.quantity || '',
-        muDongQuantity: rawMaterials['Mủ đông']?.quantity || '',
+        muTapQuantity: rawMaterials['Mủ tạp']?.quantity?.toLocaleString('vi-VN') || '',
+        muKeQuantity: rawMaterials['Mủ ké']?.quantity?.toLocaleString('vi-VN') || '',
+        muDongQuantity: rawMaterials['Mủ đông']?.quantity?.toLocaleString('vi-VN') || '',
         id: item.data._id,
       };
     });
