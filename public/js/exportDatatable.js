@@ -44,14 +44,17 @@ function initializeExportDataTable(
 
     const updateFooterCell = (rowIndex, cellIndex, value) => {
       $(api.table().footer().rows[rowIndex].cells[cellIndex]).html(
-        formatNumberForDisplay(value, locale)
+        formatNumberForDisplay(value, locale),
       );
     };
 
     columns.forEach(colIndex => {
       const total = calculateTotal(colIndex);
       $(api.column(colIndex).footer()).html(
-        `<strong style='float: left'>${formatNumberForDisplay(total, locale)}</strong>`
+        `<strong style='float: left'>${formatNumberForDisplay(
+          total,
+          locale,
+        )}</strong>`,
       );
     });
 
@@ -64,10 +67,10 @@ function initializeExportDataTable(
       };
 
       const totals = [4, 6, 8].map(colIndex =>
-        parseNumber($(api.column(colIndex).footer()).text())
+        parseNumber($(api.column(colIndex).footer()).text()),
       );
       const prices = ['muNuoc', 'muTap', 'muDong'].map(
-        key => latestPrices[key] || 0
+        key => latestPrices[key] || 0,
       );
 
       prices.forEach((price, index) => {
@@ -123,7 +126,9 @@ function initializeExportDataTable(
           },
           {
             extend: 'print',
-            title: 'Mủ Nguyên Liệu',
+            title: individualExportPage
+              ? 'Phiếu Tính Tiền Mủ Cao Su'
+              : 'Nguyên Liệu Khu Vực',
             exportOptions: {
               columns: ':visible',
             },
@@ -170,9 +175,9 @@ function initializeExportDataTable(
                   .css('text-align', 'center')
                   .find('h1')
                   .css('text-align', 'center')
-                  .after(`<h4 style="text-align: center;">${dateRange}</h4>`)
+                  .after(`<h6 style="text-align: center;">${dateRange}</h6>`)
                   .end()
-                  .find('h4')
+                  .find('h6')
                   .after(
                     `<h6 style="text-align: left;">Tên: ${supplierName}</h6>`,
                   )
