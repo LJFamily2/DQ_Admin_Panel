@@ -172,22 +172,12 @@ async function getSupplierInputData(req, res, isArea) {
         muNuocQuantity: rawMaterials['Mủ nước']?.quantity || '',
         muNuocPercentage: rawMaterials['Mủ nước']?.percentage || '',
         muNuocQuantityToTal:
-          (rawMaterials['Mủ nước']?.quantity *
-            rawMaterials['Mủ nước']?.percentage) /
-            100 || '',
+          rawMaterials['Mủ nước']?.quantity && rawMaterials['Mủ nước']?.percentage
+            ? Number(((rawMaterials['Mủ nước'].quantity * rawMaterials['Mủ nước'].percentage) / 100).toFixed(5))
+            : '',
         muTapQuantity: rawMaterials['Mủ tạp']?.quantity || '',
         muKeQuantity: rawMaterials['Mủ ké']?.quantity || '',
-        muKePercentage: rawMaterials['Mủ ké']?.percentage || '',
-        muKeTotal:
-          (rawMaterials['Mủ ké']?.quantity *
-            rawMaterials['Mủ ké']?.percentage) /
-            100 || '',
         muDongQuantity: rawMaterials['Mủ đông']?.quantity || '',
-        muDongPercentage: rawMaterials['Mủ đông']?.percentage || '',
-        muDongTotal:
-          (rawMaterials['Mủ đông']?.quantity *
-            rawMaterials['Mủ đông']?.percentage) /
-            100 || '',
         id: item.data._id,
       };
     });

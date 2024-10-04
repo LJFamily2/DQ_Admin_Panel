@@ -157,8 +157,8 @@
               <th rowspan="2">Nhà vườn</th>
               <th colspan="3">Mủ quy khô</th>
               <th>Mủ tạp</th>
-              <th colspan="3">Mủ ké</th>
-              <th colspan="3">Mủ đông</th>
+              <th>Mủ ké</th>
+              <th>Mủ đông</th>
               <th rowspan="2">Chỉnh sửa</th>
             </tr>
             <tr>
@@ -167,11 +167,7 @@
               <th>Tổng</th>
               <th>SL</th>
               <th>SL</th>
-              <th>Hàm lượng</th>
-              <th>Tổng</th>
               <th>SL</th>
-              <th>Hàm lượng</th>
-              <th>Tổng</th>
             </tr>
           </thead>
 
@@ -287,9 +283,9 @@
                           <% } else if (raw.name === 'Mủ ké') { %>
                             <div class="itemList">
                               <div class="row my-3">
-                                <label class="form-label fw-bold">Mủ Ké + Đông</label>
-                                <div class="col col-md-6">
-                                  <label for="muKeQuantity<%= index %>" class="form-label">Số lượng mủ ké</label>
+                                <label class="form-label fw-bold">Mủ Ké</label>
+                                <div class="col">
+                                  <label for="muKeQuantity<%= index %>" class="form-label">Số lượng</label>
                                   <input
                                     type="number"
                                     class="form-control"
@@ -299,25 +295,14 @@
                                     required
                                   />
                                 </div>
-                                <div class="col col-md-6">
-                                  <label for="muKePercentage<%= index %>" class="form-label">Hàm lượng</label>
-                                  <input
-                                    type="number"
-                                    class="form-control"
-                                    id="muKePercentage<%= index %>"
-                                    name="muKePercentage"
-                                    max="100"
-                                    value="<%= raw.percentage %>"
-                                    required
-                                  />
-                                </div>
                               </div>
                             </div>
                           <% } else if (raw.name === 'Mủ đông') { %>
                             <div class="itemList">
                               <div class="row my-3">
-                                <div class="col col-md-6">
-                                  <label for="muDongQuantity<%= index %>" class="form-label">Số lượng mủ đông</label>
+                                <label class="form-label fw-bold">Mủ Đông</label>
+                                <div class="col">
+                                  <label for="muDongQuantity<%= index %>" class="form-label">Số lượng</label>
                                   <input
                                     type="number"
                                     class="form-control"
@@ -399,10 +384,6 @@
           </tbody>
           <tfoot>
             <th colspan="3">Tổng</th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
             <th></th>
             <th></th>
             <th></th>
@@ -501,39 +482,7 @@
             <div class="itemList">
               <div class="row my-3">
                 <label class="form-label fw-bold">Mủ ké</label>
-                <div class="col-6">
-                    <label class="form-label"
-                      >Số lượng</label
-                    >
-                    <input type="text" name="name" value="Mủ đông" hidden />
-
-                    <input
-                      type="number"
-                      class="form-control"
-                      name="quantity"
-                      required
-                    />
-                </div>
-                <div class="col-6">
-                  <div class="col">
-                    <label class="form-label"
-                      >Hàm lượng</label
-                    >
-                    <input
-                      type="number"
-                      class="form-control"
-                      name="percentage"
-                      max="100"
-                    required
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="itemList">
-              <div class="row my-3">
-                <label class="form-label fw-bold">Mủ đông</label>
-                <div class="col-6">
+                <div class="col-12">
                     <label class="form-label"
                       >Số lượng</label
                     >
@@ -546,19 +495,23 @@
                       required
                     />
                 </div>
-                <div class="col-6">
-                  <div class="col">
+              </div>
+            </div>
+            <div class="itemList">
+              <div class="row my-3">
+                <label class="form-label fw-bold">Mủ đông</label>
+                <div class="col-12">
                     <label class="form-label"
-                      >Hàm lượng</label
+                      >Số lượng</label
                     >
+                    <input type="text" name="name" value="Mủ đông" hidden />
+
                     <input
                       type="number"
                       class="form-control"
-                      name="percentage"
-                      max="100"
-                    required
+                      name="quantity"
+                      required
                     />
-                  </div>
                 </div>
               </div>
             </div>
@@ -741,18 +694,14 @@
 <script>
    const columns = [
     { data: 'no', visible: false, orderable: false },
-    { data: 'date', visible: true },
+    { data: 'date', visible: false },
     { data: 'supplier', orderable: false },
-    { data: 'muNuocQuantity', orderable: false, title: 'Số lượng' },
-    { data: 'muNuocPercentage', orderable: false, title: 'Hàm lượng' },
-    { data: 'muNuocQuantityToTal', orderable: false, title: 'Quy khô' },
+    { data: 'muNuocQuantity', orderable: false,  },
+    { data: 'muNuocPercentage', orderable: false,  },
+    { data: 'muNuocQuantityToTal', orderable: false,  },
     { data: 'muTapQuantity', orderable: false, },
-    { data: 'muKeQuantity', orderable: false, title: 'SL' },
-    { data: 'muKePercentage', orderable: false, title: 'Hàm lượng' },
-    { data: 'muKeTotal', orderable: false, title: 'Tổng' },
-    { data: 'muDongQuantity', orderable: false, title: 'SL ' },
-    { data: 'muDongPercentage', orderable: false, title: 'Hàm lượng' },
-    { data: 'muDongTotal', orderable: false, title: 'Tổng' },
+    { data: 'muKeQuantity', orderable: false,},
+    { data: 'muDongQuantity', orderable: false,  },
     { data: 'id', orderable: false },
   ];
   
