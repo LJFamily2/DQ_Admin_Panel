@@ -56,7 +56,7 @@
                 <div class="modal-content">
                   <div class="modal-header">
                     <h1 class="modal-title fs-5" id="staticBackdropLabel">
-                      Cập nhật thông tin <%= spend.date.toLocaleDateString() %>
+                      Cập nhật <%= spend.product %> ngày <%= spend.date.toLocaleDateString() %>
                     </h1>
                     <button
                       type="button"
@@ -182,14 +182,13 @@
               class="modal fade"
               id="deleteModalToggle<%= spend._id %>"
               aria-hidden="true"
-              aria-labelledby="exampleModalToggleLabel"
               tabindex="-1"
             >
               <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                   <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalToggleLabel">
-                      Xóa thông tin ngày <%=
+                    <h1 class="modal-title fs-5" >
+                      Xóa <%= spend.product %> ngày <%=
                       spend.date.toLocaleDateString("vi-VN") %>
                     </h1>
                     <button
@@ -204,7 +203,7 @@
                     method="post"
                   >
                     <div class="modal-body">
-                      Bạn có muốn xóa thông tin ngày
+                      Bạn có muốn xóa <strong><%= spend.product %></strong> ngày
                       <strong
                         ><%= spend.date.toLocaleDateString("vi-VN") %></strong
                       >
@@ -369,7 +368,6 @@
           class="form-control"
           id="product"
           name="product"
-          placeholder="dầu"
         />
       </div>
       <div class="my-3">
@@ -379,7 +377,6 @@
           class="form-control"
           id="quantity"
           name="quantity"
-          placeholder="1.500"
           oninput="handleQuantityInput(this)"
         />
       </div>
@@ -391,7 +388,6 @@
             class="form-control"
             id="price"
             name="price"
-            placeholder="20.000"
             oninput="handleQuantityInput(this)"
           />
         </div>
@@ -410,7 +406,6 @@
             class="form-control"
             id="price"
             name="price"
-            placeholder="20.000"
             oninput="handleQuantityInput(this)"
           />
         </div>
