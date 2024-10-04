@@ -186,7 +186,9 @@ async function editSupplier(req, res) {
   try {
     const supplier = await Supplier.findByIdAndUpdate(
       req.params.id,
-      { ...req.body },
+      { ...req.body,
+        ratioSplit: req.body.ratioSplit ? req.body.ratioSplit.replace(',', '.') : 0
+       },
       { new: true },
     );
     if (!supplier) {

@@ -26,6 +26,8 @@ function initializeExportDataTable(
   individualExportPage,
   addPriceId,
   minusPriceId,
+  supplierName,
+  ratioSplit,
 ) {
   const rowGroupOptions = rowGroup ? { dataSrc: rowGroup } : {};
 
@@ -126,56 +128,85 @@ function initializeExportDataTable(
               columns: ':visible',
             },
             customize: function (win) {
-              const startDate = $(startDateId).val();
-              const endDate = $(endDateId).val();
-              const dateRange =
-                startDate && endDate
-                  ? `Từ ngày ${startDate} đến ngày ${endDate}`
-                  : '';
+              if (individualExportPage) {
+                const startDate = $(startDateId).val();
+                const endDate = $(endDateId).val();
+                const dateRange =
+                  startDate && endDate
+                    ? `Từ ngày ${startDate} đến ngày ${endDate}`
+                    : '';
 
-              // Use the DataTable instance directly
-              const table = $(tableId).DataTable();
+                // Use the DataTable instance directly
+                const table = $(tableId).DataTable();
 
-              let totalAmount = 0;
+                let totalAmount = 0;
 
-              // Sum the "Thành tiền" values from the footer (last row)
-              const footerRow = $(table.table().footer()).find('tr:last');
-              footerRow.find('th').each(function(index) {
-                if (index > 0 && index < 4) {  // Columns 2, 3, 4 in the footer
-                  const cellValue = $(this).text();
-                  totalAmount += parseFloat(cellValue.replace(/[^\d.-]/g, '')) || 0;
-                }
-              });
+                // Sum the "Thành tiền" values from the footer (last row)
+                const footerRow = $(table.table().footer()).find('tr:last');
+                footerRow.find('th').each(function (index) {
+                  if (index > 0 && index < 4) {
+                    // Columns 2, 3, 4 in the footer
+                    const cellValue = $(this)
+                      .text()
+                      .replace(/\./g, '')
+                      .replace(',', '.');
+                    totalAmount += parseFloat(cellValue) || 0;
+                  }
+                });
 
-              const addPrice = parseFloat($(addPriceId).val()) || 0;
-              const minusPrice = parseFloat($(minusPriceId).val()) || 0;
-              const finalAmount = totalAmount + addPrice - minusPrice;
+                const addPrice =
+                  parseFloat(
+                    $(addPriceId).val().replace(/\./g, '').replace(',', '.'),
+                  ) || 0;
+                const minusPrice =
+                  parseFloat(
+                    $(minusPriceId).val().replace(/\./g, '').replace(',', '.'),
+                  ) || 0;
+                const finalAmount = totalAmount + addPrice - minusPrice;
+                const totalAfterRatio =
+                  finalAmount * (ratioSplit.replace(',', '.') / 100);
 
-              $(win.document.body)
-                .css('text-align', 'center')
-                .find('h1')
-                .css('text-align', 'center')
-                .after(`<h2 style="text-align: center;">${dateRange}</h2>`)
-                .end()
-                .find('table')
-                .after(
-                  `<p style="text-align: left; margin-top: 20px;">Tổng cộng số tiền: ${formatNumberForDisplay(
-                    totalAmount,
-                    'vi-VN',
-                  )} đ</p>`,
-                  `<p style="text-align: left; margin-top: 20px;">Cộng: ${formatNumberForDisplay(
-                    addPrice,
-                    'vi-VN',
-                  )} đ</p>`,
-                  `<p style="text-align: left; margin-top: 20px;">Trừ: ${formatNumberForDisplay(
-                    minusPrice,
-                    'vi-VN',
-                  )} đ</p>`,
-                  `<p style="text-align: left; margin-top: 20px;">Thực nhận: ${formatNumberForDisplay(
-                    finalAmount,
-                    'vi-VN',
-                  )} đ</p>`,
-                );
+                $(win.document.body)
+                  .css('text-align', 'center')
+                  .find('h1')
+                  .css('text-align', 'center')
+                  .after(`<h4 style="text-align: center;">${dateRange}</h4>`)
+                  .end()
+                  .find('h4')
+                  .after(
+                    `<h6 style="text-align: left;">Tên: ${supplierName}</h6>`,
+                  )
+                  .end()
+                  .find('table')
+                  .after(
+                    `<p style="text-align: left; margin-top: 20px;">Tổng cộng số tiền: ${formatNumberForDisplay(
+                      totalAmount,
+                      'vi-VN',
+                    )} đ</p>`,
+                    `<p style="text-align: left; margin-top: 20px;">Cộng: ${formatNumberForDisplay(
+                      addPrice,
+                      'vi-VN',
+                    )} đ</p>`,
+                    `<p style="text-align: left; margin-top: 20px;">Trừ: ${formatNumberForDisplay(
+                      minusPrice,
+                      'vi-VN',
+                    )} đ</p>`,
+                    ratioSplit > 0
+                      ? `<p style="text-align: left; margin-top: 20px;">Tổng sau cộng/trừ: ${formatNumberForDisplay(
+                          finalAmount,
+                          'vi-VN',
+                        )} đ</p>
+                    <p style="text-align: left; margin-top: 20px;">Tỉ lệ phân chia: ${ratioSplit}%</p>
+                    <p style="text-align: left; margin-top: 20px;">Thực nhận: ${formatNumberForDisplay(
+                      totalAfterRatio,
+                      'vi-VN',
+                    )} đ</p>`
+                      : `<p style="text-align: left; margin-top: 20px;">Thực nhận: ${formatNumberForDisplay(
+                          finalAmount,
+                          'vi-VN',
+                        )} đ</p>`,
+                  );
+              }
             },
           },
           {

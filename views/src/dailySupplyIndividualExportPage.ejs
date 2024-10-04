@@ -139,7 +139,7 @@
         </div>
       </div>
       <div class="card-body">
-        <table class="table table-striped" id="table">
+        <table class="table table-striped" id="table" >
           <thead>
             <tr>
               <th>STT</th>
@@ -298,8 +298,9 @@
                 class="form-control"
                 id="ratioSplit"
                 name="ratioSplit"
-                value="<%= supplierData.ratioSplit %>"
-                min="1"
+                value="<%= supplierData.ratioSplit.toLocaleString('vi-VN') %>"
+                oninput="handlePercentageInput(this)"
+
               />
             </div>
           </div>
@@ -343,6 +344,8 @@
     true,
     '#addPrice',
     '#minusPrice',
+    '<%= supplierData.name %>',
+    '<%= supplierData.ratioSplit %>',
   );
 
   tippy('.tooltip-wrapper');
