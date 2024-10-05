@@ -13,7 +13,7 @@ module.exports = {
 async function renderPage(req, res) {
   try {
     const { slug, supplierSlug } = req.params;
-
+    const { startDate, endDate } = req.query;
     // Find the supplier by supplierSlug
     const supplier = await Supplier.findOne({ supplierSlug });
     if (!supplier) {
@@ -35,12 +35,15 @@ async function renderPage(req, res) {
       return res.status(404).render('partials/404', { layout: false });
     }
 
+
     res.render('src/dailySupplyIndividualExportPage', {
       layout: './layouts/defaultLayout',
       title: `Xuất dữ liệu mủ của ${supplierData.name}`,
       area,
       supplierData,
       user: req.user,
+      startDate,
+      endDate,
       messages: req.flash(),
     });
   } catch (error) {
