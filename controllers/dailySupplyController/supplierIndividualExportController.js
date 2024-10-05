@@ -13,13 +13,6 @@ async function renderPage(req, res) {
     const { slug, supplierSlug } = req.params;
     const { startDate, endDate } = req.query;
 
-    // Find the supplier by supplierSlug
-    const supplier = await Supplier.findOne({ supplierSlug });
-    if (!supplier) {
-      return res.status(404).render('partials/404', { layout: false });
-    }
-
-    // Find the DailySupply document with the given slug
     const area = await DailySupply.findOne({ slug })
       .populate('accountID')
       .populate('suppliers');
@@ -28,25 +21,29 @@ async function renderPage(req, res) {
       return res.status(404).render('partials/404', { layout: false });
     }
 
-    // Find the specific supplier's data in the suppliers array
-    const supplierData = area.suppliers.find(s => s._id.equals(supplier._id));
+    const supplierData = area.suppliers.find(s => s.supplierSlug === supplierSlug);
     if (!supplierData) {
       return res.status(404).render('partials/404', { layout: false });
     }
 
+    // Filter data for the specific supplier
+    const supplierSpecificData = area.data.filter(item => 
+      item.supplier.toString() === supplierData._id.toString()
+    );
 
     res.render('src/dailySupplyIndividualExportPage', {
       layout: './layouts/defaultLayout',
       title: `Xuất dữ liệu mủ của ${supplierData.name}`,
-      area,
       supplierData,
+      supplierSpecificData,
+      area,
       user: req.user,
       startDate,
       endDate,
       messages: req.flash(),
     });
   } catch (error) {
-    console.error('Error fetching area:', error);
+    console.error('Error fetching supplier data:', error);
     res.status(500).render('partials/500', { layout: false });
   }
 }

@@ -259,6 +259,7 @@ function initializeExportDataTable(
         return {
           ...column,
           render: function (data, type, row) {
+            console.log(row.id)
             return `
             <div class="d-flex justify-content-between fs-5">
               <i

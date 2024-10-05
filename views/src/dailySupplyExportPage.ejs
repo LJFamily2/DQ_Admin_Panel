@@ -2,7 +2,6 @@
     <!-- js -->
     <script src="https://cdn.datatables.net/buttons/3.1.2/js/buttons.colVis.min.js"></script>
 
-    <script src="/js/exportDatatable.js"></script>
     <script src="https://cdn.datatables.net/buttons/3.0.2/js/dataTables.buttons.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.html5.min.js"></script>
@@ -10,6 +9,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     <script src="https://cdn.datatables.net/buttons/3.1.2/js/buttons.print.min.js"></script>
     <script src="https://cdn.datatables.net/rowgroup/1.5.0/js/dataTables.rowGroup.js"></script>
+    <script src="/js/exportDatatable.js"></script>
 
     <script src="/js/inputFieldRestriction.js" defer></script>
     <!-- Slim select -->
@@ -142,7 +142,7 @@
                   <div class="modal-content">
                     <div class="modal-header">
                       <h1 class="modal-title fs-5">
-                        Cập nhật thông tin <%= item.supplier.name %>
+                        Cập nhật dữ liệu <%= item.supplier.name %>
                       </h1>
                       <button
                         type="button"
@@ -197,24 +197,38 @@
                                   <div class="col col-md-6">
                                     <label for="muNuocQuantity<%= index %>" class="form-label">Số lượng</label>
                                     <input
-                                      type="number"
+                                      type="text"
                                       class="form-control"
                                       id="muNuocQuantity<%= index %>"
                                       name="muNuocQuantity"
                                       value="<%= raw.quantity %>"
                                       required
+                                      oninput="handleQuantityInput(this)"
                                     />
                                   </div>
                                   <div class="col col-md-6">
                                     <label for="muNuocPercentage<%= index %>" class="form-label">Hàm lượng</label>
                                     <input
-                                      type="number"
+                                      type="text"
                                       class="form-control"
                                       id="muNuocPercentage<%= index %>"
                                       name="muNuocPercentage"
-                                      max="100"
                                       value="<%= raw.percentage %>"
                                       required
+                                      oninput="handlePercentageInput(this)"
+                                    />
+                                  </div>
+                                </div>
+                                <div class="row my-3">
+                                  <div class="col">
+                                    <label for="price<%= index %>" class="form-label">Đơn giá</label>
+                                    <input
+                                      type="text"
+                                      class="form-control"
+                                      id="price<%= index %>"
+                                      name="price"
+                                      value="<%= raw.price?  raw.price.toLocaleString('vi-VN'): '' %>"
+                                      oninput="handleQuantityInput(this)"
                                     />
                                   </div>
                                 </div>
@@ -223,44 +237,45 @@
                               <div class="itemList">
                                 <div class="row my-3">
                                   <label class="form-label fw-bold">Mủ tạp</label>
-                                  <div class="col">
+                                  <div class="col col-md-6">
                                     <label for="muTapQuantity<%= index %>" class="form-label">Số lượng</label>
                                     <input
-                                      type="number"
+                                      type="text"
                                       class="form-control"
                                       id="muTapQuantity<%= index %>"
                                       name="muTapQuantity"
                                       value="<%= raw.quantity %>"
                                       required
+                                      oninput="handleQuantityInput(this)"
                                     />
                                   </div>
+                                  <div class="col col-md-6">
+                                    <label for="price<%= index %>" class="form-label">Đơn giá</label>
+                                    <input
+                                      type="text"
+                                      class="form-control"
+                                      id="price<%= index %>"
+                                      name="price"
+                                      value="<%= raw.price?  raw.price.toLocaleString('vi-VN'): '' %>"
+                                      oninput="handleQuantityInput(this)"
+                                    />
+                                </div>
                                 </div>
                               </div>
                             <% } else if (raw.name === 'Mủ ké') { %>
                               <div class="itemList">
                                 <div class="row my-3">
-                                  <label class="form-label fw-bold">Mủ Ké + Đông</label>
-                                  <div class="col col-md-6">
-                                    <label for="muKeQuantity<%= index %>" class="form-label">Số lượng mủ ké</label>
+                                  <label class="form-label fw-bold">Mủ Ké</label>
+                                  <div class="col ">
+                                    <label for="muKeQuantity<%= index %>" class="form-label">Số lượng </label>
                                     <input
-                                      type="number"
+                                      type="text"
                                       class="form-control"
                                       id="muKeQuantity<%= index %>"
                                       name="muKeQuantity"
                                       value="<%= raw.quantity %>"
                                       required
-                                    />
-                                  </div>
-                                  <div class="col col-md-6">
-                                    <label for="muKePercentage<%= index %>" class="form-label">Hàm lượng</label>
-                                    <input
-                                      type="number"
-                                      class="form-control"
-                                      id="muKePercentage<%= index %>"
-                                      name="muKePercentage"
-                                      max="100"
-                                      value="<%= raw.percentage %>"
-                                      required
+                                      oninput="handleQuantityInput(this)"
                                     />
                                   </div>
                                 </div>
@@ -268,15 +283,30 @@
                             <% } else if (raw.name === 'Mủ đông') { %>
                               <div class="itemList">
                                 <div class="row my-3">
-                                  <div class="col col-md-6">
-                                    <label for="muDongQuantity<%= index %>" class="form-label">Số lượng mủ đông</label>
+                                  <label class="form-label fw-bold">Mủ Đông</label>
+                                  <div class="col ">
+                                    <label for="muDongQuantity<%= index %>" class="form-label">Số lượng</label>
                                     <input
-                                      type="number"
+                                      type="text"
                                       class="form-control"
                                       id="muDongQuantity<%= index %>"
                                       name="muDongQuantity"
                                       value="<%= raw.quantity %>"
                                       required
+                                      oninput="handleQuantityInput(this)"
+                                    />
+                                  </div>
+                                </div>
+                                <div class="row my-3">
+                                  <div class="col">
+                                    <label for="price<%= index %>" class="form-label">Đơn giá</label>
+                                    <input
+                                      type="text"
+                                      class="form-control"
+                                      id="price<%= index %>"
+                                      name="price"
+                                      value="<%= raw.price ? raw.price.toLocaleString('vi-VN') : '' %>"
+                                      oninput="handleQuantityInput(this)"
                                     />
                                   </div>
                                 </div>

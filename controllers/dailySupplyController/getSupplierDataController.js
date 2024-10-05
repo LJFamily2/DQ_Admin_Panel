@@ -1,5 +1,21 @@
 const { DailySupply, Supplier } = require('../../models/dailySupplyModel');
 
+module.exports = {
+  getData,
+
+  // DetailPage
+  getAreaSupplierData,
+
+  // User side for input data
+  getSupplierData,
+
+  // Admin side for export data
+  getSupplierExportData,
+
+  // Admin side for exportin individual data
+  getIndividualSupplierExportData,
+};
+
 async function getData(req, res) {
   try {
     const { draw, start, length, search, order, columns } = req.body;
@@ -302,14 +318,7 @@ async function getSupplierExportData(req, res, isArea) {
       const muTapTotal =
         rawMaterials['Mủ tạp']?.quantity * rawMaterials['Mủ tạp']?.price;
 
-      const muKeQuantity =
-        (rawMaterials['Mủ ké']?.quantity * rawMaterials['Mủ ké']?.percentage) /
-        100;
-      const muDongQuantity =
-        (rawMaterials['Mủ đông']?.quantity *
-          rawMaterials['Mủ đông']?.percentage) /
-        100;
-      const muKeDongQuantity = muKeQuantity + muDongQuantity;
+      const muKeDongQuantity = rawMaterials['Mủ ké']?.quantity + rawMaterials['Mủ đông']?.quantity;
       const muKeDongDonGia = rawMaterials['Mủ ké']?.price;
       const muKeDongTotal = muKeDongQuantity * muKeDongDonGia;
 
@@ -381,7 +390,7 @@ async function getIndividualSupplierExportData(req, res) {
           data: [
             {
               $project: {
-                _id: 0,
+                _id: '$data._id', 
                 date: '$data.date',
                 rawMaterial: '$data.rawMaterial',
                 supplierId: '$data.supplier',
@@ -405,7 +414,7 @@ async function getIndividualSupplierExportData(req, res) {
     });
 
     const { data: flattenedData, latestPrices } = flattenData(data);
-
+    console.log(flattenedData)
     res.json({
       draw: parseInt(draw),
       recordsTotal: totalRecords,
@@ -476,7 +485,7 @@ async function getIndividualSupplierExportData(req, res) {
         muTapPrice: rawMaterials['Mủ tạp']?.price.toLocaleString('vi-VN'),
         muDongQuantity: muDongTotal.toLocaleString('vi-VN'),
         muDongPrice: rawMaterials['Mủ đông']?.price.toLocaleString('vi-VN'),
-        id: item.supplierId.toString(),
+        id: item._id,  
       };
     });
 
@@ -486,21 +495,3 @@ async function getIndividualSupplierExportData(req, res) {
     };
   }
 }
-
-
-
-module.exports = {
-  getData,
-
-  // DetailPage
-  getAreaSupplierData,
-
-  // User side for input data
-  getSupplierData,
-
-  // Admin side for export data
-  getSupplierExportData,
-
-  // Admin side for exportin individual data
-  getIndividualSupplierExportData,
-};

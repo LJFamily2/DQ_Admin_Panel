@@ -1,6 +1,7 @@
 const { Supplier, DailySupply } = require('../../models/dailySupplyModel');
 
 const handleResponse = require('../utils/handleResponse');
+const convertToDecimal = require('../utils/convertToDecimal');
 
 module.exports = {
   // User side for input data
@@ -202,79 +203,42 @@ async function updateSupplierData(req, res) {
       muTapQuantity,
       muKeQuantity,
       muDongQuantity,
+      price,
     } = req.body;
 
-    // Find the supplier by name
-    let supplierDoc = await Supplier.findOne({ name: supplier });
+    // Find or update the supplier
+    let supplierDoc = await Supplier.findOneAndUpdate(
+      { name: supplier },
+      { name: supplier },
+      { upsert: true, new: true }
+    );
 
-    let supplierId;
-    if (supplierDoc) {
-      // If the supplier exists, use the existing supplier's ID
-      supplierId = supplierDoc._id;
-    } else {
-      // If the supplier does not exist, get the current supplier ID from the document
-      const currentData = await DailySupply.findOne(
-        { 'data._id': id },
-        { 'data.$': 1 },
-      );
-      const currentSupplierId = currentData.data[0].supplier;
+    // Prepare the raw material data
+    const rawMaterial = [
+      { name: 'Mủ nước', quantity: convertToDecimal(muNuocQuantity), percentage: convertToDecimal(muNuocPercentage), price: convertToDecimal(price[0]) },
+      { name: 'Mủ tạp', quantity: convertToDecimal(muTapQuantity), price: convertToDecimal(price[1]) },
+      { name: 'Mủ ké', quantity: convertToDecimal(muKeQuantity), price: convertToDecimal(price[2]) },
+      { name: 'Mủ đông', quantity: convertToDecimal(muDongQuantity), price: convertToDecimal(price[2]) },
+    ];
 
-      // Update the current supplier's name to the inputted supplier name
-      await Supplier.updateOne(
-        { _id: currentSupplierId },
-        { $set: { name: supplier } },
-      );
-
-      supplierId = currentSupplierId;
-    }
-
-    // Update the daily supply data with the new values
+    // Update the daily supply data
     const updatedData = await DailySupply.findOneAndUpdate(
       { 'data._id': id },
       {
         $set: {
           'data.$.date': new Date(date),
-          'data.$.supplier': supplierId,
-          'data.$.rawMaterial': [
-            {
-              name: 'Mủ nước',
-              quantity: muNuocQuantity,
-              percentage: muNuocPercentage,
-            },
-            { name: 'Mủ tạp', quantity: muTapQuantity },
-            {
-              name: 'Mủ ké',
-              quantity: muKeQuantity,
-            },
-            {
-              name: 'Mủ đông',
-              quantity: muDongQuantity,
-            },
-          ],
+          'data.$.supplier': supplierDoc._id,
+          'data.$.rawMaterial': rawMaterial,
         },
       },
-      { new: true },
+      { new: true }
     );
 
     if (!updatedData) {
-      return handleResponse(
-        req,
-        res,
-        404,
-        'fail',
-        'Cập nhật dữ liệu thất bại!',
-        req.headers.referer,
-      );
+      return handleResponse(req, res, 404, 'fail', 'Cập nhật dữ liệu thất bại!', req.headers.referer);
     }
 
-    return handleResponse(
-      req,
-      res,
-      200,
-      'success',
-      'Cập nhật dữ liệu thành công!',
-      req.headers.referer,
-    );
+    return handleResponse(req, res, 200, 'success', 'Cập nhật dữ liệu thành công!', req.headers.referer);
   } catch (err) {
     console.error('Error updating supplier data:', err);
     res.status(500).render('partials/500', { layout: false });
