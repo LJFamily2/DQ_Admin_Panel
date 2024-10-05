@@ -468,11 +468,11 @@ async function getIndividualSupplierExportData(req, res) {
       if (rawMaterials['Mủ đông']?.price > 0) latestPrices.muDong = rawMaterials['Mủ đông'].price;
 
       const muNuoc = rawMaterials['Mủ nước'] || { quantity: 0, percentage: 0 };
-      const muDong = rawMaterials['Mủ đông'] || { quantity: 0, percentage: 0 };
-      const muTap = rawMaterials['Mủ tạp'] || { quantity: 0, percentage: 0 };
+      const muDong = rawMaterials['Mủ đông'] || { quantity: 0 };
+      const muTap = rawMaterials['Mủ tạp'] || { quantity: 0 };
+      const muKe = rawMaterials['Mủ ké'] || { quantity: 0 };
 
       const muQuyKhoTotal = (muNuoc.quantity * muNuoc.percentage) / 100;
-      const muDongTotal = (muDong.quantity * muDong.percentage) / 100;
 
       return {
         no: index + 1,
@@ -483,7 +483,7 @@ async function getIndividualSupplierExportData(req, res) {
         muQuyKhoPrice: rawMaterials['Mủ nước']?.price.toLocaleString('vi-VN'),
         muTapQuantity: muTap.quantity.toLocaleString('vi-VN'),
         muTapPrice: rawMaterials['Mủ tạp']?.price.toLocaleString('vi-VN'),
-        muDongQuantity: muDongTotal.toLocaleString('vi-VN'),
+        muDongQuantity: muDong.quantity.toLocaleString('vi-VN'),
         muDongPrice: rawMaterials['Mủ đông']?.price.toLocaleString('vi-VN'),
         id: item._id,  
       };
