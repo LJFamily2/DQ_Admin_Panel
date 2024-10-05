@@ -11,16 +11,19 @@ module.exports = {
 };
 async function renderPage(req, res) {
   try {
+    const { startDate, endDate } = req.query;
     const area = await DailySupply.findOne({ slug: req.params.slug })
       .populate('accountID')
       .populate('suppliers')
       .populate('data.supplier');
-    
+
     res.render('src/dailySupplyExportPage', {
       layout: './layouts/defaultLayout',
       title: `Xuất dữ liệu mủ của ${area.name}`,
       area,
       user: req.user,
+      startDate,
+      endDate,
       messages: req.flash(),
     });
   } catch (error) {
@@ -30,8 +33,6 @@ async function renderPage(req, res) {
 }
 
 async function updatePrice(req, res) {
-  console.log(req.body);
-  
   try {
     const { startDate, endDate, dryPrice, mixedPrice, kePrice } = req.body;
     // Find the area by slug
@@ -47,7 +48,7 @@ async function updatePrice(req, res) {
         404,
         'fail',
         'Không tìm thấy khu vực cung cấp',
-        req.headers.referer
+        req.headers.referer,
       );
     }
 
@@ -79,7 +80,7 @@ async function updatePrice(req, res) {
             material.price = parsedDryPrice;
           } else if (material.name === 'Mủ tạp') {
             material.price = parsedMixedPrice;
-          } else if ((material.name === 'Mủ ké' || material.name === 'Mủ đông')) {
+          } else if (material.name === 'Mủ ké' || material.name === 'Mủ đông') {
             material.price = parsedKePrice;
           }
         });
@@ -95,12 +96,10 @@ async function updatePrice(req, res) {
       200,
       'success',
       'Cập nhật giá thành công',
-      req.headers.referer
+      req.headers.referer,
     );
   } catch (error) {
     console.error('Error updating prices:', error);
     res.status(500).render('partials/500', { layout: false });
   }
 }
-
-

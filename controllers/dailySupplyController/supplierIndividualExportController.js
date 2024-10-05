@@ -14,6 +14,7 @@ async function renderPage(req, res) {
   try {
     const { slug, supplierSlug } = req.params;
     const { startDate, endDate } = req.query;
+    
     // Find the supplier by supplierSlug
     const supplier = await Supplier.findOne({ supplierSlug });
     if (!supplier) {
