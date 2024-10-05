@@ -11,9 +11,8 @@ module.exports = {
   deleteProduct,
   getProducts,
   renderPage,
-  deleteAll
+  deleteAll,
 };
-
 
 async function updateTotal(dryRubberAdjustment, productAdjustment) {
   const updateData = { $inc: {} };
@@ -26,11 +25,14 @@ async function updateTotal(dryRubberAdjustment, productAdjustment) {
   }
 
   // Update the totals in the database
-  return await ProductTotalModel.findOneAndUpdate({}, updateData, { new: true });
+  return await ProductTotalModel.findOneAndUpdate({}, updateData, {
+    new: true,
+  });
 }
 
 async function renderPage(req, res) {
   try {
+    const { startDate, endDate } = req.query;
     let totalData = await ProductTotalModel.find();
     const total = formatTotalData(totalData);
 
@@ -41,10 +43,12 @@ async function renderPage(req, res) {
       products,
       user: req.user,
       total,
+      startDate,
+      endDate,
       messages: req.flash(),
     });
   } catch {
-    res.status(500).render('partials/500', {layout: false});
+    res.status(500).render('partials/500', { layout: false });
   }
 }
 
@@ -89,7 +93,6 @@ async function createProduct(req, res) {
       );
     }
 
-    
     let quantity = convertToDecimal(req.body.quantity) || 0;
     let dryRubberUsed = convertToDecimal(req.body.dryRubberUsed) || 0;
     let dryPercentage = convertToDecimal(req.body.dryPercentage) || 0;
@@ -98,9 +101,8 @@ async function createProduct(req, res) {
       ...req.body,
       quantity,
       dryRubberUsed,
-      dryPercentage
+      dryPercentage,
     });
-
 
     let totalDryRubber = (dryRubberUsed * dryPercentage) / 100;
 
@@ -108,10 +110,7 @@ async function createProduct(req, res) {
     let dryRubberAdjustment = -totalDryRubber;
     let productAdjustment = quantity;
 
-    await updateProductTotals(
-      dryRubberAdjustment,
-      productAdjustment,
-    );
+    await updateProductTotals(dryRubberAdjustment, productAdjustment);
 
     handleResponse(
       req,
@@ -122,7 +121,7 @@ async function createProduct(req, res) {
       req.headers.referer,
     );
   } catch (err) {
-    res.status(500).render('partials/500', {layout: false});
+    res.status(500).render('partials/500', { layout: false });
   }
 }
 
@@ -133,7 +132,14 @@ async function updateProduct(req, res) {
 
     const existingDate = await ProductModel.findOne({ date });
     if (existingDate && existingDate._id.toString() !== id) {
-      return handleResponse(req, res, 404, 'fail', 'Đã có dữ liệu ngày này. Hãy chọn ngày khác!', req.headers.referer);
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Đã có dữ liệu ngày này. Hãy chọn ngày khác!',
+        req.headers.referer,
+      );
     }
 
     const dryRubberUsedInput = convertToDecimal(dryRubberUsed || 0);
@@ -155,21 +161,28 @@ async function updateProduct(req, res) {
 
     await ProductModel.findByIdAndUpdate(id, updateFields, { new: true });
 
-    const dryRubberUsedDiff = ((dryRubberUsedInput * dryPercentageInput) / 100) - ((oldData.dryRubberUsed * oldData.dryPercentage) / 100);
+    const dryRubberUsedDiff =
+      (dryRubberUsedInput * dryPercentageInput) / 100 -
+      (oldData.dryRubberUsed * oldData.dryPercentage) / 100;
     const quantityDiff = quantityInput - oldData.quantity;
 
     if (dryRubberUsedDiff !== 0 || quantityDiff !== 0) {
       await updateTotal(-dryRubberUsedDiff, quantityDiff);
     }
 
-    return handleResponse(req, res, 200, 'success', 'Cập nhật hàng hóa thành công', req.headers.referer);
+    return handleResponse(
+      req,
+      res,
+      200,
+      'success',
+      'Cập nhật hàng hóa thành công',
+      req.headers.referer,
+    );
   } catch (error) {
-    console.log(error)
+    console.log(error);
     res.status(500).render('partials/500', { layout: false });
   }
 }
-
-
 
 async function deleteProduct(req, res) {
   try {
@@ -199,14 +212,12 @@ async function deleteProduct(req, res) {
       );
     }
 
-    let dryRubberAdjustment = deletedProduct.dryRubberUsed * deletedProduct.dryPercentage / 100;
+    let dryRubberAdjustment =
+      (deletedProduct.dryRubberUsed * deletedProduct.dryPercentage) / 100;
     let productAdjustment = -deletedProduct.quantity;
 
     // Update totals
-    await updateProductTotals(
-      dryRubberAdjustment,
-      productAdjustment,
-    );
+    await updateProductTotals(dryRubberAdjustment, productAdjustment);
 
     handleResponse(
       req,
@@ -217,7 +228,7 @@ async function deleteProduct(req, res) {
       req.headers.referer,
     );
   } catch {
-    res.status(500).render('partials/500', {layout: false});
+    res.status(500).render('partials/500', { layout: false });
   }
 }
 
@@ -240,9 +251,7 @@ async function getProducts(req, res) {
 
     const searchQuery = searchValue
       ? {
-          $or: [
-            { notes: { $regex: searchValue, $options: 'i' } },
-          ],
+          $or: [{ notes: { $regex: searchValue, $options: 'i' } }],
         }
       : {};
 
@@ -250,11 +259,11 @@ async function getProducts(req, res) {
 
     if (startDate || endDate) {
       filter.date = {};
-    
+
       const filterStartDate = new Date(startDate || endDate);
       filterStartDate.setHours(0, 0, 0, 0);
       filter.date.$gte = filterStartDate;
-    
+
       const filterEndDate = new Date(endDate || startDate);
       filterEndDate.setHours(23, 59, 59, 999);
       filter.date.$lte = filterEndDate;
@@ -278,8 +287,11 @@ async function getProducts(req, res) {
       no: parseInt(start, 10) + index + 1,
       date: product.date.toLocaleDateString('vi-VN'),
       dryRubberUsed: {
-        value: ((product.dryRubberUsed * product.dryPercentage) / 100).toLocaleString('vi-VN'),
-        id: product._id
+        value: (
+          (product.dryRubberUsed * product.dryPercentage) /
+          100
+        ).toLocaleString('vi-VN'),
+        id: product._id,
       },
       quantity: product.quantity.toLocaleString('vi-VN') || 0,
       notes: product.notes || '',
@@ -293,34 +305,42 @@ async function getProducts(req, res) {
       data,
     });
   } catch {
-    res.status(500).render('partials/500', {layout: false});
+    res.status(500).render('partials/500', { layout: false });
   }
 }
 
 async function deleteAll(req, res) {
   try {
-    const [{ totalDryQuantity = 0, totalProduct = 0 } = {}] = await ProductModel.aggregate([
-      {
-        $group: {
-          _id: null,
-          totalDryQuantity: {
-            $sum: {
-              $multiply: ["$dryRubberUsed", { $divide: ["$dryPercentage", 100] }]
-            }
+    const [{ totalDryQuantity = 0, totalProduct = 0 } = {}] =
+      await ProductModel.aggregate([
+        {
+          $group: {
+            _id: null,
+            totalDryQuantity: {
+              $sum: {
+                $multiply: [
+                  '$dryRubberUsed',
+                  { $divide: ['$dryPercentage', 100] },
+                ],
+              },
+            },
+            totalProduct: { $sum: '$quantity' },
           },
-          totalProduct: { $sum: "$quantity" }
-        }
-      }
-    ]);
+        },
+      ]);
 
-    await ProductTotalModel.findOneAndUpdate({}, {
-      $inc: {
-        dryRubber: totalDryQuantity,
-        product: -totalProduct
-      }
-    }, {
-      new: true,
-    });
+    await ProductTotalModel.findOneAndUpdate(
+      {},
+      {
+        $inc: {
+          dryRubber: totalDryQuantity,
+          product: -totalProduct,
+        },
+      },
+      {
+        new: true,
+      },
+    );
 
     await ProductModel.deleteMany({});
     return handleResponse(

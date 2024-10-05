@@ -1,7 +1,5 @@
-const AccountModel = require('../../models/accountModel');
 const { Supplier, DailySupply } = require('../../models/dailySupplyModel');
 
-const trimStringFields = require('../utils/trimStringFields');
 const handleResponse = require('../utils/handleResponse');
 const convertToDecimal = require('../utils/convertToDecimal');
 
@@ -14,7 +12,7 @@ async function renderPage(req, res) {
   try {
     const { slug, supplierSlug } = req.params;
     const { startDate, endDate } = req.query;
-    
+
     // Find the supplier by supplierSlug
     const supplier = await Supplier.findOne({ supplierSlug });
     if (!supplier) {

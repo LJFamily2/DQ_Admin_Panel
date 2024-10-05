@@ -29,6 +29,7 @@ async function updateProductTotal(amount, isCreating = true) {
 
 async function renderPage(req, res) {
   try {
+    const { startDate, endDate } = req.query;
     let totalData = await ProductTotalModel.find();
     const total = formatTotalData(totalData);
     let spends = await SpendModel.find();
@@ -37,6 +38,8 @@ async function renderPage(req, res) {
       title: 'Quản lý chi tiêu',
       spends,
       total,
+      startDate,
+      endDate,
       user: req.user,
       messages: req.flash(),
     });
@@ -57,10 +60,9 @@ async function createData(req, res) {
       price,
     });
 
-
     await updateProductTotal(quantity * price);
 
-    if(!spend) {
+    if (!spend) {
       return handleResponse(
         req,
         res,
@@ -142,8 +144,14 @@ async function getData(req, res) {
       no: parseInt(start, 10) + index + 1,
       date: product.date.toLocaleDateString('vi-VN'),
       product: product.product.toLocaleString('vi-VN') || '',
-      quantity: product.product === 'lương' ? 0 : product.quantity.toLocaleString('vi-VN') || 0,
-      price: product.product === 'lương' ? 0 : product.price.toLocaleString('vi-VN') || 0,
+      quantity:
+        product.product === 'lương'
+          ? 0
+          : product.quantity.toLocaleString('vi-VN') || 0,
+      price:
+        product.product === 'lương'
+          ? 0
+          : product.price.toLocaleString('vi-VN') || 0,
       total: (product.price * product.quantity).toLocaleString('vi-VN') || 0,
       notes: product.notes || '',
       id: product._id,

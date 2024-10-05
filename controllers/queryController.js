@@ -11,6 +11,7 @@ module.exports = {
 
 async function renderPage(req, res) {
   try {
+    const { startDate, endDate } = req.query;
     let totalData = await ProductTotalModel.find();
     const total = formatTotalData(totalData);
 
@@ -18,10 +19,12 @@ async function renderPage(req, res) {
       layout: './layouts/defaultLayout',
       total,
       user: req.user,
+      startDate,
+      endDate,
       title: 'Truy vấn',
     });
   } catch {
-    res.status(500).render('partials/500', {layout: false});
+    res.status(500).render('partials/500', { layout: false });
   }
 }
 
@@ -46,20 +49,18 @@ async function getDataTotal(req, res) {
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    
+
     const startDate = reqStartDate ? new Date(reqStartDate) : new Date(today);
     startDate.setHours(0, 0, 0, 0); // Ensure start of the day
-    
+
     const endDate = reqEndDate ? new Date(reqEndDate) : new Date(startDate);
     endDate.setHours(23, 59, 59, 999); // Ensure end of the day
-    
+
     // Apply the simplified date range filter
     filter.date = { $gte: startDate, $lte: endDate };
 
     if (searchValue) {
-      filter.$or = [
-        { notes: new RegExp(searchValue, 'i') },
-      ];
+      filter.$or = [{ notes: new RegExp(searchValue, 'i') }];
     }
 
     const totalRecords = await RawMaterialModel.countDocuments(filter);
@@ -79,8 +80,7 @@ async function getDataTotal(req, res) {
             plantation.products.dryPercentage) /
           100;
         keQuantityTotal +=
-          (plantation.products.keQuantity *
-            plantation.products.dryPercentage) /
+          (plantation.products.keQuantity * plantation.products.dryPercentage) /
           100;
         mixedQuantityTotal += plantation.products.mixedQuantity;
       }
@@ -105,7 +105,7 @@ async function getDataTotal(req, res) {
         keQuantity: keQuantityTotal.toLocaleString('vi-VN'),
         kePrice: kePriceValue.toLocaleString('vi-VN'),
         keTotal: keTotalValue.toLocaleString('vi-VN'),
-        notes: plantation.notes || "",
+        notes: plantation.notes || '',
         totalMoney: totalMoneyValue.toLocaleString('vi-VN'),
       };
     });
@@ -117,6 +117,6 @@ async function getDataTotal(req, res) {
       data,
     });
   } catch (err) {
-    res.status(500).render('partials/500', {layout: false});
+    res.status(500).render('partials/500', { layout: false });
   }
 }

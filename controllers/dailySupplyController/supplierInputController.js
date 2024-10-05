@@ -2,8 +2,19 @@ const { Supplier, DailySupply } = require('../../models/dailySupplyModel');
 
 const handleResponse = require('../utils/handleResponse');
 
+module.exports = {
+  // User side for input data
+  renderInputDataDashboardPage,
+  renderInputDataPage,
+  addData,
+  updateSupplierData,
+  deleteSupplierData,
+};
+
 async function renderInputDataDashboardPage(req, res) {
   try {
+    const { startDate, endDate } = req.query;
+
     let areas;
 
     if (req.user.role === 'Admin') {
@@ -28,6 +39,8 @@ async function renderInputDataDashboardPage(req, res) {
       title: `Nguyên liệu hằng ngày`,
       areas,
       user: req.user,
+      startDate,
+      endDate,
       messages: req.flash(),
     });
   } catch (error) {
@@ -38,6 +51,7 @@ async function renderInputDataDashboardPage(req, res) {
 
 async function renderInputDataPage(req, res) {
   try {
+    const { startDate, endDate } = req.query;
     // Check if the user has the 'Admin' role
     const isAdmin = req.user.role === 'Admin';
 
@@ -77,6 +91,8 @@ async function renderInputDataPage(req, res) {
       title: `Nguyên liệu hằng ngày ${area.name}`,
       area,
       user: req.user,
+      startDate,
+      endDate,
       messages: req.flash(),
       limitReached,
     });
@@ -127,7 +143,7 @@ async function addData(req, res) {
         percentage = req.body.percentage[0] || 0;
       } else if (name === 'Mủ ké') {
         percentage = req.body.percentage[1] || 0;
-      }else{
+      } else {
         percentage = req.body.percentage[2] || 0;
       }
       return {
@@ -302,11 +318,3 @@ async function deleteSupplierData(req, res) {
     res.status(500).render('partials/500', { layout: false });
   }
 }
-module.exports = {
-  // User side for input data
-  renderInputDataDashboardPage,
-  renderInputDataPage,
-  addData,
-  updateSupplierData,
-  deleteSupplierData,
-};

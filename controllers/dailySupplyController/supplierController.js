@@ -16,6 +16,8 @@ module.exports = {
 
 async function renderDetailPage(req, res) {
   try {
+    const { startDate, endDate } = req.query;
+
     const area = await DailySupply.findOne({ slug: req.params.slug })
       .populate('accountID')
       .populate('suppliers')
@@ -27,6 +29,8 @@ async function renderDetailPage(req, res) {
       title: `Dữ liệu mủ của ${area.name}`,
       hamLuongAccounts,
       area,
+      startDate,
+      endDate,
       user: req.user,
       messages: req.flash(),
     });
@@ -186,9 +190,12 @@ async function editSupplier(req, res) {
   try {
     const supplier = await Supplier.findByIdAndUpdate(
       req.params.id,
-      { ...req.body,
-        ratioSplit: req.body.ratioSplit ? req.body.ratioSplit.replace(',', '.') : 0
-       },
+      {
+        ...req.body,
+        ratioSplit: req.body.ratioSplit
+          ? req.body.ratioSplit.replace(',', '.')
+          : 0,
+      },
       { new: true },
     );
     if (!supplier) {

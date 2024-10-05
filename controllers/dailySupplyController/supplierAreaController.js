@@ -5,6 +5,13 @@ const trimStringFields = require('../utils/trimStringFields');
 const handleResponse = require('../utils/handleResponse');
 const createSuppliers = require('./helper/createSuppliers');
 
+module.exports = {
+  renderPage,
+  addArea,
+  deleteArea,
+};
+
+
 async function renderPage(req, res) {
   try {
     const areas = await DailySupply.find({}).populate('accountID');
@@ -115,8 +122,3 @@ async function deleteArea(req, res) {
     res.status(500).render('partials/500', { layout: false });
   }
 }
-module.exports = {
-  renderPage,
-  addArea,
-  deleteArea,
-};

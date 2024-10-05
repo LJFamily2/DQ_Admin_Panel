@@ -95,6 +95,7 @@ const calculateDifferences = (newProducts, oldSale) => {
 
 async function renderPage(req, res) {
   try {
+    const { startDate, endDate } = req.query;
     const sales = await SaleModel.find();
 
     let totalData = await ProductTotalModel.find({});
@@ -105,6 +106,8 @@ async function renderPage(req, res) {
       total,
       index: 0,
       user: req.user,
+      startDate,
+      endDate,
       messages: req.flash(),
       title: 'Quản lý hợp đồng bán mủ',
     });

@@ -16,6 +16,7 @@ module.exports = {
 
 async function renderPage(req, res) {
   try {
+    const { startDate, endDate } = req.query;
     let totalData = await ProductTotalModel.find();
     const total = formatTotalData(totalData);
 
@@ -24,6 +25,8 @@ async function renderPage(req, res) {
       layout: './layouts/defaultLayout',
       datas,
       total,
+      startDate,
+      endDate,
       user: req.user,
       messages: req.flash(),
       title: 'Nguyên liệu',
