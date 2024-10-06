@@ -159,6 +159,7 @@
               <th>Mủ tạp</th>
               <th>Mủ ké</th>
               <th>Mủ đông</th>
+              <th rowspan="2">Ghi chú</th>
               <th rowspan="2">Chỉnh sửa</th>
             </tr>
             <tr>
@@ -317,6 +318,18 @@
                           <% } %>
                         <% }) %>
                       </div>
+                      <div class="itemList">
+                        <div class="row my-3">
+                          <label class="form-label fw-bold">Ghi chú</label>
+                          <div class="col-12">
+                            <textarea
+                              class="form-control"
+                              name="note"
+                              rows="3"
+                            ><%= item.note %></textarea>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                     <div class="modal-footer bg-transparent">
                       <!-- Buttons -->
@@ -383,14 +396,12 @@
             <% }) %>
           </tbody>
           <tfoot>
-            <th colspan="3">Tổng</th>
+            <th colspan="5">Tổng</th>
             <th></th>
             <th></th>
             <th></th>
             <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
+            <th colspan="2"></th>
           </tfoot>
         </table>
       </div>
@@ -515,6 +526,19 @@
                 </div>
               </div>
             </div>
+            <div class="itemList">
+              <div class="row my-3">
+                <label class="form-label fw-bold">Ghi chú</label>
+                <div class="col-12">
+                    <textarea
+                      type="text"
+                      class="form-control"
+                      name="note"
+                      required
+                    ></textarea>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         <div class="card-footer bg-transparent">
@@ -537,40 +561,7 @@
     </div>
   </div>
 </div>
-<!-- Modal for deleting all -->
-<div
-  class="modal fade"
-  id="deleteAll"
-  data-bs-backdrop="static"
-  data-bs-keyboard="false"
-  tabindex="-1"
-  aria-labelledby="deleteUsers"
-  aria-hidden="true"
->
-  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="deleteUsers">Xóa tất cả chi tiêu</h1>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
-      </div>
 
-      <form action="/quan-ly-chi-tieu/deleteAll" method="post">
-        <div class="modal-body">
-          Bạn có muốn xóa <strong class="fs-3">tất cả</strong> thông tin ? Hành
-          động này không thể hoàn tác.
-        </div>
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-danger">Xác nhận</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
 
 <!-- Modal for adding new supplier -->
 <div
@@ -702,6 +693,7 @@
     { data: 'muTapQuantity', orderable: false, },
     { data: 'muKeQuantity', orderable: false,},
     { data: 'muDongQuantity', orderable: false,  },
+    { data: 'note', orderable: false, width: '2rem'  },
     { data: 'id', orderable: false },
   ];
   

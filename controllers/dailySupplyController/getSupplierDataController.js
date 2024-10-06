@@ -194,6 +194,7 @@ async function getSupplierInputData(req, res, isArea) {
         muTapQuantity: rawMaterials['Mủ tạp']?.quantity?.toLocaleString('vi-VN') || '',
         muKeQuantity: rawMaterials['Mủ ké']?.quantity?.toLocaleString('vi-VN') || '',
         muDongQuantity: rawMaterials['Mủ đông']?.quantity?.toLocaleString('vi-VN') || '',
+        note: item.data.note || '',
         id: item.data._id,
       };
     });

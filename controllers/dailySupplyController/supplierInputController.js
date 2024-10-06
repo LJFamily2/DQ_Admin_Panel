@@ -2,6 +2,7 @@ const { Supplier, DailySupply } = require('../../models/dailySupplyModel');
 
 const handleResponse = require('../utils/handleResponse');
 const convertToDecimal = require('../utils/convertToDecimal');
+const trimStringFields = require('../utils/trimStringFields');
 
 module.exports = {
   // User side for input data
@@ -70,9 +71,9 @@ async function renderInputDataPage(req, res) {
 
     // Get today's start and end dates
     const startOfToday = new Date();
-    startOfToday.setUTCHours(0, 0, 0, 0);
+    startOfToday.setHours(0, 0, 0, 0);
     const endOfToday = new Date();
-    endOfToday.setUTCHours(23, 59, 59, 999);
+    endOfToday.setHours(23, 59, 59, 999);
 
     // Count the number of entries for today
     const todayEntriesCount = await DailySupply.aggregate([
@@ -103,15 +104,14 @@ async function renderInputDataPage(req, res) {
 }
 
 async function addData(req, res) {
-  console.log(req.body);
   try {
     // Get today's date at midnight
-    const today = new Date().setUTCHours(0, 0, 0, 0);
+    const today = new Date().setHours(0, 0, 0, 0);
 
     // Check the number of entries for today
     const dailySupply = await DailySupply.findById(req.params.id);
     const todayEntries = dailySupply.data.filter(
-      entry => new Date(entry.date).setUTCHours(0, 0, 0, 0) === today,
+      entry => new Date(entry.date).setHours(0, 0, 0, 0) === today,
     );
 
     if (todayEntries.length >= dailySupply.limitData) {
@@ -139,19 +139,10 @@ async function addData(req, res) {
 
     // Prepare the input data
     const rawMaterials = req.body.name.map((name, index) => {
-      let percentage = 0;
-      if (name === 'Mủ nước') {
-        percentage = req.body.percentage[0] || 0;
-      } else if (name === 'Mủ ké') {
-        percentage = req.body.percentage[1] || 0;
-      } else {
-        percentage = req.body.percentage[2] || 0;
-      }
       return {
         name: name,
-        percentage: name === 'Mủ tạp' ? undefined : percentage,
+        percentage: name === 'Mủ nước' ? req.body.percentage : 0,
         quantity: req.body.quantity[index] || 0,
-        price: 0, // Assuming price is not provided in req.body
       };
     });
 
@@ -159,6 +150,7 @@ async function addData(req, res) {
       date: today,
       rawMaterial: rawMaterials,
       supplier: existedSupplier._id,
+      note: trimStringFields(req.body.note) || '', 
     };
 
     const newData = await DailySupply.findByIdAndUpdate(
@@ -203,7 +195,11 @@ async function updateSupplierData(req, res) {
       muTapQuantity,
       muKeQuantity,
       muDongQuantity,
-      price,
+      muNuocPrice,
+      muTapPrice,
+      muKePrice,
+      muDongPrice,
+      note,
     } = req.body;
 
     // Find or update the supplier
@@ -215,10 +211,27 @@ async function updateSupplierData(req, res) {
 
     // Prepare the raw material data
     const rawMaterial = [
-      { name: 'Mủ nước', quantity: convertToDecimal(muNuocQuantity), percentage: convertToDecimal(muNuocPercentage), price: convertToDecimal(price[0]) },
-      { name: 'Mủ tạp', quantity: convertToDecimal(muTapQuantity), price: convertToDecimal(price[1]) },
-      { name: 'Mủ ké', quantity: convertToDecimal(muKeQuantity), price: convertToDecimal(price[2]) },
-      { name: 'Mủ đông', quantity: convertToDecimal(muDongQuantity), price: convertToDecimal(price[2]) },
+      { 
+        name: 'Mủ nước', 
+        quantity: convertToDecimal(muNuocQuantity), 
+        percentage: convertToDecimal(muNuocPercentage), 
+        price: convertToDecimal(muNuocPrice) 
+      },
+      { 
+        name: 'Mủ tạp', 
+        quantity: convertToDecimal(muTapQuantity), 
+        price: convertToDecimal(muTapPrice) 
+      },
+      { 
+        name: 'Mủ ké', 
+        quantity: convertToDecimal(muKeQuantity), 
+        price: convertToDecimal(muKePrice) 
+      },
+      { 
+        name: 'Mủ đông', 
+        quantity: convertToDecimal(muDongQuantity), 
+        price: convertToDecimal(muDongPrice) 
+      },
     ];
 
     // Update the daily supply data
@@ -229,6 +242,7 @@ async function updateSupplierData(req, res) {
           'data.$.date': new Date(date),
           'data.$.supplier': supplierDoc._id,
           'data.$.rawMaterial': rawMaterial,
+          'data.$.note': trimStringFields(note) || '',
         },
       },
       { new: true }
