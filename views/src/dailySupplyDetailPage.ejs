@@ -67,6 +67,7 @@
               <th>Mủ tạp</th>
               <th>Mủ ké</th>
               <th>Mủ đông</th>
+              <th rowspan="2">Ghi chú</th>
               <th rowspan="2">Chỉnh sửa</th>
             </tr>
             <tr>
@@ -191,53 +192,54 @@
                                 </div>
                               </div>
                             </div>
-                          <% } else if (raw.name === 'Mủ ké') { %>
-                            <div class="itemList">
-                              <div class="row my-3">
-                                <label class="form-label fw-bold">Mủ Ké + Đông</label>
-                                <div class="col col-md-6">
-                                  <label for="muKeQuantity<%= index %>" class="form-label">Số lượng mủ ké</label>
-                                  <input
-                                    type="number"
-                                    class="form-control"
-                                    id="muKeQuantity<%= index %>"
-                                    name="muKeQuantity"
-                                    value="<%= raw.quantity %>"
-                                    required
-                                  />
-                                </div>
-                                <div class="col col-md-6">
-                                  <label for="muKePercentage<%= index %>" class="form-label">Hàm lượng</label>
-                                  <input
-                                    type="number"
-                                    class="form-control"
-                                    id="muKePercentage<%= index %>"
-                                    name="muKePercentage"
-                                    max="100"
-                                    value="<%= raw.percentage %>"
-                                    required
-                                  />
+                            <% } else if (raw.name === 'Mủ ké') { %>
+                              <div class="itemList">
+                                <div class="row my-3">
+                                  <label class="form-label fw-bold">Mủ Ké</label>
+                                  <div class="col">
+                                    <label for="muKeQuantity<%= index %>" class="form-label">Số lượng</label>
+                                    <input
+                                      type="number"
+                                      class="form-control"
+                                      id="muKeQuantity<%= index %>"
+                                      name="muKeQuantity"
+                                      value="<%= raw.quantity %>"
+                                      required
+                                    />
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          <% } else if (raw.name === 'Mủ đông') { %>
-                            <div class="itemList">
-                              <div class="row my-3">
-                                <div class="col col-md-6">
-                                  <label for="muDongQuantity<%= index %>" class="form-label">Số lượng mủ đông</label>
-                                  <input
-                                    type="number"
-                                    class="form-control"
-                                    id="muDongQuantity<%= index %>"
-                                    name="muDongQuantity"
-                                    value="<%= raw.quantity %>"
-                                    required
-                                  />
+                            <% } else if (raw.name === 'Mủ đông') { %>
+                              <div class="itemList">
+                                <div class="row my-3">
+                                  <label class="form-label fw-bold">Mủ Đông</label>
+                                  <div class="col">
+                                    <label for="muDongQuantity<%= index %>" class="form-label">Số lượng</label>
+                                    <input
+                                      type="number"
+                                      class="form-control"
+                                      id="muDongQuantity<%= index %>"
+                                      name="muDongQuantity"
+                                      value="<%= raw.quantity %>"
+                                      required
+                                    />
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          <% } %>
-                        <% }) %>
+                            <% } %>
+                          <% }) %>
+                      </div>
+                      <div class="itemList">
+                        <div class="row my-3">
+                          <label class="form-label fw-bold">Ghi chú</label>
+                          <div class="col-12">
+                              <textarea
+                                class="form-control"
+                                name="note"
+                                rows="3"
+                              ><%= eachData.note %></textarea>
+                          </div>
+                        </div>
                       </div>
                     </div>
                     <div class="modal-footer bg-transparent">
@@ -298,7 +300,7 @@
             <th></th>
             <th></th>
             <th ></th>
-            <th></th>
+            <th colspan="2"></th>
           </tfoot>
         </table>
       </div>
@@ -665,6 +667,7 @@
     { data: 'muTapQuantity', orderable: false },
     { data: 'muKeQuantity', orderable: false },
     { data: 'muDongQuantity', orderable: false },
+    { data: 'note', orderable: false, width: '2rem'  },
     { data: 'id', orderable: false },
   ];
 
