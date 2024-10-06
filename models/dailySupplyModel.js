@@ -35,6 +35,7 @@ const dailySupplySchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Supplier' 
         },
+        note: String,
     }],
     suppliers: [{
         type: mongoose.Schema.Types.ObjectId,
