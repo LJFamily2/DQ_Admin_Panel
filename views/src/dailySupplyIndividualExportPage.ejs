@@ -61,55 +61,24 @@
   <div class="col-12 col-md-9 mt-2">
     <div class="card" style="box-shadow: 0 1px 2px">
       <div class="card-header bg-transparent">
+        <form
+          action="/du-lieu-hang-ngay/<%= area.slug %>/updatePrice/<%= supplierData.supplierSlug %>"
+          method="post"
+        >
         <div class="row">
           <div class="col-12 col-md-6">
             <h5 class="p-0">Chọn ngày và nhập số tiền</h5>
-            <form
-              action="/du-lieu-hang-ngay/<%= area.slug %>/updatePrice/<%= supplierData.supplierSlug %>"
-              method="post"
-            >
               <%- include('../partials/dateSelection.ejs') %>
-              <div class="p-0 d-flex mt-2">
-                <div>
-                  <label for="dryPrice">Mủ quy khô</label>
-                  <input
-                    type="text"
-                    class="form-control form-control-sm"
-                    id="dryPrice"
-                    name="dryPrice"
-                    placeholder="99.000"
-                    oninput="handleQuantityInput(this)"
-                  />
-                </div>
-                <div class="mx-2">
-                  <label for="mixedPrice">Mủ tạp</label>
-                  <input
-                    type="text"
-                    class="form-control form-control-sm"
-                    id="mixedPrice"
-                    name="mixedPrice"
-                    placeholder="19.000"
-                    oninput="handleQuantityInput(this)"
-                  />
-                </div>
-
-                <div class="mx-2">
-                  <label for="dongPrice">Mủ ké + đông</label>
-                  <input
-                    type="text"
-                    class="form-control form-control-sm"
-                    id="dongPrice"
-                    name="dongPrice"
-                    placeholder="19.000"
-                    oninput="handleQuantityInput(this)"
-                  />
-                </div>
-                <div class="d-flex align-items-end">
-                  <button type="submit" class="btn btn-primary">Nhập</button>
-                </div>
-              </div>
-            </form>
-
+            </div>
+          </div>
+        <div class="row">
+          <div class="col">
+            <%- include('../partials/setPrice.ejs') %>
+          </div>
+        </div>
+      </form>
+        <div class="row">
+          <div class="col">
             <div class="p-0 d-flex mt-2">
               <div>
                 <label for="addPrice">Cộng</label>
@@ -136,6 +105,8 @@
             </div>
           </div>
         </div>
+        
+        
       </div>
       <div class="card-body">
         <table class="table table-striped" id="table" >
