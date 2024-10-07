@@ -185,6 +185,7 @@ async function addData(req, res) {
 }
 
 async function updateSupplierData(req, res) {
+  console.log(req.body);
   try {
     const { id } = req.params;
     const {
@@ -239,7 +240,7 @@ async function updateSupplierData(req, res) {
       { 'data._id': id },
       {
         $set: {
-          'data.$.date': new Date(date),
+          'data.$.date': new Date(date).setHours(12, 0, 0, 0),
           'data.$.supplier': supplierDoc._id,
           'data.$.rawMaterial': rawMaterial,
           'data.$.note': trimStringFields(note) || '',

@@ -1,5 +1,42 @@
 const { DailySupply, Supplier } = require('../../models/dailySupplyModel');
 
+// Add these helper functions at the top of the file, outside of any other functions
+
+function getTodayDate() {
+  const today = new Date();
+  return today.toISOString().split('T')[0]; 
+}
+
+function adjustDates(startDate, endDate) {
+  const today = getTodayDate();
+  if (!startDate && !endDate) {
+    return { effectiveStartDate: today, effectiveEndDate: today };
+  } else if (startDate && !endDate) {
+    return { effectiveStartDate: startDate, effectiveEndDate: today };
+  } else if (!startDate && endDate) {
+    return { effectiveStartDate: endDate, effectiveEndDate: endDate };
+  }
+  return { effectiveStartDate: startDate, effectiveEndDate: endDate };
+}
+
+function createDateFilter(startDateUTC, endDateUTC) {
+  return {
+    'data.date': {
+      $gte: new Date(startDateUTC),
+      $lte: new Date(endDateUTC),
+    },
+  };
+}
+
+function parseDates(startDate, endDate) {
+  const { effectiveStartDate, effectiveEndDate } = adjustDates(startDate, endDate);
+  const startDateUTC = new Date(effectiveStartDate);
+  startDateUTC.setHours(0, 0, 0, 0);
+  const endDateUTC = new Date(effectiveEndDate);
+  endDateUTC.setHours(23, 59, 59, 999);
+  return { startDateUTC, endDateUTC };
+}
+
 module.exports = {
   getData,
 
@@ -104,33 +141,6 @@ async function getSupplierInputData(req, res, isArea) {
     res.status(500).render('partials/500', { layout: false });
   }
 
-  function parseDates(startDate, endDate) {
-    return {
-      startDateUTC: startDate ? new Date(startDate).setHours(0, 0, 0, 0) : null,
-      endDateUTC: endDate ? new Date(endDate).setHours(23, 59, 59, 999) : null,
-    };
-  }
-
-  function createDateFilter(startDateUTC, endDateUTC) {
-    const today = new Date().setHours(0, 0, 0, 0);
-    const tomorrow = new Date().setHours(23, 59, 59, 999);
-
-    if (startDateUTC && !endDateUTC) {
-      endDateUTC = startDateUTC;
-    }
-
-    return startDateUTC || endDateUTC
-      ? {
-          'data.date': {
-            ...(startDateUTC && { $gte: new Date(startDateUTC) }),
-            ...(endDateUTC && { $lte: new Date(endDateUTC) }),
-          },
-        }
-      : {
-          'data.date': { $gte: new Date(today), $lte: new Date(tomorrow) },
-        };
-  }
-
   function createMatchStage(slug, dateFilter, searchValue) {
     return {
       $match: {
@@ -233,33 +243,6 @@ async function getSupplierExportData(req, res, isArea) {
     res.status(500).render('partials/500', { layout: false });
   }
 
-  function parseDates(startDate, endDate) {
-    return {
-      startDateUTC: startDate ? new Date(startDate).setHours(0, 0, 0, 0) : null,
-      endDateUTC: endDate ? new Date(endDate).setHours(23, 59, 59, 999) : null,
-    };
-  }
-
-  function createDateFilter(startDateUTC, endDateUTC) {
-    const today = new Date().setHours(0, 0, 0, 0);
-    const tomorrow = new Date().setHours(23, 59, 59, 999);
-
-    if (startDateUTC && !endDateUTC) {
-      endDateUTC = startDateUTC;
-    }
-
-    return startDateUTC || endDateUTC
-      ? {
-          'data.date': {
-            ...(startDateUTC && { $gte: new Date(startDateUTC) }),
-            ...(endDateUTC && { $lte: new Date(endDateUTC) }),
-          },
-        }
-      : {
-          'data.date': { $gte: new Date(today), $lte: new Date(tomorrow) },
-        };
-  }
-
   function createMatchStage(slug, dateFilter, searchValue) {
     return {
       $match: {
@@ -355,24 +338,7 @@ async function getIndividualSupplierExportData(req, res) {
     const { slug, supplierSlug } = req.params;
     const { draw, startDate, endDate, order } = req.body;
 
-    let effectiveStartDate = startDate;
-    let effectiveEndDate = endDate;
-
-    // Handle date range scenarios
-    if (startDate && !endDate) {
-      effectiveEndDate = startDate;
-    } else if (!startDate && endDate) {
-      effectiveStartDate = new Date().toISOString().split('T')[0]; 
-    } else if (!startDate && !endDate) {
-      return res.json({
-        draw: parseInt(draw),
-        recordsTotal: 0,
-        recordsFiltered: 0,
-        data: [],
-      });
-    }
-
-    const { startDateUTC, endDateUTC } = parseDates(effectiveStartDate, effectiveEndDate);
+    const { startDateUTC, endDateUTC } = parseDates(startDate, endDate);
     const dateFilter = createDateFilter(startDateUTC, endDateUTC);
 
     const supplier = await Supplier.findOne({ supplierSlug });
@@ -432,25 +398,6 @@ async function getIndividualSupplierExportData(req, res) {
     });
   } catch (error) {
     res.status(500).json({ error: 'Internal Server Error', details: error.message });
-  }
-
-  function parseDates(startDate, endDate) {
-    return {
-      startDateUTC: startDate ? new Date(startDate) : null,
-      endDateUTC: endDate ? new Date(endDate) : null,
-    };
-  }
-
-  function createDateFilter(startDateUTC, endDateUTC) {
-    if (startDateUTC && endDateUTC) {
-      return {
-        'data.date': {
-          $gte: startDateUTC,
-          $lte: endDateUTC,
-        },
-      };
-    }
-    return {};
   }
 
   function flattenData(data) {
