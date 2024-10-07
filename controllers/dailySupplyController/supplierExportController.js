@@ -34,7 +34,7 @@ async function renderPage(req, res) {
 
 async function updatePrice(req, res) {
   try {
-    const { startDate, endDate, dryPrice, mixedPrice, kePrice } = req.body;
+    const { startDate, endDate, dryPrice, mixedPrice, kePrice, dongPrice } = req.body;
     // Find the area by slug
     const area = await DailySupply.findOne({ slug: req.params.slug })
       .populate('accountID')
@@ -70,6 +70,7 @@ async function updatePrice(req, res) {
     const parsedDryPrice = convertToDecimal(dryPrice);
     const parsedMixedPrice = convertToDecimal(mixedPrice);
     const parsedKePrice = convertToDecimal(kePrice);
+    const parsedDongPrice = convertToDecimal(dongPrice);
 
     // Iterate over the data and update prices within the date range
     area.data.forEach(entry => {
@@ -80,8 +81,10 @@ async function updatePrice(req, res) {
             material.price = parsedDryPrice;
           } else if (material.name === 'Mủ tạp') {
             material.price = parsedMixedPrice;
-          } else if (material.name === 'Mủ ké' || material.name === 'Mủ đông') {
+          } else if (material.name === 'Mủ ké') {
             material.price = parsedKePrice;
+          } else if (material.name === 'Mủ đông') {
+            material.price = parsedDongPrice;
           }
         });
       }
