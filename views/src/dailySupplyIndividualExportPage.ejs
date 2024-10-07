@@ -59,7 +59,7 @@
 
 <div class="row m-0 m-md-2 g-3 mb-4">
   <div class="col-12 col-md-9 mt-2">
-    <div class="card" style="box-shadow: 0 1px 2px">
+  <div class="card" style="box-shadow: 0 1px 2px">
       <div class="card-header bg-transparent">
         <form
           action="/du-lieu-hang-ngay/<%= area.slug %>/updatePrice/<%= supplierData.supplierSlug %>"
@@ -120,8 +120,11 @@
               <th>Đơn giá</th>
               <th>Mủ tạp</th>
               <th>Đơn giá</th>
+              <th>Mủ ké</th>
+              <th>Đơn giá</th>
               <th>Mủ đông</th>
               <th>Đơn giá</th>
+              <th>Mủ khác</th>
               <th>Chỉnh sửa</th>
             </tr>
           </thead>
@@ -165,7 +168,7 @@
                                       class="form-control"
                                       id="date<%= index %>"
                                       name="date"
-                                      value="<%= item.date.toISOString().slice(0,10) %>"
+                                      value="<%= item.date.toISOString().split('T')[0] %>"
                                       required
                                     />
                                   </div>
@@ -389,20 +392,26 @@
               <th></th>
               <th></th>
               <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
             </tr>
             <tr>
               <th colspan="2">Đơn giá</th>
               <th colspan="4"></th>
               <th colspan="2"></th>
               <th colspan="2"></th>
-              <th></th>
+              <th colspan="2"></th>
+              <th colspan="2"></th>
+
             </tr>
             <tr>
               <th colspan="2">Thành tiền</th>
               <th colspan="4"></th>
               <th colspan="2"></th>
               <th colspan="2"></th>
-              <th></th>
+              <th colspan="2"></th>
+              <th colspan="2"></th>
             </tr>
           </tfoot>
         </table>
@@ -537,8 +546,11 @@
     { data: 'muQuyKhoPrice', orderable: false },
     { data: 'muTapQuantity', orderable: false,  },
     { data: 'muTapPrice', orderable: false, },
+    { data: 'muKeQuantity', orderable: false,  },
+    { data: 'muKePrice', orderable: false,  },
     { data: 'muDongQuantity', orderable: false,  },
     { data: 'muDongPrice', orderable: false,  },
+    { data: 'note', orderable: false,  },
     { data: 'id', orderable: false },
   ];
 

@@ -17,8 +17,7 @@ module.exports = {
 };
 
 function getTodayDate() {
-  const today = new Date();
-  return today.toISOString().split('T')[0]; 
+  return today = new Date(); 
 }
 
 function adjustDates(startDate, endDate) {
@@ -437,8 +436,11 @@ async function getIndividualSupplierExportData(req, res) {
         muQuyKhoPrice: rawMaterials['Mủ nước']?.price.toLocaleString('vi-VN'),
         muTapQuantity: muTap.quantity.toLocaleString('vi-VN'),
         muTapPrice: rawMaterials['Mủ tạp']?.price.toLocaleString('vi-VN'),
+        muKeQuantity: muKe.quantity.toLocaleString('vi-VN'),
+        muKePrice: rawMaterials['Mủ ké']?.price.toLocaleString('vi-VN'),
         muDongQuantity: muDong.quantity.toLocaleString('vi-VN'),
         muDongPrice: rawMaterials['Mủ đông']?.price.toLocaleString('vi-VN'),
+        note: item.note || '',
         id: item._id,  
       };
     });
