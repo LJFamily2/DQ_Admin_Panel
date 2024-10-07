@@ -333,16 +333,16 @@ async function getSupplierExportData(req, res, isArea) {
         supplier: item.supplier.name || '',
         ...(isArea && { code: item.supplier.code || '' }),
         muQuyKhoQuantity: muQuyKhoQuantity > 0 ? muQuyKhoQuantity.toLocaleString('vi-VN') : '',
-        muQuyKhoDonGia: muQuyKhoPrice >= 1 ? muQuyKhoPrice.toLocaleString('vi-VN') : '',
+        muQuyKhoDonGia: muQuyKhoPrice > 0 ? muQuyKhoPrice.toLocaleString('vi-VN') : '',
         muQuyKhoToTal: muQuyKhoToTal > 0 ? muQuyKhoToTal.toLocaleString('vi-VN') : '',
         muTapQuantity: rawMaterials['Mủ tạp']?.quantity > 0 ? rawMaterials['Mủ tạp'].quantity.toLocaleString('vi-VN') : '',
-        muTapDonGia: rawMaterials['Mủ tạp']?.price >= 1 ? rawMaterials['Mủ tạp'].price.toLocaleString('vi-VN') : '',
+        muTapDonGia: rawMaterials['Mủ tạp']?.price > 0 ? rawMaterials['Mủ tạp'].price.toLocaleString('vi-VN') : '',
         muTapTotal: muTapTotal > 0 ? muTapTotal.toLocaleString('vi-VN') : '',
         muKeQuantity: muKeQuantity > 0 ? muKeQuantity.toLocaleString('vi-VN') : '',
-        muKeDonGia: muKeDonGia >= 1 ? muKeDonGia.toLocaleString('vi-VN') : '',
+        muKeDonGia: muKeDonGia > 0 ? muKeDonGia.toLocaleString('vi-VN') : '',
         muKeTotal: muKeTotal > 0 ? muKeTotal.toLocaleString('vi-VN') : '',
         muDongQuantity: muDongQuantity > 0 ? muDongQuantity.toLocaleString('vi-VN') : '',
-        muDongDonGia: muDongDonGia >= 1 ? muDongDonGia.toLocaleString('vi-VN') : '',
+        muDongDonGia: muDongDonGia > 0 ? muDongDonGia.toLocaleString('vi-VN') : '',
         muDongTotal: muDongTotal > 0 ? muDongTotal.toLocaleString('vi-VN') : '',
         id: item.data._id,
       };
@@ -362,7 +362,7 @@ async function getIndividualSupplierExportData(req, res) {
     if (startDate && !endDate) {
       effectiveEndDate = startDate;
     } else if (!startDate && endDate) {
-      effectiveStartDate = new Date().toISOString().split('T')[0]; // Today's date in YYYY-MM-DD format
+      effectiveStartDate = new Date().toISOString().split('T')[0]; 
     } else if (!startDate && !endDate) {
       return res.json({
         draw: parseInt(draw),

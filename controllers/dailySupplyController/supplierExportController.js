@@ -33,6 +33,7 @@ async function renderPage(req, res) {
 }
 
 async function updatePrice(req, res) {
+  console.log(req.body);
   try {
     const { startDate, endDate, dryPrice, mixedPrice, kePrice, dongPrice } = req.body;
     // Find the area by slug
