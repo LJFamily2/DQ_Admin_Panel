@@ -44,17 +44,14 @@ function initializeExportDataTable(
 
     const updateFooterCell = (rowIndex, cellIndex, value) => {
       $(api.table().footer().rows[rowIndex].cells[cellIndex]).html(
-        formatNumberForDisplay(value, locale),
+        `<strong>${value}</strong>`
       );
     };
 
     columns.forEach(colIndex => {
       const total = calculateTotal(colIndex);
       $(api.column(colIndex).footer()).html(
-        `<strong style='float: left'>${formatNumberForDisplay(
-          total,
-          locale,
-        )}</strong>`,
+        `<strong>${formatNumberForDisplay(total, locale)}</strong>`
       );
     });
 
@@ -74,8 +71,8 @@ function initializeExportDataTable(
       );
 
       prices.forEach((price, index) => {
-        updateFooterCell(1, index + 1, price);
-        updateFooterCell(2, index + 1, totals[index] * price);
+        updateFooterCell(1, index + 1, formatNumberForDisplay(price, locale));
+        updateFooterCell(2, index + 1, formatNumberForDisplay(totals[index] * price, locale));
       });
     }
   };
@@ -254,12 +251,14 @@ function initializeExportDataTable(
       infoFiltered: '(lọc từ _MAX_ bản ghi)',
     },
     lengthMenu: [10, 20],
+    columnDefs: [
+      { className: "dt-center", targets: "_all" },
+    ],
     columns: columns.map(column => {
       if (column.data === 'id') {
         return {
           ...column,
           render: function (data, type, row) {
-            console.log(row.id)
             return `
             <div class="d-flex justify-content-between fs-5">
               <i
@@ -279,7 +278,9 @@ function initializeExportDataTable(
           },
         };
       }
-      return column;
+      return{
+        ...column,
+      } ;
     }),
     ...footerCallbackOptions,
   };

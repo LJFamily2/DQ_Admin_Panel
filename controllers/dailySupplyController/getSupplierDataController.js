@@ -1,6 +1,20 @@
 const { DailySupply, Supplier } = require('../../models/dailySupplyModel');
 
-// Add these helper functions at the top of the file, outside of any other functions
+module.exports = {
+  getData,
+
+  // DetailPage
+  getAreaSupplierData,
+
+  // User side for input data
+  getSupplierData,
+
+  // Admin side for export data
+  getSupplierExportData,
+
+  // Admin side for exportin individual data
+  getIndividualSupplierExportData,
+};
 
 function getTodayDate() {
   const today = new Date();
@@ -36,22 +50,6 @@ function parseDates(startDate, endDate) {
   endDateUTC.setHours(23, 59, 59, 999);
   return { startDateUTC, endDateUTC };
 }
-
-module.exports = {
-  getData,
-
-  // DetailPage
-  getAreaSupplierData,
-
-  // User side for input data
-  getSupplierData,
-
-  // Admin side for export data
-  getSupplierExportData,
-
-  // Admin side for exportin individual data
-  getIndividualSupplierExportData,
-};
 
 async function getData(req, res) {
   try {
@@ -327,6 +325,7 @@ async function getSupplierExportData(req, res, isArea) {
         muDongQuantity: muDongQuantity > 0 ? muDongQuantity.toLocaleString('vi-VN') : '',
         muDongDonGia: muDongDonGia > 0 ? muDongDonGia.toLocaleString('vi-VN') : '',
         muDongTotal: muDongTotal > 0 ? muDongTotal.toLocaleString('vi-VN') : '',
+        note: item.data.note || '',
         id: item.data._id,
       };
     });
