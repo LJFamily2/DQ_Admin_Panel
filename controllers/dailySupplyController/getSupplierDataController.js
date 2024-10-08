@@ -93,7 +93,6 @@ async function getData(req, res) {
       data,
     });
   } catch (err) {
-    console.log(err);
     res.status(500).render('partials/500', { layout: false });
   }
 }
@@ -386,7 +385,6 @@ async function getIndividualSupplierExportData(req, res) {
     });
 
     const { data: flattenedData, latestPrices } = flattenData(data);
-    console.log(flattenedData)
     res.json({
       draw: parseInt(draw),
       recordsTotal: totalRecords,
