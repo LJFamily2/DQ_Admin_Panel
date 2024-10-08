@@ -51,7 +51,10 @@ function initializeExportDataTable(
     columns.forEach(colIndex => {
       const total = calculateTotal(colIndex);
       $(api.column(colIndex).footer()).html(
-        `<strong class="text-center d-block">${formatNumberForDisplay(total, locale)}</strong>`,
+        `<strong class="text-center d-block">${formatNumberForDisplay(
+          total,
+          locale,
+        )}</strong>`,
       );
     });
 
@@ -64,7 +67,7 @@ function initializeExportDataTable(
         muDong: 0,
       };
 
-      const totals = [4,6,8,10].map(colIndex =>
+      const totals = [4, 6, 8, 10].map(colIndex =>
         parseNumber($(api.column(colIndex).footer()).text()),
       );
       const prices = ['muNuoc', 'muTap', 'muKe', 'muDong'].map(
@@ -161,6 +164,7 @@ function initializeExportDataTable(
                   }
                 });
 
+                /// Add the addPrice and minusPrice to the top of the table
                 const addPrice =
                   parseFloat(
                     $(addPriceId).val().replace(/\./g, '').replace(',', '.'),
@@ -173,6 +177,7 @@ function initializeExportDataTable(
                 const totalAfterRatio =
                   finalAmount * (ratioSplit.replace(',', '.') / 100);
 
+                  /// Add the date range and supplier name to the top of the table
                 $(win.document.body)
                   .css('text-align', 'center')
                   .find('h1')
@@ -190,29 +195,39 @@ function initializeExportDataTable(
                       totalAmount,
                       'vi-VN',
                     )} đ</p>`,
-                    `<p style="text-align: left; margin-top: 20px;">Cộng: ${formatNumberForDisplay(
+                    `${addPrice > 0 ? `<p style="text-align: left; margin-top: 20px;">Cộng: ${formatNumberForDisplay(
                       addPrice,
-                      'vi-VN',
-                    )} đ</p>`,
-                    `<p style="text-align: left; margin-top: 20px;">Trừ: ${formatNumberForDisplay(
+                      'vi-VN'
+                    )} đ</p>` : ''}`,
+                    `${minusPrice > 0 ? `<p style="text-align: left; margin-top: 20px;">Trừ: ${formatNumberForDisplay(
                       minusPrice,
-                      'vi-VN',
-                    )} đ</p>`,
+                      'vi-VN'
+                    )} đ</p>` : ''}`,
                     ratioSplit > 0
-                      ? `<p style="text-align: left; margin-top: 20px;">Tổng sau cộng/trừ: ${formatNumberForDisplay(
+                      ? `${(addPrice > 0 || minusPrice > 0) ? `<p style="text-align: left; margin-top: 20px;">Tổng sau cộng/trừ: ${formatNumberForDisplay(
                           finalAmount,
                           'vi-VN',
-                        )} đ</p>
+                        )} đ</p>` : ''}
                     <p style="text-align: left; margin-top: 20px;">Tỉ lệ phân chia: ${ratioSplit}%</p>
-                    <p style="text-align: left; margin-top: 20px;">Thực nhận: ${formatNumberForDisplay(
+                    <hr><p style="text-align: left; margin-top: 20px;">Thực nhận: ${formatNumberForDisplay(
                       totalAfterRatio,
                       'vi-VN',
                     )} đ</p>`
-                      : `<p style="text-align: left; margin-top: 20px;">Thực nhận: ${formatNumberForDisplay(
+                      : `${(addPrice > 0 || minusPrice > 0) ? `<p style="text-align: left; margin-top: 20px;">Tổng sau cộng/trừ: ${formatNumberForDisplay(
+                          finalAmount,
+                          'vi-VN',
+                        )} đ</p>` : ''}
+                    <hr><p style="text-align: left; margin-top: 20px;">Thực nhận: ${formatNumberForDisplay(
                           finalAmount,
                           'vi-VN',
                         )} đ</p>`,
                   );
+
+                  ///Set the css for the table
+                $(win.document.body).find('th, td').css({
+                  'text-align': 'right', 
+                  'font-size': '0.8rem',
+                });
               }
             },
           },
@@ -256,7 +271,7 @@ function initializeExportDataTable(
       infoFiltered: '(lọc từ _MAX_ bản ghi)',
     },
     lengthMenu: [10, 20],
-    columnDefs: [{ className: 'dt-center', targets: '_all' }],
+    columnDefs: [{ className: 'dt-right', targets: '_all' }],
     columns: columns.map(column => {
       if (column.data === 'id') {
         return {
