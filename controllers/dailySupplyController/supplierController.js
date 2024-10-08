@@ -188,10 +188,15 @@ async function deleteSupplier(req, res) {
 async function editSupplier(req, res) {
   req.body = trimStringFields(req.body);
   try {
+    // Generate new slug if code is changed
+    const existingSupplier = await Supplier.findById(req.params.id);
+    const newSlug = req.body.code ? `${req.body.code}-${Math.floor(100000 + Math.random() * 900000)}` : existingSupplier.supplierSlug;
+
     const supplier = await Supplier.findByIdAndUpdate(
       req.params.id,
       {
         ...req.body,
+        supplierSlug: newSlug, 
         ratioSplit: req.body.ratioSplit
           ? req.body.ratioSplit.replace(',', '.')
           : 0,
