@@ -44,14 +44,14 @@ function initializeExportDataTable(
 
     const updateFooterCell = (rowIndex, cellIndex, value) => {
       $(api.table().footer().rows[rowIndex].cells[cellIndex]).html(
-        `<strong class="text-center d-block">${value}</strong>`,
+        `<strong>${value}</strong>`,
       );
     };
 
     columns.forEach(colIndex => {
       const total = calculateTotal(colIndex);
       $(api.column(colIndex).footer()).html(
-        `<strong class="text-center d-block">${formatNumberForDisplay(
+        `<strong>${formatNumberForDisplay(
           total,
           locale,
         )}</strong>`,
@@ -271,7 +271,6 @@ function initializeExportDataTable(
       infoFiltered: '(lọc từ _MAX_ bản ghi)',
     },
     lengthMenu: [10, 20],
-    columnDefs: [{ className: 'dt-right', targets: '_all' }],
     columns: columns.map(column => {
       if (column.data === 'id') {
         return {
