@@ -106,12 +106,12 @@ async function renderInputDataPage(req, res) {
 async function addData(req, res) {
   try {
     // Get today's date at midnight
-    const today = new Date().setHours(0, 0, 0, 0);
+    const today = new Date();
 
     // Check the number of entries for today
     const dailySupply = await DailySupply.findById(req.params.id);
     const todayEntries = dailySupply.data.filter(
-      entry => new Date(entry.date).setHours(0, 0, 0, 0) === today,
+      entry => new Date(entry.date) === today,
     );
 
     if (todayEntries.length >= dailySupply.limitData) {
@@ -169,7 +169,7 @@ async function addData(req, res) {
         req.headers.referer,
       );
     }
-
+    console.log(newData)
     return handleResponse(
       req,
       res,

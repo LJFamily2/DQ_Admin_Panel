@@ -23,7 +23,7 @@ router.post('/getData', authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), d
 // Admin side for detail page
 router.get('/:slug', authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.supplierController.renderDetailPage);
 router.post('/update/:id', authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.supplierController.updateArea);
-router.post('/addSupplier/:id', authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.supplierController.addSupplier);
+router.post('/addSupplier/:id', authMiddlewares.ensureRoles(['Admin', 'Văn phòng', 'Hàm lượng']), dailySupplyController.supplierController.addSupplier);
 router.post('/deleteSupplier/:id', authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.supplierController.deleteSupplier);
 router.post('/updateSupplier/:id', authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.supplierController.editSupplier);
 router.post('/getAreaSupplierData/:slug', authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.getSupplierDataController.getAreaSupplierData);
