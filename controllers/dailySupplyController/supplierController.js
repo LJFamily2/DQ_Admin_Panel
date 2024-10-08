@@ -207,15 +207,18 @@ async function deleteSupplier(req, res) {
 async function editSupplier(req, res) {
   req.body = trimStringFields(req.body);
   try {
-    // Generate new slug if code is changed
+    // Generate new slug only if code is changed
     const existingSupplier = await Supplier.findById(req.params.id);
-    const newSlug = req.body.code ? `${req.body.code}-${Math.floor(100000 + Math.random() * 900000)}` : existingSupplier.supplierSlug;
+    let newSlug = existingSupplier.supplierSlug;
+    if (req.body.code && req.body.code !== existingSupplier.code) {
+      newSlug = `${req.body.code}-${Math.floor(100000 + Math.random() * 900000)}`;
+    }
 
     const supplier = await Supplier.findByIdAndUpdate(
       req.params.id,
       {
         ...req.body,
-        supplierSlug: newSlug, 
+        supplierSlug: newSlug,
         ratioSplit: req.body.ratioSplit
           ? req.body.ratioSplit.replace(',', '.')
           : 0,
@@ -232,16 +235,22 @@ async function editSupplier(req, res) {
         req.headers.referer,
       );
     }
+
+    // Determine the redirect URL based on whether the slug has changed
+    const redirectUrl = newSlug !== existingSupplier.supplierSlug
+      ? req.headers.referer.replace(existingSupplier.supplierSlug, newSlug)
+      : req.headers.referer;
+
     return handleResponse(
       req,
       res,
       200,
       'success',
       'Sửa thông tin nhà vườn thành công!',
-      req.headers.referer,
+      redirectUrl
     );
   } catch (error) {
-    console.error('Error adding suppliers:', error);
+    console.error('Error editing supplier:', error);
     res.status(500).render('partials/500', { layout: false });
   }
 }

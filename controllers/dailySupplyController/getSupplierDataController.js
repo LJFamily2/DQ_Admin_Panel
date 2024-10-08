@@ -427,7 +427,6 @@ async function getIndividualSupplierExportData(req, res) {
       const muKe = rawMaterials['Mủ ké'] || { quantity: 0 };
 
       const muQuyKhoTotal = (muNuoc.quantity * muNuoc.percentage) / 100;
-      console.log(item)
       return {
         no: index + 1,
         date: item.date.toLocaleDateString('vi-VN'),
@@ -445,7 +444,6 @@ async function getIndividualSupplierExportData(req, res) {
         id: item._id,  
       };
     });
-    console.log(flattenedData)
     return {
       data: flattenedData,
       latestPrices: latestPrices

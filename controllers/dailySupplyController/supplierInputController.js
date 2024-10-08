@@ -169,7 +169,6 @@ async function addData(req, res) {
         req.headers.referer,
       );
     }
-    console.log(newData)
     return handleResponse(
       req,
       res,
