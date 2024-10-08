@@ -364,6 +364,7 @@ async function getIndividualSupplierExportData(req, res) {
                 _id: '$data._id', 
                 date: '$data.date',
                 rawMaterial: '$data.rawMaterial',
+                note: '$data.note',
                 supplierId: '$data.supplier',
               }
             }
@@ -400,6 +401,7 @@ async function getIndividualSupplierExportData(req, res) {
     let latestPrices = {
       muNuoc: 0,
       muTap: 0,
+      muKe: 0,
       muDong: 0
     };
 
@@ -416,6 +418,7 @@ async function getIndividualSupplierExportData(req, res) {
       // Update latest prices
       if (rawMaterials['Mủ nước']?.price > 0) latestPrices.muNuoc = rawMaterials['Mủ nước'].price;
       if (rawMaterials['Mủ tạp']?.price > 0) latestPrices.muTap = rawMaterials['Mủ tạp'].price;
+      if (rawMaterials['Mủ ké']?.price > 0) latestPrices.muKe = rawMaterials['Mủ ké'].price;
       if (rawMaterials['Mủ đông']?.price > 0) latestPrices.muDong = rawMaterials['Mủ đông'].price;
 
       const muNuoc = rawMaterials['Mủ nước'] || { quantity: 0, percentage: 0 };
@@ -424,7 +427,7 @@ async function getIndividualSupplierExportData(req, res) {
       const muKe = rawMaterials['Mủ ké'] || { quantity: 0 };
 
       const muQuyKhoTotal = (muNuoc.quantity * muNuoc.percentage) / 100;
-
+      console.log(item)
       return {
         no: index + 1,
         date: item.date.toLocaleDateString('vi-VN'),
@@ -442,7 +445,7 @@ async function getIndividualSupplierExportData(req, res) {
         id: item._id,  
       };
     });
-
+    console.log(flattenedData)
     return {
       data: flattenedData,
       latestPrices: latestPrices

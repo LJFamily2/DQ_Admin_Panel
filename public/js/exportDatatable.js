@@ -44,14 +44,14 @@ function initializeExportDataTable(
 
     const updateFooterCell = (rowIndex, cellIndex, value) => {
       $(api.table().footer().rows[rowIndex].cells[cellIndex]).html(
-        `<strong>${value}</strong>`
+        `<strong>${value}</strong>`,
       );
     };
 
     columns.forEach(colIndex => {
       const total = calculateTotal(colIndex);
       $(api.column(colIndex).footer()).html(
-        `<strong>${formatNumberForDisplay(total, locale)}</strong>`
+        `<strong>${formatNumberForDisplay(total, locale)}</strong>`,
       );
     });
 
@@ -60,19 +60,24 @@ function initializeExportDataTable(
       const latestPrices = ajaxData?.latestPrices || {
         muNuoc: 0,
         muTap: 0,
+        muKe: 0,
         muDong: 0,
       };
 
-      const totals = [4, 6, 8].map(colIndex =>
+      const totals = [4,6,8,10].map(colIndex =>
         parseNumber($(api.column(colIndex).footer()).text()),
       );
-      const prices = ['muNuoc', 'muTap', 'muDong'].map(
+      const prices = ['muNuoc', 'muTap', 'muKe', 'muDong'].map(
         key => latestPrices[key] || 0,
       );
 
       prices.forEach((price, index) => {
         updateFooterCell(1, index + 1, formatNumberForDisplay(price, locale));
-        updateFooterCell(2, index + 1, formatNumberForDisplay(totals[index] * price, locale));
+        updateFooterCell(
+          2,
+          index + 1,
+          formatNumberForDisplay(totals[index] * price, locale),
+        );
       });
     }
   };
@@ -89,7 +94,7 @@ function initializeExportDataTable(
   }
 
   if (individualExportPage) {
-    footerCallbackOptions = setupFooterCallbackOptions([4, 6, 8]);
+    footerCallbackOptions = setupFooterCallbackOptions([4, 6, 8, 10]);
   }
 
   const pdfButton = {
@@ -251,9 +256,7 @@ function initializeExportDataTable(
       infoFiltered: '(lọc từ _MAX_ bản ghi)',
     },
     lengthMenu: [10, 20],
-    columnDefs: [
-      { className: "dt-center", targets: "_all" },
-    ],
+    columnDefs: [{ className: 'dt-center', targets: '_all' }],
     columns: columns.map(column => {
       if (column.data === 'id') {
         return {
@@ -278,9 +281,9 @@ function initializeExportDataTable(
           },
         };
       }
-      return{
+      return {
         ...column,
-      } ;
+      };
     }),
     ...footerCallbackOptions,
   };
