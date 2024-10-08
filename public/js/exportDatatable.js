@@ -44,14 +44,14 @@ function initializeExportDataTable(
 
     const updateFooterCell = (rowIndex, cellIndex, value) => {
       $(api.table().footer().rows[rowIndex].cells[cellIndex]).html(
-        `<strong>${value}</strong>`,
+        `<strong class="text-center d-block">${value}</strong>`,
       );
     };
 
     columns.forEach(colIndex => {
       const total = calculateTotal(colIndex);
       $(api.column(colIndex).footer()).html(
-        `<strong>${formatNumberForDisplay(total, locale)}</strong>`,
+        `<strong class="text-center d-block">${formatNumberForDisplay(total, locale)}</strong>`,
       );
     });
 
