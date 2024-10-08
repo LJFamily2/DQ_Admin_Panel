@@ -788,15 +788,25 @@
                   </div>
                 </div>
                 <div class="mt-3">
-                  <label for="address" class="form-label fw-bold"
-                    >Địa chỉ</label
-                  >
+                  <label for="address" class="form-label fw-bold">Địa chỉ</label>
                   <input
                     type="text"
                     class="form-control"
                     id="address"
                     name="address"
                     maxlength="70"
+                    required
+                  />
+                </div>
+                <div class="mt-3">
+                  <label for="ratioSplit" class="form-label fw-bold">Ăn chia</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="ratioSplit"
+                    name="ratioSplit"
+                    min="0"
+                    required
                   />
                 </div>
                 <div
