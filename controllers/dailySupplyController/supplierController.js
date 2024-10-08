@@ -45,7 +45,7 @@ async function updateArea(req, res) {
   req.body = trimStringFields(req.body);
   try {
     const id = req.params.id;
-    const { accountID, areaName } = req.body;
+    const { accountID, areaName, limitData } = req.body;
 
     // Check if the accountID is already assigned to another area
     const existingArea = await DailySupply.findOne({
@@ -63,11 +63,28 @@ async function updateArea(req, res) {
       );
     }
 
+    const currentArea = await DailySupply.findById(id);
+    if (!currentArea) {
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Không tìm thấy khu vực!',
+        req.headers.referer,
+      );
+    }
+
     const updateFields = {
       ...req.body,
       name: areaName,
-      slug: slugify(areaName, {lower: true, strict: true, trim: true}),
+      limitData: limitData || currentArea.limitData,
     };
+
+    // Only update slug if areaName has changed and is a non-empty string
+    if (typeof areaName === 'string' && areaName.trim() !== '' && areaName !== currentArea.name) {
+      updateFields.slug = slugify(areaName, {lower: true, trim: true});
+    }
 
     const newData = await DailySupply.findByIdAndUpdate(id, updateFields, {
       new: true,
