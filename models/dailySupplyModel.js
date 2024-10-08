@@ -12,7 +12,10 @@ const supplierSchema = new mongoose.Schema({
     ratioSplit: Number,
     supplierSlug: {
         type: String,
-        slug: 'name'
+        default: function() {
+            const randomNum = Math.floor(100000 + Math.random() * 900000); 
+            return `${this.code}-${randomNum}`; 
+        }
     }
 });
 
