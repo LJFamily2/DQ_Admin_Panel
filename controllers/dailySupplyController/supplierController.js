@@ -1,5 +1,6 @@
 const AccountModel = require('../../models/accountModel');
 const { Supplier, DailySupply } = require('../../models/dailySupplyModel');
+const slugify = require('slugify');
 
 const trimStringFields = require('../utils/trimStringFields');
 const handleResponse = require('../utils/handleResponse');
@@ -65,6 +66,7 @@ async function updateArea(req, res) {
     const updateFields = {
       ...req.body,
       name: areaName,
+      slug: slugify(areaName),
     };
 
     const newData = await DailySupply.findByIdAndUpdate(id, updateFields, {
@@ -86,7 +88,7 @@ async function updateArea(req, res) {
       200,
       'success',
       'Cập nhật khu vực thành công',
-      req.headers.referer,
+      `/nhap-du-lieu/${newData.slug}`
     );
   } catch (error) {
     console.error('Error updating area:', error);
