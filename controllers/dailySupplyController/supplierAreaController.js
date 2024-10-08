@@ -56,9 +56,11 @@ async function addArea(req, res) {
 
     const suppliers = await createSuppliers(req);
 
-    const createdSuppliers = await Supplier.create(suppliers);
-
-    const suppliersId = createdSuppliers.map(supplier => supplier._id);
+    let suppliersId = [];
+    if (suppliers && suppliers.length > 0) {
+      const createdSuppliers = await Supplier.create(suppliers);
+      suppliersId = createdSuppliers.map(supplier => supplier._id);
+    }
 
     const newData = await DailySupply.create({
       ...req.body,
