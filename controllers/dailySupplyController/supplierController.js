@@ -66,7 +66,7 @@ async function updateArea(req, res) {
     const updateFields = {
       ...req.body,
       name: areaName,
-      slug: slugify(areaName),
+      slug: slugify(areaName, {lower: true, strict: true, trim: true}),
     };
 
     const newData = await DailySupply.findByIdAndUpdate(id, updateFields, {
