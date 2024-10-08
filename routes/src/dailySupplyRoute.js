@@ -12,7 +12,7 @@ router.get('/nguyen-lieu/:slug', authMiddlewares.ensureRoles(['Admin', 'Hàm lư
 router.post('/nguyen-lieu/addData/:id', authMiddlewares.ensureRoles(['Admin', 'Hàm lượng']), dailySupplyController.supplierInputController.addData);
 router.post('/nguyen-lieu/getSupplierData/:slug', authMiddlewares.ensureRoles(['Admin', 'Hàm lượng']), dailySupplyController.getSupplierDataController.getSupplierData);
 router.post('/nguyen-lieu/updateData/:id', authMiddlewares.ensureRoles(['Admin', 'Hàm lượng', 'Văn phòng']), dailySupplyController.supplierInputController.updateSupplierData);
-router.post('/nguyen-lieu/deleteData/:id', authMiddlewares.ensureRoles(['Admin', 'Hàm lượng']), dailySupplyController.supplierInputController.deleteSupplierData);
+router.post('/nguyen-lieu/deleteData/:id', authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.supplierInputController.deleteSupplierData);
 
 // Admin side
 router.get('/', authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.supplierAreaController.renderPage);
