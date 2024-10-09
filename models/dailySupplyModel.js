@@ -10,6 +10,7 @@ const supplierSchema = new mongoose.Schema({
     identification: String,
     issueDate: String,
     ratioSplit: Number,
+    ratioMuNuocSplit: Number,
     supplierSlug: {
         type: String,
         default: function() {
