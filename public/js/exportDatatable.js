@@ -194,33 +194,33 @@ function initializeExportDataTable(
                     `<p style="text-align: left; margin-top: 20px;">Tổng số tiền: ${formatNumberForDisplay(
                       totalAmount,
                       'vi-VN',
-                    )} đ</p>`,
+                    )} </p>`,
                     `${addPrice > 0 ? `<p style="text-align: left; margin-top: 20px;">Cộng: ${formatNumberForDisplay(
                       addPrice,
                       'vi-VN'
-                    )} đ</p>` : ''}`,
+                    )} </p>` : ''}`,
                     `${minusPrice > 0 ? `<p style="text-align: left; margin-top: 20px;">Trừ: ${formatNumberForDisplay(
                       minusPrice,
                       'vi-VN'
-                    )} đ</p>` : ''}`,
+                    )} </p>` : ''}`,
                     ratioSplit > 0
                       ? `${(addPrice > 0 || minusPrice > 0) ? `<p style="text-align: left; margin-top: 20px;">Tổng sau cộng/trừ: ${formatNumberForDisplay(
                           finalAmount,
                           'vi-VN',
-                        )} đ</p>` : ''}
+                        )} </p>` : ''}
                     <p style="text-align: left; margin-top: 20px;">Tỉ lệ phân chia: ${ratioSplit}%</p>
                     <hr><p style="text-align: left; margin-top: 20px;">Thực nhận: ${formatNumberForDisplay(
                       totalAfterRatio,
                       'vi-VN',
-                    )} đ</p>`
+                    )} </p>`
                       : `${(addPrice > 0 || minusPrice > 0) ? `<p style="text-align: left; margin-top: 20px;">Tổng sau cộng/trừ: ${formatNumberForDisplay(
                           finalAmount,
                           'vi-VN',
-                        )} đ</p>` : ''}
+                        )} </p>` : ''}
                     <hr><p style="text-align: left; margin-top: 20px;">Thực nhận: ${formatNumberForDisplay(
                           finalAmount,
                           'vi-VN',
-                        )} đ</p>`,
+                        )} </p>`,
                   );
 
                   ///Set the css for the table
