@@ -225,8 +225,10 @@ function initializeExportDataTable(
 
                   ///Set the css for the table
                 $(win.document.body).find('th, td').css({
-                  'text-align': 'right', 
-                  'font-size': '0.8rem',
+                  'font-size': '0.75rem',
+                });
+                $(win.document.body).find('th').css({
+                  'white-space': 'nowrap',
                 });
               }
             },
