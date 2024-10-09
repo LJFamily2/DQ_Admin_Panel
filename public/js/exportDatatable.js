@@ -139,8 +139,8 @@ function initializeExportDataTable(
             },
             customize: function (win) {
               if (individualExportPage) {
-                const startDate = $(startDateId).val();
-                const endDate = $(endDateId).val();
+                const startDate = new Date($(startDateId).val()).toLocaleDateString('vi-VN');
+                const endDate = new Date($(endDateId).val()).toLocaleDateString('vi-VN');
                 const dateRange =
                   startDate && endDate
                     ? `Từ ngày ${startDate} đến ngày ${endDate}`
@@ -191,7 +191,7 @@ function initializeExportDataTable(
                   .end()
                   .find('table')
                   .after(
-                    `<p style="text-align: left; margin-top: 20px;">Tổng cộng số tiền: ${formatNumberForDisplay(
+                    `<p style="text-align: left; margin-top: 20px;">Tổng số tiền: ${formatNumberForDisplay(
                       totalAmount,
                       'vi-VN',
                     )} đ</p>`,
