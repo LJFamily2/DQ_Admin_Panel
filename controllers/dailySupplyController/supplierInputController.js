@@ -202,11 +202,20 @@ async function updateSupplierData(req, res) {
     } = req.body;
 
     // Find the supplier by supplierSlug
-    let supplierDoc = await Supplier.findOneAndUpdate(
-      { supplierSlug: supplier }, 
-      { name: supplier }, 
-      { upsert: true, new: true }
+    let supplierDoc = await Supplier.findOne(
+      { supplierSlug: supplier } 
     );
+
+    if (!supplierDoc) {
+      return handleResponse(
+        req,
+        res,
+        400,
+        'fail',
+        'Nhà vườn không tồn tại!', 
+        req.headers.referer,
+      );
+    }
 
     // Prepare the raw material data
     const rawMaterial = [
