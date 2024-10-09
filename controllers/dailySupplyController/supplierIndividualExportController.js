@@ -16,7 +16,8 @@ async function renderPage(req, res) {
 
     const area = await DailySupply.findOne({ slug })
       .populate('accountID')
-      .populate('suppliers');
+      .populate('suppliers')
+      .populate('data.supplier')  
 
     if (!area) {
       return res.status(404).render('partials/404', { layout: false });
@@ -29,7 +30,7 @@ async function renderPage(req, res) {
 
     // Filter data for the specific supplier
     const supplierSpecificData = area.data.filter(item => 
-      item.supplier.toString() === supplierData._id.toString()
+      item.supplier._id.toString() === supplierData._id.toString()
     );
 
     res.render('src/dailySupplyIndividualExportPage', {

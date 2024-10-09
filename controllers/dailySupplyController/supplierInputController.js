@@ -188,7 +188,7 @@ async function updateSupplierData(req, res) {
     const { id } = req.params;
     const {
       date,
-      supplier,
+      supplier, 
       muNuocQuantity,
       muNuocPercentage,
       muTapQuantity,
@@ -201,10 +201,10 @@ async function updateSupplierData(req, res) {
       note,
     } = req.body;
 
-    // Find or update the supplier
+    // Find the supplier by supplierSlug
     let supplierDoc = await Supplier.findOneAndUpdate(
-      { name: supplier },
-      { name: supplier },
+      { supplierSlug: supplier }, 
+      { name: supplier }, 
       { upsert: true, new: true }
     );
 
@@ -239,7 +239,7 @@ async function updateSupplierData(req, res) {
       {
         $set: {
           'data.$.date': new Date(date),
-          'data.$.supplier': supplierDoc._id,
+          'data.$.supplier': supplierDoc._id, 
           'data.$.rawMaterial': rawMaterial,
           'data.$.note': trimStringFields(note) || '',
         },
