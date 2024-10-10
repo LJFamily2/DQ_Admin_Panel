@@ -31,8 +31,15 @@ function initializeExportDataTable(
   minusPriceId,
   supplierName,
   ratioSplit,
+  ratioMuNuocSplit // Added parameter
 ) {
   const rowGroupOptions = rowGroup ? { dataSrc: rowGroup } : {};
+
+  const updateFooterCell = (api, rowIndex, cellIndex, value) => {
+    $(api.table().footer().rows[rowIndex].cells[cellIndex]).html(
+      `<strong>${value}</strong>`,
+    );
+  };
 
   const setupFooterCallback = (columns, api, locale = 'vi-VN') => {
     const calculateTotal = colIndex => {
@@ -42,19 +49,24 @@ function initializeExportDataTable(
         .reduce((acc, val) => acc + parseNumber(val), 0);
     };
 
-    const updateFooterCell = (rowIndex, cellIndex, value) => {
-      $(api.table().footer().rows[rowIndex].cells[cellIndex]).html(
-        `<strong>${value}</strong>`,
-      );
-    };
+    const totalQuyKho = calculateTotal(4); 
+    const totalAfterRatio = ratioMuNuocSplit > 0 ? totalQuyKho * (ratioMuNuocSplit / 100) : 0;
 
+
+    if (ratioMuNuocSplit > 0) {
+      // Display three columns if ratio is greater than 0
+      updateFooterCell(api, 0, 1, `${ratioMuNuocSplit}%`); // Percentage
+      updateFooterCell(api, 0, 2, formatNumberForDisplay(totalQuyKho, locale)); // Current total
+      updateFooterCell(api, 0, 3, formatNumberForDisplay(totalAfterRatio, locale)); // Total * percentage
+    } else {
+      updateFooterCell(api, 0, 1, formatNumberForDisplay(totalQuyKho, locale));
+    }
+
+    // Update other footers as before
     columns.forEach(colIndex => {
       const total = calculateTotal(colIndex);
       $(api.column(colIndex).footer()).html(
-        `<strong>${formatNumberForDisplay(
-          total,
-          locale,
-        )}</strong>`,
+        `<strong>${formatNumberForDisplay(total, locale)}</strong>`,
       );
     });
 
@@ -75,8 +87,9 @@ function initializeExportDataTable(
       );
 
       prices.forEach((price, index) => {
-        updateFooterCell(1, index + 1, formatNumberForDisplay(price, locale));
+        updateFooterCell(api, 1, index + 1, formatNumberForDisplay(price, locale));
         updateFooterCell(
+          api,
           2,
           index + 1,
           formatNumberForDisplay(totals[index] * price, locale),
@@ -97,7 +110,7 @@ function initializeExportDataTable(
   }
 
   if (individualExportPage) {
-    footerCallbackOptions = setupFooterCallbackOptions([4, 6, 8, 10]);
+    footerCallbackOptions = setupFooterCallbackOptions([ 6, 8, 10]);
   }
 
   const pdfButton = {
