@@ -9,14 +9,17 @@ const supplierSchema = new mongoose.Schema({
     phone: String,
     identification: String,
     issueDate: String,
-    ratioSplit: Number,
-    ratioMuNuocSplit: Number,
+    ratioSplit: {
+        type: Number,
+        default: 0
+    },
+    ratioMuNuocSplit: {
+        type: Number,
+        default: 0
+    },
     supplierSlug: {
         type: String,
-        default: function() {
-            const randomNum = Math.floor(100000 + Math.random() * 900000); 
-            return `${this.code}-${randomNum}`; 
-        }
+        default: () => `${this.code}-${Math.floor(100000 + Math.random() * 900000)}`
     }
 });
 
