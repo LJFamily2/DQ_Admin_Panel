@@ -141,8 +141,8 @@ async function addData(req, res) {
     const rawMaterials = req.body.name.map((name, index) => {
       return {
         name: name,
-        percentage: name === 'Mủ nước' ? req.body.percentage : 0,
-        quantity: req.body.quantity[index] || 0,
+        percentage: name === 'Mủ nước' ? convertToDecimal(req.body.percentage) : 0,
+        quantity: convertToDecimal(req.body.quantity[index] || 0), 
       };
     });
 

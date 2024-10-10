@@ -195,7 +195,7 @@ async function getSupplierInputData(req, res, isArea) {
         muNuocPercentage: rawMaterials['Mủ nước']?.percentage?.toLocaleString('vi-VN') || '',
         muNuocQuantityToTal:
           rawMaterials['Mủ nước']?.quantity && rawMaterials['Mủ nước']?.percentage
-            ? Number(((rawMaterials['Mủ nước'].quantity * rawMaterials['Mủ nước'].percentage) / 100).toFixed(5))
+            ? Number(((rawMaterials['Mủ nước'].quantity * rawMaterials['Mủ nước'].percentage) / 100).toFixed(5)).toLocaleString('vi-VN')
             : '',
         muTapQuantity: rawMaterials['Mủ tạp']?.quantity?.toLocaleString('vi-VN') || '',
         muKeQuantity: rawMaterials['Mủ ké']?.quantity?.toLocaleString('vi-VN') || '',
