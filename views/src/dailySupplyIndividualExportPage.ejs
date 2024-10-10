@@ -537,12 +537,13 @@
               />
             </div>
             <div class="mt-3">
-              <label for="ratioMuNuocSplit" class="form-label fw-bold">Ăn chia theo quy khô</label>
+              <label for="ratioMuNuocSplit" class="form-label fw-bold">Ăn chia quy khô</label>
               <input
                 type="text"
                 class="form-control"
                 id="ratioMuNuocSplit"
                 name="ratioMuNuocSplit"
+                value="<%= supplierData.ratioMuNuocSplit.toLocaleString('vi-VN') %>"
                 oninput="handlePercentageInput(this)"
 
               />

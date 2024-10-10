@@ -555,7 +555,7 @@
                                 class="form-control"
                                 id="ratioMuNuocSplit"
                                 name="ratioMuNuocSplit"
-                                value="<%= supplier.ratioMuNuocSplit %>"
+                                value="<%= supplier.ratioMuNuocSplit.toLocaleString('vi-VN') %>"
                                 oninput="handlePercentageInput(this)"
                               />
                             </div>
@@ -568,7 +568,7 @@
                                 class="form-control"
                                 id="ratioSplit"
                                 name="ratioSplit"
-                                value="<%= supplier.ratioSplit %>"
+                                value="<%= supplier.ratioSplit.toLocaleString('vi-VN') %>"
                                 min="1"
                               />
                             </div>
