@@ -209,7 +209,7 @@ async function getSupplierInputData(req, res, isArea) {
 
 async function getSupplierExportData(req, res, isArea) {
   try {
-    const { draw, search, startDate, endDate } = req.body;
+    const { draw, search, startDate, endDate, order } = req.body;
     const searchValue = search?.value?.toLowerCase() || '';
 
     const { startDateUTC, endDateUTC } = parseDates(startDate, endDate);
@@ -219,7 +219,11 @@ async function getSupplierExportData(req, res, isArea) {
       dateFilter,
       searchValue,
     );
-    const sortStage = { $sort: { 'data.date': -1 } };
+    
+    // Determine sort direction based on order parameter
+    const sortDirection = order && order[0] && order[0].dir === 'desc' ? -1 : 1;
+    const sortStage = { $sort: { 'data.date': sortDirection } };
+    
     const pipeline = createPipeline(req.params.slug, matchStage, sortStage);
 
     const result = await DailySupply.aggregate(pipeline);
@@ -343,7 +347,7 @@ async function getIndividualSupplierExportData(req, res) {
       return res.status(404).json({ error: 'Supplier not found' });
     }
 
-    const sortOrder = order && order[0] ? (order[0].dir === 'desc' ? -1 : 1) : -1;
+    const sortOrder = order && order[0] && order[0].dir === 'desc' ? -1 : 1;
 
     const pipeline = [
       { $match: { slug: slug } },
