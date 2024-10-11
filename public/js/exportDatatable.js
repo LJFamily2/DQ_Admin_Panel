@@ -151,6 +151,25 @@ function initializeExportDataTable(
               columns: ':visible',
             },
             customize: function (win) {
+              if(exportPageFooter) {
+                const startDate = new Date($(startDateId).val()).toLocaleDateString('vi-VN');
+                const endDate = new Date($(endDateId).val()).toLocaleDateString('vi-VN');
+                const dateRange =
+                  startDate && endDate
+                    ? `Từ ngày ${startDate} đến ngày ${endDate}`
+                    : '';
+
+                    $(win.document.body)
+                  .css('text-align', 'center')
+                  .find('h1')
+                  .css('text-align', 'center')
+                  .after(`<h6 style="text-align: center;">${dateRange}</h6>`)
+                  .end()
+                  .find('h6')
+                  .after(
+                    `<h6 style="text-align: left;">Khu vực: ${supplierName}</h6>`,
+                  )
+              }
               if (individualExportPage) {
                 const startDate = new Date($(startDateId).val()).toLocaleDateString('vi-VN');
                 const endDate = new Date($(endDateId).val()).toLocaleDateString('vi-VN');
