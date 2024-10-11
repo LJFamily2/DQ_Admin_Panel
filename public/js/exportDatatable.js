@@ -31,7 +31,7 @@ function initializeExportDataTable(
   minusPriceId,
   supplierName,
   ratioSplit,
-  ratioMuNuocSplit // Added parameter
+  ratioMuNuocSplit 
 ) {
   const rowGroupOptions = rowGroup ? { dataSrc: rowGroup } : {};
 
@@ -106,7 +106,7 @@ function initializeExportDataTable(
 
   let footerCallbackOptions;
   if (exportPageFooter) {
-    footerCallbackOptions = setupFooterCallbackOptions([4, 6, 7, 9, 10, 12,13,15]);
+    footerCallbackOptions = setupFooterCallbackOptions([3, 5, 6, 8, 9, 11, 12, 14]);
   }
 
   if (individualExportPage) {

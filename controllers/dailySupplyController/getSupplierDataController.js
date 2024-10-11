@@ -274,7 +274,8 @@ async function getSupplierExportData(req, res, isArea) {
           supplier: { $first: '$supplier' },
           rawMaterials: {
             $push: '$data.rawMaterial'
-          }
+          },
+          notes: { $push: '$data.note' }
         }
       },
       {
@@ -291,11 +292,14 @@ async function getSupplierExportData(req, res, isArea) {
       const rawMaterials = item.rawMaterials.reduce((acc, rawMaterialArray) => {
         rawMaterialArray.forEach(raw => {
           if (!acc[raw.name]) {
-            acc[raw.name] = { quantity: 0, percentage: 0, price: 0 };
+            acc[raw.name] = { quantity: 0, percentage: 0, price: 0, count: 0 };
           }
           acc[raw.name].quantity += raw.quantity || 0;
           acc[raw.name].percentage += raw.percentage || 0;
-          acc[raw.name].price += raw.price || 0;
+          if (raw.price) {
+            acc[raw.name].price += raw.price;
+            acc[raw.name].count++;
+          }
         });
         return acc;
       }, {});
@@ -303,7 +307,9 @@ async function getSupplierExportData(req, res, isArea) {
       Object.keys(rawMaterials).forEach(key => {
         const count = item.rawMaterials.length;
         rawMaterials[key].percentage /= count;
-        rawMaterials[key].price /= count;
+        if (rawMaterials[key].count > 0) {
+          rawMaterials[key].price /= rawMaterials[key].count;
+        }
       });
 
       const muQuyKhoQuantity =
@@ -323,6 +329,8 @@ async function getSupplierExportData(req, res, isArea) {
       const muDongDonGia = rawMaterials['Mủ đông']?.price;
       const muDongTotal = muDongQuantity * muDongDonGia;
 
+      const combinedNotes = item.notes.filter(note => note).join(', ');
+
       return {
         no: index + 1,
         supplier: item.supplier.name || '',
@@ -339,6 +347,7 @@ async function getSupplierExportData(req, res, isArea) {
         muDongQuantity: muDongQuantity > 0 ? muDongQuantity.toLocaleString('vi-VN') : '',
         muDongDonGia: muDongDonGia > 0 ? muDongDonGia.toLocaleString('vi-VN') : '',
         muDongTotal: muDongTotal > 0 ? muDongTotal.toLocaleString('vi-VN') : '',
+        note: combinedNotes,
         id: item._id,
       };
     });
