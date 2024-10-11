@@ -188,7 +188,7 @@ async function updateSupplierData(req, res) {
     const { id } = req.params;
     const {
       date,
-      supplier, 
+      supplier,
       muNuocQuantity,
       muNuocPercentage,
       muTapQuantity,
@@ -201,20 +201,23 @@ async function updateSupplierData(req, res) {
       note,
     } = req.body;
 
-    // Find the supplier by supplierSlug
-    let supplierDoc = await Supplier.findOne(
-      { supplierSlug: supplier } 
-    );
+    let supplierDoc;
 
-    if (!supplierDoc) {
-      return handleResponse(
-        req,
-        res,
-        400,
-        'fail',
-        'Nhà vườn không tồn tại!', 
-        req.headers.referer,
-      );
+    // Check if supplier is provided
+    if (supplier) {
+      // Find the supplier by supplierSlug
+      supplierDoc = await Supplier.findOne({ supplierSlug: supplier });
+
+      if (!supplierDoc) {
+        return handleResponse(
+          req,
+          res,
+          400,
+          'fail',
+          'Nhà vườn không tồn tại!',
+          req.headers.referer,
+        );
+      }
     }
 
     // Prepare the raw material data
@@ -242,17 +245,22 @@ async function updateSupplierData(req, res) {
       },
     ];
 
+    // Prepare update object
+    const updateObject = {
+      'data.$.date': new Date(date),
+      'data.$.rawMaterial': rawMaterial,
+      'data.$.note': trimStringFields(note) || '',
+    };
+
+    // Only update supplier if it was provided and found
+    if (supplierDoc) {
+      updateObject['data.$.supplier'] = supplierDoc._id;
+    }
+
     // Update the daily supply data
     const updatedData = await DailySupply.findOneAndUpdate(
       { 'data._id': id },
-      {
-        $set: {
-          'data.$.date': new Date(date),
-          'data.$.supplier': supplierDoc._id, 
-          'data.$.rawMaterial': rawMaterial,
-          'data.$.note': trimStringFields(note) || '',
-        },
-      },
+      { $set: updateObject },
       { new: true }
     );
 
