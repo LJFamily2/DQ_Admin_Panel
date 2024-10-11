@@ -146,7 +146,7 @@ function initializeExportDataTable(
             extend: 'print',
             title: individualExportPage
               ? 'Phiếu Tính Tiền Mủ Cao Su'
-              : 'Nguyên Liệu Khu Vực',
+              : 'Bảng Kê Ký Nhận Tiền Thanh Toán Mua Mủ Cao Su',
             exportOptions: {
               columns: ':visible',
             },
@@ -160,15 +160,21 @@ function initializeExportDataTable(
                     : '';
 
                     $(win.document.body)
-                  .css('text-align', 'center')
                   .find('h1')
                   .css('text-align', 'center')
+                  .css('font-size', '1.5rem')
                   .after(`<h6 style="text-align: center;">${dateRange}</h6>`)
                   .end()
                   .find('h6')
                   .after(
                     `<h6 style="text-align: left;">Khu vực: ${supplierName}</h6>`,
                   )
+                  $(win.document.body).find('th, td').css({
+                    'font-size': '0.75rem',
+                  });
+                  $(win.document.body).find('th').css({
+                    'white-space': 'nowrap',
+                  });
               }
               if (individualExportPage) {
                 const startDate = new Date($(startDateId).val()).toLocaleDateString('vi-VN');
@@ -211,7 +217,6 @@ function initializeExportDataTable(
 
                   /// Add the date range and supplier name to the top of the table
                 $(win.document.body)
-                  .css('text-align', 'center')
                   .find('h1')
                   .css('text-align', 'center')
                   .after(`<h6 style="text-align: center;">${dateRange}</h6>`)

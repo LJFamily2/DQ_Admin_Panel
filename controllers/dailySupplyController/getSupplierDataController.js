@@ -357,6 +357,7 @@ async function getSupplierExportData(req, res, isArea) {
         muDongDonGia: muDongDonGia > 0 ? muDongDonGia.toLocaleString('vi-VN') : '',
         muDongTotal: muDongTotal > 0 ? muDongTotal.toLocaleString('vi-VN') : '',
         note: combinedNotes,
+        signature: '',
         id: item._id,
       };
     });

@@ -83,6 +83,7 @@
                 <th colspan="3">Mủ ké</th>
                 <th colspan="3">Mủ đông</th>
                 <th rowspan="2">Ghi chú</th>
+                <th rowspan="2">Ký nhận</th>
                 <th rowspan="2">Chỉnh sửa</th>
               </tr>
               <tr>
@@ -385,6 +386,7 @@
               <th></th>
               <th></th>
               <th></th>
+              <th></th>
               <th colspan="2"></th>
             </tfoot>
           </table>
@@ -446,6 +448,7 @@
       { data: 'muDongDonGia', orderable: false, },
       { data: 'muDongTotal', orderable: false, },
       { data: 'note', orderable: false, },
+      { data: 'signature', orderable: false, },
       { data: 'id', orderable: false },
     ];
     
@@ -462,8 +465,11 @@
       '#clearFilterButton',
       true,
       true,
+      false,
+      false,
+      false,
+      '<%= area.name %>',
     );
   
     tippy('.tooltip-wrapper');
-  </script>
-  
+  </script> 
