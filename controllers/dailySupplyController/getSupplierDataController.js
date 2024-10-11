@@ -289,35 +289,44 @@ async function getSupplierExportData(req, res, isArea) {
 
   function flattenData(data, isArea) {
     return data.map((item, index) => {
+      let totalMuQuyKho = 0;
+      let totalMuNuocQuantity = 0;
+      let totalMuNuocPrice = 0;
+      let priceCount = 0;
+
       const rawMaterials = item.rawMaterials.reduce((acc, rawMaterialArray) => {
         rawMaterialArray.forEach(raw => {
           if (!acc[raw.name]) {
-            acc[raw.name] = { quantity: 0, percentage: 0, price: 0, count: 0 };
+            acc[raw.name] = { quantity: 0, price: 0, count: 0 };
           }
           acc[raw.name].quantity += raw.quantity || 0;
-          acc[raw.name].percentage += raw.percentage || 0;
           if (raw.price) {
             acc[raw.name].price += raw.price;
             acc[raw.name].count++;
+          }
+          if (raw.name === 'Mủ nước') {
+            const quyKho = (raw.quantity * raw.percentage) / 100;
+            totalMuQuyKho += quyKho;
+            totalMuNuocQuantity += raw.quantity;
+            if (raw.price) {
+              totalMuNuocPrice += raw.price;
+              priceCount++;
+            }
           }
         });
         return acc;
       }, {});
 
       Object.keys(rawMaterials).forEach(key => {
-        const count = item.rawMaterials.length;
-        rawMaterials[key].percentage /= count;
         if (rawMaterials[key].count > 0) {
           rawMaterials[key].price /= rawMaterials[key].count;
         }
       });
 
-      const muQuyKhoQuantity =
-        (rawMaterials['Mủ nước']?.quantity *
-          rawMaterials['Mủ nước']?.percentage) /
-        100;
-      const muQuyKhoPrice = rawMaterials['Mủ nước']?.price;
-      const muQuyKhoToTal = muQuyKhoPrice * muQuyKhoQuantity;
+      const averageMuNuocPrice = priceCount > 0 ? totalMuNuocPrice / priceCount : 0;
+
+      const muQuyKhoToTal = totalMuQuyKho * averageMuNuocPrice;
+
       const muTapTotal =
         rawMaterials['Mủ tạp']?.quantity * rawMaterials['Mủ tạp']?.price;
 
@@ -335,8 +344,8 @@ async function getSupplierExportData(req, res, isArea) {
         no: index + 1,
         supplier: item.supplier.name || '',
         ...(isArea && { code: item.supplier.code || '' }),
-        muQuyKhoQuantity: muQuyKhoQuantity > 0 ? muQuyKhoQuantity.toLocaleString('vi-VN') : '',
-        muQuyKhoDonGia: muQuyKhoPrice > 0 ? muQuyKhoPrice.toLocaleString('vi-VN') : '',
+        muQuyKhoQuantity: totalMuQuyKho > 0 ? totalMuQuyKho.toLocaleString('vi-VN') : '',
+        muQuyKhoDonGia: averageMuNuocPrice > 0 ? averageMuNuocPrice.toLocaleString('vi-VN') : '',
         muQuyKhoToTal: muQuyKhoToTal > 0 ? muQuyKhoToTal.toLocaleString('vi-VN') : '',
         muTapQuantity: rawMaterials['Mủ tạp']?.quantity > 0 ? rawMaterials['Mủ tạp'].quantity.toLocaleString('vi-VN') : '',
         muTapDonGia: rawMaterials['Mủ tạp']?.price > 0 ? rawMaterials['Mủ tạp'].price.toLocaleString('vi-VN') : '',
