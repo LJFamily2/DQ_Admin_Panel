@@ -8,7 +8,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     <script src="https://cdn.datatables.net/buttons/3.1.2/js/buttons.print.min.js"></script>
-    <script src="https://cdn.datatables.net/rowgroup/1.5.0/js/dataTables.rowGroup.js"></script>
     <script src="/js/exportDatatable.js"></script>
 
     <script src="/js/inputFieldRestriction.js" defer></script>
@@ -431,8 +430,8 @@
 
   <script>
      const columns = [
-      { data: 'no', visible: false, orderable: false },
-      { data: 'supplier', orderable: false },
+      { data: 'no', orderable: false },
+      { data: 'supplier' },
       { data: 'code', orderable: false },
       { data: 'muQuyKhoQuantity', orderable: false, },
       { data: 'muQuyKhoDonGia', orderable: false, },
