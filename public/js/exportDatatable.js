@@ -106,7 +106,7 @@ function initializeExportDataTable(
 
   let footerCallbackOptions;
   if (exportPageFooter) {
-    footerCallbackOptions = setupFooterCallbackOptions([4, 6, 7, 9, 10, 12]);
+    footerCallbackOptions = setupFooterCallbackOptions([4, 6, 7, 9, 10, 12,13,15]);
   }
 
   if (individualExportPage) {

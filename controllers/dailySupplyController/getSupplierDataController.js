@@ -209,7 +209,7 @@ async function getSupplierInputData(req, res, isArea) {
 
 async function getSupplierExportData(req, res, isArea) {
   try {
-    const { draw, search, startDate, endDate, order } = req.body;
+    const { draw, search, startDate, endDate } = req.body;
     const searchValue = search?.value?.toLowerCase() || '';
 
     const { startDateUTC, endDateUTC } = parseDates(startDate, endDate);
@@ -220,11 +220,7 @@ async function getSupplierExportData(req, res, isArea) {
       searchValue,
     );
     
-    // Determine sort direction based on order parameter
-    const sortDirection = order && order[0] && order[0].dir === 'desc' ? -1 : 1;
-    const sortStage = { $sort: { 'data.date': sortDirection } };
-    
-    const pipeline = createPipeline(req.params.slug, matchStage, sortStage);
+    const pipeline = createPipeline(req.params.slug, matchStage);
 
     const result = await DailySupply.aggregate(pipeline);
     const totalRecords = result[0].totalRecords[0]?.count || 0;
@@ -258,7 +254,7 @@ async function getSupplierExportData(req, res, isArea) {
     };
   }
 
-  function createPipeline(slug, matchStage, sortStage) {
+  function createPipeline(slug, matchStage) {
     return [
       { $match: { slug } },
       { $unwind: '$data' },
@@ -272,7 +268,15 @@ async function getSupplierExportData(req, res, isArea) {
       },
       { $unwind: '$supplier' },
       matchStage,
-      sortStage,
+      {
+        $group: {
+          _id: '$supplier._id',
+          supplier: { $first: '$supplier' },
+          rawMaterials: {
+            $push: '$data.rawMaterial'
+          }
+        }
+      },
       {
         $facet: {
           data: [],
@@ -284,21 +288,30 @@ async function getSupplierExportData(req, res, isArea) {
 
   function flattenData(data, isArea) {
     return data.map((item, index) => {
-      const rawMaterials = item.data.rawMaterial.reduce((acc, raw) => {
-        acc[raw.name] = {
-          quantity: raw.quantity,
-          percentage: raw.percentage,
-          price: raw.price,
-        };
+      const rawMaterials = item.rawMaterials.reduce((acc, rawMaterialArray) => {
+        rawMaterialArray.forEach(raw => {
+          if (!acc[raw.name]) {
+            acc[raw.name] = { quantity: 0, percentage: 0, price: 0 };
+          }
+          acc[raw.name].quantity += raw.quantity || 0;
+          acc[raw.name].percentage += raw.percentage || 0;
+          acc[raw.name].price += raw.price || 0;
+        });
         return acc;
       }, {});
+
+      Object.keys(rawMaterials).forEach(key => {
+        const count = item.rawMaterials.length;
+        rawMaterials[key].percentage /= count;
+        rawMaterials[key].price /= count;
+      });
 
       const muQuyKhoQuantity =
         (rawMaterials['Mủ nước']?.quantity *
           rawMaterials['Mủ nước']?.percentage) /
         100;
       const muQuyKhoPrice = rawMaterials['Mủ nước']?.price;
-      const muQuyKhoToTal = rawMaterials['Mủ nước']?.price * muQuyKhoQuantity;
+      const muQuyKhoToTal = muQuyKhoPrice * muQuyKhoQuantity;
       const muTapTotal =
         rawMaterials['Mủ tạp']?.quantity * rawMaterials['Mủ tạp']?.price;
 
@@ -312,7 +325,6 @@ async function getSupplierExportData(req, res, isArea) {
 
       return {
         no: index + 1,
-        date: new Date(item.data.date).toLocaleDateString('vi-VN'),
         supplier: item.supplier.name || '',
         ...(isArea && { code: item.supplier.code || '' }),
         muQuyKhoQuantity: muQuyKhoQuantity > 0 ? muQuyKhoQuantity.toLocaleString('vi-VN') : '',
@@ -327,8 +339,7 @@ async function getSupplierExportData(req, res, isArea) {
         muDongQuantity: muDongQuantity > 0 ? muDongQuantity.toLocaleString('vi-VN') : '',
         muDongDonGia: muDongDonGia > 0 ? muDongDonGia.toLocaleString('vi-VN') : '',
         muDongTotal: muDongTotal > 0 ? muDongTotal.toLocaleString('vi-VN') : '',
-        note: item.data.note || '',
-        id: item.data._id,
+        id: item._id,
       };
     });
   }
