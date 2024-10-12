@@ -9,6 +9,14 @@ const supplierSchema = new mongoose.Schema({
     phone: String,
     identification: String,
     issueDate: String,
+    bonus: {
+        type: Number,
+        default: 0
+    },
+    loss: {
+        type: Number,
+        default: 0
+    },
     ratioSplit: {
         type: Number,
         default: 0
