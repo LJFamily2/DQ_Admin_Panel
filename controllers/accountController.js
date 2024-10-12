@@ -2,7 +2,7 @@ const UserModel = require('../models/accountModel');
 const bcrypt = require('bcryptjs');
 const handleResponse = require('./utils/handleResponse');
 const trimStringFields = require('./utils/trimStringFields');
-const { DailySupply } = require('../models/dailySupplyModel');
+const { Area } = require('../models/AreaModel');
 
 module.exports = {
   initialSetupPage,
@@ -256,8 +256,8 @@ async function deleteUser(req, res) {
 
     // Proceed to delete the user from the database
     await UserModel.findByIdAndDelete(req.params.id);
-    // Remove the accountID from the DailySupply collection
-    await DailySupply.updateMany(
+    // Remove the accountID from the Area collection
+    await Area.updateMany(
       { accountID: req.params.id },
       { $unset: { accountID: '' } },
     );
@@ -297,10 +297,10 @@ async function deleteAllUsers(req, res) {
     // Delete all users with role not equal to 'Admin'
     await UserModel.deleteMany({ _id: { $in: userIds } });
 
-    // Remove the accountID from the DailySupply collection
-    await DailySupply.updateMany(
+    // Remove the accountID from the Area collection
+    await Area.updateMany(
       { accountID: { $in: userIds } },
-      { $unset: { accountID: "" } }
+      { $unset: { accountID: '' } },
     );
 
     return handleResponse(

@@ -1,72 +1,78 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 const slug = require('mongoose-slug-generator');
 mongoose.plugin(slug);
 
 const supplierSchema = new mongoose.Schema({
-    name: String,
-    code: String,
-    address: String,
-    phone: String,
-    identification: String,
-    issueDate: String,
-    bonus: {
-        type: Number,
-        default: 0
-    },
-    loss: {
-        type: Number,
-        default: 0
-    },
-    ratioSplit: {
-        type: Number,
-        default: 0
-    },
-    ratioMuNuocSplit: {
-        type: Number,
-        default: 0
-    },
-    supplierSlug: {
-        type: String,
-        default: () => `${this.code}-${Math.floor(100000 + Math.random() * 900000)}`
-    }
+  name: String,
+  code: String,
+  address: String,
+  phone: String,
+  identification: String,
+  issueDate: String,
+  bonus: {
+    type: Number,
+    default: 0,
+  },
+  loss: {
+    type: Number,
+    default: 0,
+  },
+  ratioSplit: {
+    type: Number,
+    default: 0,
+  },
+  ratioMuNuocSplit: {
+    type: Number,
+    default: 0,
+  },
+  supplierSlug: {
+    type: String,
+    default: () =>
+      `${this.code}-${Math.floor(100000 + Math.random() * 900000)}`,
+  },
 });
 
-const dailySupplySchema = new mongoose.Schema({
-    accountID: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Accounts',
-    },
-    name: String,
-    limitData: Number,
-    data: [{
-        date: Date,
-        rawMaterial:[{
-            name: String, 
-            percentage: Number,
-            quantity: Number,
-            price: Number,  
-        }],
-        supplier: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Supplier' 
+const areaSchema = new mongoose.Schema({
+  accountID: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Accounts',
+  },
+  name: String,
+  limitData: Number,
+  data: [
+    {
+      date: Date,
+      rawMaterial: [
+        {
+          name: String,
+          percentage: Number,
+          quantity: Number,
+          price: Number,
         },
-        note: String,
-    }],
-    suppliers: [{
+      ],
+      supplier: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Supplier' 
-    }],
-    slug: {
-        type: String,
-        slug: 'name'
-    }
-
+        ref: 'Supplier',
+      },
+      note: String,
+    },
+  ],
+  suppliers: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Supplier',
+    },
+  ],
+  slug: {
+    type: String,
+    slug: 'name',
+  },
 });
 
-const Supplier = mongoose.model("Supplier", supplierSchema);
-const DailySupply = mongoose.model("DailySupply", dailySupplySchema);
+const Supplier = mongoose.model('Supplier', supplierSchema);
+const Area = mongoose.model('Area', areaSchema);
 
 module.exports = {
-    Supplier,
-    DailySupply
+  Supplier,
+  Area,
 };

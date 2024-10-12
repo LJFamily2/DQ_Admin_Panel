@@ -1,4 +1,4 @@
-const { Supplier, DailySupply } = require('../../models/dailySupplyModel');
+const { Supplier, Area } = require('../../models/AreaModel');
 
 const handleResponse = require('../utils/handleResponse');
 const convertToDecimal = require('../utils/convertToDecimal');
@@ -14,26 +14,28 @@ async function renderPage(req, res) {
     const { slug, supplierSlug } = req.params;
     const { startDate, endDate } = req.query;
 
-    const area = await DailySupply.findOne({ slug })
+    const area = await Area.findOne({ slug })
       .populate('accountID')
       .populate('suppliers')
-      .populate('data.supplier')  
+      .populate('data.supplier');
 
     if (!area) {
       return res.status(404).render('partials/404', { layout: false });
     }
 
-    const supplierData = area.suppliers.find(s => s.supplierSlug === supplierSlug);
+    const supplierData = area.suppliers.find(
+      s => s.supplierSlug === supplierSlug,
+    );
     if (!supplierData) {
       return res.status(404).render('partials/404', { layout: false });
     }
 
     // Filter data for the specific supplier
-    const supplierSpecificData = area.data.filter(item => 
-      item.supplier._id.toString() === supplierData._id.toString()
+    const supplierSpecificData = area.data.filter(
+      item => item.supplier._id.toString() === supplierData._id.toString(),
     );
 
-    res.render('src/dailySupplyIndividualExportPage', {
+    res.render('src/AreaIndividualExportPage', {
       layout: './layouts/defaultLayout',
       title: `Xuất dữ liệu mủ của ${supplierData.name}`,
       supplierData,
@@ -52,38 +54,64 @@ async function renderPage(req, res) {
 
 async function updateSupplierPrice(req, res) {
   try {
-    const { startDate, endDate, dryPrice, mixedPrice, kePrice, dongPrice } = req.body;
+    const { startDate, endDate, dryPrice, mixedPrice, kePrice, dongPrice } =
+      req.body;
     const { slug, supplierSlug } = req.params;
 
-    const area = await DailySupply.findOne({ slug: slug })
+    const area = await Area.findOne({ slug: slug })
       .populate('accountID')
       .populate('suppliers')
       .populate('data.supplier');
 
     if (!area) {
-      return handleResponse(req, res, 404, 'fail', 'Không tìm thấy khu vực cung cấp', req.headers.referer);
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Không tìm thấy khu vực cung cấp',
+        req.headers.referer,
+      );
     }
 
     const supplier = await Supplier.findOne({ supplierSlug: supplierSlug });
     if (!supplier) {
-      return handleResponse(req, res, 404, 'fail', 'Không tìm thấy nhà cung cấp', req.headers.referer);
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Không tìm thấy nhà cung cấp',
+        req.headers.referer,
+      );
     }
 
-    const start = new Date(startDate || endDate || new Date().setHours(0, 0, 0, 0));
-    const end = new Date(endDate || startDate || new Date().setHours(23, 59, 59, 999));
+    const start = new Date(
+      startDate || endDate || new Date().setHours(0, 0, 0, 0),
+    );
+    const end = new Date(
+      endDate || startDate || new Date().setHours(23, 59, 59, 999),
+    );
 
     const prices = {
       dryPrice: convertToDecimal(dryPrice),
       mixedPrice: convertToDecimal(mixedPrice),
       kePrice: convertToDecimal(kePrice),
-      dongPrice: convertToDecimal(dongPrice)
+      dongPrice: convertToDecimal(dongPrice),
     };
 
     updatePrices(area.data, start, end, prices, supplier._id);
 
     await area.save();
 
-    return handleResponse(req, res, 200, 'success', 'Cập nhật giá thành công cho nhà cung cấp', req.headers.referer);
+    return handleResponse(
+      req,
+      res,
+      200,
+      'success',
+      'Cập nhật giá thành công cho nhà cung cấp',
+      req.headers.referer,
+    );
   } catch (error) {
     console.error('Error updating supplier prices:', error);
     res.status(500).render('partials/500', { layout: false });

@@ -1,4 +1,4 @@
-const { DailySupply, Supplier } = require('../../models/dailySupplyModel');
+const { Area, Supplier } = require('../../models/AreaModel');
 
 module.exports = {
   getData,
@@ -17,7 +17,7 @@ module.exports = {
 };
 
 function getTodayDate() {
-  return today = new Date(); 
+  return (today = new Date());
 }
 
 function adjustDates(startDate, endDate) {
@@ -42,7 +42,10 @@ function createDateFilter(startDateUTC, endDateUTC) {
 }
 
 function parseDates(startDate, endDate) {
-  const { effectiveStartDate, effectiveEndDate } = adjustDates(startDate, endDate);
+  const { effectiveStartDate, effectiveEndDate } = adjustDates(
+    startDate,
+    endDate,
+  );
   const startDateUTC = new Date(effectiveStartDate);
   startDateUTC.setHours(0, 0, 0, 0);
   const endDateUTC = new Date(effectiveEndDate);
@@ -66,10 +69,10 @@ async function getData(req, res) {
     const sortObject = sortColumn ? { [sortColumn]: sortDirection } : {};
 
     // Count the total and filtered records
-    const totalRecords = await DailySupply.countDocuments();
-    const filteredRecords = await DailySupply.countDocuments(filter);
+    const totalRecords = await Area.countDocuments();
+    const filteredRecords = await Area.countDocuments(filter);
 
-    const products = await DailySupply.find(filter)
+    const products = await Area.find(filter)
       .sort(sortObject)
       .skip(parseInt(start, 10))
       .limit(parseInt(length, 10))
@@ -120,7 +123,7 @@ async function getSupplierInputData(req, res, isArea) {
     const sortStage = { $sort: { 'data.date': -1 } };
     const pipeline = createPipeline(req.params.slug, matchStage, sortStage);
 
-    const result = await DailySupply.aggregate(pipeline);
+    const result = await Area.aggregate(pipeline);
     const totalRecords = result[0].totalRecords[0]?.count || 0;
     const data = result[0].data;
 
@@ -191,15 +194,27 @@ async function getSupplierInputData(req, res, isArea) {
         date: new Date(item.data.date).toLocaleDateString('vi-VN'),
         supplier: item.supplier.name || '',
         ...(isArea && { code: item.supplier.code || '' }),
-        muNuocQuantity: rawMaterials['Mủ nước']?.quantity?.toLocaleString('vi-VN') || '',
-        muNuocPercentage: rawMaterials['Mủ nước']?.percentage?.toLocaleString('vi-VN') || '',
+        muNuocQuantity:
+          rawMaterials['Mủ nước']?.quantity?.toLocaleString('vi-VN') || '',
+        muNuocPercentage:
+          rawMaterials['Mủ nước']?.percentage?.toLocaleString('vi-VN') || '',
         muNuocQuantityToTal:
-          rawMaterials['Mủ nước']?.quantity && rawMaterials['Mủ nước']?.percentage
-            ? Number(((rawMaterials['Mủ nước'].quantity * rawMaterials['Mủ nước'].percentage) / 100).toFixed(5)).toLocaleString('vi-VN')
+          rawMaterials['Mủ nước']?.quantity &&
+          rawMaterials['Mủ nước']?.percentage
+            ? Number(
+                (
+                  (rawMaterials['Mủ nước'].quantity *
+                    rawMaterials['Mủ nước'].percentage) /
+                  100
+                ).toFixed(5),
+              ).toLocaleString('vi-VN')
             : '',
-        muTapQuantity: rawMaterials['Mủ tạp']?.quantity?.toLocaleString('vi-VN') || '',
-        muKeQuantity: rawMaterials['Mủ ké']?.quantity?.toLocaleString('vi-VN') || '',
-        muDongQuantity: rawMaterials['Mủ đông']?.quantity?.toLocaleString('vi-VN') || '',
+        muTapQuantity:
+          rawMaterials['Mủ tạp']?.quantity?.toLocaleString('vi-VN') || '',
+        muKeQuantity:
+          rawMaterials['Mủ ké']?.quantity?.toLocaleString('vi-VN') || '',
+        muDongQuantity:
+          rawMaterials['Mủ đông']?.quantity?.toLocaleString('vi-VN') || '',
         note: item.data.note || '',
         id: item.data._id,
       };
@@ -219,10 +234,10 @@ async function getSupplierExportData(req, res, isArea) {
       dateFilter,
       searchValue,
     );
-    
+
     const pipeline = createPipeline(req.params.slug, matchStage);
 
-    const result = await DailySupply.aggregate(pipeline);
+    const result = await Area.aggregate(pipeline);
     const totalRecords = result[0].totalRecords[0]?.count || 0;
     const data = result[0].data;
 
@@ -273,10 +288,10 @@ async function getSupplierExportData(req, res, isArea) {
           _id: '$supplier._id',
           supplier: { $first: '$supplier' },
           rawMaterials: {
-            $push: '$data.rawMaterial'
+            $push: '$data.rawMaterial',
           },
-          notes: { $push: '$data.note' }
-        }
+          notes: { $push: '$data.note' },
+        },
       },
       {
         $facet: {
@@ -323,7 +338,8 @@ async function getSupplierExportData(req, res, isArea) {
         }
       });
 
-      const averageMuNuocPrice = priceCount > 0 ? totalMuNuocPrice / priceCount : 0;
+      const averageMuNuocPrice =
+        priceCount > 0 ? totalMuNuocPrice / priceCount : 0;
 
       const muQuyKhoToTal = totalMuQuyKho * averageMuNuocPrice;
 
@@ -344,17 +360,31 @@ async function getSupplierExportData(req, res, isArea) {
         no: index + 1,
         supplier: item.supplier.name || '',
         ...(isArea && { code: item.supplier.code || '' }),
-        muQuyKhoQuantity: totalMuQuyKho > 0 ? totalMuQuyKho.toLocaleString('vi-VN') : '',
-        muQuyKhoDonGia: averageMuNuocPrice > 0 ? averageMuNuocPrice.toLocaleString('vi-VN') : '',
-        muQuyKhoToTal: muQuyKhoToTal > 0 ? muQuyKhoToTal.toLocaleString('vi-VN') : '',
-        muTapQuantity: rawMaterials['Mủ tạp']?.quantity > 0 ? rawMaterials['Mủ tạp'].quantity.toLocaleString('vi-VN') : '',
-        muTapDonGia: rawMaterials['Mủ tạp']?.price > 0 ? rawMaterials['Mủ tạp'].price.toLocaleString('vi-VN') : '',
+        muQuyKhoQuantity:
+          totalMuQuyKho > 0 ? totalMuQuyKho.toLocaleString('vi-VN') : '',
+        muQuyKhoDonGia:
+          averageMuNuocPrice > 0
+            ? averageMuNuocPrice.toLocaleString('vi-VN')
+            : '',
+        muQuyKhoToTal:
+          muQuyKhoToTal > 0 ? muQuyKhoToTal.toLocaleString('vi-VN') : '',
+        muTapQuantity:
+          rawMaterials['Mủ tạp']?.quantity > 0
+            ? rawMaterials['Mủ tạp'].quantity.toLocaleString('vi-VN')
+            : '',
+        muTapDonGia:
+          rawMaterials['Mủ tạp']?.price > 0
+            ? rawMaterials['Mủ tạp'].price.toLocaleString('vi-VN')
+            : '',
         muTapTotal: muTapTotal > 0 ? muTapTotal.toLocaleString('vi-VN') : '',
-        muKeQuantity: muKeQuantity > 0 ? muKeQuantity.toLocaleString('vi-VN') : '',
+        muKeQuantity:
+          muKeQuantity > 0 ? muKeQuantity.toLocaleString('vi-VN') : '',
         muKeDonGia: muKeDonGia > 0 ? muKeDonGia.toLocaleString('vi-VN') : '',
         muKeTotal: muKeTotal > 0 ? muKeTotal.toLocaleString('vi-VN') : '',
-        muDongQuantity: muDongQuantity > 0 ? muDongQuantity.toLocaleString('vi-VN') : '',
-        muDongDonGia: muDongDonGia > 0 ? muDongDonGia.toLocaleString('vi-VN') : '',
+        muDongQuantity:
+          muDongQuantity > 0 ? muDongQuantity.toLocaleString('vi-VN') : '',
+        muDongDonGia:
+          muDongDonGia > 0 ? muDongDonGia.toLocaleString('vi-VN') : '',
         muDongTotal: muDongTotal > 0 ? muDongTotal.toLocaleString('vi-VN') : '',
         note: combinedNotes,
         signature: '',
@@ -395,19 +425,19 @@ async function getIndividualSupplierExportData(req, res) {
           data: [
             {
               $project: {
-                _id: '$data._id', 
+                _id: '$data._id',
                 date: '$data.date',
                 rawMaterial: '$data.rawMaterial',
                 note: '$data.note',
                 supplierId: '$data.supplier',
-              }
-            }
+              },
+            },
           ],
         },
       },
     ];
 
-    const result = await DailySupply.aggregate(pipeline);
+    const result = await Area.aggregate(pipeline);
 
     const totalRecords = result[0].totalRecords[0]?.count || 0;
     const data = result[0].data;
@@ -425,10 +455,12 @@ async function getIndividualSupplierExportData(req, res) {
       recordsTotal: totalRecords,
       recordsFiltered: totalRecords,
       data: flattenedData,
-      latestPrices: latestPrices
+      latestPrices: latestPrices,
     });
   } catch (error) {
-    res.status(500).json({ error: 'Internal Server Error', details: error.message });
+    res
+      .status(500)
+      .json({ error: 'Internal Server Error', details: error.message });
   }
 
   function flattenData(data) {
@@ -436,7 +468,7 @@ async function getIndividualSupplierExportData(req, res) {
       muNuoc: 0,
       muTap: 0,
       muKe: 0,
-      muDong: 0
+      muDong: 0,
     };
 
     const flattenedData = data.map((item, index) => {
@@ -450,10 +482,14 @@ async function getIndividualSupplierExportData(req, res) {
       }, {});
 
       // Update latest prices
-      if (rawMaterials['Mủ nước']?.price > 0) latestPrices.muNuoc = rawMaterials['Mủ nước'].price;
-      if (rawMaterials['Mủ tạp']?.price > 0) latestPrices.muTap = rawMaterials['Mủ tạp'].price;
-      if (rawMaterials['Mủ ké']?.price > 0) latestPrices.muKe = rawMaterials['Mủ ké'].price;
-      if (rawMaterials['Mủ đông']?.price > 0) latestPrices.muDong = rawMaterials['Mủ đông'].price;
+      if (rawMaterials['Mủ nước']?.price > 0)
+        latestPrices.muNuoc = rawMaterials['Mủ nước'].price;
+      if (rawMaterials['Mủ tạp']?.price > 0)
+        latestPrices.muTap = rawMaterials['Mủ tạp'].price;
+      if (rawMaterials['Mủ ké']?.price > 0)
+        latestPrices.muKe = rawMaterials['Mủ ké'].price;
+      if (rawMaterials['Mủ đông']?.price > 0)
+        latestPrices.muDong = rawMaterials['Mủ đông'].price;
 
       const muNuoc = rawMaterials['Mủ nước'] || { quantity: 0, percentage: 0 };
       const muDong = rawMaterials['Mủ đông'] || { quantity: 0 };
@@ -475,12 +511,12 @@ async function getIndividualSupplierExportData(req, res) {
         muDongQuantity: muDong.quantity.toLocaleString('vi-VN'),
         muDongPrice: rawMaterials['Mủ đông']?.price.toLocaleString('vi-VN'),
         note: item.note || '',
-        id: item._id,  
+        id: item._id,
       };
     });
     return {
       data: flattenedData,
-      latestPrices: latestPrices
+      latestPrices: latestPrices,
     };
   }
 }

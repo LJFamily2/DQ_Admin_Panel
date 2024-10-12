@@ -1,4 +1,4 @@
-const { Supplier, DailySupply } = require('../../models/dailySupplyModel');
+const { Supplier, Area } = require('../../models/AreaModel');
 
 const handleResponse = require('../utils/handleResponse');
 const convertToDecimal = require('../utils/convertToDecimal');
@@ -21,12 +21,10 @@ async function renderInputDataDashboardPage(req, res) {
 
     if (req.user.role === 'Admin') {
       // Fetch all areas if the user is an Admin
-      areas = await DailySupply.find()
-        .populate('suppliers')
-        .populate('data.supplier');
+      areas = await Area.find().populate('suppliers').populate('data.supplier');
     } else {
       // Fetch only the areas assigned to the user by accountID
-      const area = await DailySupply.findOne({
+      const area = await Area.findOne({
         accountID: req.user._id,
       })
         .populate('suppliers')
@@ -36,7 +34,7 @@ async function renderInputDataDashboardPage(req, res) {
       areas = area ? [area] : [];
     }
 
-    res.render('src/dailySupplyInputDashboardPage', {
+    res.render('src/AreaInputDashboardPage', {
       layout: './layouts/defaultLayout',
       title: `Nguyên liệu hằng ngày`,
       areas,
@@ -57,8 +55,8 @@ async function renderInputDataPage(req, res) {
     // Check if the user has the 'Admin' role
     const isAdmin = req.user.role === 'Admin';
 
-    // Find the DailySupply document based on the slug and accountID
-    const area = await DailySupply.findOne({
+    // Find the Area document based on the slug and accountID
+    const area = await Area.findOne({
       slug: req.params.slug,
       ...(isAdmin ? {} : { accountID: req.user._id }), // If not admin, add accountID to the query
     })
@@ -76,7 +74,7 @@ async function renderInputDataPage(req, res) {
     endOfToday.setHours(23, 59, 59, 999);
 
     // Count the number of entries for today
-    const todayEntriesCount = await DailySupply.aggregate([
+    const todayEntriesCount = await Area.aggregate([
       { $match: { _id: area._id } },
       { $unwind: '$data' },
       { $match: { 'data.date': { $gte: startOfToday, $lte: endOfToday } } },
@@ -88,7 +86,7 @@ async function renderInputDataPage(req, res) {
         ? todayEntriesCount[0].count >= area.limitData
         : false;
 
-    res.render('src/dailySupplyInputPage', {
+    res.render('src/AreaInputPage', {
       layout: './layouts/defaultLayout',
       title: `Nguyên liệu hằng ngày ${area.name}`,
       area,
@@ -109,12 +107,12 @@ async function addData(req, res) {
     const today = new Date();
 
     // Check the number of entries for today
-    const dailySupply = await DailySupply.findById(req.params.id);
-    const todayEntries = dailySupply.data.filter(
+    const Area = await Area.findById(req.params.id);
+    const todayEntries = Area.data.filter(
       entry => new Date(entry.date) === today,
     );
 
-    if (todayEntries.length >= dailySupply.limitData) {
+    if (todayEntries.length >= Area.limitData) {
       return handleResponse(
         req,
         res,
@@ -141,8 +139,9 @@ async function addData(req, res) {
     const rawMaterials = req.body.name.map((name, index) => {
       return {
         name: name,
-        percentage: name === 'Mủ nước' ? convertToDecimal(req.body.percentage) : 0,
-        quantity: convertToDecimal(req.body.quantity[index] || 0), 
+        percentage:
+          name === 'Mủ nước' ? convertToDecimal(req.body.percentage) : 0,
+        quantity: convertToDecimal(req.body.quantity[index] || 0),
       };
     });
 
@@ -150,10 +149,10 @@ async function addData(req, res) {
       date: today,
       rawMaterial: rawMaterials,
       supplier: existedSupplier._id,
-      note: trimStringFields(req.body.note) || '', 
+      note: trimStringFields(req.body.note) || '',
     };
 
-    const newData = await DailySupply.findByIdAndUpdate(
+    const newData = await Area.findByIdAndUpdate(
       req.params.id,
       { $push: { data: inputedData } },
       { new: true },
@@ -222,26 +221,26 @@ async function updateSupplierData(req, res) {
 
     // Prepare the raw material data
     const rawMaterial = [
-      { 
-        name: 'Mủ nước', 
-        quantity: convertToDecimal(muNuocQuantity), 
-        percentage: convertToDecimal(muNuocPercentage), 
-        price: convertToDecimal(muNuocPrice) 
+      {
+        name: 'Mủ nước',
+        quantity: convertToDecimal(muNuocQuantity),
+        percentage: convertToDecimal(muNuocPercentage),
+        price: convertToDecimal(muNuocPrice),
       },
-      { 
-        name: 'Mủ tạp', 
-        quantity: convertToDecimal(muTapQuantity), 
-        price: convertToDecimal(muTapPrice) 
+      {
+        name: 'Mủ tạp',
+        quantity: convertToDecimal(muTapQuantity),
+        price: convertToDecimal(muTapPrice),
       },
-      { 
-        name: 'Mủ ké', 
-        quantity: convertToDecimal(muKeQuantity), 
-        price: convertToDecimal(muKePrice) 
+      {
+        name: 'Mủ ké',
+        quantity: convertToDecimal(muKeQuantity),
+        price: convertToDecimal(muKePrice),
       },
-      { 
-        name: 'Mủ đông', 
-        quantity: convertToDecimal(muDongQuantity), 
-        price: convertToDecimal(muDongPrice) 
+      {
+        name: 'Mủ đông',
+        quantity: convertToDecimal(muDongQuantity),
+        price: convertToDecimal(muDongPrice),
       },
     ];
 
@@ -258,17 +257,31 @@ async function updateSupplierData(req, res) {
     }
 
     // Update the daily supply data
-    const updatedData = await DailySupply.findOneAndUpdate(
+    const updatedData = await Area.findOneAndUpdate(
       { 'data._id': id },
       { $set: updateObject },
-      { new: true }
+      { new: true },
     );
 
     if (!updatedData) {
-      return handleResponse(req, res, 404, 'fail', 'Cập nhật dữ liệu thất bại!', req.headers.referer);
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Cập nhật dữ liệu thất bại!',
+        req.headers.referer,
+      );
     }
 
-    return handleResponse(req, res, 200, 'success', 'Cập nhật dữ liệu thành công!', req.headers.referer);
+    return handleResponse(
+      req,
+      res,
+      200,
+      'success',
+      'Cập nhật dữ liệu thành công!',
+      req.headers.referer,
+    );
   } catch (err) {
     console.error('Error updating supplier data:', err);
     res.status(500).render('partials/500', { layout: false });
@@ -280,7 +293,7 @@ async function deleteSupplierData(req, res) {
     const { id } = req.params;
 
     // Find and delete the sub-document by ID
-    const updatedData = await DailySupply.findOneAndUpdate(
+    const updatedData = await Area.findOneAndUpdate(
       { 'data._id': id },
       {
         $pull: { data: { _id: id } },

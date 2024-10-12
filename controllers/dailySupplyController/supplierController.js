@@ -1,5 +1,5 @@
 const AccountModel = require('../../models/accountModel');
-const { Supplier, DailySupply } = require('../../models/dailySupplyModel');
+const { Supplier, Area } = require('../../models/AreaModel');
 const slugify = require('slugify');
 
 const trimStringFields = require('../utils/trimStringFields');
@@ -19,13 +19,13 @@ async function renderDetailPage(req, res) {
   try {
     const { startDate, endDate } = req.query;
 
-    const area = await DailySupply.findOne({ slug: req.params.slug })
+    const area = await Area.findOne({ slug: req.params.slug })
       .populate('accountID')
       .populate('suppliers')
       .populate('data.supplier');
     const hamLuongAccounts = await AccountModel.find({ role: 'Hàm lượng' });
 
-    res.render('src/dailySupplyDetailPage', {
+    res.render('src/AreaDetailPage', {
       layout: './layouts/defaultLayout',
       title: `Dữ liệu mủ của ${area.name}`,
       hamLuongAccounts,
@@ -48,7 +48,7 @@ async function updateArea(req, res) {
     const { accountID, areaName, limitData } = req.body;
 
     // Check if the accountID is already assigned to another area
-    const existingArea = await DailySupply.findOne({
+    const existingArea = await Area.findOne({
       accountID,
       _id: { $ne: id },
     });
@@ -63,7 +63,7 @@ async function updateArea(req, res) {
       );
     }
 
-    const currentArea = await DailySupply.findById(id);
+    const currentArea = await Area.findById(id);
     if (!currentArea) {
       return handleResponse(
         req,
@@ -82,11 +82,15 @@ async function updateArea(req, res) {
     };
 
     // Only update slug if areaName has changed and is a non-empty string
-    if (typeof areaName === 'string' && areaName.trim() !== '' && areaName !== currentArea.name) {
-      updateFields.slug = slugify(areaName, {lower: true, trim: true});
+    if (
+      typeof areaName === 'string' &&
+      areaName.trim() !== '' &&
+      areaName !== currentArea.name
+    ) {
+      updateFields.slug = slugify(areaName, { lower: true, trim: true });
     }
 
-    const newData = await DailySupply.findByIdAndUpdate(id, updateFields, {
+    const newData = await Area.findByIdAndUpdate(id, updateFields, {
       new: true,
     });
     if (!newData) {
@@ -105,7 +109,7 @@ async function updateArea(req, res) {
       200,
       'success',
       'Cập nhật khu vực thành công',
-      `/nhap-du-lieu/${newData.slug}`
+      `/nhap-du-lieu/${newData.slug}`,
     );
   } catch (error) {
     console.error('Error updating area:', error);
@@ -116,7 +120,7 @@ async function updateArea(req, res) {
 async function addSupplier(req, res) {
   req.body = trimStringFields(req.body);
   try {
-    const area = await DailySupply.findById(req.params.id);
+    const area = await Area.findById(req.params.id);
     if (!area) {
       return handleResponse(
         req,
@@ -211,7 +215,9 @@ async function editSupplier(req, res) {
     const existingSupplier = await Supplier.findById(req.params.id);
     let newSlug = existingSupplier.supplierSlug;
     if (req.body.code && req.body.code !== existingSupplier.code) {
-      newSlug = `${req.body.code}-${Math.floor(100000 + Math.random() * 900000)}`;
+      newSlug = `${req.body.code}-${Math.floor(
+        100000 + Math.random() * 900000,
+      )}`;
     }
 
     const supplier = await Supplier.findByIdAndUpdate(
@@ -237,9 +243,10 @@ async function editSupplier(req, res) {
     }
 
     // Determine the redirect URL based on whether the slug has changed
-    const redirectUrl = newSlug !== existingSupplier.supplierSlug
-      ? req.headers.referer.replace(existingSupplier.supplierSlug, newSlug)
-      : req.headers.referer;
+    const redirectUrl =
+      newSlug !== existingSupplier.supplierSlug
+        ? req.headers.referer.replace(existingSupplier.supplierSlug, newSlug)
+        : req.headers.referer;
 
     return handleResponse(
       req,
@@ -247,7 +254,7 @@ async function editSupplier(req, res) {
       200,
       'success',
       'Sửa thông tin nhà vườn thành công!',
-      redirectUrl
+      redirectUrl,
     );
   } catch (error) {
     console.error('Error editing supplier:', error);

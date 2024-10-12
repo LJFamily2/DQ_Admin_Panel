@@ -30,8 +30,8 @@ function initializeDataTable(
   dataPageFooter,
   salePageFooter,
   spendPageFooter,
-  dailySupplyFooter,
-  dailySupplyDetailFooter
+  AreaFooter,
+  AreaDetailFooter,
 ) {
   let rowGroupOptions = {};
 
@@ -98,16 +98,16 @@ function initializeDataTable(
       },
     };
   }
-  if (dailySupplyDetailFooter) {
-    const columns = [6,7,8,9];
+  if (AreaDetailFooter) {
+    const columns = [6, 7, 8, 9];
     footerCallbackOptions = {
       footerCallback: function () {
         setupFooterCallback(columns, this.api());
       },
     };
   }
-  if (dailySupplyFooter) {
-    const columns = [5,6,7,8];
+  if (AreaFooter) {
+    const columns = [5, 6, 7, 8];
     footerCallbackOptions = {
       footerCallback: function () {
         setupFooterCallback(columns, this.api(), 'en-US');
@@ -132,7 +132,7 @@ function initializeDataTable(
           {
             extend: 'print',
             exportOptions: {
-              columns: [1, 4,5 ,6 ,7,8,9,10] 
+              columns: [1, 4, 5, 6, 7, 8, 9, 10],
             },
             title: 'Mủ Nguyên Liệu ',
             customize: function (win) {
@@ -144,10 +144,8 @@ function initializeDataTable(
               // Add a subheader under the title
               $(win.document.body)
                 .find('h1')
-                .after(
-                  `<h2 style="text-align: center;">Từ ngày </h2>`,
-                );
-                $(win.document.body)
+                .after(`<h2 style="text-align: center;">Từ ngày </h2>`);
+              $(win.document.body)
                 .find('table')
                 .after(
                   '<p style="text-align: left; margin-top: 20px;">Tổng cộng số tiền </p>',
@@ -162,7 +160,7 @@ function initializeDataTable(
     serverSide: true,
     processing: true,
     responsive: true,
-    paging: !(queryPageFooter || dailySupplyFooter),
+    paging: !(queryPageFooter || AreaFooter),
     scrollX: isMobile,
     pagingType: 'first_last_numbers',
     rowGroup: rowGroupOptions,

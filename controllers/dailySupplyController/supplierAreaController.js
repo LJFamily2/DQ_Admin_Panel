@@ -1,5 +1,5 @@
 const AccountModel = require('../../models/accountModel');
-const { Supplier, DailySupply } = require('../../models/dailySupplyModel');
+const { Supplier, Area } = require('../../models/AreaModel');
 
 const trimStringFields = require('../utils/trimStringFields');
 const handleResponse = require('../utils/handleResponse');
@@ -11,13 +11,12 @@ module.exports = {
   deleteArea,
 };
 
-
 async function renderPage(req, res) {
   try {
-    const areas = await DailySupply.find({}).populate('accountID');
+    const areas = await Area.find({}).populate('accountID');
 
     const hamLuongAccounts = await AccountModel.find({ role: 'Hàm lượng' });
-    const assignedAccounts = await DailySupply.distinct('accountID');
+    const assignedAccounts = await Area.distinct('accountID');
     const unassignedHamLuongAccounts = hamLuongAccounts.filter(
       account =>
         !assignedAccounts
@@ -25,7 +24,7 @@ async function renderPage(req, res) {
           .includes(account._id.toString()),
     );
 
-    res.render('src/dailySupplyPage', {
+    res.render('src/AreaPage', {
       layout: './layouts/defaultLayout',
       title: 'Dữ liệu mủ hằng ngày',
       unassignedHamLuongAccounts,
@@ -42,7 +41,7 @@ async function renderPage(req, res) {
 async function addArea(req, res) {
   req.body = trimStringFields(req.body);
   try {
-    const existingArea = await DailySupply.findOne({ name: req.body.areaName });
+    const existingArea = await Area.findOne({ name: req.body.areaName });
     if (existingArea) {
       return handleResponse(
         req,
@@ -62,7 +61,7 @@ async function addArea(req, res) {
       suppliersId = createdSuppliers.map(supplier => supplier._id);
     }
 
-    const newData = await DailySupply.create({
+    const newData = await Area.create({
       ...req.body,
       name: req.body.areaName,
       suppliers: suppliersId,
@@ -95,7 +94,7 @@ async function addArea(req, res) {
 
 async function deleteArea(req, res) {
   try {
-    const area = await DailySupply.findByIdAndDelete(req.params.id);
+    const area = await Area.findByIdAndDelete(req.params.id);
     if (!area) {
       return handleResponse(
         req,

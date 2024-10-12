@@ -1,5 +1,5 @@
 const AccountModel = require('../../models/accountModel');
-const { Supplier, DailySupply } = require('../../models/dailySupplyModel');
+const { Supplier, Area } = require('../../models/AreaModel');
 
 const trimStringFields = require('../utils/trimStringFields');
 const handleResponse = require('../utils/handleResponse');
@@ -13,12 +13,12 @@ module.exports = {
 async function renderPage(req, res) {
   try {
     const { startDate, endDate } = req.query;
-    const area = await DailySupply.findOne({ slug: req.params.slug })
+    const area = await Area.findOne({ slug: req.params.slug })
       .populate('accountID')
       .populate('suppliers')
       .populate('data.supplier');
 
-    res.render('src/dailySupplyExportPage', {
+    res.render('src/AreaExportPage', {
       layout: './layouts/defaultLayout',
       title: `Xuất dữ liệu mủ của ${area.name}`,
       area,
@@ -35,16 +35,24 @@ async function renderPage(req, res) {
 
 async function updatePrice(req, res) {
   try {
-    const { startDate, endDate, dryPrice, mixedPrice, kePrice, dongPrice } = req.body;
+    const { startDate, endDate, dryPrice, mixedPrice, kePrice, dongPrice } =
+      req.body;
     const { slug, supplierSlug } = req.params;
 
-    const area = await DailySupply.findOne({ slug })
+    const area = await Area.findOne({ slug })
       .populate('accountID')
       .populate('suppliers')
       .populate('data.supplier');
 
     if (!area) {
-      return handleResponse(req, res, 404, 'fail', 'Không tìm thấy khu vực cung cấp', req.headers.referer);
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Không tìm thấy khu vực cung cấp',
+        req.headers.referer,
+      );
     }
 
     const start = new Date(startDate || endDate || new Date());
@@ -56,14 +64,21 @@ async function updatePrice(req, res) {
       dryPrice: convertToDecimal(dryPrice),
       mixedPrice: convertToDecimal(mixedPrice),
       kePrice: convertToDecimal(kePrice),
-      dongPrice: convertToDecimal(dongPrice)
+      dongPrice: convertToDecimal(dongPrice),
     };
 
     let supplierId = null;
     if (supplierSlug) {
       const supplier = await Supplier.findOne({ supplierSlug });
       if (!supplier) {
-        return handleResponse(req, res, 404, 'fail', 'Không tìm thấy nhà cung cấp', req.headers.referer);
+        return handleResponse(
+          req,
+          res,
+          404,
+          'fail',
+          'Không tìm thấy nhà cung cấp',
+          req.headers.referer,
+        );
       }
       supplierId = supplier._id;
     }
@@ -71,9 +86,17 @@ async function updatePrice(req, res) {
     updatePrices(area.data, start, end, prices, supplierId);
     await area.save();
 
-    const successMessage = supplierSlug ? 'Cập nhật giá thành công cho nhà cung cấp' : 'Cập nhật giá thành công cho khu vực';
-    return handleResponse(req, res, 200, 'success', successMessage, req.headers.referer);
-
+    const successMessage = supplierSlug
+      ? 'Cập nhật giá thành công cho nhà cung cấp'
+      : 'Cập nhật giá thành công cho khu vực';
+    return handleResponse(
+      req,
+      res,
+      200,
+      'success',
+      successMessage,
+      req.headers.referer,
+    );
   } catch (error) {
     console.error('Error updating prices:', error);
     res.status(500).render('partials/500', { layout: false });
