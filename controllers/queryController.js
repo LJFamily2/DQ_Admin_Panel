@@ -48,13 +48,13 @@ async function getDataTotal(req, res) {
     const filter = {};
 
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    today.setUTCHours(today.getUTCHours() + 7);
 
     const startDate = reqStartDate ? new Date(reqStartDate) : new Date(today);
-    startDate.setHours(0, 0, 0, 0); // Ensure start of the day
+    startDate.setUTCHours(startDate.getUTCHours() + 7);
 
     const endDate = reqEndDate ? new Date(reqEndDate) : new Date(startDate);
-    endDate.setHours(23, 59, 59, 999); // Ensure end of the day
+    endDate.setUTCHours(endDate.getUTCHours() + 7);
 
     // Apply the simplified date range filter
     filter.date = { $gte: startDate, $lte: endDate };

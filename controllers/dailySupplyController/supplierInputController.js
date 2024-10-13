@@ -71,9 +71,9 @@ async function renderInputDataPage(req, res) {
 
     // Get today's start and end dates
     const startOfToday = new Date();
-    startOfToday.setHours(0, 0, 0, 0);
+    startOfToday.setUTCHours(startOfToday.getUTCHours() + 7);
     const endOfToday = new Date();
-    endOfToday.setHours(23, 59, 59, 999);
+    endOfToday.setUTCHours(endOfToday.getUTCHours() + 7);
 
     // Count the number of entries for today
     const todayEntriesCount = await DailySupply.aggregate([

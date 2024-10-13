@@ -16,8 +16,11 @@ module.exports = {
   getIndividualSupplierExportData,
 };
 
+// Get today date in UTC+7
 function getTodayDate() {
-  return today = new Date(); 
+  const today = new Date();
+  today.setUTCHours(today.getUTCHours() + 7);
+  return today;
 }
 
 function adjustDates(startDate, endDate) {
@@ -53,17 +56,14 @@ function parseDates(startDate, endDate) {
 // Function to calculate contract duration and status
 function calculateContractDuration(startDate, endDate) {
   const today = new Date();
-  today.setHours(0, 0, 0, 0); 
+  today.setUTCHours(today.getUTCHours() + 7);
   
   if (!startDate && !endDate) {
     return { duration: null, status: 'No contract' }; 
   }
   
   const start = new Date(startDate);
-  start.setHours(0, 0, 0, 0); 
-  
   const end = new Date(endDate);
-  end.setHours(23, 59, 59, 999); 
   
   if (end < today) {
     return { duration: Math.ceil((end - start) / (1000 * 60 * 60 * 24)), status: 'expired' };
