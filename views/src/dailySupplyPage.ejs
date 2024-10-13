@@ -4,6 +4,8 @@
   <script src="/js/multipleFieldsWithText.js"></script>
   <script src="/js/slim-select.js" defer></script>
   <script src="/js/toggleButtons.js" defer></script>
+  <script src="/js/inputFieldRestriction.js" defer></script>
+
   <style>
     .hide {
       display: none;
@@ -44,7 +46,7 @@
                 <div class="modal-content">
                   <div class="modal-header">
                     <h1 class="modal-title fs-5" id="exampleModalToggleLabel">
-                      Xóa hợp đồng <%= area.code %>
+                      Xóa khu vực <%= area.name %>
                     </h1>
                     <button
                       type="button"
@@ -58,8 +60,7 @@
                     method="post"
                   >
                     <div class="modal-body">
-                      Bạn có muốn xóa hợp đồng mã
-                      <strong><%= area.code %></strong> ? Hành động này không
+                      Bạn có muốn xóa khu vực <strong><%= area.name %></strong> ? Hành động này không
                       thể hoàn tác.
                     </div>
                     <div class="modal-footer">
@@ -115,14 +116,14 @@
             </select>
           </div>
           <div class="my-3">
-            <label for="areaDimension" class="form-label fw-bold">Diện tích khu vực (m²)</label>
+            <label for="areaDimension" class="form-label fw-bold">Diện tích khu vực (mẫu)</label>
             <input
               type="number"
               class="form-control"
               id="areaDimension"
               name="areaDimension"
               required
-              step="1"
+              step="0.1"
               min="0"
             />
           </div>
@@ -168,7 +169,6 @@
               class="form-control"
               id="areaPrice"
               name="areaPrice"
-              required
               step="1"
               min="0"
             />
@@ -269,16 +269,71 @@
                           </div>
                         </div>
                         <div class="mt-3">
-                          <label for="address" class="form-label fw-bold"
+                          <label class="form-label fw-bold"
                             >Địa chỉ</label
                           >
                           <input
                             type="text"
                             class="form-control"
-                            id="address"
-                            name="address"
-                            maxlength="70"
+                            name="supplierAddress"
+                            maxlength="150"
                           />
+                        </div>
+                        <div class="mt-3">
+                          <label for="purchasedAreaDimension" class="form-label fw-bold">Diện tích mua (mẫu)</label>
+                          <input
+                            type="number"
+                            class="form-control"
+                            id="purchasedAreaDimension"
+                            name="purchasedAreaDimension"
+                            step="0.1"
+                            min="0"
+                          />
+                        </div>
+                        <div class="mt-3">
+                          <label for="purchasedPrice" class="form-label fw-bold">Giá mua (VNĐ/mẫu)</label>
+                          <input
+                            type="number"
+                            class="form-control"
+                            id="purchasedPrice"
+                            name="purchasedPrice"
+                            step="1"
+                            min="0"
+                          />
+                        </div>
+                        <div class="mt-3">
+                          <label for="areaDeposit" class="form-label fw-bold">Tiền đặt cọc</label>
+                          <input
+                            type="number"
+                            class="form-control"
+                            id="areaDeposit"
+                            name="areaDeposit"
+                            step="1"
+                            min="0"
+                          />
+                        </div>
+                        <div class="mt-3">
+                          <label class="form-label fw-bold">Thời hạn mua</label>
+                          <div class="row">
+                            <div class="col-6">
+                              <label for="areaDurationStart" class="form-label">Ngày bắt đầu</label>
+                              <input
+                                type="date"
+                                class="form-control"
+                                id="areaDurationStart"
+                                name="areaDuration[start]"
+                              />
+                            </div>
+                            <div class="col-6">
+                              <label for="areaDurationEnd" class="form-label">Ngày kết thúc</label>
+                              <input
+                                type="date"
+                                class="form-control"
+                                id="areaDurationEnd"
+                                name="areaDuration[end]"
+                              />
+                            </div>
+                          </div>
                         </div>
                         <div class="mt-3">
                           <label for="ratioMuNuocSplit" class="form-label fw-bold">Ăn chia quy khô</label>

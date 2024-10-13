@@ -11,6 +11,7 @@ module.exports = {
   deleteArea,
 };
 
+const ensureArray = input => (Array.isArray(input) ? input : [input]);
 
 async function renderPage(req, res) {
   try {
@@ -54,21 +55,33 @@ async function addArea(req, res) {
       );
     }
 
-    const suppliers = await createSuppliers(req);
+    const areaDimension = parseFloat(req.body.areaDimension);
+    const purchasedAreaDimensions = ensureArray(req.body.purchasedAreaDimension).map(dim => parseFloat(dim));
 
-    let suppliersId = [];
-    if (suppliers && suppliers.length > 0) {
-      const createdSuppliers = await Supplier.create(suppliers);
-      suppliersId = createdSuppliers.map(supplier => supplier._id);
+    const totalPurchasedAreaDimension = purchasedAreaDimensions.reduce((sum, dim) => sum + dim, 0);
+
+    if (totalPurchasedAreaDimension > areaDimension) {
+      return handleResponse(
+        req,
+        res,
+        400,
+        'fail',
+        'Tổng diện tích mua vượt quá diện tích khu vực!',
+        req.headers.referer,
+      );
     }
 
-    const newData = await DailySupply.create({
+    const remainingAreaDimension = areaDimension - totalPurchasedAreaDimension;
+
+    const newArea = await DailySupply.create({
       ...req.body,
       name: req.body.areaName,
-      suppliers: suppliersId,
+      areaDimension: areaDimension,
+      remainingAreaDimension: remainingAreaDimension,
+      suppliers: [],
     });
 
-    if (!newData) {
+    if (!newArea) {
       return handleResponse(
         req,
         res,
@@ -77,6 +90,15 @@ async function addArea(req, res) {
         'Tạo khu vực thất bại!',
         req.headers.referer,
       );
+    }
+
+    const suppliers = await createSuppliers(req);
+
+    if (suppliers && suppliers.length > 0) {
+      const createdSuppliers = await Supplier.create(suppliers);
+      const suppliersId = createdSuppliers.map(supplier => supplier._id);
+      newArea.suppliers = suppliersId;
+      await newArea.save();
     }
 
     return handleResponse(

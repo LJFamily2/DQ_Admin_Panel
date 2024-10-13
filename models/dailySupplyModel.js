@@ -5,7 +5,7 @@ mongoose.plugin(slug);
 const supplierSchema = new mongoose.Schema({
   name: String,
   code: String,
-  address: String,
+  supplierAddress: String,
   phone: String,
   identification: String,
   manager: {
@@ -22,8 +22,9 @@ const supplierSchema = new mongoose.Schema({
   },
   supplierSlug: {
     type: String,
-    default: () =>
-      `${this.code}-${Math.floor(100000 + Math.random() * 900000)}`,
+    default: function() {
+      return `${this.code}-${Math.floor(100000 + Math.random() * 900000)}`;
+    }
   },
   // Apply with the Contract Area
   purchasedPrice: {
@@ -33,6 +34,12 @@ const supplierSchema = new mongoose.Schema({
   areaDeposit: {
     type: Number,
     default: 0
+  },
+  debt: {
+    type: Number,
+    default: function() {
+      return this.purchasedAreaDimension * this.purchasedPrice - this.areaDeposit;
+    }
   },
   purchasedAreaDimension: {
     type: Number,
@@ -77,6 +84,12 @@ const dailySupplySchema = new mongoose.Schema({
   limitData: Number,
   // Apply with the Contract Area
   areaDimension: Number,
+  remainingAreaDimension: {
+    type: Number,
+    default: function() {
+      return this.areaDimension; 
+    }
+  },
   contractDuration: {
     start: Date,
     end: Date

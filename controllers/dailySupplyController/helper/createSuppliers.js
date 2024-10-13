@@ -8,6 +8,11 @@ async function createSuppliers(req) {
   let supplierIssueDate = ensureArray(req.body.issueDate);
   let supplierAddress = ensureArray(req.body.address);
   let supplierRatioSplit = ensureArray(req.body.ratioSplit);
+  let supplierAreaDeposit = ensureArray(req.body.areaDeposit);
+  let supplierPurchasedPrice = ensureArray(req.body.purchasedPrice);
+  let supplierPurchasedAreaDimension = ensureArray(req.body.purchasedAreaDimension);
+  let supplierAreaDurationStart = ensureArray(req.body.areaDurationStart);
+  let supplierAreaDurationEnd = ensureArray(req.body.areaDurationEnd);
 
   const suppliers = supplierNames.map((name, index) => {
     // Only create supplier if the name is provided
@@ -20,9 +25,16 @@ async function createSuppliers(req) {
         issueDate: supplierIssueDate[index],
         address: supplierAddress[index],
         ratioSplit: supplierRatioSplit[index],
+        areaDeposit: supplierAreaDeposit[index],
+        purchasedPrice: supplierPurchasedPrice[index],
+        purchasedAreaDimension: supplierPurchasedAreaDimension[index],
+        areaDuration: {
+          start: supplierAreaDurationStart[index],
+          end: supplierAreaDurationEnd[index]
+        }
       };
     }
-  }).filter(Boolean); // Remove undefined entries
+  }).filter(Boolean); 
 
   return suppliers;
 }
