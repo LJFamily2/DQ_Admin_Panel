@@ -27,6 +27,7 @@
               <th>STT</th>
               <th>Khu vực</th>
               <th>Nướng hàm lượng</th>
+              <th>Thời hạn hợp đồng</th>
               <th>Chỉnh sửa</th>
             </tr>
           </thead>
@@ -399,6 +400,20 @@
     { data: 'no', orderable: false, width: '1%' },
     { data: 'area', orderable: false, width: '1%' },
     { data: 'accountID', orderable: false, width: '1%' },
+    {
+      data: 'contractDuration',
+      orderable: false,
+      width: '1%',
+      render: function (data, type, row) {
+        const badges = {
+          'No contract': '<span class="badge bg-light text-dark">Không hợp đồng</span>',
+          'valid': `<span class="badge bg-success">Còn ${data.duration} ngày</span>`,
+          'expired': '<span class="badge bg-danger">Hết hạn</span>'
+        };
+        const badgeContent = badges[data.status] || '<span class="badge bg-secondary">Không xác định</span>';
+        return `<div class="d-flex justify-content-center">${badgeContent}</div>`;
+      },
+    },
     {
       data: 'link',
       orderable: false,

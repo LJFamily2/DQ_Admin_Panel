@@ -50,6 +50,30 @@ function parseDates(startDate, endDate) {
   return { startDateUTC, endDateUTC };
 }
 
+// Function to calculate contract duration and status
+function calculateContractDuration(startDate, endDate) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); 
+  
+  if (!startDate && !endDate) {
+    return { duration: null, status: 'No contract' }; 
+  }
+  
+  const start = new Date(startDate);
+  start.setHours(0, 0, 0, 0); 
+  
+  const end = new Date(endDate);
+  end.setHours(23, 59, 59, 999); 
+  
+  if (end < today) {
+    return { duration: Math.ceil((end - start) / (1000 * 60 * 60 * 24)), status: 'expired' };
+  } else if (start <= today && end >= today) {
+    return { duration: Math.ceil((end - today) / (1000 * 60 * 60 * 24)), status: 'valid' }; 
+  }
+  
+  return { duration: null, status: 'No contract' }; 
+}
+
 async function getData(req, res) {
   try {
     const { draw, start, length, search, order, columns } = req.body;
@@ -76,15 +100,22 @@ async function getData(req, res) {
       .populate('accountID');
 
     // Map the products to the desired format
-    const data = products.map((product, index) => ({
-      no: parseInt(start, 10) + index + 1,
-      area: product.name || '',
-      accountID: product.accountID?.username || '',
-      link: {
-        _id: product._id,
-        slug: product.slug,
-      },
-    }));
+    const data = products.map((product, index) => {
+      const { duration, status } = calculateContractDuration(product.contractDuration.start, product.contractDuration.end);
+      return {
+        no: parseInt(start, 10) + index + 1,
+        area: product.name || '',
+        accountID: product.accountID?.username || '',
+        link: {
+          _id: product._id,
+          slug: product.slug,
+        },
+        contractDuration: {
+          duration: duration,
+          status: status,
+        },
+      };
+    });
 
     res.json({
       draw,
@@ -96,6 +127,8 @@ async function getData(req, res) {
     res.status(500).render('partials/500', { layout: false });
   }
 }
+
+
 
 async function getSupplierData(req, res) {
   await getSupplierInputData(req, res, false);
