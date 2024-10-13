@@ -26,14 +26,22 @@ const supplierSchema = new mongoose.Schema({
       `${this.code}-${Math.floor(100000 + Math.random() * 900000)}`,
   },
   // Apply with the Contract Area
-  purchasePrice: {
+  purchasedPrice: {
     type: Number,
     default: 0
   },
-  purchaseAreaDimension: {
+  areaDeposit: {
     type: Number,
     default: 0
   },
+  purchasedAreaDimension: {
+    type: Number,
+    default: 0
+  },
+  areaDuration: {
+    start: Date,
+    end: Date
+  }
 });
 
 const dailySupplySchema = new mongoose.Schema({
@@ -69,8 +77,10 @@ const dailySupplySchema = new mongoose.Schema({
   limitData: Number,
   // Apply with the Contract Area
   areaDimension: Number,
-  contractDurationStart: Date,
-  contractDurationEnd: Date,
+  contractDuration: {
+    start: Date,
+    end: Date
+  },
   areaPrice: Number,
   address: String,
   slug: {
