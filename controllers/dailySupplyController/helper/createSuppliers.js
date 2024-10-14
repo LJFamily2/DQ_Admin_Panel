@@ -8,8 +8,8 @@ async function createSuppliers(req) {
   let supplierIdentification = ensureArray(req.body.identification);
   let supplierIssueDate = ensureArray(req.body.issueDate);
   let supplierAddress = ensureArray(req.body.address);
-  let supplierRatioSplit = ensureArray(req.body.ratioSplit);
-  let supplierRatioMuNuocSplit = ensureArray(req.body.ratioMuNuocSplit);
+  let supplierRatioSumSplit = ensureArray(req.body.ratioSumSplit);
+  let supplierRatioRubberSplit = ensureArray(req.body.ratioRubberSplit);
   let supplierAreaDeposit = ensureArray(req.body.areaDeposit);
   let supplierPurchasedPrice = ensureArray(req.body.purchasedPrice);
   let supplierPurchasedAreaDimension = ensureArray(req.body.purchasedAreaDimension);
@@ -26,8 +26,8 @@ async function createSuppliers(req) {
         identification: supplierIdentification[index],
         issueDate: supplierIssueDate[index],
         address: supplierAddress[index],
-        ratioSplit: convertToDecimal(supplierRatioSplit[index]),
-        ratioMuNuocSplit: convertToDecimal(supplierRatioMuNuocSplit[index]),
+        ratioSumSplit: convertToDecimal(supplierRatioSumSplit[index]),
+        ratioRubberSplit: convertToDecimal(supplierRatioRubberSplit[index]),
         areaDeposit: convertToDecimal(supplierAreaDeposit[index]),
         purchasedPrice: convertToDecimal(supplierPurchasedPrice[index]),
         purchasedAreaDimension: supplierPurchasedAreaDimension[index],

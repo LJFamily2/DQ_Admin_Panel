@@ -142,6 +142,7 @@ async function addData(req, res) {
       return {
         name: name,
         percentage: name === 'Mủ nước' ? convertToDecimal(req.body.percentage) : 0,
+        ratioSplit: existedSupplier.ratioRubberSplit,
         quantity: convertToDecimal(req.body.quantity[index] || 0), 
       };
     });

@@ -57,9 +57,14 @@ async function addArea(req, res) {
     }
 
     const areaDimension = parseFloat(req.body.areaDimension) || 0;
-    const purchasedAreaDimensions = ensureArray(req.body.purchasedAreaDimension).map(dim => parseFloat(dim) || 0);
+    const purchasedAreaDimensions = ensureArray(
+      req.body.purchasedAreaDimension,
+    ).map(dim => parseFloat(dim) || 0);
 
-    const totalPurchasedAreaDimension = purchasedAreaDimensions.reduce((sum, dim) => sum + dim, 0);
+    const totalPurchasedAreaDimension = purchasedAreaDimensions.reduce(
+      (sum, dim) => sum + dim,
+      0,
+    );
 
     if (totalPurchasedAreaDimension > areaDimension) {
       return handleResponse(

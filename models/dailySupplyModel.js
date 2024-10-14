@@ -12,13 +12,13 @@ const supplierSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  ratioSplit: {
+  ratioRubberSplit: {
     type: Number,
-    default: 0,
+    default: 100,
   },
-  ratioMuNuocSplit: {
+  ratioSumSplit: {
     type: Number,
-    default: 0,
+    default: 100,
   },
   supplierSlug: {
     type: String,
@@ -65,6 +65,7 @@ const dailySupplySchema = new mongoose.Schema({
           name: String,
           percentage: Number,
           quantity: Number,
+          ratioSplit: Number,
           price: Number,
         },
       ],
