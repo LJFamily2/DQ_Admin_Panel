@@ -508,11 +508,10 @@
                     >Giá khu vực</label
                   >
                   <input
-                    type="number"
+                    type="text"
                     class="form-control"
                     id="areaPrice"
                     name="areaPrice"
-                    step="1"
                     min="0"
                     value="<%= area.areaPrice.toLocaleString('vi-VN') %>"
                     oninput="handleQuantityInput(this)"
@@ -560,7 +559,7 @@
                         <div class="modal-content">
                           <div class="modal-header">
                             <h1 class="modal-title fs-5" id="staticBackdropLabel">
-                              Chỉnh sửa nhà vườn
+                              Chỉnh sửa nhà vườn <%= supplier.name %>
                             </h1>
                             <button
                               type="button"
@@ -602,6 +601,13 @@
                                   required
                                 />
                               </div>
+                            </div>
+                            <div class="mt-3">
+                              <label for="manager" class="form-label fw-bold">Vai trò</label>
+                              <select class="form-select" id="manager" name="manager" required>
+                                <option value="false" <%= supplier.manager === false ? 'selected' : '' %>>Nhà vườn</option>
+                                <option value="true" <%= supplier.manager === true ? 'selected' : '' %>>Quản lý</option>
+                              </select>
                             </div>
                             <div class="mt-3">
                               <label for="phone" class="form-label fw-bold"
@@ -656,31 +662,31 @@
                               <input
                                 type="text"
                                 class="form-control"
-                                name="address"
-                                value="<%= supplier.address %>"
+                                name="supplierAddress"
+                                value="<%= supplier.supplierAddress %>"
                                 maxlength="70"
                               />
                             </div>
                             <div class="mt-3">
-                              <label for="ratioMuNuocSplit" class="form-label fw-bold">Ăn chia quy khô</label>
+                              <label for="ratioRubberSplit" class="form-label fw-bold">Ăn chia mủ</label>
                               <input
                                 type="text"
                                 class="form-control"
-                                id="ratioMuNuocSplit"
-                                name="ratioMuNuocSplit"
+                                id="ratioRubberSplit"
+                                name="ratioRubberSplit"
                                 value="<%= supplier.ratioRubberSplit.toLocaleString('vi-VN') %>"
                                 oninput="handlePercentageInput(this)"
                               />
                             </div>
                             <div class="mt-3">
-                              <label for="ratioSplit" class="form-label fw-bold"
-                                >Ăn chia</label
+                              <label for="ratioSumSplit" class="form-label fw-bold"
+                                >Ăn chia tổng</label
                               >
                               <input
                                 type="text"
                                 class="form-control"
-                                id="ratioSplit"
-                                name="ratioSplit"
+                                id="ratioSumSplit"
+                                name="ratioSumSplit"
                                 value="<%= supplier.ratioSumSplit.toLocaleString('vi-VN') %>"
                                 min="1"
                               />
