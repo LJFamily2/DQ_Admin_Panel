@@ -103,20 +103,27 @@
               <th rowspan="2">Ngày</th>
               <th rowspan="2">Nhà vườn</th>
               <th rowspan="2">Mã</th>
-              <th colspan="3">Mủ quy khô</th>
-              <th>Mủ tạp</th>
-              <th>Mủ ké</th>
-              <th>Mủ đông</th>
+              <th colspan="4">Mủ quy khô</th>
+              <th colspan="3">Mủ tạp</th>
+              <th colspan="3">Mủ ké</th>
+              <th colspan="3">Mủ đông</th>
               <th rowspan="2">Ghi chú</th>
               <th rowspan="2">Chỉnh sửa</th>
             </tr>
             <tr>
               <th>SL</th>
               <th>Hàm lượng</th>
+              <th>Tỷ lệ (%)</th>
               <th>Tổng</th>
               <th>SL</th>
+              <th>Tỷ lệ (%)</th>
+              <th>Tổng</th>
               <th>SL</th>
+              <th>Tỷ lệ (%)</th>
+              <th>Tổng</th>
               <th>SL</th>
+              <th>Tỷ lệ (%)</th>
+              <th>Tổng</th>
             </tr>
           </thead>
 
@@ -190,7 +197,7 @@
                             <div class="itemList">
                               <div class="row my-3">
                                 <label class="form-label fw-bold">Mủ nước</label>
-                                <div class="col col-md-6">
+                                <div class="col col-md-4">
                                   <label for="muNuocQuantity<%= index %>" class="form-label">Số lượng</label>
                                   <input
                                     type="number"
@@ -201,7 +208,7 @@
                                     required
                                   />
                                 </div>
-                                <div class="col col-md-6">
+                                <div class="col col-md-4">
                                   <label for="muNuocPercentage<%= index %>" class="form-label">Hàm lượng</label>
                                   <input
                                     type="number"
@@ -213,13 +220,25 @@
                                     required
                                   />
                                 </div>
+                                <div class="col col-md-4">
+                                  <label for="muNuocRatioSplit<%= index %>" class="form-label">Tỷ lệ (%)</label>
+                                  <input
+                                    type="number"
+                                    class="form-control"
+                                    id="muNuocRatioSplit<%= index %>"
+                                    name="muNuocRatioSplit"
+                                    max="100"
+                                    value="<%= raw.ratioSplit %>"
+                                    required
+                                  />
+                                </div>
                               </div>
                             </div>
                           <% } else if (raw.name === 'Mủ tạp') { %>
                             <div class="itemList">
                               <div class="row my-3">
                                 <label class="form-label fw-bold">Mủ tạp</label>
-                                <div class="col">
+                                <div class="col col-md-6">
                                   <label for="muTapQuantity<%= index %>" class="form-label">Số lượng</label>
                                   <input
                                     type="number"
@@ -230,13 +249,25 @@
                                     required
                                   />
                                 </div>
+                                <div class="col col-md-6">
+                                  <label for="muTapRatioSplit<%= index %>" class="form-label">Tỷ lệ (%)</label>
+                                  <input
+                                    type="number"
+                                    class="form-control"
+                                    id="muTapRatioSplit<%= index %>"
+                                    name="muTapRatioSplit"
+                                    max="100"
+                                    value="<%= raw.ratioSplit %>"
+                                    required
+                                  />
+                                </div>
                               </div>
                             </div>
                             <% } else if (raw.name === 'Mủ ké') { %>
                               <div class="itemList">
                                 <div class="row my-3">
                                   <label class="form-label fw-bold">Mủ Ké</label>
-                                  <div class="col">
+                                  <div class="col col-md-6">
                                     <label for="muKeQuantity<%= index %>" class="form-label">Số lượng</label>
                                     <input
                                       type="number"
@@ -247,13 +278,25 @@
                                       required
                                     />
                                   </div>
+                                  <div class="col col-md-6">
+                                    <label for="muKeRatioSplit<%= index %>" class="form-label">Tỷ lệ (%)</label>
+                                    <input
+                                      type="number"
+                                      class="form-control"
+                                      id="muKeRatioSplit<%= index %>"
+                                      name="muKeRatioSplit"
+                                      max="100"
+                                      value="<%= raw.ratioSplit %>"
+                                      required
+                                    />
+                                  </div>
                                 </div>
                               </div>
                             <% } else if (raw.name === 'Mủ đông') { %>
                               <div class="itemList">
                                 <div class="row my-3">
                                   <label class="form-label fw-bold">Mủ Đông</label>
-                                  <div class="col">
+                                  <div class="col col-md-6">
                                     <label for="muDongQuantity<%= index %>" class="form-label">Số lượng</label>
                                     <input
                                       type="number"
@@ -261,6 +304,18 @@
                                       id="muDongQuantity<%= index %>"
                                       name="muDongQuantity"
                                       value="<%= raw.quantity %>"
+                                      required
+                                    />
+                                  </div>
+                                  <div class="col col-md-6">
+                                    <label for="muDongRatioSplit<%= index %>" class="form-label">Tỷ lệ (%)</label>
+                                    <input
+                                      type="number"
+                                      class="form-control"
+                                      id="muDongRatioSplit<%= index %>"
+                                      name="muDongRatioSplit"
+                                      max="100"
+                                      value="<%= raw.ratioSplit %>"
                                       required
                                     />
                                   </div>
@@ -335,11 +390,18 @@
             <% }) %>
           </tbody>
           <tfoot>
-            <th colspan="6">Tổng</th>
+            <th colspan="7">Tổng</th>
             <th></th>
             <th></th>
             <th></th>
-            <th ></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
             <th colspan="2"></th>
           </tfoot>
         </table>
@@ -797,10 +859,17 @@
     { data: 'code', orderable: false },
     { data: 'muNuocQuantity', orderable: false },
     { data: 'muNuocPercentage', orderable: false },
+    { data: 'muNuocRatioSplit', orderable: false },
     { data: 'muNuocQuantityToTal', orderable: false },
     { data: 'muTapQuantity', orderable: false },
+    { data: 'muTapRatioSplit', orderable: false },
+    { data: 'muTapQuantityToTal', orderable: false },
     { data: 'muKeQuantity', orderable: false },
+    { data: 'muKeRatioSplit', orderable: false },
+    { data: 'muKeQuantityToTal', orderable: false },
     { data: 'muDongQuantity', orderable: false },
+    { data: 'muDongRatioSplit', orderable: false },
+    { data: 'muDongQuantityToTal', orderable: false },
     { data: 'note', orderable: false, width: '2rem'  },
     { data: 'id', orderable: false },
   ];

@@ -210,6 +210,7 @@ async function deleteSupplier(req, res) {
 }
 
 async function editSupplier(req, res) {
+  console.log(req.body);
   req.body = trimStringFields(req.body);
   try {
     // Generate new slug only if code is changed

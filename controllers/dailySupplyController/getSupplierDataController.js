@@ -215,6 +215,7 @@ async function getSupplierInputData(req, res, isArea) {
         acc[raw.name] = {
           quantity: raw.quantity || '',
           percentage: raw.percentage || '',
+          ratioSplit: raw.ratioSplit || '',
         };
         return acc;
       }, {});
@@ -226,13 +227,17 @@ async function getSupplierInputData(req, res, isArea) {
         ...(isArea && { code: item.supplier.code || '' }),
         muNuocQuantity: rawMaterials['Mủ nước']?.quantity?.toLocaleString('vi-VN') || '',
         muNuocPercentage: rawMaterials['Mủ nước']?.percentage?.toLocaleString('vi-VN') || '',
-        muNuocQuantityToTal:
-          rawMaterials['Mủ nước']?.quantity && rawMaterials['Mủ nước']?.percentage
-            ? Number(((rawMaterials['Mủ nước'].quantity * rawMaterials['Mủ nước'].percentage) / 100).toFixed(5)).toLocaleString('vi-VN')
-            : '',
+        muNuocRatioSplit: rawMaterials['Mủ nước']?.ratioSplit?.toLocaleString('vi-VN') || '',
+        muNuocQuantityToTal:Number((rawMaterials['Mủ nước'].quantity * rawMaterials['Mủ nước'].percentage / 100 * rawMaterials['Mủ nước'].ratioSplit / 100).toFixed(5)).toLocaleString('vi-VN') || '',
         muTapQuantity: rawMaterials['Mủ tạp']?.quantity?.toLocaleString('vi-VN') || '',
-        muKeQuantity: rawMaterials['Mủ ké']?.quantity?.toLocaleString('vi-VN') || '',
+        muTapRatioSplit: rawMaterials['Mủ tạp']?.ratioSplit?.toLocaleString('vi-VN') || '',
+        muTapQuantityToTal: Number((rawMaterials['Mủ tạp'].quantity * rawMaterials['Mủ tạp'].ratioSplit / 100).toFixed(5)).toLocaleString('vi-VN') || '',
+        muKeQuantity: rawMaterials['Mủ ké']?.quantity?.toLocaleString('vi-VN') || '', 
+        muKeRatioSplit: rawMaterials['Mủ ké']?.ratioSplit?.toLocaleString('vi-VN') || '',
+        muKeQuantityToTal: Number((rawMaterials['Mủ ké'].quantity * rawMaterials['Mủ ké'].ratioSplit / 100).toFixed(5)).toLocaleString('vi-VN') || '',
         muDongQuantity: rawMaterials['Mủ đông']?.quantity?.toLocaleString('vi-VN') || '',
+        muDongRatioSplit: rawMaterials['Mủ đông']?.ratioSplit?.toLocaleString('vi-VN') || '',
+        muDongQuantityToTal: Number((rawMaterials['Mủ đông'].quantity * rawMaterials['Mủ đông'].ratioSplit / 100).toFixed(5)).toLocaleString('vi-VN') || '',
         note: item.data.note || '',
         id: item.data._id,
       };

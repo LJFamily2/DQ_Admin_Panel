@@ -106,7 +106,7 @@ function initializeDataTable(
     };
   }
   if (dailySupplyDetailFooter) {
-    const columns = [6, 7, 8, 9];
+    const columns = [ 7, 10, 13, 16];
     footerCallbackOptions = {
       footerCallback: function () {
         setupFooterCallback(columns, this.api());

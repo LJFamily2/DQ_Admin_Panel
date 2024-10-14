@@ -192,9 +192,13 @@ async function updateSupplierData(req, res) {
       supplier,
       muNuocQuantity,
       muNuocPercentage,
+      muNuocRatioSplit,
       muTapQuantity,
+      muTapRatioSplit,
       muKeQuantity,
+      muKeRatioSplit,
       muDongQuantity,
+      muDongRatioSplit,
       muNuocPrice,
       muTapPrice,
       muKePrice,
@@ -227,21 +231,25 @@ async function updateSupplierData(req, res) {
         name: 'Mủ nước', 
         quantity: convertToDecimal(muNuocQuantity), 
         percentage: convertToDecimal(muNuocPercentage), 
+        ratioSplit: convertToDecimal(muNuocRatioSplit),
         price: convertToDecimal(muNuocPrice) 
       },
       { 
         name: 'Mủ tạp', 
         quantity: convertToDecimal(muTapQuantity), 
+        ratioSplit: convertToDecimal(muTapRatioSplit),
         price: convertToDecimal(muTapPrice) 
       },
       { 
         name: 'Mủ ké', 
         quantity: convertToDecimal(muKeQuantity), 
+        ratioSplit: convertToDecimal(muKeRatioSplit),
         price: convertToDecimal(muKePrice) 
       },
       { 
         name: 'Mủ đông', 
         quantity: convertToDecimal(muDongQuantity), 
+        ratioSplit: convertToDecimal(muDongRatioSplit),
         price: convertToDecimal(muDongPrice) 
       },
     ];
