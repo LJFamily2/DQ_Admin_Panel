@@ -614,13 +614,12 @@
                               </div>
                             </div>
                             <div class="mt-3">
-                              <label for="address" class="form-label fw-bold"
+                              <label  class="form-label fw-bold"
                                 >Địa chỉ</label
                               >
                               <input
                                 type="text"
                                 class="form-control"
-                                id="address"
                                 name="address"
                                 value="<%= supplier.address %>"
                                 maxlength="70"
@@ -633,7 +632,7 @@
                                 class="form-control"
                                 id="ratioMuNuocSplit"
                                 name="ratioMuNuocSplit"
-                                value="<%= supplier.ratioMuNuocSplit.toLocaleString('vi-VN') %>"
+                                value="<%= supplier.ratioRubberSplit.toLocaleString('vi-VN') %>"
                                 oninput="handlePercentageInput(this)"
                               />
                             </div>
@@ -646,7 +645,7 @@
                                 class="form-control"
                                 id="ratioSplit"
                                 name="ratioSplit"
-                                value="<%= supplier.ratioSplit.toLocaleString('vi-VN') %>"
+                                value="<%= supplier.ratioSumSplit.toLocaleString('vi-VN') %>"
                                 min="1"
                               />
                             </div>
