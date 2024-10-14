@@ -25,6 +25,9 @@ async function renderDetailPage(req, res) {
       .populate('data.supplier');
     const hamLuongAccounts = await AccountModel.find({ role: 'Hàm lượng' });
 
+    // Find the manager supplier
+    const managerSupplier = area.suppliers.find(supplier => supplier.manager === true);
+
     res.render('src/dailySupplyDetailPage', {
       layout: './layouts/defaultLayout',
       title: `Dữ liệu mủ của ${area.name}`,
@@ -34,6 +37,7 @@ async function renderDetailPage(req, res) {
       endDate,
       user: req.user,
       messages: req.flash(),
+      managerSupplier, 
     });
   } catch (err) {
     console.log(err);

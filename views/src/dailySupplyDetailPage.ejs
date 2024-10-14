@@ -53,6 +53,7 @@
 
 <div class="row m-0 m-md-2 g-3 mb-4">
   <div class="col-12 col-md-9 mt-2">
+    <!-- Area Info -->
     <div class="row mb-3">
       <div class="col">
         <div class="accordion" id="areaInfoAccordion">
@@ -69,6 +70,7 @@
                     <p><strong>Tên khu vực:</strong> <%= area.name %></p>
                     <p><strong>Người nướng hàm lượng:</strong> <%= area.accountID ? area.accountID.username : 'Chưa được chỉ định' %></p>
                     <p><strong>Địa chỉ:</strong> <%= area.address %></p>
+                    <p><strong>Quản lý:</strong> <%= managerSupplier ? managerSupplier.name : 'Chưa có quản lý' %></p>
                   </div>
                   <div class="col-md-6">
                     <p><strong>Thời hạn hợp đồng:</strong> 
@@ -88,6 +90,7 @@
         </div>
       </div>
     </div>
+    <!-- Table -->
     <div class="card" style="box-shadow: 0 1px 2px">
       <div class="card-header bg-transparent">
         <%- include('../partials/dateSelection.ejs') %>
@@ -396,7 +399,7 @@
                   class="list-group-item d-flex justify-content-between align-items-start"
                 >
                   <div class="ms-2 me-auto">
-                    <div class="fw-bold"><%= supplier.name %></div>
+                    <div class="fw-bold"><%= supplier.name %> <%= supplier.manager ? '(Quản lý)' : '' %></div>
                     <%= supplier.code %>
                   </div>
                 </li>

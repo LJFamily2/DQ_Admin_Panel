@@ -4,6 +4,7 @@ const ensureArray = input => (Array.isArray(input) ? input : [input]);
 async function createSuppliers(req) {
   const supplierNames = ensureArray(req.body.supplierName);
   let supplierCode = ensureArray(req.body.code);
+  let supplierManager = ensureArray(req.body.manager);
   let supplierPhone = ensureArray(req.body.phone);
   let supplierIdentification = ensureArray(req.body.identification);
   let supplierIssueDate = ensureArray(req.body.issueDate);
@@ -22,6 +23,7 @@ async function createSuppliers(req) {
       return {
         name: name,
         code: supplierCode[index],
+        manager: supplierManager[index],
         phone: supplierPhone[index],
         identification: supplierIdentification[index],
         issueDate: supplierIssueDate[index],
