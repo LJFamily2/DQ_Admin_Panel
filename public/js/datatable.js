@@ -48,11 +48,18 @@ function initializeDataTable(
       const total = api
         .column(colIndex, { search: 'applied' })
         .data()
-        .reduce((acc, val) => acc + parseNumber(val), 0);
-      const formatted = formatNumberForDisplay(total, locale);
-      $(api.column(colIndex).footer()).html(
-        `<strong style='float: left'>${formatted}</strong>`,
-      );
+        .reduce((acc, val) => {
+          const num = parseNumber(val);
+          return !isNaN(num) ? acc + num : acc;
+        }, 0);
+      if (total !== 0) {
+        const formatted = formatNumberForDisplay(total, locale);
+        $(api.column(colIndex).footer()).html(
+          `<strong style='float: left'>${formatted}</strong>`
+        );
+      } else {
+        $(api.column(colIndex).footer()).html('');
+      }
     });
   };
 
