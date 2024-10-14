@@ -107,7 +107,8 @@ async function addData(req, res) {
   try {
     // Get today's date at midnight
     const today = new Date();
-
+    today.setUTCHours(today.getUTCHours() + 7, 0, 0, 0);
+    
     // Check the number of entries for today
     const dailySupply = await DailySupply.findById(req.params.id);
     const todayEntries = dailySupply.data.filter(

@@ -19,7 +19,8 @@ module.exports = {
 // Get today date in UTC+7
 function getTodayDate() {
   const today = new Date();
-  today.setUTCHours(0, 0, 0, 0);
+  today.setUTCHours(today.getUTCHours() + 7);
+  console.log(today);
   return today;
 }
 
@@ -47,9 +48,10 @@ function createDateFilter(startDateUTC, endDateUTC) {
 function parseDates(startDate, endDate) {
   const { effectiveStartDate, effectiveEndDate } = adjustDates(startDate, endDate);
   const startDateUTC = new Date(effectiveStartDate);
-  startDateUTC.setHours(0, 0, 0, 0);
+  startDateUTC.setUTCHours(0, 0, 0, 0);
   const endDateUTC = new Date(effectiveEndDate);
-  endDateUTC.setHours(23, 59, 59, 999);
+  endDateUTC.setUTCHours(23, 59, 59, 999);
+  console.log(startDateUTC, endDateUTC);
   return { startDateUTC, endDateUTC };
 }
 
@@ -150,6 +152,8 @@ async function getSupplierInputData(req, res, isArea) {
       dateFilter,
       searchValue,
     );
+    console.log(startDateUTC, endDateUTC);
+    console.log(dateFilter);
     const sortStage = { $sort: { 'data.date': -1 } };
     const pipeline = createPipeline(req.params.slug, matchStage, sortStage);
 
@@ -327,74 +331,52 @@ async function getSupplierExportData(req, res, isArea) {
 
   function flattenData(data, isArea) {
     return data.map((item, index) => {
-      let totalMuQuyKho = 0;
-      let totalMuNuocQuantity = 0;
-      let totalMuNuocPrice = 0;
-      let priceCount = 0;
-
       const rawMaterials = item.rawMaterials.reduce((acc, rawMaterialArray) => {
         rawMaterialArray.forEach(raw => {
           if (!acc[raw.name]) {
-            acc[raw.name] = { quantity: 0, price: 0, count: 0 };
+            acc[raw.name] = { quantity: 0, price: 0, ratioSplit: 0, count: 0 };
           }
           acc[raw.name].quantity += raw.quantity || 0;
+          acc[raw.name].ratioSplit += raw.ratioSplit || 0;
           if (raw.price) {
             acc[raw.name].price += raw.price;
             acc[raw.name].count++;
-          }
-          if (raw.name === 'Mủ nước') {
-            const quyKho = (raw.quantity * raw.percentage) / 100;
-            totalMuQuyKho += quyKho;
-            totalMuNuocQuantity += raw.quantity;
-            if (raw.price) {
-              totalMuNuocPrice += raw.price;
-              priceCount++;
-            }
           }
         });
         return acc;
       }, {});
 
-      Object.keys(rawMaterials).forEach(key => {
-        if (rawMaterials[key].count > 0) {
-          rawMaterials[key].price /= rawMaterials[key].count;
+      Object.values(rawMaterials).forEach(material => {
+        if (material.count > 0) {
+          material.price /= material.count;
+          material.ratioSplit /= material.count;
         }
       });
 
-      const averageMuNuocPrice = priceCount > 0 ? totalMuNuocPrice / priceCount : 0;
+      const calculateTotal = (material) => {
+        const { quantity, price, ratioSplit } = rawMaterials[material] || {};
+        return (quantity * price * ratioSplit) / 100;
+      };
 
-      const muQuyKhoToTal = totalMuQuyKho * averageMuNuocPrice;
-
-      const muTapTotal =
-        rawMaterials['Mủ tạp']?.quantity * rawMaterials['Mủ tạp']?.price;
-
-      const muKeQuantity = rawMaterials['Mủ ké']?.quantity;
-      const muKeDonGia = rawMaterials['Mủ ké']?.price;
-      const muKeTotal = muKeQuantity * muKeDonGia;
-
-      const muDongQuantity = rawMaterials['Mủ đông']?.quantity;
-      const muDongDonGia = rawMaterials['Mủ đông']?.price;
-      const muDongTotal = muDongQuantity * muDongDonGia;
-
-      const combinedNotes = item.notes.filter(note => note).join(', ');
+      const formatNumber = (num) => num > 0 ? num.toLocaleString('vi-VN') : '';
 
       return {
         no: index + 1,
         supplier: item.supplier.name || '',
         ...(isArea && { code: item.supplier.code || '' }),
-        muQuyKhoQuantity: totalMuQuyKho > 0 ? totalMuQuyKho.toLocaleString('vi-VN') : '',
-        muQuyKhoDonGia: averageMuNuocPrice > 0 ? averageMuNuocPrice.toLocaleString('vi-VN') : '',
-        muQuyKhoToTal: muQuyKhoToTal > 0 ? muQuyKhoToTal.toLocaleString('vi-VN') : '',
-        muTapQuantity: rawMaterials['Mủ tạp']?.quantity > 0 ? rawMaterials['Mủ tạp'].quantity.toLocaleString('vi-VN') : '',
-        muTapDonGia: rawMaterials['Mủ tạp']?.price > 0 ? rawMaterials['Mủ tạp'].price.toLocaleString('vi-VN') : '',
-        muTapTotal: muTapTotal > 0 ? muTapTotal.toLocaleString('vi-VN') : '',
-        muKeQuantity: muKeQuantity > 0 ? muKeQuantity.toLocaleString('vi-VN') : '',
-        muKeDonGia: muKeDonGia > 0 ? muKeDonGia.toLocaleString('vi-VN') : '',
-        muKeTotal: muKeTotal > 0 ? muKeTotal.toLocaleString('vi-VN') : '',
-        muDongQuantity: muDongQuantity > 0 ? muDongQuantity.toLocaleString('vi-VN') : '',
-        muDongDonGia: muDongDonGia > 0 ? muDongDonGia.toLocaleString('vi-VN') : '',
-        muDongTotal: muDongTotal > 0 ? muDongTotal.toLocaleString('vi-VN') : '',
-        note: combinedNotes,
+        muQuyKhoQuantity: formatNumber(rawMaterials['Mủ nước']?.quantity),
+        muQuyKhoDonGia: formatNumber(rawMaterials['Mủ nước']?.price),
+        muQuyKhoToTal: formatNumber(calculateTotal('Mủ nước')),
+        muTapQuantity: formatNumber(rawMaterials['Mủ tạp']?.quantity * rawMaterials['Mủ tạp']?.ratioSplit / 100),
+        muTapDonGia: formatNumber(rawMaterials['Mủ tạp']?.price),
+        muTapTotal: formatNumber(calculateTotal('Mủ tạp')),
+        muKeQuantity: formatNumber(rawMaterials['Mủ ké']?.quantity * rawMaterials['Mủ ké']?.ratioSplit / 100),
+        muKeDonGia: formatNumber(rawMaterials['Mủ ké']?.price),
+        muKeTotal: formatNumber(calculateTotal('Mủ ké')),
+        muDongQuantity: formatNumber(rawMaterials['Mủ đông']?.quantity * rawMaterials['Mủ đông']?.ratioSplit / 100),
+        muDongDonGia: formatNumber(rawMaterials['Mủ đông']?.price),
+        muDongTotal: formatNumber(calculateTotal('Mủ đông')),
+        note: item.notes.filter(Boolean).join(', '),
         signature: '',
         id: item._id,
       };
