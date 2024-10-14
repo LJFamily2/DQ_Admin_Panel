@@ -31,7 +31,7 @@ function initializeExportDataTable(
   minusPriceId,
   supplierName,
   ratioSplit,
-  ratioMuNuocSplit 
+  ratioMuNuocSplit,
 ) {
   const rowGroupOptions = rowGroup ? { dataSrc: rowGroup } : {};
 
@@ -49,15 +49,20 @@ function initializeExportDataTable(
         .reduce((acc, val) => acc + parseNumber(val), 0);
     };
 
-    const totalQuyKho = calculateTotal(4); 
-    const totalAfterRatio = ratioMuNuocSplit > 0 ? totalQuyKho * (ratioMuNuocSplit / 100) : 0;
-
+    const totalQuyKho = calculateTotal(4);
+    const totalAfterRatio =
+      ratioMuNuocSplit > 0 ? totalQuyKho * (ratioMuNuocSplit / 100) : 0;
 
     if (ratioMuNuocSplit > 0) {
       // Display three columns if ratio is greater than 0
       updateFooterCell(api, 0, 1, `${ratioMuNuocSplit}%`); // Percentage
       updateFooterCell(api, 0, 2, formatNumberForDisplay(totalQuyKho, locale)); // Current total
-      updateFooterCell(api, 0, 3, formatNumberForDisplay(totalAfterRatio, locale)); // Total * percentage
+      updateFooterCell(
+        api,
+        0,
+        3,
+        formatNumberForDisplay(totalAfterRatio, locale),
+      ); // Total * percentage
     } else {
       updateFooterCell(api, 0, 1, formatNumberForDisplay(totalQuyKho, locale));
     }
@@ -87,7 +92,12 @@ function initializeExportDataTable(
       );
 
       prices.forEach((price, index) => {
-        updateFooterCell(api, 1, index + 1, formatNumberForDisplay(price, locale));
+        updateFooterCell(
+          api,
+          1,
+          index + 1,
+          formatNumberForDisplay(price, locale),
+        );
         updateFooterCell(
           api,
           2,
@@ -106,11 +116,13 @@ function initializeExportDataTable(
 
   let footerCallbackOptions;
   if (exportPageFooter) {
-    footerCallbackOptions = setupFooterCallbackOptions([3, 5, 6, 8, 9, 11, 12, 14]);
+    footerCallbackOptions = setupFooterCallbackOptions([
+      3, 5, 6, 8, 9, 11, 12, 14, 15,
+    ]);
   }
 
   if (individualExportPage) {
-    footerCallbackOptions = setupFooterCallbackOptions([ 6, 8, 10]);
+    footerCallbackOptions = setupFooterCallbackOptions([6, 8, 10]);
   }
 
   const pdfButton = {
@@ -151,15 +163,19 @@ function initializeExportDataTable(
               columns: ':visible',
             },
             customize: function (win) {
-              if(exportPageFooter) {
-                const startDate = new Date($(startDateId).val()).toLocaleDateString('vi-VN');
-                const endDate = new Date($(endDateId).val()).toLocaleDateString('vi-VN');
+              if (exportPageFooter) {
+                const startDate = new Date(
+                  $(startDateId).val(),
+                ).toLocaleDateString('vi-VN');
+                const endDate = new Date($(endDateId).val()).toLocaleDateString(
+                  'vi-VN',
+                );
                 const dateRange =
                   startDate && endDate
                     ? `Từ ngày ${startDate} đến ngày ${endDate}`
                     : '';
 
-                    $(win.document.body)
+                $(win.document.body)
                   .find('h1')
                   .css('text-align', 'center')
                   .css('font-size', '1.5rem')
@@ -168,17 +184,21 @@ function initializeExportDataTable(
                   .find('h6')
                   .after(
                     `<h6 style="text-align: left;">Khu vực: ${supplierName}</h6>`,
-                  )
-                  $(win.document.body).find('th, td').css({
-                    'font-size': '0.75rem',
-                  });
-                  $(win.document.body).find('th').css({
-                    'white-space': 'nowrap',
-                  });
+                  );
+                $(win.document.body).find('th, td').css({
+                  'font-size': '0.75rem',
+                });
+                $(win.document.body).find('th').css({
+                  'white-space': 'nowrap',
+                });
               }
               if (individualExportPage) {
-                const startDate = new Date($(startDateId).val()).toLocaleDateString('vi-VN');
-                const endDate = new Date($(endDateId).val()).toLocaleDateString('vi-VN');
+                const startDate = new Date(
+                  $(startDateId).val(),
+                ).toLocaleDateString('vi-VN');
+                const endDate = new Date($(endDateId).val()).toLocaleDateString(
+                  'vi-VN',
+                );
                 const dateRange =
                   startDate && endDate
                     ? `Từ ngày ${startDate} đến ngày ${endDate}`
@@ -215,7 +235,7 @@ function initializeExportDataTable(
                 const totalAfterRatio =
                   finalAmount * (ratioSplit.replace(',', '.') / 100);
 
-                  /// Add the date range and supplier name to the top of the table
+                /// Add the date range and supplier name to the top of the table
                 $(win.document.body)
                   .find('h1')
                   .css('text-align', 'center')
@@ -232,35 +252,51 @@ function initializeExportDataTable(
                       totalAmount,
                       'vi-VN',
                     )} </p>`,
-                    `${addPrice > 0 ? `<p style="text-align: left; margin-top: 20px;">Cộng: ${formatNumberForDisplay(
-                      addPrice,
-                      'vi-VN'
-                    )} </p>` : ''}`,
-                    `${minusPrice > 0 ? `<p style="text-align: left; margin-top: 20px;">Trừ: ${formatNumberForDisplay(
-                      minusPrice,
-                      'vi-VN'
-                    )} </p>` : ''}`,
+                    `${
+                      addPrice > 0
+                        ? `<p style="text-align: left; margin-top: 20px;">Cộng: ${formatNumberForDisplay(
+                            addPrice,
+                            'vi-VN',
+                          )} </p>`
+                        : ''
+                    }`,
+                    `${
+                      minusPrice > 0
+                        ? `<p style="text-align: left; margin-top: 20px;">Trừ: ${formatNumberForDisplay(
+                            minusPrice,
+                            'vi-VN',
+                          )} </p>`
+                        : ''
+                    }`,
                     ratioSplit > 0
-                      ? `${(addPrice > 0 || minusPrice > 0) ? `<p style="text-align: left; margin-top: 20px;">Tổng sau cộng/trừ: ${formatNumberForDisplay(
-                          finalAmount,
-                          'vi-VN',
-                        )} </p>` : ''}
+                      ? `${
+                          addPrice > 0 || minusPrice > 0
+                            ? `<p style="text-align: left; margin-top: 20px;">Tổng sau cộng/trừ: ${formatNumberForDisplay(
+                                finalAmount,
+                                'vi-VN',
+                              )} </p>`
+                            : ''
+                        }
                     <p style="text-align: left; margin-top: 20px;">Tỉ lệ phân chia: ${ratioSplit}%</p>
                     <hr><p style="text-align: left; margin-top: 20px;">Thực nhận: ${formatNumberForDisplay(
                       totalAfterRatio,
                       'vi-VN',
                     )} </p>`
-                      : `${(addPrice > 0 || minusPrice > 0) ? `<p style="text-align: left; margin-top: 20px;">Tổng sau cộng/trừ: ${formatNumberForDisplay(
-                          finalAmount,
-                          'vi-VN',
-                        )} </p>` : ''}
+                      : `${
+                          addPrice > 0 || minusPrice > 0
+                            ? `<p style="text-align: left; margin-top: 20px;">Tổng sau cộng/trừ: ${formatNumberForDisplay(
+                                finalAmount,
+                                'vi-VN',
+                              )} </p>`
+                            : ''
+                        }
                     <hr><p style="text-align: left; margin-top: 20px;">Thực nhận: ${formatNumberForDisplay(
-                          finalAmount,
-                          'vi-VN',
-                        )} </p>`,
+                      finalAmount,
+                      'vi-VN',
+                    )} </p>`,
                   );
 
-                  ///Set the css for the table
+                ///Set the css for the table
                 $(win.document.body).find('th, td').css({
                   'font-size': '0.75rem',
                 });

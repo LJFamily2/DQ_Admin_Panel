@@ -20,7 +20,6 @@ module.exports = {
 function getTodayDate() {
   const today = new Date();
   today.setUTCHours(today.getUTCHours() + 7);
-  console.log(today);
   return today;
 }
 
@@ -51,7 +50,6 @@ function parseDates(startDate, endDate) {
   startDateUTC.setUTCHours(0, 0, 0, 0);
   const endDateUTC = new Date(effectiveEndDate);
   endDateUTC.setUTCHours(23, 59, 59, 999);
-  console.log(startDateUTC, endDateUTC);
   return { startDateUTC, endDateUTC };
 }
 
@@ -152,8 +150,6 @@ async function getSupplierInputData(req, res, isArea) {
       dateFilter,
       searchValue,
     );
-    console.log(startDateUTC, endDateUTC);
-    console.log(dateFilter);
     const sortStage = { $sort: { 'data.date': -1 } };
     const pipeline = createPipeline(req.params.slug, matchStage, sortStage);
 
@@ -348,7 +344,7 @@ async function getSupplierExportData(req, res, isArea) {
 
       Object.values(rawMaterials).forEach(material => {
         if (material.count > 0) {
-          material.price /= material.count;
+          material.price = material.price / material.count; // Calculate average price
           material.ratioSplit /= material.count;
         }
       });
@@ -359,6 +355,10 @@ async function getSupplierExportData(req, res, isArea) {
       };
 
       const formatNumber = (num) => num > 0 ? num.toLocaleString('vi-VN') : '';
+
+      const totalSum = Object.keys(rawMaterials).reduce((sum, material) => {
+        return sum + calculateTotal(material);
+      }, 0);
 
       return {
         no: index + 1,
@@ -376,9 +376,10 @@ async function getSupplierExportData(req, res, isArea) {
         muDongQuantity: formatNumber(rawMaterials['Mủ đông']?.quantity * rawMaterials['Mủ đông']?.ratioSplit / 100),
         muDongDonGia: formatNumber(rawMaterials['Mủ đông']?.price),
         muDongTotal: formatNumber(calculateTotal('Mủ đông')),
+        totalSum: formatNumber(totalSum),
         note: item.notes.filter(Boolean).join(', '),
         signature: '',
-        id: item._id,
+        id: item.supplier.supplierSlug,
       };
     });
   }
