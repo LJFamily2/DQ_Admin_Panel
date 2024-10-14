@@ -376,7 +376,7 @@
             >
               <h4>Chỉnh sửa</h4>
               <form action="/du-lieu-hang-ngay/update/<%= area._id %>" method="post" onchange="this.querySelector('button[type=submit]').style.display = 'block';">
-                <div class="mb-3">
+                <div>
                   <label for="areaName" class="form-label">Khu vực</label>
                   <input
                     type="text"
@@ -387,7 +387,7 @@
                     required
                   />
                 </div>
-                <div class="mb-3">
+                <div class="my-3">
                   <label for="accountID" class="form-label"
                     >Nướng hàm lượng</label
                   >
@@ -406,6 +406,84 @@
                       </option>
                     <% }) %>
                   </select>
+                </div>
+                <div class="my-3">
+                  <label for="address" class="form-label fw-bold">Địa chỉ</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="address"
+                    name="address"
+                    required
+                    maxlength="150"
+                    value="<%= area.address %>"
+                  />
+                </div>
+                <div class="my-3">
+                  <label class="form-label fw-bold">Thời hạn hợp đồng</label>
+                  <div class="row">
+                    <div class="col-6">
+                      <label for="contractStart" class="form-label"
+                        >Ngày bắt đầu</label
+                      >
+                      <input
+                        type="date"
+                        class="form-control"
+                        id="contractStart"
+                        name="contractDuration[start]"
+                        value="<%= area.contractDuration.start.toISOString().split('T')[0] %>"
+                      />
+                    </div>
+                    <div class="col-6">
+                      <label for="contractEnd" class="form-label"
+                        >Ngày kết thúc</label
+                      >
+                      <input
+                        type="date"
+                        class="form-control"
+                        id="contractEnd"
+                        name="contractDuration[end]"
+                        value="<%= area.contractDuration.end.toISOString().split('T')[0] %>"
+                      />
+                    </div>
+                  </div>
+                  <small class="text-muted"
+                    >Để trống nếu không có ngày hợp đồng</small
+                  >
+                </div>
+                <div class="my-3">
+                  <label for="areaDimension" class="form-label fw-bold"
+                    >Diện tích khu vực (mẫu)</label
+                  >
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="areaDimension"
+                    name="areaDimension"
+                    required
+                    step="0.1"
+                    min="0"
+                    value="<%= area.areaDimension %>"
+                  />
+                  <small class="text-muted">Chỉ áp dụng cho khu vực hợp đồng</small>
+                </div>
+                <div class="my-3">
+                  <label for="areaPrice" class="form-label fw-bold"
+                    >Giá khu vực</label
+                  >
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="areaPrice"
+                    name="areaPrice"
+                    step="1"
+                    min="0"
+                    value="<%= area.areaPrice.toLocaleString('vi-VN') %>"
+                    oninput="handleQuantityInput(this)"
+                  />
+                  <small class="text-muted"
+                    >Để trống nếu không khu vực không mua bán</small
+                  >
                 </div>
                 <button type="submit" class="btn btn-primary" style="display: none;">Lưu</button>
               </form>

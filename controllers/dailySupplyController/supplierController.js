@@ -5,7 +5,7 @@ const slugify = require('slugify');
 const trimStringFields = require('../utils/trimStringFields');
 const handleResponse = require('../utils/handleResponse');
 const createSuppliers = require('./helper/createSuppliers');
-
+const convertToDecimal = require('../utils/convertToDecimal');
 module.exports = {
   // DetailPage
   renderDetailPage,
@@ -79,6 +79,7 @@ async function updateArea(req, res) {
       ...req.body,
       name: areaName,
       limitData: limitData || currentArea.limitData,
+      areaPrice: convertToDecimal(req.body.areaPrice) || currentArea.areaPrice,
     };
 
     // Only update slug if areaName has changed and is a non-empty string

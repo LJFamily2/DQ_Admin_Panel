@@ -61,7 +61,8 @@
                     method="post"
                   >
                     <div class="modal-body">
-                      Bạn có muốn xóa khu vực <strong><%= area.name %></strong> ? Hành động này không
+                      Bạn có muốn xóa khu vực
+                      <strong><%= area.name %></strong> ? Hành động này không
                       thể hoàn tác.
                     </div>
                     <div class="modal-footer">
@@ -116,19 +117,7 @@
               <% }) %>
             </select>
           </div>
-          <div class="my-3">
-            <label for="areaDimension" class="form-label fw-bold">Diện tích khu vực (mẫu)</label>
-            <input
-              type="number"
-              class="form-control"
-              id="areaDimension"
-              name="areaDimension"
-              required
-              step="0.1"
-              min="0"
-            />
-            <small class="text-muted">Chỉ áp dụng cho khu vực hợp đồng</small>
-          </div>
+
           <div class="my-3">
             <label for="address" class="form-label fw-bold">Địa chỉ</label>
             <input
@@ -144,7 +133,9 @@
             <label class="form-label fw-bold">Thời hạn hợp đồng</label>
             <div class="row">
               <div class="col-6">
-                <label for="contractStart" class="form-label">Ngày bắt đầu</label>
+                <label for="contractStart" class="form-label"
+                  >Ngày bắt đầu</label
+                >
                 <input
                   type="date"
                   class="form-control"
@@ -153,7 +144,9 @@
                 />
               </div>
               <div class="col-6">
-                <label for="contractEnd" class="form-label">Ngày kết thúc</label>
+                <label for="contractEnd" class="form-label"
+                  >Ngày kết thúc</label
+                >
                 <input
                   type="date"
                   class="form-control"
@@ -162,10 +155,29 @@
                 />
               </div>
             </div>
-            <small class="text-muted">Để trống nếu không có ngày hợp đồng</small>
+            <small class="text-muted"
+              >Để trống nếu không có ngày hợp đồng</small
+            >
           </div>
           <div class="my-3">
-            <label for="areaPrice" class="form-label fw-bold">Giá khu vực</label>
+            <label for="areaDimension" class="form-label fw-bold"
+              >Diện tích khu vực (mẫu)</label
+            >
+            <input
+              type="number"
+              class="form-control"
+              id="areaDimension"
+              name="areaDimension"
+              required
+              step="0.1"
+              min="0"
+            />
+            <small class="text-muted">Chỉ áp dụng cho khu vực hợp đồng</small>
+          </div>
+          <div class="my-3">
+            <label for="areaPrice" class="form-label fw-bold"
+              >Giá khu vực</label
+            >
             <input
               type="number"
               class="form-control"
@@ -174,17 +186,31 @@
               step="1"
               min="0"
             />
-            <small class="text-muted">Để trống nếu không khu vực không mua bán</small>
+            <small class="text-muted"
+              >Để trống nếu không khu vực không mua bán</small
+            >
           </div>
 
           <div class="accordion" id="supplierAccordion">
             <div class="accordion-item">
               <h2 class="accordion-header" id="headingSupplier">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSupplier" aria-expanded="false" aria-controls="collapseSupplier">
+                <button
+                  class="accordion-button collapsed"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#collapseSupplier"
+                  aria-expanded="false"
+                  aria-controls="collapseSupplier"
+                >
                   <h5 class="fw-bold mb-0">Thêm nhà vườn</h5>
                 </button>
               </h2>
-              <div id="collapseSupplier" class="accordion-collapse collapse" aria-labelledby="headingSupplier" data-bs-parent="#supplierAccordion">
+              <div
+                id="collapseSupplier"
+                class="accordion-collapse collapse"
+                aria-labelledby="headingSupplier"
+                data-bs-parent="#supplierAccordion"
+              >
                 <div class="accordion-body">
                   <div class="supplierInfor my-3">
                     <div class="supplier">
@@ -220,7 +246,9 @@
                             />
                           </div>
                           <div class="col col-md-6">
-                            <label for="code" class="form-label fw-bold">Mã</label>
+                            <label for="code" class="form-label fw-bold"
+                              >Mã</label
+                            >
                             <input
                               type="text"
                               class="form-control"
@@ -241,11 +269,13 @@
                             name="phone"
                             maxlength="10"
                             oninput="this.value = this.value.replace(/\D/g, '');"
-                            />
+                          />
                         </div>
                         <div class="row">
                           <div class="col-7 mt-3">
-                            <label for="identification" class="form-label fw-bold"
+                            <label
+                              for="identification"
+                              class="form-label fw-bold"
                               >Căn cước công dân</label
                             >
                             <input
@@ -271,9 +301,7 @@
                           </div>
                         </div>
                         <div class="mt-3">
-                          <label class="form-label fw-bold"
-                            >Địa chỉ</label
-                          >
+                          <label class="form-label fw-bold">Địa chỉ</label>
                           <input
                             type="text"
                             class="form-control"
@@ -282,7 +310,11 @@
                           />
                         </div>
                         <div class="mt-3">
-                          <label for="purchasedAreaDimension" class="form-label fw-bold">Diện tích mua (mẫu)</label>
+                          <label
+                            for="purchasedAreaDimension"
+                            class="form-label fw-bold"
+                            >Diện tích mua (mẫu)</label
+                          >
                           <input
                             type="number"
                             class="form-control"
@@ -293,7 +325,9 @@
                           />
                         </div>
                         <div class="mt-3">
-                          <label for="purchasedPrice" class="form-label fw-bold">Giá mua (VNĐ/mẫu)</label>
+                          <label for="purchasedPrice" class="form-label fw-bold"
+                            >Giá mua (VNĐ/mẫu)</label
+                          >
                           <input
                             type="number"
                             class="form-control"
@@ -304,7 +338,9 @@
                           />
                         </div>
                         <div class="mt-3">
-                          <label for="areaDeposit" class="form-label fw-bold">Tiền đặt cọc</label>
+                          <label for="areaDeposit" class="form-label fw-bold"
+                            >Tiền đặt cọc</label
+                          >
                           <input
                             type="number"
                             class="form-control"
@@ -318,7 +354,9 @@
                           <label class="form-label fw-bold">Thời hạn mua</label>
                           <div class="row">
                             <div class="col-6">
-                              <label for="areaDurationStart" class="form-label">Ngày bắt đầu</label>
+                              <label for="areaDurationStart" class="form-label"
+                                >Ngày bắt đầu</label
+                              >
                               <input
                                 type="date"
                                 class="form-control"
@@ -327,7 +365,9 @@
                               />
                             </div>
                             <div class="col-6">
-                              <label for="areaDurationEnd" class="form-label">Ngày kết thúc</label>
+                              <label for="areaDurationEnd" class="form-label"
+                                >Ngày kết thúc</label
+                              >
                               <input
                                 type="date"
                                 class="form-control"
@@ -338,7 +378,11 @@
                           </div>
                         </div>
                         <div class="mt-3">
-                          <label for="ratioMuNuocSplit" class="form-label fw-bold">Ăn chia quy khô</label>
+                          <label
+                            for="ratioMuNuocSplit"
+                            class="form-label fw-bold"
+                            >Ăn chia quy khô</label
+                          >
                           <input
                             type="text"
                             class="form-control"
@@ -348,7 +392,9 @@
                           />
                         </div>
                         <div class="mt-3">
-                          <label for="ratioSplit" class="form-label fw-bold">Ăn chia tổng</label>
+                          <label for="ratioSplit" class="form-label fw-bold"
+                            >Ăn chia tổng</label
+                          >
                           <input
                             type="text"
                             class="form-control"
@@ -407,11 +453,14 @@
       width: '1%',
       render: function (data, type, row) {
         const badges = {
-          'No contract': '<span class="badge bg-light text-dark">Không hợp đồng</span>',
-          'valid': `<span class="badge bg-success">Còn ${data.duration} ngày</span>`,
-          'expired': '<span class="badge bg-danger">Hết hạn</span>'
+          'No contract':
+            '<span class="badge bg-light text-dark">Không hợp đồng</span>',
+          valid: `<span class="badge bg-success">Còn ${data.duration} ngày</span>`,
+          expired: '<span class="badge bg-danger">Hết hạn</span>',
         };
-        const badgeContent = badges[data.status] || '<span class="badge bg-secondary">Không xác định</span>';
+        const badgeContent =
+          badges[data.status] ||
+          '<span class="badge bg-secondary">Không xác định</span>';
         return `<div class="d-flex justify-content-center">${badgeContent}</div>`;
       },
     },
