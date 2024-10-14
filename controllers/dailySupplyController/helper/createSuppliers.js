@@ -7,7 +7,7 @@ async function createSuppliers(req) {
   let supplierPhone = ensureArray(req.body.phone);
   let supplierIdentification = ensureArray(req.body.identification);
   let supplierIssueDate = ensureArray(req.body.issueDate);
-  let supplierAddress = ensureArray(req.body.address);
+  let supplierAddress = ensureArray(req.body.supplierAddress);
   let supplierRatioSumSplit = ensureArray(req.body.ratioSumSplit);
   let supplierRatioRubberSplit = ensureArray(req.body.ratioRubberSplit);
   let supplierAreaDeposit = ensureArray(req.body.areaDeposit);

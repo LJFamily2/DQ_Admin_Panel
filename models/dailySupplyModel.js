@@ -8,6 +8,7 @@ const supplierSchema = new mongoose.Schema({
   supplierAddress: String,
   phone: String,
   identification: String,
+  issueDate: String,
   manager: {
     type: Boolean,
     default: false,
