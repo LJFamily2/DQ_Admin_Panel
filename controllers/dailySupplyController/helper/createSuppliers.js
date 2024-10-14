@@ -1,3 +1,4 @@
+const convertToDecimal = require('../../utils/convertToDecimal');
 const ensureArray = input => (Array.isArray(input) ? input : [input]);
 // Helper function
 async function createSuppliers(req) {
@@ -8,6 +9,7 @@ async function createSuppliers(req) {
   let supplierIssueDate = ensureArray(req.body.issueDate);
   let supplierAddress = ensureArray(req.body.address);
   let supplierRatioSplit = ensureArray(req.body.ratioSplit);
+  let supplierRatioMuNuocSplit = ensureArray(req.body.ratioMuNuocSplit);
   let supplierAreaDeposit = ensureArray(req.body.areaDeposit);
   let supplierPurchasedPrice = ensureArray(req.body.purchasedPrice);
   let supplierPurchasedAreaDimension = ensureArray(req.body.purchasedAreaDimension);
@@ -24,9 +26,10 @@ async function createSuppliers(req) {
         identification: supplierIdentification[index],
         issueDate: supplierIssueDate[index],
         address: supplierAddress[index],
-        ratioSplit: supplierRatioSplit[index],
-        areaDeposit: supplierAreaDeposit[index],
-        purchasedPrice: supplierPurchasedPrice[index],
+        ratioSplit: convertToDecimal(supplierRatioSplit[index]),
+        ratioMuNuocSplit: convertToDecimal(supplierRatioMuNuocSplit[index]),
+        areaDeposit: convertToDecimal(supplierAreaDeposit[index]),
+        purchasedPrice: convertToDecimal(supplierPurchasedPrice[index]),
         purchasedAreaDimension: supplierPurchasedAreaDimension[index],
         areaDuration: {
           start: supplierAreaDurationStart[index],

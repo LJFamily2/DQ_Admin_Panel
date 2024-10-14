@@ -179,12 +179,12 @@
               >Giá khu vực</label
             >
             <input
-              type="number"
+              type="text"
               class="form-control"
               id="areaPrice"
               name="areaPrice"
-              step="1"
               min="0"
+              oninput="handleQuantityInput(this)"
             />
             <small class="text-muted"
               >Để trống nếu không khu vực không mua bán</small
@@ -329,12 +329,12 @@
                             >Giá mua (VNĐ/mẫu)</label
                           >
                           <input
-                            type="number"
+                            type="text"
                             class="form-control"
                             id="purchasedPrice"
                             name="purchasedPrice"
-                            step="1"
                             min="0"
+                            oninput="handleQuantityInput(this)"
                           />
                         </div>
                         <div class="mt-3">
@@ -342,12 +342,12 @@
                             >Tiền đặt cọc</label
                           >
                           <input
-                            type="number"
+                            type="text"
                             class="form-control"
                             id="areaDeposit"
                             name="areaDeposit"
-                            step="1"
                             min="0"
+                            oninput="handleQuantityInput(this)"
                           />
                         </div>
                         <div class="mt-3">

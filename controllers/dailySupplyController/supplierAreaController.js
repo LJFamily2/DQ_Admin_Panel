@@ -4,6 +4,7 @@ const { Supplier, DailySupply } = require('../../models/dailySupplyModel');
 const trimStringFields = require('../utils/trimStringFields');
 const handleResponse = require('../utils/handleResponse');
 const createSuppliers = require('./helper/createSuppliers');
+const convertToDecimal = require('../utils/convertToDecimal');
 
 module.exports = {
   renderPage,
@@ -41,6 +42,7 @@ async function renderPage(req, res) {
 }
 
 async function addArea(req, res) {
+  console.log(req.body);
   req.body = trimStringFields(req.body);
   try {
     const existingArea = await DailySupply.findOne({ name: req.body.areaName });
@@ -78,6 +80,7 @@ async function addArea(req, res) {
       name: req.body.areaName,
       areaDimension: areaDimension,
       remainingAreaDimension: remainingAreaDimension,
+      areaPrice: convertToDecimal(req.body.areaPrice),
       suppliers: [],
     });
 
