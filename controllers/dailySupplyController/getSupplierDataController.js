@@ -479,7 +479,6 @@ async function getIndividualSupplierExportData(req, res) {
 
       const muQuyKhoTotal = (muNuoc.quantity * muNuoc.percentage) / 100;
       const muQuyKhoTotalAfterSplit = (muQuyKhoTotal * muNuoc.ratioSplit) / 100;
-      console.log(muQuyKhoTotalAfterSplit)
       const muTapTotalAfterSplit = (muTap.quantity * muTap.ratioSplit) / 100;
       const muKeTotalAfterSplit = (muKe.quantity * muKe.ratioSplit) / 100;
       const muDongTotalAfterSplit = (muDong.quantity * muDong.ratioSplit) / 100;

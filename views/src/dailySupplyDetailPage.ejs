@@ -624,8 +624,7 @@
                             action="/quan-ly-nha-vuon/edit/<%= supplier._id %>"
                             method="post"
                           >
-                            <div class="modal-body
-                            ">
+                            <div class="modal-body">
                             <div class="row">
                               <div class="col col-md-6">
                                 <label for="name" class="form-label fw-bold"
@@ -720,6 +719,77 @@
                               />
                             </div>
                             <div class="mt-3">
+                              <label for="purchasedAreaDimension" class="form-label fw-bold"
+                                >Diện tích mua (mẫu)</label
+                              >
+                              <input
+                                type="number"
+                                class="form-control"
+                                id="purchasedAreaDimension"
+                                name="purchasedAreaDimension"
+                                step="0.1"
+                                min="0"
+                                value="<%= supplier.purchasedAreaDimension %>"
+                              />
+                            </div>
+                            <div class="mt-3">
+                              <label for="purchasedPrice" class="form-label fw-bold"
+                                >Giá mua (VNĐ/mẫu)</label
+                              >
+                              <input
+                                type="text"
+                                class="form-control"
+                                id="purchasedPrice"
+                                name="purchasedPrice"
+                                min="0"
+                                oninput="handleQuantityInput(this)"
+                                value="<%= supplier.purchasedPrice %>"
+                              />
+                            </div>
+                            <div class="mt-3">
+                              <label for="areaDeposit" class="form-label fw-bold"
+                                >Tiền đặt cọc</label
+                              >
+                              <input
+                                type="text"
+                                class="form-control"
+                                id="areaDeposit"
+                                name="areaDeposit"
+                                min="0"
+                                oninput="handleQuantityInput(this)"
+                                value="<%= supplier.areaDeposit %>"
+                              />
+                            </div>
+                            <div class="mt-3">
+                              <label class="form-label fw-bold">Thời hạn mua</label>
+                              <div class="row">
+                                <div class="col-6">
+                                  <label for="areaDurationStart" class="form-label"
+                                    >Ngày bắt đầu</label
+                                  >
+                                  <input
+                                    type="date"
+                                    class="form-control"
+                                    id="areaDurationStart"
+                                    name="areaDuration[start]"
+                                    value="<%= supplier.areaDuration.start ? supplier.areaDuration.start.toISOString().split('T')[0] : '' %>"
+                                  />
+                                </div>
+                                <div class="col-6">
+                                  <label for="areaDurationEnd" class="form-label"
+                                    >Ngày kết thúc</label
+                                  >
+                                  <input
+                                    type="date"
+                                    class="form-control"
+                                    id="areaDurationEnd"
+                                    name="areaDuration[end]"
+                                    value="<%=  supplier.areaDuration.end ? supplier.areaDuration.end.toISOString().split('T')[0] : '' %>"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                            <div class="mt-3">
                               <label for="ratioRubberSplit" class="form-label fw-bold">Ăn chia mủ</label>
                               <input
                                 type="text"
@@ -743,11 +813,10 @@
                                 min="1"
                               />
                             </div>
+
                             </div>
-                            <div class="modal-footer
-                            ">
-                              <button type="submit" class="btn btn-primary
-                              ">Lưu mới</button>
+                            <div class="modal-footer">
+                              <button type="submit" class="btn btn-primary">Lưu mới</button>
                             </div>
                           </form>
                         </div>
