@@ -695,7 +695,7 @@
                                 name="purchasedPrice"
                                 min="0"
                                 oninput="handleQuantityInput(this)"
-                                value="<%= supplier.purchasedPrice %>"
+                                value="<%= supplier.purchasedPrice.toLocaleString('vi-VN') %>"
                               />
                             </div>
                             <div class="mt-3">
@@ -709,7 +709,7 @@
                                 name="areaDeposit"
                                 min="0"
                                 oninput="handleQuantityInput(this)"
-                                value="<%= supplier.areaDeposit %>"
+                                value="<%= supplier.areaDeposit.toLocaleString('vi-VN') %>"
                               />
                             </div>
                             <div class="mt-3">
@@ -1040,7 +1040,7 @@
                     >Tiền đặt cọc</label
                   >
                   <input
-                    type="text"
+                    type="text"2
                     class="form-control"
                     id="areaDeposit"
                     name="areaDeposit"
