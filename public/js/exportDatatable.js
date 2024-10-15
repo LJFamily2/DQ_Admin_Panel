@@ -30,8 +30,8 @@ function initializeExportDataTable(
   addPriceId,
   minusPriceId,
   supplierName,
-  ratioSplit,
-  ratioMuNuocSplit,
+  ratioSumSplit,
+  ratioRubberSplit,
 ) {
   const rowGroupOptions = rowGroup ? { dataSrc: rowGroup } : {};
 
@@ -51,11 +51,11 @@ function initializeExportDataTable(
 
     // const totalQuyKho = calculateTotal(4);
     // const totalAfterRatio =
-    //   ratioMuNuocSplit > 0 ? totalQuyKho * (ratioMuNuocSplit / 100) : 0;
+    //   ratioRubberSplit > 0 ? totalQuyKho * (ratioRubberSplit / 100) : 0;
 
-    // if (ratioMuNuocSplit > 0) {
+    // if (ratioRubberSplit > 0) {
     //   // Display three columns if ratio is greater than 0
-    //   updateFooterCell(api, 0, 1, `${ratioMuNuocSplit}%`); // Percentage
+    //   updateFooterCell(api, 0, 1, `${ratioRubberSplit}%`); // Percentage
     //   updateFooterCell(api, 0, 2, formatNumberForDisplay(totalQuyKho, locale)); // Current total
     //   updateFooterCell(
     //     api,
@@ -233,7 +233,7 @@ function initializeExportDataTable(
                   ) || 0;
                 const finalAmount = totalAmount + addPrice - minusPrice;
                 const totalAfterRatio =
-                  finalAmount * (ratioSplit.replace(',', '.') / 100);
+                  finalAmount * (ratioSumSplit.replace(',', '.') / 100);
 
                 /// Add the date range and supplier name to the top of the table
                 $(win.document.body)
@@ -268,7 +268,7 @@ function initializeExportDataTable(
                           )} </p>`
                         : ''
                     }`,
-                    ratioSplit > 0
+                    ratioSumSplit > 0
                       ? `${
                           addPrice > 0 || minusPrice > 0
                             ? `<p style="text-align: left; margin-top: 20px;">Tổng sau cộng/trừ: ${formatNumberForDisplay(
@@ -277,7 +277,7 @@ function initializeExportDataTable(
                               )} </p>`
                             : ''
                         }
-                    <p style="text-align: left; margin-top: 20px;">Tỉ lệ phân chia: ${ratioSplit}%</p>
+                    <p style="text-align: left; margin-top: 20px;">Tỉ lệ phân chia: ${ratioSumSplit}%</p>
                     <hr><p style="text-align: left; margin-top: 20px;">Thực nhận: ${formatNumberForDisplay(
                       totalAfterRatio,
                       'vi-VN',

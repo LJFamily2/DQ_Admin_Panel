@@ -664,6 +664,17 @@
               />
             </div>
             <div class="mt-3">
+              <label for="debt" class="form-label fw-bold">Nợ</label>
+              <input
+                type="text"
+                class="form-control"
+                id="debt"
+                oninput="handleQuantityInput(this)"
+                value="<%= supplierData.debt %>"
+                disabled
+              />
+            </div>
+            <div class="mt-3">
               <label class="form-label fw-bold">Thời hạn mua</label>
               <div class="row">
                 <div class="col-6">
@@ -766,6 +777,7 @@
     '<%= supplierData.name %>',
     '<%= supplierData.ratioSumSplit %>',
     '<%= supplierData.ratioRubberSplit %>',
+    '<%= supplierData.debt %>',
   );
 
   tippy('.tooltip-wrapper');
