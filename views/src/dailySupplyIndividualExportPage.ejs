@@ -121,7 +121,7 @@
             <tr>
               <th rowspan="2">STT</th>
               <th rowspan="2">Ngày</th>
-              <th colspan="5">Mủ nước</th>
+              <th colspan="6">Mủ nước</th>
               <th colspan="4">Mủ tạp</th>
               <th colspan="4">Mủ ké</th>
               <th colspan="4">Mủ đông</th>
@@ -131,8 +131,9 @@
             <tr>
               <th>SL</th>
               <th>HL%</th>
+              <th>Quy khô trc</th>
               <th>Tỷ lệ (%)</th>
-              <th>Quy khô</th>
+              <th>Quy khô sau</th>
               <th>Đơn giá</th>
               <th>SL</th>
               <th>Tỷ lệ (%)</th>
@@ -496,10 +497,11 @@
               <th></th>
               <th></th>
               <th></th>
+              <th></th>
             </tr>
             <tr>
               <th colspan="2">Đơn giá</th>
-              <th colspan="5"></th>
+              <th colspan="6"></th>
               <th colspan="4"></th>
               <th colspan="4"></th>
               <th colspan="4"></th>
@@ -507,7 +509,7 @@
             </tr>
             <tr>
               <th colspan="2">Thành tiền</th>
-              <th colspan="5"></th>
+              <th colspan="6"></th>
               <th colspan="4"></th>
               <th colspan="4"></th>
               <th colspan="4"></th>
@@ -739,6 +741,7 @@
     { data: 'date' },
     { data: 'muNuocQuantity', orderable: false },
     { data: 'muHamLuong', orderable: false },
+    { data: 'muQuyKhoTotal', orderable: false },
     { data: 'muNuocRatioSplit', orderable: false, visible: false },
     { data: 'muQuyKhoTotalAfterSplit', orderable: false },
     { data: 'muQuyKhoPrice', orderable: false,visible: false },

@@ -190,7 +190,7 @@
                             <div class="itemList">
                               <div class="row my-3">
                                 <label class="form-label fw-bold">Mủ nước</label>
-                                <div class="col col-md-4">
+                                <div class="col col-md-6">
                                   <label for="muNuocQuantity<%= index %>" class="form-label">Số lượng</label>
                                   <input
                                     type="number"
@@ -201,7 +201,7 @@
                                     required
                                   />
                                 </div>
-                                <div class="col col-md-4">
+                                <div class="col col-md-6">
                                   <label for="muNuocPercentage<%= index %>" class="form-label">Hàm lượng</label>
                                   <input
                                     type="number"
@@ -213,25 +213,13 @@
                                     required
                                   />
                                 </div>
-                                <div class="col col-md-4">
-                                  <label for="muNuocRatioSplit<%= index %>" class="form-label">Tổng</label>
-                                  <input
-                                    type="number"
-                                    class="form-control"
-                                    id="muNuocRatioSplit<%= index %>"
-                                    name="muNuocRatioSplit"
-                                    max="100"
-                                    value="<%= raw.ratioSplit %>"
-                                    required
-                                  />
-                                </div>
                               </div>
                             </div>
                           <% } else if (raw.name === 'Mủ tạp') { %>
                             <div class="itemList">
                               <div class="row my-3">
                                 <label class="form-label fw-bold">Mủ tạp</label>
-                                <div class="col col-md-6">
+                                <div class="col-12">
                                   <label for="muTapQuantity<%= index %>" class="form-label">Số lượng</label>
                                   <input
                                     type="number"
@@ -242,25 +230,13 @@
                                     required
                                   />
                                 </div>
-                                <div class="col col-md-6">
-                                  <label for="muTapRatioSplit<%= index %>" class="form-label">Tổng</label>
-                                  <input
-                                    type="number"
-                                    class="form-control"
-                                    id="muTapRatioSplit<%= index %>"
-                                    name="muTapRatioSplit"
-                                    max="100"
-                                    value="<%= raw.ratioSplit %>"
-                                    required
-                                  />
-                                </div>
                               </div>
                             </div>
                             <% } else if (raw.name === 'Mủ ké') { %>
                               <div class="itemList">
                                 <div class="row my-3">
                                   <label class="form-label fw-bold">Mủ Ké</label>
-                                  <div class="col col-md-6">
+                                  <div class="col-12">
                                     <label for="muKeQuantity<%= index %>" class="form-label">Số lượng</label>
                                     <input
                                       type="number"
@@ -271,25 +247,13 @@
                                       required
                                     />
                                   </div>
-                                  <div class="col col-md-6">
-                                    <label for="muKeRatioSplit<%= index %>" class="form-label">Tổng</label>
-                                    <input
-                                      type="number"
-                                      class="form-control"
-                                      id="muKeRatioSplit<%= index %>"
-                                      name="muKeRatioSplit"
-                                      max="100"
-                                      value="<%= raw.ratioSplit %>"
-                                      required
-                                    />
-                                  </div>
                                 </div>
                               </div>
                             <% } else if (raw.name === 'Mủ đông') { %>
                               <div class="itemList">
                                 <div class="row my-3">
                                   <label class="form-label fw-bold">Mủ Đông</label>
-                                  <div class="col col-md-6">
+                                  <div class="col-12">
                                     <label for="muDongQuantity<%= index %>" class="form-label">Số lượng</label>
                                     <input
                                       type="number"
@@ -297,18 +261,6 @@
                                       id="muDongQuantity<%= index %>"
                                       name="muDongQuantity"
                                       value="<%= raw.quantity %>"
-                                      required
-                                    />
-                                  </div>
-                                  <div class="col col-md-6">
-                                    <label for="muDongRatioSplit<%= index %>" class="form-label">Tổng</label>
-                                    <input
-                                      type="number"
-                                      class="form-control"
-                                      id="muDongRatioSplit<%= index %>"
-                                      name="muDongRatioSplit"
-                                      max="100"
-                                      value="<%= raw.ratioSplit %>"
                                       required
                                     />
                                   </div>

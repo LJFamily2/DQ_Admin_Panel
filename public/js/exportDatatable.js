@@ -85,7 +85,7 @@ function initializeExportDataTable(
         muDong: 0,
       };
 
-      const totals = [5, 9, 13,17].map(colIndex =>
+      const totals = [6, 10, 14, 18].map(colIndex =>
         parseNumber($(api.column(colIndex).footer()).text()),
       );
       const prices = ['muNuoc', 'muTap', 'muKe', 'muDong'].map(
@@ -123,7 +123,7 @@ function initializeExportDataTable(
   }
 
   if (individualExportPage) {
-    footerCallbackOptions = setupFooterCallbackOptions([5, 9, 13,17]);
+    footerCallbackOptions = setupFooterCallbackOptions([6, 10, 14, 18]);
   }
 
   const pdfButton = {

@@ -186,6 +186,9 @@ async function addData(req, res) {
 }
 
 async function updateSupplierData(req, res) {
+  console.log(req.body);
+  req.body = trimStringFields(req.body);
+  console.log(req.body);
   try {
     const { id } = req.params;
     const {
@@ -226,34 +229,33 @@ async function updateSupplierData(req, res) {
       }
     }
 
+    // Find the current data
+    const currentData = await DailySupply.findOne({ 'data._id': id });
+    const currentRawMaterial = currentData.data.find(item => item._id.toString() === id).rawMaterial;
+
     // Prepare the raw material data
-    const rawMaterial = [
-      { 
-        name: 'Mủ nước', 
-        quantity: convertToDecimal(muNuocQuantity), 
-        percentage: convertToDecimal(muNuocPercentage), 
-        ratioSplit: convertToDecimal(muNuocRatioSplit),
-        price: convertToDecimal(muNuocPrice) 
-      },
-      { 
-        name: 'Mủ tạp', 
-        quantity: convertToDecimal(muTapQuantity), 
-        ratioSplit: convertToDecimal(muTapRatioSplit),
-        price: convertToDecimal(muTapPrice) 
-      },
-      { 
-        name: 'Mủ ké', 
-        quantity: convertToDecimal(muKeQuantity), 
-        ratioSplit: convertToDecimal(muKeRatioSplit),
-        price: convertToDecimal(muKePrice) 
-      },
-      { 
-        name: 'Mủ đông', 
-        quantity: convertToDecimal(muDongQuantity), 
-        ratioSplit: convertToDecimal(muDongRatioSplit),
-        price: convertToDecimal(muDongPrice) 
-      },
-    ];
+    const rawMaterial = currentRawMaterial.map(item => {
+      const updatedItem = { ...item };
+      if (item.name === 'Mủ nước') {
+        if (muNuocQuantity) updatedItem.quantity = convertToDecimal(muNuocQuantity);
+        if (muNuocPercentage) updatedItem.percentage = convertToDecimal(muNuocPercentage);
+        if (muNuocRatioSplit) updatedItem.ratioSplit = convertToDecimal(muNuocRatioSplit);
+        if (muNuocPrice) updatedItem.price = convertToDecimal(muNuocPrice);
+      } else if (item.name === 'Mủ tạp') {
+        if (muTapQuantity) updatedItem.quantity = convertToDecimal(muTapQuantity);
+        if (muTapRatioSplit) updatedItem.ratioSplit = convertToDecimal(muTapRatioSplit);
+        if (muTapPrice) updatedItem.price = convertToDecimal(muTapPrice);
+      } else if (item.name === 'Mủ ké') {
+        if (muKeQuantity) updatedItem.quantity = convertToDecimal(muKeQuantity);
+        if (muKeRatioSplit) updatedItem.ratioSplit = convertToDecimal(muKeRatioSplit);
+        if (muKePrice) updatedItem.price = convertToDecimal(muKePrice);
+      } else if (item.name === 'Mủ đông') {
+        if (muDongQuantity) updatedItem.quantity = convertToDecimal(muDongQuantity);
+        if (muDongRatioSplit) updatedItem.ratioSplit = convertToDecimal(muDongRatioSplit);
+        if (muDongPrice) updatedItem.price = convertToDecimal(muDongPrice);
+      }
+      return updatedItem;
+    });
 
     // Prepare update object
     const updateObject = {
