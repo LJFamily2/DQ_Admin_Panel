@@ -215,29 +215,24 @@ async function getSupplierInputData(req, res, isArea) {
         acc[raw.name] = {
           quantity: raw.quantity || '',
           percentage: raw.percentage || '',
-          ratioSplit: raw.ratioSplit || '',
         };
         return acc;
       }, {});
 
+      const muNuocQuantity = rawMaterials['Mủ nước']?.quantity || 0;
+      const muNuocPercentage = rawMaterials['Mủ nước']?.percentage || 0;
+      const muNuocQuantityTotal = Number((muNuocQuantity * muNuocPercentage / 100).toFixed(5));
       return {
         no: index + 1,
         date: new Date(item.data.date).toLocaleDateString('vi-VN'),
         supplier: item.supplier.name || '',
         ...(isArea && { code: item.supplier.code || '' }),
-        muNuocQuantity: rawMaterials['Mủ nước']?.quantity?.toLocaleString('vi-VN') || '',
-        muNuocPercentage: rawMaterials['Mủ nước']?.percentage?.toLocaleString('vi-VN') || '',
-        muNuocRatioSplit: rawMaterials['Mủ nước']?.ratioSplit?.toLocaleString('vi-VN') || '',
-        muNuocQuantityToTal:Number((rawMaterials['Mủ nước'].quantity * rawMaterials['Mủ nước'].percentage / 100 * rawMaterials['Mủ nước'].ratioSplit / 100).toFixed(5)).toLocaleString('vi-VN') || '',
+        muNuocQuantity: muNuocQuantity.toLocaleString('vi-VN') || '',
+        muNuocPercentage: muNuocPercentage.toLocaleString('vi-VN') || '',
+        muNuocQuantityTotal: muNuocQuantityTotal.toLocaleString('vi-VN') || '',
         muTapQuantity: rawMaterials['Mủ tạp']?.quantity?.toLocaleString('vi-VN') || '',
-        muTapRatioSplit: rawMaterials['Mủ tạp']?.ratioSplit?.toLocaleString('vi-VN') || '',
-        muTapQuantityToTal: Number((rawMaterials['Mủ tạp'].quantity * rawMaterials['Mủ tạp'].ratioSplit / 100).toFixed(5)).toLocaleString('vi-VN') || '',
         muKeQuantity: rawMaterials['Mủ ké']?.quantity?.toLocaleString('vi-VN') || '', 
-        muKeRatioSplit: rawMaterials['Mủ ké']?.ratioSplit?.toLocaleString('vi-VN') || '',
-        muKeQuantityToTal: Number((rawMaterials['Mủ ké'].quantity * rawMaterials['Mủ ké'].ratioSplit / 100).toFixed(5)).toLocaleString('vi-VN') || '',
         muDongQuantity: rawMaterials['Mủ đông']?.quantity?.toLocaleString('vi-VN') || '',
-        muDongRatioSplit: rawMaterials['Mủ đông']?.ratioSplit?.toLocaleString('vi-VN') || '',
-        muDongQuantityToTal: Number((rawMaterials['Mủ đông'].quantity * rawMaterials['Mủ đông'].ratioSplit / 100).toFixed(5)).toLocaleString('vi-VN') || '',
         note: item.data.note || '',
         id: item.data._id,
       };
