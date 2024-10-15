@@ -32,6 +32,7 @@ function initializeExportDataTable(
   supplierName,
   ratioSumSplit,
   ratioRubberSplit,
+  debt,
 ) {
   const rowGroupOptions = rowGroup ? { dataSrc: rowGroup } : {};
 
