@@ -76,11 +76,13 @@
                     <p><strong>Thời hạn hợp đồng:</strong> 
                       <% if (area.contractDuration && area.contractDuration.start && area.contractDuration.end) { %>
                         <%= new Date(area.contractDuration.start).toLocaleDateString('vi-VN') %> - <%= new Date(area.contractDuration.end).toLocaleDateString('vi-VN') %>
+                        (<%= Math.ceil((new Date(area.contractDuration.end) - new Date(area.contractDuration.start)) / (1000 * 60 * 60 * 24)) %> ngày)
                       <% } else { %>
                         Không có thông tin
                       <% } %>
                     </p>
                     <p><strong>Diện tích khu vực:</strong> <%= area.areaDimension ? area.areaDimension.toLocaleString('vi-VN') + ' mẫu' : 'Chưa có thông tin' %></p>
+                    <p><strong>Diện tích còn trống:</strong> <%= area.remainingAreaDimension ? area.remainingAreaDimension.toLocaleString('vi-VN') + ' mẫu' : 'Chưa có thông tin' %></p>
                     <p><strong>Giá khu vực:</strong> <%= area.areaPrice ? area.areaPrice.toLocaleString('vi-VN') + ' VNĐ' : 'Chưa có thông tin' %></p>
                   </div>
                 </div>
