@@ -49,23 +49,23 @@ function initializeExportDataTable(
         .reduce((acc, val) => acc + parseNumber(val), 0);
     };
 
-    const totalQuyKho = calculateTotal(4);
-    const totalAfterRatio =
-      ratioMuNuocSplit > 0 ? totalQuyKho * (ratioMuNuocSplit / 100) : 0;
+    // const totalQuyKho = calculateTotal(4);
+    // const totalAfterRatio =
+    //   ratioMuNuocSplit > 0 ? totalQuyKho * (ratioMuNuocSplit / 100) : 0;
 
-    if (ratioMuNuocSplit > 0) {
-      // Display three columns if ratio is greater than 0
-      updateFooterCell(api, 0, 1, `${ratioMuNuocSplit}%`); // Percentage
-      updateFooterCell(api, 0, 2, formatNumberForDisplay(totalQuyKho, locale)); // Current total
-      updateFooterCell(
-        api,
-        0,
-        3,
-        formatNumberForDisplay(totalAfterRatio, locale),
-      ); // Total * percentage
-    } else {
-      updateFooterCell(api, 0, 1, formatNumberForDisplay(totalQuyKho, locale));
-    }
+    // if (ratioMuNuocSplit > 0) {
+    //   // Display three columns if ratio is greater than 0
+    //   updateFooterCell(api, 0, 1, `${ratioMuNuocSplit}%`); // Percentage
+    //   updateFooterCell(api, 0, 2, formatNumberForDisplay(totalQuyKho, locale)); // Current total
+    //   updateFooterCell(
+    //     api,
+    //     0,
+    //     3,
+    //     formatNumberForDisplay(totalAfterRatio, locale),
+    //   ); // Total * percentage
+    // } else {
+    //   updateFooterCell(api, 0, 1, formatNumberForDisplay(totalQuyKho, locale));
+    // }
 
     // Update other footers as before
     columns.forEach(colIndex => {
@@ -122,7 +122,7 @@ function initializeExportDataTable(
   }
 
   if (individualExportPage) {
-    footerCallbackOptions = setupFooterCallbackOptions([6, 8, 10]);
+    footerCallbackOptions = setupFooterCallbackOptions([4,6, 8, 10]);
   }
 
   const pdfButton = {
