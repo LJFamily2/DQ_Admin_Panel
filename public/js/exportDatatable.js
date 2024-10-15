@@ -122,7 +122,7 @@ function initializeExportDataTable(
   }
 
   if (individualExportPage) {
-    footerCallbackOptions = setupFooterCallbackOptions([4,6, 8, 10]);
+    footerCallbackOptions = setupFooterCallbackOptions([5, 9, 13,17]);
   }
 
   const pdfButton = {
