@@ -84,7 +84,7 @@ function initializeExportDataTable(
         muDong: 0,
       };
 
-      const totals = [4, 6, 8, 10].map(colIndex =>
+      const totals = [5, 9, 13,17].map(colIndex =>
         parseNumber($(api.column(colIndex).footer()).text()),
       );
       const prices = ['muNuoc', 'muTap', 'muKe', 'muDong'].map(
