@@ -407,7 +407,7 @@
           <tfoot>
             <tr>
               <th colspan="2">Tổng SL</th>
-              <% if (supplierData.ratioMuNuocSplit > 0) { %>
+              <% if (supplierData.ratioRubberSplit > 0) { %>
               <th></th> <!-- Placeholder for ratio -->
               <th></th> <!-- Placeholder for current total -->
               <th></th> <!-- Placeholder for total after ratio -->
@@ -542,25 +542,25 @@
               />
             </div>
             <div class="mt-3">
-              <label for="ratioMuNuocSplit" class="form-label fw-bold">Ăn chia quy khô</label>
+              <label for="ratioRubberSplit" class="form-label fw-bold">Ăn chia quy khô</label>
               <input
                 type="text"
                 class="form-control"
-                id="ratioMuNuocSplit"
-                name="ratioMuNuocSplit"
-                value="<%= supplierData.ratioMuNuocSplit.toLocaleString('vi-VN') %>"
+                id="ratioRubberSplit"
+                name="ratioRubberSplit"
+                value="<%= supplierData.ratioRubberSplit.toLocaleString('vi-VN') %>"
                 oninput="handlePercentageInput(this)"
 
               />
             </div>
             <div class="mt-3">
-              <label for="ratioSplit" class="form-label fw-bold">Ăn chia</label>
+              <label for="ratioSumSplit" class="form-label fw-bold">Ăn chia</label>
               <input
                 type="text"
                 class="form-control"
-                id="ratioSplit"
-                name="ratioSplit"
-                value="<%= supplierData.ratioSplit.toLocaleString('vi-VN') %>"
+                id="ratioSumSplit"
+                name="ratioSumSplit"
+                value="<%= supplierData.ratioSumSplit.toLocaleString('vi-VN') %>"
                 oninput="handlePercentageInput(this)"
 
               />
@@ -610,8 +610,8 @@
     '#addPrice',
     '#minusPrice',
     '<%= supplierData.name %>',
-    '<%= supplierData.ratioSplit %>',
-    '<%= supplierData.ratioMuNuocSplit %>',
+    '<%= supplierData.ratioSumSplit %>',
+    '<%= supplierData.ratioRubberSplit %>',
   );
 
   tippy('.tooltip-wrapper');
