@@ -31,7 +31,7 @@ router.post('/getAreaSupplierData/:slug', authMiddlewares.ensureRoles(['Admin', 
 // Admin side for export
 router.get("/:slug/xuat-file", authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.supplierExportController.renderPage)
 router.post("/:slug/xuat-file", authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.getSupplierDataController.getSupplierExportData)
-router.post("/:slug/updatePrice/:supplierSlug?", authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.supplierExportController.updatePrice)
+router.post("/:slug/updatePrice/:supplierSlug?", authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.supplierExportController.updatePricesAndRatios)
 
 // Admin side for exporting individual
 router.get("/:slug/xuat-file/:supplierSlug", authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.supplierIndividualExportController.renderPage)

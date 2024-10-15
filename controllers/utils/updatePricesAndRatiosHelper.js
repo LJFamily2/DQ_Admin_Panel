@@ -1,4 +1,4 @@
-function updatePrices(data, start, end, prices, supplierId = null) {
+function updatePricesAndRatios(data, start, end, prices, ratios, supplierId = null) {
   const priceMap = {
     'Mủ nước': 'dryPrice',
     'Mủ tạp': 'mixedPrice',
@@ -14,6 +14,12 @@ function updatePrices(data, start, end, prices, supplierId = null) {
         if (priceKey && prices[priceKey] > 0) {
           material.price = prices[priceKey];
         }
+        
+        // Update the ratio split for each material
+        if (ratios && ratios[material.name]) {
+          material.ratioSplit = ratios[material.name]; // Assuming ratios is an object with material names as keys
+        }
+        
         return material;
       });
     }
@@ -21,4 +27,4 @@ function updatePrices(data, start, end, prices, supplierId = null) {
   });
 }
 
-module.exports = updatePrices;
+module.exports = updatePricesAndRatios;

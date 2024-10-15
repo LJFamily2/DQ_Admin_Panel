@@ -1,14 +1,13 @@
-const AccountModel = require('../../models/accountModel');
 const { Supplier, DailySupply } = require('../../models/dailySupplyModel');
 
 const trimStringFields = require('../utils/trimStringFields');
 const handleResponse = require('../utils/handleResponse');
 const convertToDecimal = require('../utils/convertToDecimal');
-const updatePrices = require('../utils/updatePrices');
+const updatePricesAndRatiosHelper = require('../utils/updatePricesAndRatiosHelper');
 
 module.exports = {
   renderPage,
-  updatePrice,
+  updatePricesAndRatios,
 };
 async function renderPage(req, res) {
   try {
@@ -33,9 +32,21 @@ async function renderPage(req, res) {
   }
 }
 
-async function updatePrice(req, res) {
+async function updatePricesAndRatios(req, res) {
+  req.body = trimStringFields(req.body);
   try {
-    const { startDate, endDate, dryPrice, mixedPrice, kePrice, dongPrice } = req.body;
+    const {
+      startDate,
+      endDate,
+      dryPrice,
+      mixedPrice,
+      kePrice,
+      dongPrice,
+      drySplit,
+      mixedSplit,
+      keSplit,
+      dongSplit,
+    } = req.body; // Added ratio split fields
     const { slug, supplierSlug } = req.params;
 
     const area = await DailySupply.findOne({ slug })
@@ -44,7 +55,14 @@ async function updatePrice(req, res) {
       .populate('data.supplier');
 
     if (!area) {
-      return handleResponse(req, res, 404, 'fail', 'Không tìm thấy khu vực cung cấp', req.headers.referer);
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Không tìm thấy khu vực cung cấp',
+        req.headers.referer,
+      );
     }
 
     const start = new Date(startDate || endDate || new Date());
@@ -56,24 +74,53 @@ async function updatePrice(req, res) {
       dryPrice: convertToDecimal(dryPrice),
       mixedPrice: convertToDecimal(mixedPrice),
       kePrice: convertToDecimal(kePrice),
-      dongPrice: convertToDecimal(dongPrice)
+      dongPrice: convertToDecimal(dongPrice),
+    };
+
+    const ratios = {
+      'Mủ nước': convertToDecimal(drySplit),
+      'Mủ tạp': convertToDecimal(mixedSplit),
+      'Mủ ké': convertToDecimal(keSplit),
+      'Mủ đông': convertToDecimal(dongSplit),
     };
 
     let supplierId = null;
     if (supplierSlug) {
       const supplier = await Supplier.findOne({ supplierSlug });
       if (!supplier) {
-        return handleResponse(req, res, 404, 'fail', 'Không tìm thấy nhà cung cấp', req.headers.referer);
+        return handleResponse(
+          req,
+          res,
+          404,
+          'fail',
+          'Không tìm thấy nhà cung cấp',
+          req.headers.referer,
+        );
       }
       supplierId = supplier._id;
     }
 
-    updatePrices(area.data, start, end, prices, supplierId);
+    updatePricesAndRatiosHelper(
+      area.data,
+      start,
+      end,
+      prices,
+      ratios,
+      supplierId,
+    ); // Updated function call
     await area.save();
 
-    const successMessage = supplierSlug ? 'Cập nhật giá thành công cho nhà cung cấp' : 'Cập nhật giá thành công cho khu vực';
-    return handleResponse(req, res, 200, 'success', successMessage, req.headers.referer);
-
+    const successMessage = supplierSlug
+      ? 'Cập nhật giá thành công cho nhà cung cấp'
+      : 'Cập nhật giá thành công cho khu vực';
+    return handleResponse(
+      req,
+      res,
+      200,
+      'success',
+      successMessage,
+      req.headers.referer,
+    );
   } catch (error) {
     console.error('Error updating prices:', error);
     res.status(500).render('partials/500', { layout: false });
