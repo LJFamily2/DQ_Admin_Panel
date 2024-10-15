@@ -650,7 +650,7 @@
                 name="purchasedPrice"
                 min="0"
                 oninput="handleQuantityInput(this)"
-                value="<%= supplierData.purchasedPrice %>"
+                value="<%= supplierData.purchasedPrice.toLocaleString('vi-VN') %>"
               />
             </div>
             <div class="mt-3">
@@ -662,7 +662,7 @@
                 name="areaDeposit"
                 min="0"
                 oninput="handleQuantityInput(this)"
-                value="<%= supplierData.areaDeposit %>"
+                value="<%= supplierData.areaDeposit.toLocaleString('vi-VN') %>"
               />
             </div>
             <div class="mt-3">
@@ -672,7 +672,7 @@
                 class="form-control"
                 id="debt"
                 oninput="handleQuantityInput(this)"
-                value="<%= supplierData.debt %>"
+                value="<%= supplierData.debt.toLocaleString('vi-VN') %>"
                 disabled
               />
             </div>
