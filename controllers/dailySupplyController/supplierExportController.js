@@ -46,7 +46,7 @@ async function updatePricesAndRatios(req, res) {
       mixedSplit,
       keSplit,
       dongSplit,
-    } = req.body; // Added ratio split fields
+    } = req.body; 
     const { slug, supplierSlug } = req.params;
 
     const area = await DailySupply.findOne({ slug })

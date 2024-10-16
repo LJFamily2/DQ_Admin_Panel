@@ -77,7 +77,7 @@ function initializeExportDataTable(
         );
       });
 
-    if (individualExportPage && parseNumber(areaDimension) === 0 && parseNumber(areaPrice) === 0) {
+    if (individualExportPage) {
       const ajaxData = api.ajax.json();
       const latestPrices = ajaxData?.latestPrices || {
         muNuoc: 0,
@@ -86,7 +86,14 @@ function initializeExportDataTable(
         muDong: 0,
       };
 
-      const totals = [].map(colIndex =>
+      let totals = [];
+      if (parseNumber(areaDimension) > 0 && parseNumber(areaPrice) > 0) {
+        totals = [6,11,16,21]
+      }else{
+        totals = []
+      }
+
+      totals = totals.map(colIndex =>
         parseNumber($(api.column(colIndex).footer()).text()),
       );
       const prices = ['muNuoc', 'muTap', 'muKe', 'muDong'].map(
@@ -124,7 +131,11 @@ function initializeExportDataTable(
   }
 
   if (individualExportPage) {
-    footerCallbackOptions = setupFooterCallbackOptions([4,6,8,11,13,16,18,21,23]);
+    if (parseNumber(areaDimension) > 0 && parseNumber(areaPrice) > 0) {
+      footerCallbackOptions = setupFooterCallbackOptions([6,8,11,13,16,18,21,23]);
+    } else {
+      footerCallbackOptions = setupFooterCallbackOptions([]);
+    }
   }
 
   const pdfButton = {
@@ -279,22 +290,36 @@ function initializeExportDataTable(
                             : ''
                         }
                     <p style="text-align: left; margin-top: 20px;">Tỉ lệ phân chia: ${ratioSumSplit}%</p>
-                    <hr><p style="text-align: left; margin-top: 20px;">Thực nhận: ${formatNumberForDisplay(
-                      totalAfterRatio,
-                      'vi-VN',
-                    )} </p>`
+                    <hr>
+                    <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+                      <p style="text-align: left; width: 50%;">Thực nhận: ${formatNumberForDisplay(
+                        totalAfterRatio,
+                        'vi-VN'
+                      )}</p>
+                      ${debt > 0 ? `<p style="text-align: right; width: 50%;">Công nợ: ${formatNumberForDisplay(
+                        debt,
+                        'vi-VN'
+                      )}</p>` : ''}
+                    </div>`
                       : `${
                           addPrice > 0 || minusPrice > 0
                             ? `<p style="text-align: left; margin-top: 20px;">Tổng sau cộng/trừ: ${formatNumberForDisplay(
                                 finalAmount,
-                                'vi-VN',
+                                'vi-VN'
                               )} </p>`
                             : ''
                         }
-                    <hr><p style="text-align: left; margin-top: 20px;">Thực nhận: ${formatNumberForDisplay(
-                      finalAmount,
-                      'vi-VN',
-                    )} </p>`,
+                    <hr>
+                    <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+                      <p style="text-align: left; width: 50%;">Thực nhận: ${formatNumberForDisplay(
+                        totalAfterRatio,
+                        'vi-VN'
+                      )}</p>
+                      ${debt > 0 ? `<p style="text-align: right; width: 50%;">Công nợ: ${formatNumberForDisplay(
+                        debt,
+                        'vi-VN'
+                      )}</p>` : ''}
+                    </div>`,
                   );
 
                 ///Set the css for the table
