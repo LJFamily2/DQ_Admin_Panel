@@ -225,9 +225,11 @@ async function editSupplier(req, res) {
       {
         ...req.body,
         supplierSlug: newSlug,
-        ratioSplit: req.body.ratioSplit
-          ? req.body.ratioSplit.replace(',', '.')
+        ratioSumSplit: req.body.ratioSumSplit
+          ? req.body.ratioSumSplit.replace(',', '.')
           : 0,
+        purchasedPrice: convertToDecimal(req.body.purchasedPrice),
+        areaDeposit: convertToDecimal(req.body.areaDeposit),
       },
       { new: true },
     );

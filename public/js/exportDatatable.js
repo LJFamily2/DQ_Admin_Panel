@@ -33,6 +33,7 @@ function initializeExportDataTable(
   ratioSumSplit,
   ratioRubberSplit,
   debt,
+  {areaDimension, areaPrice},
 ) {
   const rowGroupOptions = rowGroup ? { dataSrc: rowGroup } : {};
 
@@ -72,11 +73,11 @@ function initializeExportDataTable(
     columns.forEach(colIndex => {
       const total = calculateTotal(colIndex);
       $(api.column(colIndex).footer()).html(
-        `<strong>${formatNumberForDisplay(total, locale)}</strong>`,
-      );
-    });
+          `<strong>${formatNumberForDisplay(total, locale)}</strong>`,
+        );
+      });
 
-    if (individualExportPage) {
+    if (individualExportPage && parseNumber(areaDimension) === 0 && parseNumber(areaPrice) === 0) {
       const ajaxData = api.ajax.json();
       const latestPrices = ajaxData?.latestPrices || {
         muNuoc: 0,
@@ -85,7 +86,7 @@ function initializeExportDataTable(
         muDong: 0,
       };
 
-      const totals = [6, 10, 14, 18].map(colIndex =>
+      const totals = [].map(colIndex =>
         parseNumber($(api.column(colIndex).footer()).text()),
       );
       const prices = ['muNuoc', 'muTap', 'muKe', 'muDong'].map(
@@ -123,7 +124,7 @@ function initializeExportDataTable(
   }
 
   if (individualExportPage) {
-    footerCallbackOptions = setupFooterCallbackOptions([6, 10, 14, 18]);
+    footerCallbackOptions = setupFooterCallbackOptions([4,6,8,11,13,16,18,21,23]);
   }
 
   const pdfButton = {
@@ -139,7 +140,6 @@ function initializeExportDataTable(
     };
   }
 
-  const isMobile = window.innerWidth < 1300;
   const tableOptions = {
     dom:
       "<'row m-0 p-0 py-2'<'col-sm-12 col-md-6 d-flex align-items-center'B><'col-sm-12 col-md-6 d-flex justify-content-end'f>>" +
@@ -269,7 +269,7 @@ function initializeExportDataTable(
                           )} </p>`
                         : ''
                     }`,
-                    ratioSumSplit > 0
+                    ratioSumSplit < 0
                       ? `${
                           addPrice > 0 || minusPrice > 0
                             ? `<p style="text-align: left; margin-top: 20px;">Tổng sau cộng/trừ: ${formatNumberForDisplay(
@@ -317,7 +317,7 @@ function initializeExportDataTable(
     processing: true,
     responsive: true,
     paging: !exportPageFooter,
-    scrollX: isMobile,
+    scrollX: true,
     pagingType: 'first_last_numbers',
     rowGroup: rowGroupOptions,
     ajax: {

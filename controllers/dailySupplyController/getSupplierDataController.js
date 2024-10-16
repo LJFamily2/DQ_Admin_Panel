@@ -472,10 +472,10 @@ async function getIndividualSupplierExportData(req, res) {
       if (rawMaterials['Mủ ké']?.price > 0) latestPrices.muKe = rawMaterials['Mủ ké'].price;
       if (rawMaterials['Mủ đông']?.price > 0) latestPrices.muDong = rawMaterials['Mủ đông'].price;
 
-      const muNuoc = rawMaterials['Mủ nước'] || { quantity: 0, percentage: 0, ratioSplit: 100 };
-      const muDong = rawMaterials['Mủ đông'] || { quantity: 0, ratioSplit: 100 };
-      const muTap = rawMaterials['Mủ tạp'] || { quantity: 0, ratioSplit: 100 };
-      const muKe = rawMaterials['Mủ ké'] || { quantity: 0, ratioSplit: 100 };
+      const muNuoc = rawMaterials['Mủ nước'] || { quantity: 0, percentage: 0, ratioSplit: 100, price: 0 };
+      const muDong = rawMaterials['Mủ đông'] || { quantity: 0, ratioSplit: 100, price: 0 };
+      const muTap = rawMaterials['Mủ tạp'] || { quantity: 0, ratioSplit: 100, price: 0 };
+      const muKe = rawMaterials['Mủ ké'] || { quantity: 0, ratioSplit: 100, price: 0 };
 
       const muQuyKhoTotal = (muNuoc.quantity * muNuoc.percentage) / 100;
       const muQuyKhoTotalAfterSplit = (muQuyKhoTotal * muNuoc.ratioSplit) / 100;
@@ -483,27 +483,36 @@ async function getIndividualSupplierExportData(req, res) {
       const muKeTotalAfterSplit = (muKe.quantity * muKe.ratioSplit) / 100;
       const muDongTotalAfterSplit = (muDong.quantity * muDong.ratioSplit) / 100;
 
+      const muQuyKhoTotalPrice = muQuyKhoTotalAfterSplit * muNuoc.price;
+      const muTapTotalPrice = muTapTotalAfterSplit * muTap.price;
+      const muKeTotalPrice = muKeTotalAfterSplit * muKe.price;
+      const muDongTotalPrice = muDongTotalAfterSplit * muDong.price;
+
       return {
         no: index + 1,
         date: item.date.toLocaleDateString('vi-VN'),
         muNuocQuantity: muNuoc.quantity.toLocaleString('vi-VN'),
         muHamLuong: muNuoc.percentage.toLocaleString('vi-VN'),
         muQuyKhoTotal: muQuyKhoTotal.toLocaleString('vi-VN'),
-        muQuyKhoPrice: rawMaterials['Mủ nước']?.price.toLocaleString('vi-VN'),
+        muQuyKhoPrice: muNuoc.price.toLocaleString('vi-VN'),
         muNuocRatioSplit: muNuoc.ratioSplit.toLocaleString('vi-VN'),
         muQuyKhoTotalAfterSplit: muQuyKhoTotalAfterSplit.toLocaleString('vi-VN'),
+        muQuyKhoTotalPrice: muQuyKhoTotalPrice.toLocaleString('vi-VN'),
         muTapQuantity: muTap.quantity.toLocaleString('vi-VN'),
-        muTapPrice: rawMaterials['Mủ tạp']?.price.toLocaleString('vi-VN'),
+        muTapPrice: muTap.price.toLocaleString('vi-VN'),
         muTapRatioSplit: muTap.ratioSplit.toLocaleString('vi-VN'),
         muTapTotalAfterSplit: muTapTotalAfterSplit.toLocaleString('vi-VN'),
+        muTapTotalPrice: muTapTotalPrice.toLocaleString('vi-VN'),
         muKeQuantity: muKe.quantity.toLocaleString('vi-VN'),
-        muKePrice: rawMaterials['Mủ ké']?.price.toLocaleString('vi-VN'),
+        muKePrice: muKe.price.toLocaleString('vi-VN'),
         muKeRatioSplit: muKe.ratioSplit.toLocaleString('vi-VN'),
         muKeTotalAfterSplit: muKeTotalAfterSplit.toLocaleString('vi-VN'),
+        muKeTotalPrice: muKeTotalPrice.toLocaleString('vi-VN'),
         muDongQuantity: muDong.quantity.toLocaleString('vi-VN'),
-        muDongPrice: rawMaterials['Mủ đông']?.price.toLocaleString('vi-VN'),
+        muDongPrice: muDong.price.toLocaleString('vi-VN'),
         muDongRatioSplit: muDong.ratioSplit.toLocaleString('vi-VN'),
         muDongTotalAfterSplit: muDongTotalAfterSplit.toLocaleString('vi-VN'),
+        muDongTotalPrice: muDongTotalPrice.toLocaleString('vi-VN'),
         note: item.note || '',
         id: item._id,  
       };

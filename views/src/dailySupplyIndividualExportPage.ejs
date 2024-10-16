@@ -121,10 +121,10 @@
             <tr>
               <th rowspan="2">STT</th>
               <th rowspan="2">Ngày</th>
-              <th colspan="6">Mủ nước</th>
-              <th colspan="4">Mủ tạp</th>
-              <th colspan="4">Mủ ké</th>
-              <th colspan="4">Mủ đông</th>
+              <th colspan="7">Mủ nước</th>
+              <th colspan="5">Mủ tạp</th>
+              <th colspan="5">Mủ ké</th>
+              <th colspan="5">Mủ đông</th>
               <th rowspan="2">Khác</th>
               <th rowspan="2">Chỉnh sửa</th>
             </tr>
@@ -135,18 +135,22 @@
               <th>Tỷ lệ (%)</th>
               <th>Quy khô sau</th>
               <th>Đơn giá</th>
+              <th>Thành tiền</th>
               <th>SL</th>
               <th>Tỷ lệ (%)</th>
-              <th>Tổng</th>
+              <th>SL sau</th>
               <th>Đơn giá</th>
+              <th>Thành tiền</th>
               <th>SL</th>
               <th>Tỷ lệ (%)</th>
-              <th>Tổng</th>
+              <th>SL sau</th>
               <th>Đơn giá</th>
+              <th>Thành tiền</th>
               <th>SL</th>
               <th>Tỷ lệ (%)</th>
-              <th>Tổng</th>
+              <th>SL sau</th>
               <th>Đơn giá</th>
+              <th>Thành tiền</th>
             </tr>
           </thead>
 
@@ -472,6 +476,35 @@
             <% }) %>
           </tbody>
           <tfoot>
+            <% if (area.areaDimension > 0 && area.areaPrice > 0) { %>
+              <tr>
+                <th colspan="2">Tổng SL</th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+              </tr>
+              <% }else{ %>
             <tr>
               <th colspan="2">Tổng SL</th>
               <%# if (supplierData.ratioRubberSplit > 0) { %>
@@ -498,23 +531,28 @@
               <th></th>
               <th></th>
               <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
             </tr>
             <tr>
               <th colspan="2">Đơn giá</th>
-              <th colspan="6"></th>
-              <th colspan="4"></th>
-              <th colspan="4"></th>
-              <th colspan="4"></th>
+              <th colspan="7"></th>
+              <th colspan="5"></th>
+              <th colspan="5"></th>
+              <th colspan="5"></th>
               <th colspan="2"></th>
             </tr>
             <tr>
               <th colspan="2">Thành tiền</th>
-              <th colspan="6"></th>
-              <th colspan="4"></th>
-              <th colspan="4"></th>
-              <th colspan="4"></th>
+              <th colspan="7"></th>
+              <th colspan="5"></th>
+              <th colspan="5"></th>
+              <th colspan="5"></th>
               <th colspan="2"></th>
             </tr>
+            <% } %>
           </tfoot>
         </table>
       </div>
@@ -686,7 +724,7 @@
                     class="form-control"
                     id="areaDurationStart"
                     name="areaDuration[start]"
-                    value="<%= supplierData.areaDuration?.start %>"
+                    value="<%= supplierData.areaDuration.start ? supplierData.areaDuration.start.toISOString().split('T')[0] : '' %>"
                   />
                 </div>
                 <div class="col-6">
@@ -696,7 +734,7 @@
                     class="form-control"
                     id="areaDurationEnd"
                     name="areaDuration[end]"
-                    value="<%= supplierData.areaDuration?.end %>"
+                    value="<%= supplierData.areaDuration.end ? supplierData.areaDuration.end.toISOString().split('T')[0] : '' %>"
                   />
                 </div>
               </div>
@@ -742,21 +780,25 @@
     { data: 'muNuocQuantity', orderable: false },
     { data: 'muHamLuong', orderable: false },
     { data: 'muQuyKhoTotal', orderable: false },
-    { data: 'muNuocRatioSplit', orderable: false, visible: false },
+    { data: 'muNuocRatioSplit', orderable: false,  },
     { data: 'muQuyKhoTotalAfterSplit', orderable: false },
-    { data: 'muQuyKhoPrice', orderable: false,visible: false },
+    { data: 'muQuyKhoPrice', orderable: false, },
+    { data: 'muQuyKhoTotalPrice', orderable: false, },
     { data: 'muTapQuantity', orderable: false },
-    { data: 'muTapRatioSplit', orderable: false,visible: false },
+    { data: 'muTapRatioSplit', orderable: false, },
     { data: 'muTapTotalAfterSplit', orderable: false },
-    { data: 'muTapPrice', orderable: false,visible: false },
+    { data: 'muTapPrice', orderable: false, },
+    { data: 'muTapTotalPrice', orderable: false },
     { data: 'muKeQuantity', orderable: false },
-    { data: 'muKeRatioSplit', orderable: false,visible: false },
+    { data: 'muKeRatioSplit', orderable: false, },
     { data: 'muKeTotalAfterSplit', orderable: false },
-    { data: 'muKePrice', orderable: false,visible: false },
+    { data: 'muKePrice', orderable: false, },
+    { data: 'muKeTotalPrice', orderable: false },
     { data: 'muDongQuantity', orderable: false },
-    { data: 'muDongRatioSplit', orderable: false,visible: false },
+    { data: 'muDongRatioSplit', orderable: false, },
     { data: 'muDongTotalAfterSplit', orderable: false },
-    { data: 'muDongPrice', orderable: false,visible: false },
+    { data: 'muDongPrice', orderable: false, },
+    { data: 'muDongTotalPrice', orderable: false },
     { data: 'note', orderable: false },
     { data: 'id', orderable: false },
   ];
@@ -781,6 +823,10 @@
     '<%= supplierData.ratioSumSplit %>',
     '<%= supplierData.ratioRubberSplit %>',
     '<%= supplierData.debt %>',
+    {
+      areaDimension: '<%= area.areaDimension %>',
+      areaPrice: '<%= area.areaPrice %>'
+    }
   );
 
   tippy('.tooltip-wrapper');
