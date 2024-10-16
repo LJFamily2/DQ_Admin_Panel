@@ -51,24 +51,6 @@ function initializeExportDataTable(
         .reduce((acc, val) => acc + parseNumber(val), 0);
     };
 
-    // const totalQuyKho = calculateTotal(4);
-    // const totalAfterRatio =
-    //   ratioRubberSplit > 0 ? totalQuyKho * (ratioRubberSplit / 100) : 0;
-
-    // if (ratioRubberSplit > 0) {
-    //   // Display three columns if ratio is greater than 0
-    //   updateFooterCell(api, 0, 1, `${ratioRubberSplit}%`); // Percentage
-    //   updateFooterCell(api, 0, 2, formatNumberForDisplay(totalQuyKho, locale)); // Current total
-    //   updateFooterCell(
-    //     api,
-    //     0,
-    //     3,
-    //     formatNumberForDisplay(totalAfterRatio, locale),
-    //   ); // Total * percentage
-    // } else {
-    //   updateFooterCell(api, 0, 1, formatNumberForDisplay(totalQuyKho, locale));
-    // }
-
     // Update other footers as before
     columns.forEach(colIndex => {
       const total = calculateTotal(colIndex);
@@ -90,7 +72,7 @@ function initializeExportDataTable(
       if (parseNumber(areaDimension) > 0 && parseNumber(areaPrice) > 0) {
         totals = [6,11,16,21]
       }else{
-        totals = []
+        totals = [4,6,,8,10]
       }
 
       totals = totals.map(colIndex =>
@@ -134,7 +116,7 @@ function initializeExportDataTable(
     if (parseNumber(areaDimension) > 0 && parseNumber(areaPrice) > 0) {
       footerCallbackOptions = setupFooterCallbackOptions([6,8,11,13,16,18,21,23]);
     } else {
-      footerCallbackOptions = setupFooterCallbackOptions([]);
+      footerCallbackOptions = setupFooterCallbackOptions([4,6,,8,10]);
     }
   }
 
@@ -175,11 +157,11 @@ function initializeExportDataTable(
               columns: ':visible',
             },
             customize: function (win) {
-              if (exportPageFooter) {
+              if (exportPageFooter) {2
                 const startDate = new Date(
                   $(startDateId).val(),
-                ).toLocaleDateString('vi-VN');
-                const endDate = new Date($(endDateId).val()).toLocaleDateString(
+                ).toLocaleDateString('vi-VN') ;
+                const endDate = new Date($(endDateId ).val()).toLocaleDateString(
                   'vi-VN',
                 );
                 const dateRange =
@@ -342,7 +324,7 @@ function initializeExportDataTable(
     processing: true,
     responsive: true,
     paging: !exportPageFooter,
-    scrollX: true,
+    scrollX: window.innerWidth <= 1900 ? true : false,
     pagingType: 'first_last_numbers',
     rowGroup: rowGroupOptions,
     ajax: {
