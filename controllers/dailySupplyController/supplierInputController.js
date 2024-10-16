@@ -186,11 +186,9 @@ async function addData(req, res) {
 }
 
 async function updateSupplierData(req, res) {
-  console.log(req.body);
-  req.body = trimStringFields(req.body);
-  console.log(req.body);
   try {
     const { id } = req.params;
+    req.body = trimStringFields(req.body);
     const {
       date,
       supplier,
@@ -212,11 +210,8 @@ async function updateSupplierData(req, res) {
 
     let supplierDoc;
 
-    // Check if supplier is provided
     if (supplier) {
-      // Find the supplier by supplierSlug
       supplierDoc = await Supplier.findOne({ supplierSlug: supplier });
-
       if (!supplierDoc) {
         return handleResponse(
           req,
@@ -229,56 +224,47 @@ async function updateSupplierData(req, res) {
       }
     }
 
-    // Find the current data
-    const currentData = await DailySupply.findOne({ 'data._id': id });
-    const currentRawMaterial = currentData.data.find(item => item._id.toString() === id).rawMaterial;
+    const dailySupply = await DailySupply.findOne({ 'data._id': id });
+    if (!dailySupply) {
+      return handleResponse(req, res, 404, 'fail', 'Không tìm thấy dữ liệu!', req.headers.referer);
+    }
 
-    // Prepare the raw material data
-    const rawMaterial = currentRawMaterial.map(item => {
+    const dataIndex = dailySupply.data.findIndex(item => item._id.toString() === id);
+    if (dataIndex === -1) {
+      return handleResponse(req, res, 404, 'fail', 'Không tìm thấy dữ liệu!', req.headers.referer);
+    }
+
+    const updatedRawMaterial = dailySupply.data[dataIndex].rawMaterial.map(item => {
       const updatedItem = { ...item };
       if (item.name === 'Mủ nước') {
-        if (muNuocQuantity) updatedItem.quantity = convertToDecimal(muNuocQuantity);
-        if (muNuocPercentage) updatedItem.percentage = convertToDecimal(muNuocPercentage);
-        if (muNuocRatioSplit) updatedItem.ratioSplit = convertToDecimal(muNuocRatioSplit);
-        if (muNuocPrice) updatedItem.price = convertToDecimal(muNuocPrice);
+        updatedItem.quantity = convertToDecimal(muNuocQuantity);
+        updatedItem.percentage = convertToDecimal(muNuocPercentage);
+        updatedItem.ratioSplit = convertToDecimal(muNuocRatioSplit);
+        updatedItem.price = convertToDecimal(muNuocPrice);
       } else if (item.name === 'Mủ tạp') {
-        if (muTapQuantity) updatedItem.quantity = convertToDecimal(muTapQuantity);
-        if (muTapRatioSplit) updatedItem.ratioSplit = convertToDecimal(muTapRatioSplit);
-        if (muTapPrice) updatedItem.price = convertToDecimal(muTapPrice);
+        updatedItem.quantity = convertToDecimal(muTapQuantity);
+        updatedItem.ratioSplit = convertToDecimal(muTapRatioSplit);
+        updatedItem.price = convertToDecimal(muTapPrice);
       } else if (item.name === 'Mủ ké') {
-        if (muKeQuantity) updatedItem.quantity = convertToDecimal(muKeQuantity);
-        if (muKeRatioSplit) updatedItem.ratioSplit = convertToDecimal(muKeRatioSplit);
-        if (muKePrice) updatedItem.price = convertToDecimal(muKePrice);
+        updatedItem.quantity = convertToDecimal(muKeQuantity);
+        updatedItem.ratioSplit = convertToDecimal(muKeRatioSplit);
+        updatedItem.price = convertToDecimal(muKePrice);
       } else if (item.name === 'Mủ đông') {
-        if (muDongQuantity) updatedItem.quantity = convertToDecimal(muDongQuantity);
-        if (muDongRatioSplit) updatedItem.ratioSplit = convertToDecimal(muDongRatioSplit);
-        if (muDongPrice) updatedItem.price = convertToDecimal(muDongPrice);
+        updatedItem.quantity = convertToDecimal(muDongQuantity);
+        updatedItem.ratioSplit = convertToDecimal(muDongRatioSplit);
+        updatedItem.price = convertToDecimal(muDongPrice);
       }
       return updatedItem;
     });
 
-    // Prepare update object
-    const updateObject = {
-      'data.$.date': new Date(date),
-      'data.$.rawMaterial': rawMaterial,
-      'data.$.note': trimStringFields(note) || '',
-    };
-
-    // Only update supplier if it was provided and found
+    dailySupply.data[dataIndex].date = new Date(date);
+    dailySupply.data[dataIndex].rawMaterial = updatedRawMaterial;
+    dailySupply.data[dataIndex].note = trimStringFields(note) || '';
     if (supplierDoc) {
-      updateObject['data.$.supplier'] = supplierDoc._id;
+      dailySupply.data[dataIndex].supplier = supplierDoc._id;
     }
 
-    // Update the daily supply data
-    const updatedData = await DailySupply.findOneAndUpdate(
-      { 'data._id': id },
-      { $set: updateObject },
-      { new: true }
-    );
-
-    if (!updatedData) {
-      return handleResponse(req, res, 404, 'fail', 'Cập nhật dữ liệu thất bại!', req.headers.referer);
-    }
+    await dailySupply.save();
 
     return handleResponse(req, res, 200, 'success', 'Cập nhật dữ liệu thành công!', req.headers.referer);
   } catch (err) {
