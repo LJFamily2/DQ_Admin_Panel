@@ -45,7 +45,10 @@ function createDateFilter(startDateUTC, endDateUTC) {
 }
 
 function parseDates(startDate, endDate) {
-  const { effectiveStartDate, effectiveEndDate } = adjustDates(startDate, endDate);
+  const { effectiveStartDate, effectiveEndDate } = adjustDates(
+    startDate,
+    endDate,
+  );
   const startDateUTC = new Date(effectiveStartDate);
   startDateUTC.setUTCHours(0, 0, 0, 0);
   const endDateUTC = new Date(effectiveEndDate);
@@ -57,21 +60,27 @@ function parseDates(startDate, endDate) {
 function calculateContractDuration(startDate, endDate) {
   const today = new Date();
   today.setUTCHours(today.getUTCHours() + 7);
-  
+
   if (!startDate && !endDate) {
-    return { duration: null, status: 'No contract' }; 
+    return { duration: null, status: 'No contract' };
   }
-  
+
   const start = new Date(startDate);
   const end = new Date(endDate);
-  
+
   if (end < today) {
-    return { duration: Math.ceil((end - start) / (1000 * 60 * 60 * 24)), status: 'expired' };
+    return {
+      duration: Math.ceil((end - start) / (1000 * 60 * 60 * 24)),
+      status: 'expired',
+    };
   } else if (start <= today && end >= today) {
-    return { duration: Math.ceil((end - today) / (1000 * 60 * 60 * 24)), status: 'valid' }; 
+    return {
+      duration: Math.ceil((end - today) / (1000 * 60 * 60 * 24)),
+      status: 'valid',
+    };
   }
-  
-  return { duration: null, status: 'No contract' }; 
+
+  return { duration: null, status: 'No contract' };
 }
 
 async function getData(req, res) {
@@ -101,7 +110,10 @@ async function getData(req, res) {
 
     // Map the products to the desired format
     const data = products.map((product, index) => {
-      const { duration, status } = calculateContractDuration(product.contractDuration.start, product.contractDuration.end);
+      const { duration, status } = calculateContractDuration(
+        product.contractDuration.start,
+        product.contractDuration.end,
+      );
       return {
         no: parseInt(start, 10) + index + 1,
         area: product.name || '',
@@ -127,8 +139,6 @@ async function getData(req, res) {
     res.status(500).render('partials/500', { layout: false });
   }
 }
-
-
 
 async function getSupplierData(req, res) {
   await getSupplierInputData(req, res, false);
@@ -221,7 +231,9 @@ async function getSupplierInputData(req, res, isArea) {
 
       const muNuocQuantity = rawMaterials['Mủ nước']?.quantity || 0;
       const muNuocPercentage = rawMaterials['Mủ nước']?.percentage || 0;
-      const muNuocQuantityTotal = Number((muNuocQuantity * muNuocPercentage / 100).toFixed(5));
+      const muNuocQuantityTotal = Number(
+        ((muNuocQuantity * muNuocPercentage) / 100).toFixed(5),
+      );
       return {
         no: index + 1,
         date: new Date(item.data.date).toLocaleDateString('vi-VN'),
@@ -230,9 +242,12 @@ async function getSupplierInputData(req, res, isArea) {
         muNuocQuantity: muNuocQuantity.toLocaleString('vi-VN') || '',
         muNuocPercentage: muNuocPercentage.toLocaleString('vi-VN') || '',
         muNuocQuantityTotal: muNuocQuantityTotal.toLocaleString('vi-VN') || '',
-        muTapQuantity: rawMaterials['Mủ tạp']?.quantity?.toLocaleString('vi-VN') || '',
-        muKeQuantity: rawMaterials['Mủ ké']?.quantity?.toLocaleString('vi-VN') || '', 
-        muDongQuantity: rawMaterials['Mủ đông']?.quantity?.toLocaleString('vi-VN') || '',
+        muTapQuantity:
+          rawMaterials['Mủ tạp']?.quantity?.toLocaleString('vi-VN') || '',
+        muKeQuantity:
+          rawMaterials['Mủ ké']?.quantity?.toLocaleString('vi-VN') || '',
+        muDongQuantity:
+          rawMaterials['Mủ đông']?.quantity?.toLocaleString('vi-VN') || '',
         note: item.data.note || '',
         id: item.data._id,
       };
@@ -252,7 +267,7 @@ async function getSupplierExportData(req, res, isArea) {
       dateFilter,
       searchValue,
     );
-    
+
     const pipeline = createPipeline(req.params.slug, matchStage);
 
     const result = await DailySupply.aggregate(pipeline);
@@ -306,10 +321,10 @@ async function getSupplierExportData(req, res, isArea) {
           _id: '$supplier._id',
           supplier: { $first: '$supplier' },
           rawMaterials: {
-            $push: '$data.rawMaterial'
+            $push: '$data.rawMaterial',
           },
-          notes: { $push: '$data.note' }
-        }
+          notes: { $push: '$data.note' },
+        },
       },
       {
         $facet: {
@@ -321,60 +336,99 @@ async function getSupplierExportData(req, res, isArea) {
   }
 
   function flattenData(data, isArea) {
+    const formatNumber = num => (num > 0 ? num.toLocaleString('vi-VN') : '');
+  
+    const calculateMaterialData = (material) => {
+      if (!material) return { quantity: 0, ratioSplit: 0, price: 0, total: 0, afterSplit: 0 };
+  
+      let quantity = 0;
+      let total = 0;
+      let ratioSplit = 0;
+      let price = 0;
+  
+      material.rawMaterial.forEach(raw => {
+        quantity += raw.quantity || 0;
+        ratioSplit += raw.ratioSplit || 0;
+        if (raw.price) {
+          price += raw.price;
+          total += (raw.name === 'Mủ nước' 
+            ? ((raw.quantity * (raw.percentage || 0) / 100) * (raw.ratioSplit || 0) / 100) * raw.price 
+            : ((raw.quantity * (raw.ratioSplit || 0)) / 100) * raw.price);
+        }
+      });
+  
+      const count = material.count;
+      return {
+        quantity,
+        ratioSplit: count > 0 ? ratioSplit / count : 0,
+        price: count > 0 ? price / count : 0,
+        total,
+        afterSplit: (quantity * (ratioSplit / 100)) || 0,
+      };
+    };
+  
     return data.map((item, index) => {
       const rawMaterials = item.rawMaterials.reduce((acc, rawMaterialArray) => {
         rawMaterialArray.forEach(raw => {
           if (!acc[raw.name]) {
-            acc[raw.name] = { quantity: 0, price: 0, ratioSplit: 0, count: 0 };
+            acc[raw.name] = { quantity: 0, percentage: 0, price: 0, ratioSplit: 0, total: 0, count: 0, rawMaterial: [] };
           }
           acc[raw.name].quantity += raw.quantity || 0;
           acc[raw.name].ratioSplit += raw.ratioSplit || 0;
+          acc[raw.name].count++;
           if (raw.price) {
             acc[raw.name].price += raw.price;
-            acc[raw.name].count++;
+            acc[raw.name].total += (raw.name === 'Mủ nước' 
+              ? ((raw.quantity * (raw.percentage || 0) / 100) * (raw.ratioSplit || 0) / 100) * raw.price 
+              : ((raw.quantity * (raw.ratioSplit || 0)) / 100) * raw.price);
           }
+          acc[raw.name].rawMaterial.push(raw);
         });
         return acc;
       }, {});
-
-      Object.values(rawMaterials).forEach(material => {
-        if (material.count > 0) {
-          material.price = material.price / material.count; // Calculate average price
-          material.ratioSplit /= material.count;
-        }
-      });
-
-      const calculateTotal = (material) => {
-        const { quantity, price, ratioSplit } = rawMaterials[material] || {};
-        return (quantity * price * ratioSplit) / 100;
-      };
-
-      const formatNumber = (num) => num > 0 ? num.toLocaleString('vi-VN') : '';
-
-      const totalSum = Object.keys(rawMaterials).reduce((sum, material) => {
-        return sum + calculateTotal(material);
-      }, 0);
-
+  
+      const no = index + 1;
+      const supplier = item.supplier.name || '';
+      const code = isArea ? item.supplier.code || '' : undefined;
+  
+      const muQuyKhoData = calculateMaterialData(rawMaterials['Mủ nước']);
+      const muTapData = calculateMaterialData(rawMaterials['Mủ tạp']);
+      const muKeData = calculateMaterialData(rawMaterials['Mủ ké']);
+      const muDongData = calculateMaterialData(rawMaterials['Mủ đông']);
+  
+      const totalSum = formatNumber(Object.values(rawMaterials).reduce((sum, material) => sum + (material?.total || 0), 0));
+      const note = item.notes.filter(Boolean).join(', ');
+      const signature = '';
+      const id = item.supplier.supplierSlug;
+  
       return {
-        no: index + 1,
-        supplier: item.supplier.name || '',
-        ...(isArea && { code: item.supplier.code || '' }),
-        muQuyKhoQuantity: formatNumber(rawMaterials['Mủ nước']?.quantity),
-        muQuyKhoDonGia: formatNumber(rawMaterials['Mủ nước']?.price),
-        muQuyKhoToTal: formatNumber(calculateTotal('Mủ nước')),
-        muTapQuantity: formatNumber(rawMaterials['Mủ tạp']?.quantity * rawMaterials['Mủ tạp']?.ratioSplit / 100),
-        muTapDonGia: formatNumber(rawMaterials['Mủ tạp']?.price),
-        muTapTotal: formatNumber(calculateTotal('Mủ tạp')),
-        muKeQuantity: formatNumber(rawMaterials['Mủ ké']?.quantity * rawMaterials['Mủ ké']?.ratioSplit / 100),
-        muKeDonGia: formatNumber(rawMaterials['Mủ ké']?.price),
-        muKeTotal: formatNumber(calculateTotal('Mủ ké')),
-        muDongQuantity: formatNumber(rawMaterials['Mủ đông']?.quantity * rawMaterials['Mủ đông']?.ratioSplit / 100),
-        muDongDonGia: formatNumber(rawMaterials['Mủ đông']?.price),
-        muDongTotal: formatNumber(calculateTotal('Mủ đông')),
-        totalSum: formatNumber(totalSum),
-        note: item.notes.filter(Boolean).join(', '),
-        signature: '',
-        id: item.supplier.supplierSlug,
+        no,
+        supplier,
+        ...(isArea && { code }),
+        muQuyKhoQuantity: formatNumber(muQuyKhoData.quantity),
+        muQuyKhoSplit: formatNumber(muQuyKhoData.ratioSplit),
+        muQuyKhoQuantityAfterSplit: formatNumber(muQuyKhoData.afterSplit),
+        muQuyKhoDonGia: formatNumber(muQuyKhoData.price),
+        muQuyKhoTotal: formatNumber(muQuyKhoData.total),
+        muTapQuantity: formatNumber(muTapData.quantity),
+        muTapSplit: formatNumber(muTapData.ratioSplit),
+        muTapAfterSplit: formatNumber(muTapData.afterSplit),
+        muTapDonGia: formatNumber(muTapData.price),
+        muTapTotal: formatNumber(muTapData.total),
+        muKeQuantity: formatNumber(muKeData.quantity),
+        muKeSplit: formatNumber(muKeData.ratioSplit),
+        muKeAfterSplit: formatNumber(muKeData.afterSplit),
+        muKeDonGia: formatNumber(muKeData.price),
+        muKeTotal: formatNumber(muKeData.total),
+        muDongQuantity: formatNumber(muDongData.quantity),
+        muDongSplit: formatNumber(muDongData.ratioSplit),
+        muDongAfterSplit: formatNumber(muDongData.afterSplit),
+        muDongDonGia: formatNumber(muDongData.price),
+        muDongTotal: formatNumber(muDongData.total),
+        totalSum,
+        note,
+        signature,
+        id,
       };
     });
   }
@@ -411,13 +465,13 @@ async function getIndividualSupplierExportData(req, res) {
           data: [
             {
               $project: {
-                _id: '$data._id', 
+                _id: '$data._id',
                 date: '$data.date',
                 rawMaterial: '$data.rawMaterial',
                 note: '$data.note',
                 supplierId: '$data.supplier',
-              }
-            }
+              },
+            },
           ],
         },
       },
@@ -441,10 +495,12 @@ async function getIndividualSupplierExportData(req, res) {
       recordsTotal: totalRecords,
       recordsFiltered: totalRecords,
       data: flattenedData,
-      latestPrices: latestPrices
+      latestPrices: latestPrices,
     });
   } catch (error) {
-    res.status(500).json({ error: 'Internal Server Error', details: error.message });
+    res
+      .status(500)
+      .json({ error: 'Internal Server Error', details: error.message });
   }
 
   function flattenData(data) {
@@ -452,7 +508,7 @@ async function getIndividualSupplierExportData(req, res) {
       muNuoc: 0,
       muTap: 0,
       muKe: 0,
-      muDong: 0
+      muDong: 0,
     };
 
     const flattenedData = data.map((item, index) => {
@@ -467,15 +523,36 @@ async function getIndividualSupplierExportData(req, res) {
       }, {});
 
       // Update latest prices
-      if (rawMaterials['Mủ nước']?.price > 0) latestPrices.muNuoc = rawMaterials['Mủ nước'].price;
-      if (rawMaterials['Mủ tạp']?.price > 0) latestPrices.muTap = rawMaterials['Mủ tạp'].price;
-      if (rawMaterials['Mủ ké']?.price > 0) latestPrices.muKe = rawMaterials['Mủ ké'].price;
-      if (rawMaterials['Mủ đông']?.price > 0) latestPrices.muDong = rawMaterials['Mủ đông'].price;
+      if (rawMaterials['Mủ nước']?.price > 0)
+        latestPrices.muNuoc = rawMaterials['Mủ nước'].price;
+      if (rawMaterials['Mủ tạp']?.price > 0)
+        latestPrices.muTap = rawMaterials['Mủ tạp'].price;
+      if (rawMaterials['Mủ ké']?.price > 0)
+        latestPrices.muKe = rawMaterials['Mủ ké'].price;
+      if (rawMaterials['Mủ đông']?.price > 0)
+        latestPrices.muDong = rawMaterials['Mủ đông'].price;
 
-      const muNuoc = rawMaterials['Mủ nước'] || { quantity: 0, percentage: 0, ratioSplit: 100, price: 0 };
-      const muDong = rawMaterials['Mủ đông'] || { quantity: 0, ratioSplit: 100, price: 0 };
-      const muTap = rawMaterials['Mủ tạp'] || { quantity: 0, ratioSplit: 100, price: 0 };
-      const muKe = rawMaterials['Mủ ké'] || { quantity: 0, ratioSplit: 100, price: 0 };
+      const muNuoc = rawMaterials['Mủ nước'] || {
+        quantity: 0,
+        percentage: 0,
+        ratioSplit: 100,
+        price: 0,
+      };
+      const muDong = rawMaterials['Mủ đông'] || {
+        quantity: 0,
+        ratioSplit: 100,
+        price: 0,
+      };
+      const muTap = rawMaterials['Mủ tạp'] || {
+        quantity: 0,
+        ratioSplit: 100,
+        price: 0,
+      };
+      const muKe = rawMaterials['Mủ ké'] || {
+        quantity: 0,
+        ratioSplit: 100,
+        price: 0,
+      };
 
       const muQuyKhoTotal = (muNuoc.quantity * muNuoc.percentage) / 100;
       const muQuyKhoTotalAfterSplit = (muQuyKhoTotal * muNuoc.ratioSplit) / 100;
@@ -496,7 +573,8 @@ async function getIndividualSupplierExportData(req, res) {
         muQuyKhoTotal: muQuyKhoTotal.toLocaleString('vi-VN'),
         muQuyKhoPrice: muNuoc.price.toLocaleString('vi-VN'),
         muNuocRatioSplit: muNuoc.ratioSplit.toLocaleString('vi-VN'),
-        muQuyKhoTotalAfterSplit: muQuyKhoTotalAfterSplit.toLocaleString('vi-VN'),
+        muQuyKhoTotalAfterSplit:
+          muQuyKhoTotalAfterSplit.toLocaleString('vi-VN'),
         muQuyKhoTotalPrice: muQuyKhoTotalPrice.toLocaleString('vi-VN'),
         muTapQuantity: muTap.quantity.toLocaleString('vi-VN'),
         muTapPrice: muTap.price.toLocaleString('vi-VN'),
@@ -514,12 +592,12 @@ async function getIndividualSupplierExportData(req, res) {
         muDongTotalAfterSplit: muDongTotalAfterSplit.toLocaleString('vi-VN'),
         muDongTotalPrice: muDongTotalPrice.toLocaleString('vi-VN'),
         note: item.note || '',
-        id: item._id,  
+        id: item._id,
       };
     });
     return {
       data: flattenedData,
-      latestPrices: latestPrices
+      latestPrices: latestPrices,
     };
   }
 }
