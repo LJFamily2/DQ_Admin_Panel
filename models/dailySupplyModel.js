@@ -36,18 +36,18 @@ const supplierSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
-  debt: {
-    type: Number,
-    default: function() {
-      return this.purchasedAreaDimension * this.purchasedPrice - this.areaDeposit;
-    }
-  },
-  debtPaid: [{
-    date: Date,
+  debt: [{
+    date: Date, 
     amount: {
       type: Number,
+      default: function() {
+        return this.purchasedAreaDimension * this.purchasedPrice - this.areaDeposit;
+      },
+    },
+    paid: {
+      type: Number,
       default: 0
-    }
+    },
   }],
   purchasedAreaDimension: {
     type: Number,
