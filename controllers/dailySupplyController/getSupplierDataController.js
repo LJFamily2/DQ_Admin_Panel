@@ -400,15 +400,14 @@ async function getSupplierExportData(req, res, isArea) {
       const note = item.notes.filter(Boolean).join(', ');
       const signature = '';
       const id = item.supplier.supplierSlug;
-  
       return {
         no,
         supplier,
         ...(isArea && { code }),
-        areaPurchased: item.purchasedAreaDimension,
-        areaPrice: item.purchasedPrice,
-        areaTotal: item.purchasedAreaDimension * item.purchasedPrice,
-        areaDeposit: item.areaDeposit,
+        areaPurchased: item.supplier.purchasedAreaDimension,
+        areaPrice: formatNumber(item.supplier.purchasedPrice),
+        areaTotal: formatNumber(item.supplier.purchasedAreaDimension * item.supplier.purchasedPrice),
+        areaDeposit: formatNumber(item.supplier.areaDeposit),
         muQuyKhoQuantity: formatNumber(muQuyKhoData.quantity),
         muQuyKhoSplit: formatNumber(muQuyKhoData.ratioSplit),
         muQuyKhoQuantityAfterSplit: formatNumber(muQuyKhoData.afterSplit),
