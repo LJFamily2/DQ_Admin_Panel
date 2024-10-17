@@ -108,7 +108,7 @@ function initializeExportDataTable(
   let footerCallbackOptions;
   if (exportPageFooter) {
     footerCallbackOptions = setupFooterCallbackOptions([
-      3, 5, 6, 8, 9, 11, 12, 14, 15,
+      3, 5, 7, 8, 10, 12, 13, 15, 17,18, 20,22,23,25,
     ]);
   }
 
@@ -324,9 +324,12 @@ function initializeExportDataTable(
     processing: true,
     responsive: true,
     paging: !exportPageFooter,
-    scrollX: window.innerWidth <= 1900 ? true : false,
+    scrollX: true,
     pagingType: 'first_last_numbers',
     rowGroup: rowGroupOptions,
+    // columnDefs: [
+    //   { targets: '*', className: 'dt-body-center' }
+    // ],
     ajax: {
       url: ajaxUrl,
       type: 'POST',
