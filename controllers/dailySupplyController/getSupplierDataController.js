@@ -399,7 +399,6 @@ async function getSupplierExportData(req, res, isArea) {
       const totalSum = formatNumber(Object.values(rawMaterials).reduce((sum, material) => sum + (material?.total || 0), 0));
       const note = item.notes.filter(Boolean).join(', ');
       const signature = '';
-      const id = item.supplier.supplierSlug;
       return {
         no,
         supplier,
@@ -431,7 +430,6 @@ async function getSupplierExportData(req, res, isArea) {
         totalSum,
         note,
         signature,
-        id,
       };
     });
   }

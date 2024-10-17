@@ -33,7 +33,7 @@ function initializeExportDataTable(
   ratioSumSplit,
   ratioRubberSplit,
   debt,
-  {areaDimension, areaPrice},
+  { areaDimension, areaPrice },
 ) {
   const rowGroupOptions = rowGroup ? { dataSrc: rowGroup } : {};
 
@@ -55,9 +55,9 @@ function initializeExportDataTable(
     columns.forEach(colIndex => {
       const total = calculateTotal(colIndex);
       $(api.column(colIndex).footer()).html(
-          `<strong>${formatNumberForDisplay(total, locale)}</strong>`,
-        );
-      });
+        `<strong>${formatNumberForDisplay(total, locale)}</strong>`,
+      );
+    });
 
     if (individualExportPage) {
       const ajaxData = api.ajax.json();
@@ -70,9 +70,9 @@ function initializeExportDataTable(
 
       let totals = [];
       if (parseNumber(areaDimension) > 0 && parseNumber(areaPrice) > 0) {
-        totals = [6,11,16,21]
-      }else{
-        totals = [4,6,,8,10]
+        totals = [6, 11, 16, 21];
+      } else {
+        totals = [4, 6, , 8, 10];
       }
 
       totals = totals.map(colIndex =>
@@ -107,16 +107,22 @@ function initializeExportDataTable(
 
   let footerCallbackOptions;
   if (exportPageFooter) {
-    footerCallbackOptions = setupFooterCallbackOptions([
-      7, 9, 11, 12, 14, 16, 17, 19, 21, 22, 24, 26, 27, 29,
-    ]);
+    if (parseNumber(areaDimension) > 0 && parseNumber(areaPrice) > 0) {
+      footerCallbackOptions = setupFooterCallbackOptions([
+        7, 9, 11, 12, 14, 16, 17, 19, 21, 22, 24, 26, 27, 29,
+      ]);
+    } else {
+      footerCallbackOptions = setupFooterCallbackOptions([3, 4, 5, 6, 7]);
+    }
   }
 
   if (individualExportPage) {
     if (parseNumber(areaDimension) > 0 && parseNumber(areaPrice) > 0) {
-      footerCallbackOptions = setupFooterCallbackOptions([6,8,11,13,16,18,21,23]);
+      footerCallbackOptions = setupFooterCallbackOptions([
+        6, 8, 11, 13, 16, 18, 21, 23,
+      ]);
     } else {
-      footerCallbackOptions = setupFooterCallbackOptions([4,6,,8,10]);
+      footerCallbackOptions = setupFooterCallbackOptions([4, 6, 8, 10]);
     }
   }
 
@@ -157,11 +163,12 @@ function initializeExportDataTable(
               columns: ':visible',
             },
             customize: function (win) {
-              if (exportPageFooter) {2
+              if (exportPageFooter) {
+                2;
                 const startDate = new Date(
                   $(startDateId).val(),
-                ).toLocaleDateString('vi-VN') ;
-                const endDate = new Date($(endDateId ).val()).toLocaleDateString(
+                ).toLocaleDateString('vi-VN');
+                const endDate = new Date($(endDateId).val()).toLocaleDateString(
                   'vi-VN',
                 );
                 const dateRange =
@@ -276,18 +283,22 @@ function initializeExportDataTable(
                     <div style="display: flex; justify-content: space-between; margin-top: 20px;">
                       <p style="text-align: left; width: 50%;">Thực nhận: ${formatNumberForDisplay(
                         totalAfterRatio,
-                        'vi-VN'
+                        'vi-VN',
                       )}</p>
-                      ${debt > 0 ? `<p style="text-align: right; width: 50%;">Công nợ: ${formatNumberForDisplay(
-                        debt,
-                        'vi-VN'
-                      )}</p>` : ''}
+                      ${
+                        debt > 0
+                          ? `<p style="text-align: right; width: 50%;">Công nợ: ${formatNumberForDisplay(
+                              debt,
+                              'vi-VN',
+                            )}</p>`
+                          : ''
+                      }
                     </div>`
                       : `${
                           addPrice > 0 || minusPrice > 0
                             ? `<p style="text-align: left; margin-top: 20px;">Tổng sau cộng/trừ: ${formatNumberForDisplay(
                                 finalAmount,
-                                'vi-VN'
+                                'vi-VN',
                               )} </p>`
                             : ''
                         }
@@ -295,12 +306,16 @@ function initializeExportDataTable(
                     <div style="display: flex; justify-content: space-between; margin-top: 20px;">
                       <p style="text-align: left; width: 50%;">Thực nhận: ${formatNumberForDisplay(
                         totalAfterRatio,
-                        'vi-VN'
+                        'vi-VN',
                       )}</p>
-                      ${debt > 0 ? `<p style="text-align: right; width: 50%;">Công nợ: ${formatNumberForDisplay(
-                        debt,
-                        'vi-VN'
-                      )}</p>` : ''}
+                      ${
+                        debt > 0
+                          ? `<p style="text-align: right; width: 50%;">Công nợ: ${formatNumberForDisplay(
+                              debt,
+                              'vi-VN',
+                            )}</p>`
+                          : ''
+                      }
                     </div>`,
                   );
 
@@ -324,7 +339,7 @@ function initializeExportDataTable(
     processing: true,
     responsive: true,
     paging: !exportPageFooter,
-    scrollX: true,
+    scrollX: window.innerWidth > 1900 ? false : true,
     pagingType: 'first_last_numbers',
     rowGroup: rowGroupOptions,
     // columnDefs: [
