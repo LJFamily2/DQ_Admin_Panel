@@ -11,9 +11,9 @@ const debtSchema = new mongoose.Schema({
 
 // Money Retained Schema
 const moneyRetainedSchema = new mongoose.Schema({
+  date: { type: Date, required: true },
   amount: { type: Number, default: 0 },
   percentage: { type: Number, default: 0 },
-  date: { type: Date, required: true },
 });
 
 // Supplier Schema
@@ -37,6 +37,7 @@ const supplierSchema = new mongoose.Schema({
   areaDeposit: { type: Number, default: 0 },
   debtAmount: { type: Number, default: function () {return this.purchasedAreaDimension *  this.purchasedPrice - this.areaDeposit} },
   debtPaidAmount: { type: Number, default: 0 },
+  moneyRetainedAmount: { type: Number, default: 0 },
   moneyRetainedPercentage: { type: Number, default: 0 },
   debtHistory: [{ type: mongoose.Schema.Types.ObjectId, ref: 'DailySupply' }],
   moneyRetainedHistory: [{ type: mongoose.Schema.Types.ObjectId, ref: 'DailySupply' }],
