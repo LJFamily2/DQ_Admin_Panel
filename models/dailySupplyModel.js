@@ -49,6 +49,10 @@ const supplierSchema = new mongoose.Schema({
       default: 0
     },
   }],
+  moneyRetainedPercentage: {
+    type: Number,
+    default: 0
+  },
   purchasedAreaDimension: {
     type: Number,
     default: 0
