@@ -171,6 +171,7 @@
               required
               step="0.1"
               min="0"
+              oninput="toggleFields()"
             />
             <small class="text-muted">Chỉ áp dụng cho khu vực hợp đồng</small>
           </div>
@@ -184,7 +185,7 @@
               id="areaPrice"
               name="areaPrice"
               min="0"
-              oninput="handleQuantityInput(this)"
+              oninput="handleQuantityInput(this);toggleFields()"
             />
             <small class="text-muted"
               >Để trống nếu không khu vực không mua bán</small
@@ -316,7 +317,7 @@
                             maxlength="150"
                           />
                         </div>
-                        <div class="mt-3">
+                        <div class="mt-3 conditional-field">
                           <label
                             for="purchasedAreaDimension"
                             class="form-label fw-bold"
@@ -331,7 +332,7 @@
                             min="0"
                           />
                         </div>
-                        <div class="mt-3">
+                        <div class="mt-3 conditional-field">
                           <label for="purchasedPrice" class="form-label fw-bold"
                             >Giá mua (VNĐ/mẫu)</label
                           >
@@ -344,7 +345,7 @@
                             oninput="handleQuantityInput(this)"
                           />
                         </div>
-                        <div class="mt-3">
+                        <div class="mt-3 conditional-field">
                           <label for="areaDeposit" class="form-label fw-bold"
                             >Tiền đặt cọc</label
                           >
@@ -357,7 +358,7 @@
                             oninput="handleQuantityInput(this)"
                           />
                         </div>
-                        <div class="mt-3">
+                        <div class="mt-3 conditional-field">
                           <label class="form-label fw-bold">Thời hạn mua</label>
                           <div class="row">
                             <div class="col-6">
@@ -388,25 +389,27 @@
                           <label
                             for="ratioRubberSplit"
                             class="form-label fw-bold"
-                            >Ăn chia mủ</label
+                            >Ăn chia mủ mặc định</label
                           >
                           <input
                             type="text"
                             class="form-control"
                             id="ratioRubberSplit"
                             name="ratioRubberSplit"
+                            value="100"
                             oninput="handlePercentageInput(this)"
                           />
                         </div>
                         <div class="mt-3">
                           <label for="ratioSumSplit" class="form-label fw-bold"
-                            >Ăn chia tổng</label
+                            >Ăn chia tổng mặc định</label
                           >
                           <input
                             type="text"
                             class="form-control"
                             id="ratioSumSplit"
                             name="ratioSumSplit"
+                            value="100"
                             oninput="handlePercentageInput(this)"
                           />
                         </div>
@@ -516,4 +519,21 @@
     false,
     false,
   );
+
+  // Toggle fields based on area dimension and area price input values
+  function toggleFields() {
+    const areaDimension = parseFloat(document.getElementById('areaDimension').value) || 0;
+    const areaPrice = parseFloat(document.getElementById('areaPrice').value.replace(/,/g, '')) || 0;
+    const conditionalFields = document.querySelectorAll('.conditional-field');
+
+    if (areaDimension > 0 && areaPrice > 0) {
+      conditionalFields.forEach(field => field.style.display = 'block');
+    } else {
+      conditionalFields.forEach(field => field.style.display = 'none');
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    toggleFields(); // Initial check
+  });
 </script>
