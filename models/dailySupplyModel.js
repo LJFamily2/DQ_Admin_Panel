@@ -2,24 +2,21 @@ const mongoose = require('mongoose');
 const slug = require('mongoose-slug-generator');
 mongoose.plugin(slug);
 
-// Supplier Schema
+// Debt Schema
 const debtSchema = new mongoose.Schema({
   date: { type: Date, required: true },
-  amount: {
-    type: Number,
-    default: function() {
-      return this.purchasedAreaDimension * this.purchasedPrice - this.areaDeposit;
-    },
-  },
+  amount: { type: Number, required: true },
   paid: { type: Number, default: 0 },
 });
 
+// Money Retained Schema
 const moneyRetainedSchema = new mongoose.Schema({
   amount: { type: Number, default: 0 },
   percentage: { type: Number, default: 0 },
   date: { type: Date, required: true },
 });
 
+// Supplier Schema
 const supplierSchema = new mongoose.Schema({
   name: { type: String, required: true },
   code: { type: String, required: true },
@@ -38,8 +35,11 @@ const supplierSchema = new mongoose.Schema({
   },
   purchasedPrice: { type: Number, default: 0 },
   areaDeposit: { type: Number, default: 0 },
-  debt: [{type: mongoose.Schema.Types.ObjectId, ref: 'DailySupply'}],
-  moneyRetained: [{type: mongoose.Schema.Types.ObjectId, ref: 'DailySupply'}],
+  debtAmount: { type: Number, default: function () {return purchasedAreaDimension *  purchasedPrice - areaDeposit} },
+  debtPaidAmount: { type: Number, default: 0 },
+  moneyRetainedAmount: { type: Number, default: 0 },
+  debtHistory: [{ type: mongoose.Schema.Types.ObjectId, ref: 'DailySupply' }],
+  moneyRetainedHistory: [{ type: mongoose.Schema.Types.ObjectId, ref: 'DailySupply' }],
   purchasedAreaDimension: { type: Number, default: 0 },
   areaDuration: {
     start: { type: Date, required: true },
@@ -47,28 +47,26 @@ const supplierSchema = new mongoose.Schema({
   },
 });
 
-// dailySupply Schema
+// Raw Material Schema
 const rawMaterialSchema = new mongoose.Schema({
   name: { type: String, required: true },
   percentage: { type: Number, required: true },
   quantity: { type: Number, required: true },
   ratioSplit: { type: Number, required: true },
   price: { type: Number, required: true },
-  moneyRetained: {
-    type: Number,
-    default: 0,
-  }
 });
 
+// Data Schema
 const dataSchema = new mongoose.Schema({
   date: { type: Date, required: true },
   rawMaterial: [rawMaterialSchema],
   supplier: { type: mongoose.Schema.Types.ObjectId, ref: 'Supplier', required: true },
-  debt: { debtSchema },
-  moneyRetained: { moneyRetainedSchema },
+  debt: debtSchema,
+  moneyRetained: moneyRetainedSchema,
   note: { type: String },
 });
 
+// Daily Supply Schema
 const dailySupplySchema = new mongoose.Schema({
   accountID: { type: mongoose.Schema.Types.ObjectId, ref: 'Accounts', required: true },
   name: { type: String, required: true },

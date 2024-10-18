@@ -521,17 +521,32 @@
   );
 
   // Toggle fields based on area dimension and area price input values
-  function toggleFields() {
-    const areaDimension = parseFloat(document.getElementById('areaDimension').value) || 0;
-    const areaPrice = parseFloat(document.getElementById('areaPrice').value.replace(/,/g, '')) || 0;
-    const conditionalFields = document.querySelectorAll('.conditional-field');
+function debounce(func, timeout = 700) {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      func.apply(this, args);
+    }, timeout);
+  };
+}
 
-    if (areaDimension > 0 && areaPrice > 0) {
-      conditionalFields.forEach(field => field.style.display = 'block');
-    } else {
-      conditionalFields.forEach(field => field.style.display = 'none');
-    }
+const debouncedToggleFields = debounce(toggleFields);
+
+function toggleFields() {
+  const areaDimension = parseFloat(document.getElementById('areaDimension').value) || 0;
+  const areaPrice = parseFloat(document.getElementById('areaPrice').value.replace(/,/g, '')) || 0;
+  const conditionalFields = document.querySelectorAll('.conditional-field');
+
+  if (areaDimension > 0 && areaPrice > 0) {
+    conditionalFields.forEach(field => field.style.display = 'block');
+  } else {
+    conditionalFields.forEach(field => field.style.display = 'none');
   }
+}
+
+document.getElementById('areaDimension').addEventListener('input', debouncedToggleFields);
+document.getElementById('areaPrice').addEventListener('input', debouncedToggleFields);
 
   document.addEventListener('DOMContentLoaded', () => {
     toggleFields(); // Initial check
