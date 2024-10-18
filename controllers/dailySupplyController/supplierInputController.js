@@ -112,7 +112,7 @@ async function addData(req, res) {
     // Check the number of entries for today
     const dailySupply = await DailySupply.findById(req.params.id);
     const todayEntries = dailySupply.data.filter(
-      entry => new Date(entry.date).toDateString() === today.toDateString(),
+      entry => new Date(entry.date) === today,
     );
 
     if (todayEntries.length >= dailySupply.limitData) {
@@ -145,53 +145,14 @@ async function addData(req, res) {
         percentage: name === 'Mủ nước' ? convertToDecimal(req.body.percentage) : 0,
         ratioSplit: existedSupplier.ratioRubberSplit,
         quantity: convertToDecimal(req.body.quantity[index] || 0), 
-        price: convertToDecimal(req.body.price[index] || 0)
       };
     });
-
-    // Calculate amount and paid
-    let amount = existedSupplier.debtAmount;
-    let paid = 0;
-
-    rawMaterials.forEach(material => {
-      const { name, quantity, percentage, ratioSplit, price } = material;
-      if (name === 'Mủ nước') {
-        amount -= quantity * percentage * ratioSplit * price;
-        paid += quantity * percentage * ( ratioSplit) * price;
-      } else {
-        amount -= quantity * ratioSplit * price;
-        paid += quantity * (ratioSplit) * price;
-      }
-    });
-
-    const debt = {
-      date: today,
-      amount: amount,
-      paid: paid
-    };
-
-    rawMaterials.forEach(material => {
-      const { name, quantity, percentage, ratioSplit, price } = material;
-      if (name === 'Mủ nước') {
-        amount += quantity * percentage * ( 100 - ratioSplit) * price;
-      } else {
-        amount += quantity * (100 - ratioSplit) * price;
-      }
-    });
-
-    const moneyRetained = {
-      date: today,
-      amount: amount,
-      percentage: existedSupplier.moneyRetainedPercentage,
-    }
 
     const inputedData = {
       date: today,
       rawMaterial: rawMaterials,
       supplier: existedSupplier._id,
-      note: trimStringFields(req.body.note) || '',
-      debt: debt,
-      moneyRetained: moneyRetained
+      note: trimStringFields(req.body.note) || '', 
     };
 
     const newData = await DailySupply.findByIdAndUpdate(
