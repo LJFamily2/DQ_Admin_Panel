@@ -37,7 +37,7 @@ const supplierSchema = new mongoose.Schema({
   areaDeposit: { type: Number, default: 0 },
   debtAmount: { type: Number, default: function () {return purchasedAreaDimension *  purchasedPrice - areaDeposit} },
   debtPaidAmount: { type: Number, default: 0 },
-  moneyRetainedAmount: { type: Number, default: 0 },
+  moneyRetainedPercentage: { type: Number, default: 0 },
   debtHistory: [{ type: mongoose.Schema.Types.ObjectId, ref: 'DailySupply' }],
   moneyRetainedHistory: [{ type: mongoose.Schema.Types.ObjectId, ref: 'DailySupply' }],
   purchasedAreaDimension: { type: Number, default: 0 },
