@@ -1,47 +1,46 @@
 const convertToDecimal = require('../../utils/convertToDecimal');
 const ensureArray = input => (Array.isArray(input) ? input : [input]);
-// Helper function
-async function createSuppliers(req) {
-  const supplierNames = ensureArray(req.body.supplierName);
-  let supplierCode = ensureArray(req.body.code);
-  let supplierManager = ensureArray(req.body.manager);
-  let supplierPhone = ensureArray(req.body.phone);
-  let supplierIdentification = ensureArray(req.body.identification);
-  let supplierIssueDate = ensureArray(req.body.issueDate);
-  let supplierAddress = ensureArray(req.body.supplierAddress);
-  let supplierRatioSumSplit = ensureArray(req.body.ratioSumSplit);
-  let supplierRatioRubberSplit = ensureArray(req.body.ratioRubberSplit);
-  let supplierAreaDeposit = ensureArray(req.body.areaDeposit);
-  let supplierPurchasedPrice = ensureArray(req.body.purchasedPrice);
-  let supplierPurchasedAreaDimension = ensureArray(req.body.purchasedAreaDimension);
-  let supplierAreaDurationStart = ensureArray(req.body.areaDurationStart);
-  let supplierAreaDurationEnd = ensureArray(req.body.areaDurationEnd);
 
-  const suppliers = supplierNames.map((name, index) => {
-    // Only create supplier if the name is provided
+async function createSuppliers(req) {
+  const {
+    supplierName,
+    code,
+    manager,
+    phone,
+    identification,
+    issueDate,
+    supplierAddress,
+    ratioSumSplit,
+    ratioRubberSplit,
+    areaDeposit,
+    purchasedPrice,
+    purchasedAreaDimension,
+    areaDuration,
+    moneyRetainedPercentage
+  } = req.body;
+
+  const suppliers = ensureArray(supplierName).map((name, index) => {
     if (name) {
       return {
-        name: name,
-        code: supplierCode[index],
-        manager: supplierManager[index],
-        phone: supplierPhone[index],
-        identification: supplierIdentification[index],
-        issueDate: supplierIssueDate[index],
-        address: supplierAddress[index],
-        ratioSumSplit: convertToDecimal(supplierRatioSumSplit[index]),
-        ratioRubberSplit: convertToDecimal(supplierRatioRubberSplit[index]),
-        areaDeposit: convertToDecimal(supplierAreaDeposit[index]),
-        purchasedPrice: convertToDecimal(supplierPurchasedPrice[index]),
-        purchasedAreaDimension: supplierPurchasedAreaDimension[index],
-        areaDuration: {
-          start: supplierAreaDurationStart[index],
-          end: supplierAreaDurationEnd[index]
-        }
+        name,
+        code: ensureArray(code)[index],
+        manager: ensureArray(manager)[index],
+        phone: ensureArray(phone)[index],
+        identification: ensureArray(identification)[index],
+        issueDate: ensureArray(issueDate)[index],
+        address: ensureArray(supplierAddress)[index],
+        ratioSumSplit: convertToDecimal(ensureArray(ratioSumSplit)[index]),
+        ratioRubberSplit: convertToDecimal(ensureArray(ratioRubberSplit)[index]),
+        areaDeposit: convertToDecimal(ensureArray(areaDeposit)[index]),
+        purchasedPrice: convertToDecimal(ensureArray(purchasedPrice)[index]),
+        purchasedAreaDimension: ensureArray(purchasedAreaDimension)[index],
+        moneyRetainedPercentage: convertToDecimal(ensureArray(moneyRetainedPercentage)[index]),
+        areaDuration: ensureArray(areaDuration)[index]
       };
     }
-  }).filter(Boolean); 
+  }).filter(Boolean);
 
   return suppliers;
 }
 
-module.exports = createSuppliers;
+module.exports = createSuppliers;   

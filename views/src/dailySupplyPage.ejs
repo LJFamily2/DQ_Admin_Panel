@@ -133,25 +133,23 @@
             <label class="form-label fw-bold">Thời hạn hợp đồng</label>
             <div class="row">
               <div class="col-6">
-                <label for="contractStart" class="form-label"
-                  >Ngày bắt đầu</label
-                >
+                <label for="contractStart" class="form-label">Ngày bắt đầu</label>
                 <input
                   type="date"
                   class="form-control"
                   id="contractStart"
                   name="contractDuration[start]"
+                  onchange="document.getElementById('contractEnd').min = this.value"
                 />
               </div>
               <div class="col-6">
-                <label for="contractEnd" class="form-label"
-                  >Ngày kết thúc</label
-                >
+                <label for="contractEnd" class="form-label">Ngày kết thúc</label>
                 <input
                   type="date"
                   class="form-control"
                   id="contractEnd"
                   name="contractDuration[end]"
+                  onchange="document.getElementById('contractStart').max = this.value"
                 />
               </div>
             </div>
@@ -315,6 +313,7 @@
                             class="form-control"
                             name="supplierAddress"
                             maxlength="150"
+                            required
                           />
                         </div>
                         <div class="mt-3 conditional-field">
@@ -330,6 +329,7 @@
                             name="purchasedAreaDimension"
                             step="0.1"
                             min="0"
+                            required
                           />
                         </div>
                         <div class="mt-3 conditional-field">
@@ -342,6 +342,7 @@
                             id="purchasedPrice"
                             name="purchasedPrice"
                             oninput="handleQuantityInput(this)"
+                            required
                           />
                         </div>
                         <div class="mt-3 conditional-field">
@@ -355,6 +356,7 @@
                             name="areaDeposit"
                             min="0"
                             oninput="handleQuantityInput(this)"
+                            required
                           />
                         </div>
                         <div class="mt-3 conditional-field">
@@ -369,7 +371,9 @@
                                 class="form-control"
                                 id="areaDurationStart"
                                 name="areaDuration[start]"
-                              />
+                                onfocus="this.min = document.getElementById('contractStart').value; this.max = document.getElementById('areaDurationEnd').value;"
+                                required
+                               />
                             </div>
                             <div class="col-6">
                               <label for="areaDurationEnd" class="form-label"
@@ -380,6 +384,8 @@
                                 class="form-control"
                                 id="areaDurationEnd"
                                 name="areaDuration[end]"
+                                onfocus="this.min = document.getElementById('areaDurationStart').value; this.max = document.getElementById('contractEnd').value;"
+                                required
                               />
                             </div>
                           </div>
@@ -394,6 +400,7 @@
                             id="moneyRetainedPercentage"
                             name="moneyRetainedPercentage"
                             oninput="handlePercentageInput(this)"
+                            required
                           />
                         </div>
                         <div class="mt-3">
