@@ -28,7 +28,7 @@ async function createSuppliers(req) {
         phone: ensureArray(phone)[index],
         identification: ensureArray(identification)[index],
         issueDate: ensureArray(issueDate)[index],
-        address: ensureArray(supplierAddress)[index],
+        supplierAddress: ensureArray(supplierAddress)[index],
         ratioSumSplit: convertToDecimal(ensureArray(ratioSumSplit)[index]),
         ratioRubberSplit: convertToDecimal(ensureArray(ratioRubberSplit)[index]),
         areaDeposit: convertToDecimal(ensureArray(areaDeposit)[index]),
