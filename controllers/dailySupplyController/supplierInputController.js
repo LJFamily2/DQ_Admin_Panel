@@ -104,6 +104,7 @@ async function renderInputDataPage(req, res) {
 }
 
 async function addData(req, res) {
+  req.body = trimStringFields(req.body);
   try {
     // Get today's date at midnight
     const today = new Date();
