@@ -2,117 +2,87 @@ const mongoose = require('mongoose');
 const slug = require('mongoose-slug-generator');
 mongoose.plugin(slug);
 
+const debtSchema = new mongoose.Schema({
+  date: { type: Date, required: true },
+  amount: {
+    type: Number,
+    default: function() {
+      return this.purchasedAreaDimension * this.purchasedPrice - this.areaDeposit;
+    },
+  },
+  paid: { type: Number, default: 0 },
+});
+
+const moneyRetainedSchema = new mongoose.Schema({
+  amount: { type: Number, default: 0 },
+  percentage: { type: Number, default: 0 },
+  date: { type: Date, required: true },
+});
+
 const supplierSchema = new mongoose.Schema({
-  name: String,
-  code: String,
-  supplierAddress: String,
-  phone: String,
-  identification: String,
-  issueDate: String,
-  manager: {
-    type: Boolean,
-    default: false,
-  },
-  ratioRubberSplit: {
-    type: Number,
-    default: 100,
-  },
-  ratioSumSplit: {
-    type: Number,
-    default: 100,
-  },
+  name: { type: String, required: true },
+  code: { type: String, required: true },
+  supplierAddress: { type: String, required: true },
+  phone: { type: String, required: true },
+  identification: { type: String, required: true },
+  issueDate: { type: Date, required: true },
+  manager: { type: Boolean, default: false },
+  ratioRubberSplit: { type: Number, default: 100 },
+  ratioSumSplit: { type: Number, default: 100 },
   supplierSlug: {
     type: String,
     default: function() {
       return `${this.code}-${Math.floor(100000 + Math.random() * 900000)}`;
-    }
-  },
-  // Apply with the Contract Area
-  purchasedPrice: {
-    type: Number,
-    default: 0
-  },
-  areaDeposit: {
-    type: Number,
-    default: 0
-  },
-  debt: [{
-    date: Date, 
-    amount: {
-      type: Number,
-      default: function() {
-        return this.purchasedAreaDimension * this.purchasedPrice - this.areaDeposit;
-      },
     },
-    paid: {
-      type: Number,
-      default: 0
-    },
-  }],
-  moneyRetainedPercentage: {
-    type: Number,
-    default: 0
   },
-  purchasedAreaDimension: {
-    type: Number,
-    default: 0
-  },
+  purchasedPrice: { type: Number, default: 0 },
+  areaDeposit: { type: Number, default: 0 },
+  debt: [debtSchema],
+  moneyRetained: [moneyRetainedSchema],
+  purchasedAreaDimension: { type: Number, default: 0 },
   areaDuration: {
-    start: Date,
-    end: Date
-  }
+    start: { type: Date, required: true },
+    end: { type: Date, required: true },
+  },
+});
+
+const rawMaterialSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  percentage: { type: Number, required: true },
+  quantity: { type: Number, required: true },
+  ratioSplit: { type: Number, required: true },
+  price: { type: Number, required: true },
+});
+
+const dataSchema = new mongoose.Schema({
+  date: { type: Date, required: true },
+  rawMaterial: [rawMaterialSchema],
+  supplier: { type: mongoose.Schema.Types.ObjectId, ref: 'Supplier', required: true },
+  debt: { type: mongoose.Schema.Types.ObjectId, ref: 'Supplier' },
+  moneyRetained: { type: mongoose.Schema.Types.ObjectId, ref: 'Supplier' },
+  note: { type: String },
 });
 
 const dailySupplySchema = new mongoose.Schema({
-  accountID: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Accounts',
-  },
-  name: String,
-  data: [
-    {
-      date: Date,
-      rawMaterial: [
-        {
-          name: String,
-          percentage: Number,
-          quantity: Number,
-          ratioSplit: Number,
-          price: Number,
-        },
-      ],
-      supplier: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Supplier',
-      },
-      note: String,
-    },
-  ],
-  suppliers: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Supplier',
-    },
-  ],
-  limitData: Number,
-  // Apply with the Contract Area
-  areaDimension: Number,
+  accountID: { type: mongoose.Schema.Types.ObjectId, ref: 'Accounts', required: true },
+  name: { type: String, required: true },
+  data: [dataSchema],
+  suppliers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Supplier' }],
+  limitData: { type: Number },
+  areaDimension: { type: Number },
   remainingAreaDimension: {
     type: Number,
     default: function() {
-      return this.areaDimension; 
-    }
+      return this.areaDimension;
+    },
   },
   contractDuration: {
-    start: Date,
-    end: Date
+    start: { type: Date, required: true },
+    end: { type: Date, required: true },
   },
-  areaPrice: Number,
-  address: String,
-  slug: {
-    type: String,
-    slug: 'name',
-  },
+  areaPrice: { type: Number },
+  address: { type: String, required: true },
+  slug: { type: String, slug: 'name' },
 });
 
 const Supplier = mongoose.model('Supplier', supplierSchema);
