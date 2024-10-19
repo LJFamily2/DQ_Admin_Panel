@@ -17,8 +17,7 @@ const retainedHistorySchema = new mongoose.Schema({
   referenceData: { type: mongoose.Schema.Types.ObjectId, ref: 'DailySupply' },
 });
 
-  debtAmount: { type: Number, required: true },
-  // Raw Material Schema (with Finalized Price)
+// Raw Material Schema (with Finalized Price)
 const rawMaterialSchema = new mongoose.Schema({
   name: { type: String },
   percentage: { type: Number },
