@@ -109,7 +109,8 @@ async function addData(req, res) {
   try {
     // Get today's date at midnight
     const today = new Date();
-    today.setUTCHours(today.getUTCHours() + 7, 0, 0, 0);
+    today.setUTCHours(0, 0, 0, 0);
+    console.log(today)
     
     // Check the number of entries for today
     const dailySupply = await DailySupply.findById(req.params.id);
@@ -153,11 +154,14 @@ async function addData(req, res) {
 
     const debt = { 
       date: today,
+      amount: 0,
+      paid: 0
     };
 
     const moneyRetained = {
       date: today,
       percentage: existedSupplier.moneyRetainedPercentage,
+      amount: 0
     };
 
     const inputedData = {
@@ -343,8 +347,8 @@ async function deleteSupplierData(req, res) {
 
     // Extract the supplier ID, debt ID, and moneyRetained ID
     const supplierId = subDocument.supplier;
-    const debtId = subDocument.debt._id;
-    const moneyRetainedId = subDocument.moneyRetained._id;
+    const debtAmount = subDocument.debt.amount;
+    const moneyRetainedAmount = subDocument.moneyRetained.amount;
 
     // Remove the sub-document from the DailySupply document
     const updatedData = await DailySupply.findOneAndUpdate(
@@ -371,8 +375,12 @@ async function deleteSupplierData(req, res) {
       supplierId,
       {
         $pull: {
-          debtHistory: debtId,
-          moneyRetainedHistory: moneyRetainedId,
+          debtHistory: subDocument.debt._id,
+          moneyRetainedHistory: subDocument.moneyRetained._id,
+        },
+        $inc: {
+          debtAmount: debtAmount,
+          moneyRetainedAmount: -moneyRetainedAmount,
         },
       },
       { new: true }

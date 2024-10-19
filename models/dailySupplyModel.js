@@ -5,15 +5,15 @@ mongoose.plugin(slug);
 // Debt Schema
 const debtSchema = new mongoose.Schema({
   date: { type: Date, required: true },
-  amount: { type: Number, required: true },
-  paid: { type: Number, default: 0 },
+  amount: { type: Number},
+  paid: { type: Number },
 });
 
 // Money Retained Schema
 const moneyRetainedSchema = new mongoose.Schema({
   date: { type: Date, required: true },
-  amount: { type: Number, default: 0 },
-  percentage: { type: Number, default: 0 },
+  amount: { type: Number },
+  percentage: { type: Number },
 });
 
 // Supplier Schema
@@ -69,7 +69,7 @@ const dataSchema = new mongoose.Schema({
 
 // Daily Supply Schema
 const dailySupplySchema = new mongoose.Schema({
-  accountID: { type: mongoose.Schema.Types.ObjectId, ref: 'Accounts', required: true },
+  accountID: { type: mongoose.Schema.Types.ObjectId, ref: 'Accounts' },
   name: { type: String, required: true },
   data: [dataSchema],
   suppliers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Supplier' }],
@@ -110,16 +110,38 @@ dataSchema.pre('save', async function(next) {
 
   this.rawMaterial.forEach(material => {
     const { name, quantity, percentage, ratioSplit, price } = material;
+    console.log(`Material: ${name}, Quantity: ${quantity}, Percentage: ${percentage}, RatioSplit: ${ratioSplit}, Price: ${price}`);
+    
     if (name === 'Mủ nước') {
-      totalSupplierProfit += quantity * (percentage / 100) * (ratioSplit / 100) * price;
-      debtPaid += quantity * (percentage / 100) * (100 - (ratioSplit / 100)) * price;
+      const profitContribution = quantity * (percentage / 100) * (ratioSplit / 100) * price;
+      const debtContribution = quantity * (percentage / 100) * ((100 - ratioSplit) / 100) * price;
+      totalSupplierProfit += profitContribution;
+      debtPaid += debtContribution;
+      console.log(`Mủ nước - Profit Contribution: ${profitContribution}, Debt Contribution: ${debtContribution}`);
     } else {
-      totalSupplierProfit += quantity * (ratioSplit / 100) * price;
-      debtPaid += quantity * (100 - (ratioSplit / 100)) * price;
+      const profitContribution = quantity * (ratioSplit / 100) * price;
+      const debtContribution = quantity * ((100 - ratioSplit) / 100) * price;
+      totalSupplierProfit += profitContribution;
+      debtPaid += debtContribution;
+      console.log(`Other Material - Profit Contribution: ${profitContribution}, Debt Contribution: ${debtContribution}`);
     }
   });
 
   moneyRetained = totalSupplierProfit * this.moneyRetained.percentage / 100;
+
+  // Ensure this.debt is initialized
+  if (!this.debt) {
+    this.debt = {};
+  }
+
+  // Ensure this.moneyRetained is initialized
+  if (!this.moneyRetained) {
+    this.moneyRetained = {};
+  }
+
+  console.log(`Total Supplier Profit: ${totalSupplierProfit}, Debt Paid: ${debtPaid}, Money Retained: ${moneyRetained}`);
+
+  console.log(this.supplier.debtAmount)
 
   this.debt.amount = this.supplier.debtAmount - debtPaid;
   this.debt.paid = debtPaid;
@@ -127,6 +149,7 @@ dataSchema.pre('save', async function(next) {
 
   // Update supplier's debt amount and save
   this.supplier.debtAmount = this.debt.amount;
+  this.supplier.moneyRetainedAmount += debtPaid;
   await this.supplier.save();
 
   next();

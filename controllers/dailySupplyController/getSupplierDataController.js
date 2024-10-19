@@ -19,7 +19,8 @@ module.exports = {
 // Get today date in UTC+7
 function getTodayDate() {
   const today = new Date();
-  today.setUTCHours(today.getUTCHours() + 7);
+  today.setUTCHours(0,0,0,0);
+  console.log(today)
   return today;
 }
 

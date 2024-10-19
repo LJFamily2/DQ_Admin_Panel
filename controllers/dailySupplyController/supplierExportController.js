@@ -67,8 +67,8 @@ async function updatePricesAndRatios(req, res) {
 
     const start = new Date(startDate || endDate || new Date());
     const end = new Date(endDate || startDate || new Date());
-    start.setHours(0, 0, 0, 0);
-    end.setHours(23, 59, 59, 999);
+    start.setUTCHours(0, 0, 0, 0);
+    end.setUTCHours(23, 59, 59, 999);
 
     const prices = {
       dryPrice: convertToDecimal(dryPrice),
@@ -100,6 +100,7 @@ async function updatePricesAndRatios(req, res) {
       supplierId = supplier._id;
     }
 
+    // Update prices and ratios
     updatePricesAndRatiosHelper(
       area.data,
       start,
@@ -107,7 +108,21 @@ async function updatePricesAndRatios(req, res) {
       prices,
       ratios,
       supplierId,
-    ); // Updated function call
+    );
+
+    // Collect all save operations
+    const saveOperations = area.data.map(async (dataEntry) => {
+      const supplier = await Supplier.findById(dataEntry.supplier);
+      if (supplier) {
+        supplier.purchasedPrice = prices[dataEntry.rawMaterial.name];
+        supplier.ratioRubberSplit = ratios[dataEntry.rawMaterial.name];
+        return supplier.save();
+      }
+    });
+
+    // Execute all save operations
+    await Promise.all(saveOperations);
+
     await area.save();
 
     const successMessage = supplierSlug
