@@ -110,6 +110,89 @@ async function updatePricesAndRatios(req, res) {
       supplierId,
     );
 
+    // Calculate and update debt and money retained for each data entry
+    let totalDebtPaid = 0;
+    let totalMoneyRetained = 0;
+    
+    for (const entry of area.data) {
+      let totalSupplierProfit = 0;
+      let debtPaid = 0;
+      let moneyRetained = 0;
+    
+      for (const material of entry.rawMaterial) {
+        const { name, quantity, percentage, ratioSplit, price } = material;
+    
+        // Store the old price
+        const oldPrice = material.oldPrice || 0;
+    
+        if (name === 'Mủ nước') {
+          const profitContribution =
+            quantity * (percentage / 100) * (ratioSplit / 100) * price;
+          const debtContribution =
+            quantity * (percentage / 100) * ((100 - ratioSplit) / 100) * price;
+          totalSupplierProfit += profitContribution;
+          debtPaid += debtContribution;
+        } else {
+          const profitContribution = quantity * (ratioSplit / 100) * price;
+          const debtContribution = quantity * ((100 - ratioSplit) / 100) * price;
+          totalSupplierProfit += profitContribution;
+          debtPaid += debtContribution;
+        }
+    
+        // Calculate the difference between the old and new prices
+        const priceDifference = price - oldPrice;
+    
+        // Adjust the debt amount based on the price difference
+        entry.debt.amount += quantity * priceDifference;
+      }
+    
+      moneyRetained = (totalSupplierProfit * entry.moneyRetained.percentage) / 100;
+    
+      // Ensure debt and moneyRetained are initialized
+      if (!entry.debt) {
+        entry.debt = {};
+      }
+      if (!entry.moneyRetained) {
+        entry.moneyRetained = {};
+      }
+    
+      // Store old values
+      const oldDebtAmount = entry.debt.amount || 0;
+      const oldDebtPaid = entry.debt.paid || 0;
+      const oldMoneyRetained = entry.moneyRetained.amount || 0;
+
+      // Update with new values
+      entry.debt.amount = entry.supplier.debtAmount - debtPaid;
+      entry.debt.paid = debtPaid;
+      entry.moneyRetained.amount = moneyRetained;
+    
+      // Calculate differences
+      const debtAmountDifference = entry.debt.amount - oldDebtAmount;
+      const debtPaidDifference = entry.debt.paid - oldDebtPaid;
+      const moneyRetainedDifference = entry.moneyRetained.amount - oldMoneyRetained;
+
+      // Update totals
+      totalDebtPaid += debtPaidDifference;
+      totalMoneyRetained += moneyRetainedDifference;
+
+      // Save each entry sequentially
+      await entry.save();
+    }
+    
+    // Update supplier data
+    const supplierUpdates = area.suppliers.map(async supplierId => {
+      const supplier = await Supplier.findById(supplierId);
+      if (supplier) {
+        supplier.debtAmount -= totalDebtPaid; // Deduct the total debt paid from the supplier's debt amount
+        supplier.debtPaidAmount += totalDebtPaid;
+        supplier.moneyRetainedAmount += totalMoneyRetained;
+        return supplier.save();
+      }
+    });
+    
+    // Execute all supplier updates
+    await Promise.all(supplierUpdates);
+
     await area.save();
 
     const successMessage = supplierSlug

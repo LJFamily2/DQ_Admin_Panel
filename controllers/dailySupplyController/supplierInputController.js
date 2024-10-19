@@ -105,19 +105,21 @@ async function renderInputDataPage(req, res) {
 
 async function addData(req, res) {
   req.body = trimStringFields(req.body);
-  console.log(req.body)
+  console.log(req.body);
+  
   try {
     // Get today's date at midnight
     const today = new Date();
     today.setUTCHours(0, 0, 0, 0);
-    console.log(today)
+    console.log(today);
+    
+    // Find the DailySupply entry by ID
+    const dailySupply = await DailySupply.findById(req.params.id);
     
     // Check the number of entries for today
-    const dailySupply = await DailySupply.findById(req.params.id);
     const todayEntries = dailySupply.data.filter(
-      entry => new Date(entry.date).toDateString() === today.toDateString(),
+      entry => new Date(entry.date).toDateString() === today.toDateString()
     );
-
     if (todayEntries.length >= dailySupply.limitData) {
       return handleResponse(
         req,
@@ -125,10 +127,11 @@ async function addData(req, res) {
         400,
         'fail',
         'Đã đạt giới hạn dữ liệu hàng ngày!',
-        req.headers.referer,
+        req.headers.referer
       );
     }
-
+    
+    // Find the existing supplier by name
     const existedSupplier = await Supplier.findOne({ name: req.body.supplier });
     if (!existedSupplier) {
       return handleResponse(
@@ -137,47 +140,52 @@ async function addData(req, res) {
         400,
         'fail',
         'Nhà vườn không tồn tại!',
-        req.headers.referer,
+        req.headers.referer
       );
     }
 
-    // Prepare the input data
-    const rawMaterials = req.body.name.map((name, index) => {
-      return {
-        name: name,
-        percentage: name === 'Mủ nước' ? convertToDecimal(req.body.percentage) : 0,
-        ratioSplit: existedSupplier.ratioRubberSplit,
-        quantity: convertToDecimal(req.body.quantity[index] || 0),
-        price: 0, 
-      };
-    });
+    // Prepare raw material entries
+    const rawMaterials = req.body.name.map((name, index) => ({
+      name: name,
+      percentage: name === 'Mủ nước' ? convertToDecimal(req.body.percentage) : 0,
+      ratioSplit: existedSupplier.ratioRubberSplit,
+      quantity: convertToDecimal(req.body.quantity[index] || 0),
+      price: 0, 
+    }));
+
+    // Prepare the debt and money retained data
+    const debtAmount = 0;
+    const retainedAmount = 0;
 
     const debt = { 
       date: today,
-      amount: 0,
-      paid: 0
+      debtAmount: debtAmount,
+      debtPaidAmount: 0,
+      referenceData: dailySupply._id // Reference to DailySupply entry
     };
 
     const moneyRetained = {
       date: today,
+      retainedAmount: retainedAmount,
       percentage: existedSupplier.moneyRetainedPercentage,
-      amount: 0
+      referenceData: dailySupply._id // Reference to DailySupply entry
     };
 
+    // Create input data for DailySupply
     const inputedData = {
       date: today,
       rawMaterial: rawMaterials,
       supplier: existedSupplier._id,
-      debt,
-      moneyRetained,
-      note: trimStringFields(req.body.note) || '', 
+      note: trimStringFields(req.body.note) || '',
+      debt, 
+      moneyRetained
     };
 
     // Save the new data to DailySupply
     const newData = await DailySupply.findByIdAndUpdate(
       req.params.id,
       { $push: { data: inputedData } },
-      { new: true, upsert: true },
+      { new: true, upsert: true }
     );
 
     if (!newData) {
@@ -187,29 +195,29 @@ async function addData(req, res) {
         404,
         'fail',
         'Thêm dữ liệu thất bại!',
-        req.headers.referer,
+        req.headers.referer
       );
     }
 
-    // Extract the IDs of the newly created debt and moneyRetained objects
+    // Extract the newly created debt and moneyRetained data
     const newEntry = newData.data[newData.data.length - 1];
-    const debtId = newEntry.debt._id;
-    const moneyRetainedId = newEntry.moneyRetained._id;
+    const newDebt = newEntry.debt;
+    const newMoneyRetained = newEntry.moneyRetained;
 
-    // Update the supplier's debtHistory and moneyRetainedHistory with the new IDs
-    existedSupplier.debtHistory.push(debtId);
-    existedSupplier.moneyRetainedHistory.push(moneyRetainedId);
+    // Push new debt and money retained entries into supplier's history
+    existedSupplier.debtHistory.push(newDebt);
+    existedSupplier.moneyRetainedHistory.push(newMoneyRetained);
 
-    // Save the updated supplier
+    // Save the updated supplier data
     const updateSupplierData = await existedSupplier.save();
-    if ( !updateSupplierData){
+    if (!updateSupplierData) {
       return handleResponse(
         req,
         res,
         404,
         'fail',
         'Thêm dữ liệu vào nhà vườn thất bại!',
-        req.headers.referer,
+        req.headers.referer
       );
     }
 
@@ -219,13 +227,15 @@ async function addData(req, res) {
       200,
       'success',
       'Thêm dữ liệu thành công!',
-      req.headers.referer,
+      req.headers.referer
     );
+
   } catch (error) {
     console.error('Error adding suppliers:', error);
     res.status(500).render('partials/500', { layout: false });
   }
 }
+
 
 async function updateSupplierData(req, res) {
   try {

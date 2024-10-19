@@ -11,7 +11,7 @@ function updatePricesAndRatios(data, start, end, prices, ratios, supplierId = nu
     if (entryDate >= start && entryDate <= end && (!supplierId || entry.supplier.equals(supplierId))) {
       entry.rawMaterial = entry.rawMaterial.map(material => {
         const priceKey = priceMap[material.name];
-        if (priceKey && prices[priceKey] > 0) {
+        if (priceKey ) {
           material.price = prices[priceKey];
         }
         
