@@ -105,6 +105,7 @@ async function renderInputDataPage(req, res) {
 
 async function addData(req, res) {
   req.body = trimStringFields(req.body);
+  console.log(req.body)
   try {
     // Get today's date at midnight
     const today = new Date();
@@ -143,7 +144,7 @@ async function addData(req, res) {
     const rawMaterials = req.body.name.map((name, index) => {
       return {
         name: name,
-        percentage: name === 'Mủ nước' ? convertToDecimal(req.body.percentage[index]) : 0,
+        percentage: name === 'Mủ nước' ? convertToDecimal(req.body.percentage) : 0,
         ratioSplit: existedSupplier.ratioRubberSplit,
         quantity: convertToDecimal(req.body.quantity[index] || 0),
         price: 0, 
