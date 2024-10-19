@@ -110,19 +110,6 @@ async function updatePricesAndRatios(req, res) {
       supplierId,
     );
 
-    // Collect all save operations
-    const saveOperations = area.data.map(async (dataEntry) => {
-      const supplier = await Supplier.findById(dataEntry.supplier);
-      if (supplier) {
-        supplier.purchasedPrice = prices[dataEntry.rawMaterial.name];
-        supplier.ratioRubberSplit = ratios[dataEntry.rawMaterial.name];
-        return supplier.save();
-      }
-    });
-
-    // Execute all save operations
-    await Promise.all(saveOperations);
-
     await area.save();
 
     const successMessage = supplierSlug

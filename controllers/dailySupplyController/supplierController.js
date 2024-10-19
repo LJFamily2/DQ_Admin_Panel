@@ -26,7 +26,9 @@ async function renderDetailPage(req, res) {
     const hamLuongAccounts = await AccountModel.find({ role: 'Hàm lượng' });
 
     // Find the manager supplier
-    const managerSupplier = area.suppliers.find(supplier => supplier.manager === true);
+    const managerSupplier = area.suppliers.find(
+      supplier => supplier.manager === true,
+    );
 
     res.render('src/dailySupplyDetailPage', {
       layout: './layouts/defaultLayout',
@@ -37,7 +39,7 @@ async function renderDetailPage(req, res) {
       endDate,
       user: req.user,
       messages: req.flash(),
-      managerSupplier, 
+      managerSupplier,
     });
   } catch (err) {
     console.log(err);
@@ -87,8 +89,12 @@ async function updateArea(req, res) {
     };
 
     // Only update slug if areaName has changed and is a non-empty string
-    if (typeof areaName === 'string' && areaName.trim() !== '' && areaName !== currentArea.name) {
-      updateFields.slug = slugify(areaName, {lower: true, trim: true});
+    if (
+      typeof areaName === 'string' &&
+      areaName.trim() !== '' &&
+      areaName !== currentArea.name
+    ) {
+      updateFields.slug = slugify(areaName, { lower: true, trim: true });
     }
 
     const newData = await DailySupply.findByIdAndUpdate(id, updateFields, {
@@ -110,7 +116,7 @@ async function updateArea(req, res) {
       200,
       'success',
       'Cập nhật khu vực thành công',
-      `/nhap-du-lieu/${newData.slug}`
+      `/nhap-du-lieu/${newData.slug}`,
     );
   } catch (error) {
     console.error('Error updating area:', error);
@@ -217,7 +223,9 @@ async function editSupplier(req, res) {
     const existingSupplier = await Supplier.findById(req.params.id);
     let newSlug = existingSupplier.supplierSlug;
     if (req.body.code && req.body.code !== existingSupplier.code) {
-      newSlug = `${req.body.code}-${Math.floor(100000 + Math.random() * 900000)}`;
+      newSlug = `${req.body.code}-${Math.floor(
+        100000 + Math.random() * 900000,
+      )}`;
     }
 
     const supplier = await Supplier.findByIdAndUpdate(
@@ -228,7 +236,7 @@ async function editSupplier(req, res) {
         ratioSumSplit: req.body.ratioSumSplit
           ? req.body.ratioSumSplit.replace(',', '.')
           : 0,
-        purchasedPrice: convertToDecimal(req.body.purchasedPrice),
+        purchasedAreaPrice: convertToDecimal(req.body.purchasedAreaPrice),
         areaDeposit: convertToDecimal(req.body.areaDeposit),
       },
       { new: true },
@@ -245,9 +253,10 @@ async function editSupplier(req, res) {
     }
 
     // Determine the redirect URL based on whether the slug has changed
-    const redirectUrl = newSlug !== existingSupplier.supplierSlug
-      ? req.headers.referer.replace(existingSupplier.supplierSlug, newSlug)
-      : req.headers.referer;
+    const redirectUrl =
+      newSlug !== existingSupplier.supplierSlug
+        ? req.headers.referer.replace(existingSupplier.supplierSlug, newSlug)
+        : req.headers.referer;
 
     return handleResponse(
       req,
@@ -255,7 +264,7 @@ async function editSupplier(req, res) {
       200,
       'success',
       'Sửa thông tin nhà vườn thành công!',
-      redirectUrl
+      redirectUrl,
     );
   } catch (error) {
     console.error('Error editing supplier:', error);

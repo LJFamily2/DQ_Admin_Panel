@@ -5,7 +5,7 @@ mongoose.plugin(slug);
 // Debt Schema
 const debtSchema = new mongoose.Schema({
   date: { type: Date, required: true },
-  amount: { type: Number},
+  amount: { type: Number },
   paid: { type: Number },
 });
 
@@ -20,7 +20,7 @@ const moneyRetainedSchema = new mongoose.Schema({
 const supplierSchema = new mongoose.Schema({
   name: { type: String, required: true },
   code: { type: String, required: true },
-  supplierAddress: { type: String, },
+  supplierAddress: { type: String },
   phone: { type: String, required: true },
   identification: { type: String, required: true },
   issueDate: { type: String, required: true },
@@ -29,18 +29,27 @@ const supplierSchema = new mongoose.Schema({
   ratioSumSplit: { type: Number, default: 100 },
   supplierSlug: {
     type: String,
-    default: function() {
+    default: function () {
       return `${this.code}-${Math.floor(100000 + Math.random() * 900000)}`;
     },
   },
-  purchasedPrice: { type: Number, default: 0 },
+  purchasedAreaPrice: { type: Number, default: 0 },
   areaDeposit: { type: Number, default: 0 },
-  debtAmount: { type: Number, default: function () {return this.purchasedAreaDimension *  this.purchasedPrice - this.areaDeposit} },
+  debtAmount: {
+    type: Number,
+    default: function () {
+      return (
+        this.purchasedAreaDimension * this.purchasedAreaPrice - this.areaDeposit
+      );
+    },
+  },
   debtPaidAmount: { type: Number, default: 0 },
   moneyRetainedAmount: { type: Number, default: 0 },
   moneyRetainedPercentage: { type: Number, default: 0 },
   debtHistory: [{ type: mongoose.Schema.Types.ObjectId, ref: 'DailySupply' }],
-  moneyRetainedHistory: [{ type: mongoose.Schema.Types.ObjectId, ref: 'DailySupply' }],
+  moneyRetainedHistory: [
+    { type: mongoose.Schema.Types.ObjectId, ref: 'DailySupply' },
+  ],
   purchasedAreaDimension: { type: Number, default: 0 },
   areaDuration: {
     start: { type: Date, required: true },
@@ -61,7 +70,11 @@ const rawMaterialSchema = new mongoose.Schema({
 const dataSchema = new mongoose.Schema({
   date: { type: Date, required: true },
   rawMaterial: [rawMaterialSchema],
-  supplier: { type: mongoose.Schema.Types.ObjectId, ref: 'Supplier', required: true },
+  supplier: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Supplier',
+    required: true,
+  },
   debt: debtSchema,
   moneyRetained: moneyRetainedSchema,
   note: { type: String },
@@ -77,7 +90,7 @@ const dailySupplySchema = new mongoose.Schema({
   areaDimension: { type: Number },
   remainingAreaDimension: {
     type: Number,
-    default: function() {
+    default: function () {
       return this.areaDimension;
     },
   },
@@ -92,68 +105,6 @@ const dailySupplySchema = new mongoose.Schema({
 
 const Supplier = mongoose.model('Supplier', supplierSchema);
 const DailySupply = mongoose.model('DailySupply', dailySupplySchema);
-
-// Middleware to calculate debt and money retained
-dataSchema.pre('save', async function(next) {
-  let totalSupplierProfit = 0;
-  let debtPaid = 0;
-  let moneyRetained = 0;
-
-  // Ensure supplier is populated
-  if (!this.supplier || !this.supplier.moneyRetainedPercentage) {
-    const supplier = await mongoose.model('Supplier').findById(this.supplier);
-    if (!supplier) {
-      return next(new Error('Supplier not found'));
-    }
-    this.supplier = supplier;
-  }
-
-  this.rawMaterial.forEach(material => {
-    const { name, quantity, percentage, ratioSplit, price } = material;
-    console.log(`Material: ${name}, Quantity: ${quantity}, Percentage: ${percentage}, RatioSplit: ${ratioSplit}, Price: ${price}`);
-    
-    if (name === 'Mủ nước') {
-      const profitContribution = quantity * (percentage / 100) * (ratioSplit / 100) * price;
-      const debtContribution = quantity * (percentage / 100) * ((100 - ratioSplit) / 100) * price;
-      totalSupplierProfit += profitContribution;
-      debtPaid += debtContribution;
-      console.log(`Mủ nước - Profit Contribution: ${profitContribution}, Debt Contribution: ${debtContribution}`);
-    } else {
-      const profitContribution = quantity * (ratioSplit / 100) * price;
-      const debtContribution = quantity * ((100 - ratioSplit) / 100) * price;
-      totalSupplierProfit += profitContribution;
-      debtPaid += debtContribution;
-      console.log(`Other Material - Profit Contribution: ${profitContribution}, Debt Contribution: ${debtContribution}`);
-    }
-  });
-
-  moneyRetained = totalSupplierProfit * this.moneyRetained.percentage / 100;
-
-  // Ensure this.debt is initialized
-  if (!this.debt) {
-    this.debt = {};
-  }
-
-  // Ensure this.moneyRetained is initialized
-  if (!this.moneyRetained) {
-    this.moneyRetained = {};
-  }
-
-  console.log(`Total Supplier Profit: ${totalSupplierProfit}, Debt Paid: ${debtPaid}, Money Retained: ${moneyRetained}`);
-
-  console.log(this.supplier.debtAmount)
-
-  this.debt.amount = this.supplier.debtAmount - debtPaid;
-  this.debt.paid = debtPaid;
-  this.moneyRetained.amount = moneyRetained;
-
-  // Update supplier's debt amount and save
-  this.supplier.debtAmount = this.debt.amount;
-  this.supplier.moneyRetainedAmount += debtPaid;
-  await this.supplier.save();
-
-  next();
-});
 
 module.exports = {
   Supplier,

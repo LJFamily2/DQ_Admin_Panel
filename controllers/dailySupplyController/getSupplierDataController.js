@@ -19,8 +19,8 @@ module.exports = {
 // Get today date in UTC+7
 function getTodayDate() {
   const today = new Date();
-  today.setUTCHours(0,0,0,0);
-  console.log(today)
+  today.setUTCHours(0, 0, 0, 0);
+  console.log(today);
   return today;
 }
 
@@ -338,66 +338,94 @@ async function getSupplierExportData(req, res, isArea) {
 
   function flattenData(data, isArea) {
     const formatNumber = num => (num > 0 ? num.toLocaleString('vi-VN') : '');
-  
-    const calculateMaterialData = (material) => {
-      if (!material) return { quantity: 0, ratioSplit: 0, price: 0, total: 0, afterSplit: 0 };
-  
+
+    const calculateMaterialData = material => {
+      if (!material)
+        return {
+          quantity: 0,
+          ratioSplit: 0,
+          price: 0,
+          total: 0,
+          afterSplit: 0,
+        };
+
       let quantity = 0;
       let total = 0;
       let ratioSplit = 0;
       let price = 0;
-  
+
       material.rawMaterial.forEach(raw => {
         quantity += raw.quantity || 0;
         ratioSplit += raw.ratioSplit || 0;
         if (raw.price) {
           price += raw.price;
-          total += (raw.name === 'Mủ nước' 
-            ? ((raw.quantity * (raw.percentage || 0) / 100) * (raw.ratioSplit || 0) / 100) * raw.price 
-            : ((raw.quantity * (raw.ratioSplit || 0)) / 100) * raw.price);
+          total +=
+            raw.name === 'Mủ nước'
+              ? ((((raw.quantity * (raw.percentage || 0)) / 100) *
+                  (raw.ratioSplit || 0)) /
+                  100) *
+                raw.price
+              : ((raw.quantity * (raw.ratioSplit || 0)) / 100) * raw.price;
         }
       });
-  
+
       const count = material.count;
       return {
         quantity,
         ratioSplit: count > 0 ? ratioSplit / count : 0,
         price: count > 0 ? price / count : 0,
         total,
-        afterSplit: (quantity * (ratioSplit / 100)) || 0,
+        afterSplit: quantity * (ratioSplit / 100) || 0,
       };
     };
-  
+
     return data.map((item, index) => {
       const rawMaterials = item.rawMaterials.reduce((acc, rawMaterialArray) => {
         rawMaterialArray.forEach(raw => {
           if (!acc[raw.name]) {
-            acc[raw.name] = { quantity: 0, percentage: 0, price: 0, ratioSplit: 0, total: 0, count: 0, rawMaterial: [] };
+            acc[raw.name] = {
+              quantity: 0,
+              percentage: 0,
+              price: 0,
+              ratioSplit: 0,
+              total: 0,
+              count: 0,
+              rawMaterial: [],
+            };
           }
           acc[raw.name].quantity += raw.quantity || 0;
           acc[raw.name].ratioSplit += raw.ratioSplit || 0;
           acc[raw.name].count++;
           if (raw.price) {
             acc[raw.name].price += raw.price;
-            acc[raw.name].total += (raw.name === 'Mủ nước' 
-              ? ((raw.quantity * (raw.percentage || 0) / 100) * (raw.ratioSplit || 0) / 100) * raw.price 
-              : ((raw.quantity * (raw.ratioSplit || 0)) / 100) * raw.price);
+            acc[raw.name].total +=
+              raw.name === 'Mủ nước'
+                ? ((((raw.quantity * (raw.percentage || 0)) / 100) *
+                    (raw.ratioSplit || 0)) /
+                    100) *
+                  raw.price
+                : ((raw.quantity * (raw.ratioSplit || 0)) / 100) * raw.price;
           }
           acc[raw.name].rawMaterial.push(raw);
         });
         return acc;
       }, {});
-  
+
       const no = index + 1;
       const supplier = item.supplier.name || '';
       const code = isArea ? item.supplier.code || '' : undefined;
-  
+
       const muQuyKhoData = calculateMaterialData(rawMaterials['Mủ nước']);
       const muTapData = calculateMaterialData(rawMaterials['Mủ tạp']);
       const muKeData = calculateMaterialData(rawMaterials['Mủ ké']);
       const muDongData = calculateMaterialData(rawMaterials['Mủ đông']);
-  
-      const totalSum = formatNumber(Object.values(rawMaterials).reduce((sum, material) => sum + (material?.total || 0), 0));
+
+      const totalSum = formatNumber(
+        Object.values(rawMaterials).reduce(
+          (sum, material) => sum + (material?.total || 0),
+          0,
+        ),
+      );
       const note = item.notes.filter(Boolean).join(', ');
       const signature = '';
       return {
@@ -405,8 +433,11 @@ async function getSupplierExportData(req, res, isArea) {
         supplier,
         ...(isArea && { code }),
         areaPurchased: item.supplier.purchasedAreaDimension,
-        areaPrice: formatNumber(item.supplier.purchasedPrice),
-        areaTotal: formatNumber(item.supplier.purchasedAreaDimension * item.supplier.purchasedPrice),
+        areaPrice: formatNumber(item.supplier.purchasedAreaPrice),
+        areaTotal: formatNumber(
+          item.supplier.purchasedAreaDimension *
+            item.supplier.purchasedAreaPrice,
+        ),
         areaDeposit: formatNumber(item.supplier.areaDeposit),
         muQuyKhoQuantity: formatNumber(muQuyKhoData.quantity),
         muQuyKhoSplit: formatNumber(muQuyKhoData.ratioSplit),
