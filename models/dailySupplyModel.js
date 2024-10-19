@@ -93,6 +93,45 @@ const dailySupplySchema = new mongoose.Schema({
 const Supplier = mongoose.model('Supplier', supplierSchema);
 const DailySupply = mongoose.model('DailySupply', dailySupplySchema);
 
+// Middleware to calculate debt and money retained
+dataSchema.pre('save', async function(next) {
+  let totalSupplierProfit = 0;
+  let debtPaid = 0;
+  let moneyRetained = 0;
+
+  // Ensure supplier is populated
+  if (!this.supplier || !this.supplier.moneyRetainedPercentage) {
+    const supplier = await mongoose.model('Supplier').findById(this.supplier);
+    if (!supplier) {
+      return next(new Error('Supplier not found'));
+    }
+    this.supplier = supplier;
+  }
+
+  this.rawMaterial.forEach(material => {
+    const { name, quantity, percentage, ratioSplit, price } = material;
+    if (name === 'Mủ nước') {
+      totalSupplierProfit += quantity * (percentage / 100) * (ratioSplit / 100) * price;
+      debtPaid += quantity * (percentage / 100) * (100 - (ratioSplit / 100)) * price;
+    } else {
+      totalSupplierProfit += quantity * (ratioSplit / 100) * price;
+      debtPaid += quantity * (100 - (ratioSplit / 100)) * price;
+    }
+  });
+
+  moneyRetained = totalSupplierProfit * this.moneyRetained.percentage / 100;
+
+  this.debt.amount = this.supplier.debtAmount - debtPaid;
+  this.debt.paid = debtPaid;
+  this.moneyRetained.amount = moneyRetained;
+
+  // Update supplier's debt amount and save
+  this.supplier.debtAmount = this.debt.amount;
+  await this.supplier.save();
+
+  next();
+});
+
 module.exports = {
   Supplier,
   DailySupply,

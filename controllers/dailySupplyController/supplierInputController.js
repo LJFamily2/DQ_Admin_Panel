@@ -113,7 +113,7 @@ async function addData(req, res) {
     // Check the number of entries for today
     const dailySupply = await DailySupply.findById(req.params.id);
     const todayEntries = dailySupply.data.filter(
-      entry => new Date(entry.date) === today,
+      entry => new Date(entry.date).toDateString() === today.toDateString(),
     );
 
     if (todayEntries.length >= dailySupply.limitData) {
@@ -143,23 +143,36 @@ async function addData(req, res) {
     const rawMaterials = req.body.name.map((name, index) => {
       return {
         name: name,
-        percentage: name === 'Mủ nước' ? convertToDecimal(req.body.percentage) : 0,
+        percentage: name === 'Mủ nước' ? convertToDecimal(req.body.percentage[index]) : 0,
         ratioSplit: existedSupplier.ratioRubberSplit,
-        quantity: convertToDecimal(req.body.quantity[index] || 0), 
+        quantity: convertToDecimal(req.body.quantity[index] || 0),
+        price: 0, 
       };
     });
+
+    const debt = { 
+      date: today,
+    };
+
+    const moneyRetained = {
+      date: today,
+      percentage: existedSupplier.moneyRetainedPercentage,
+    };
 
     const inputedData = {
       date: today,
       rawMaterial: rawMaterials,
       supplier: existedSupplier._id,
+      debt,
+      moneyRetained,
       note: trimStringFields(req.body.note) || '', 
     };
 
+    // Save the new data to DailySupply
     const newData = await DailySupply.findByIdAndUpdate(
       req.params.id,
       { $push: { data: inputedData } },
-      { new: true },
+      { new: true, upsert: true },
     );
 
     if (!newData) {
@@ -172,6 +185,29 @@ async function addData(req, res) {
         req.headers.referer,
       );
     }
+
+    // Extract the IDs of the newly created debt and moneyRetained objects
+    const newEntry = newData.data[newData.data.length - 1];
+    const debtId = newEntry.debt._id;
+    const moneyRetainedId = newEntry.moneyRetained._id;
+
+    // Update the supplier's debtHistory and moneyRetainedHistory with the new IDs
+    existedSupplier.debtHistory.push(debtId);
+    existedSupplier.moneyRetainedHistory.push(moneyRetainedId);
+
+    // Save the updated supplier
+    const updateSupplierData = await existedSupplier.save();
+    if ( !updateSupplierData){
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Thêm dữ liệu vào nhà vườn thất bại!',
+        req.headers.referer,
+      );
+    }
+
     return handleResponse(
       req,
       res,
@@ -278,7 +314,38 @@ async function deleteSupplierData(req, res) {
   try {
     const { id } = req.params;
 
-    // Find and delete the sub-document by ID
+    // Find the DailySupply document containing the sub-document to be deleted
+    const dailySupply = await DailySupply.findOne({ 'data._id': id });
+    if (!dailySupply) {
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Không tìm thấy dữ liệu!',
+        req.headers.referer,
+      );
+    }
+
+    // Find the sub-document to be deleted
+    const subDocument = dailySupply.data.id(id);
+    if (!subDocument) {
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Không tìm thấy dữ liệu!',
+        req.headers.referer,
+      );
+    }
+
+    // Extract the supplier ID, debt ID, and moneyRetained ID
+    const supplierId = subDocument.supplier;
+    const debtId = subDocument.debt._id;
+    const moneyRetainedId = subDocument.moneyRetained._id;
+
+    // Remove the sub-document from the DailySupply document
     const updatedData = await DailySupply.findOneAndUpdate(
       { 'data._id': id },
       {
@@ -294,6 +361,29 @@ async function deleteSupplierData(req, res) {
         404,
         'fail',
         'Xóa dữ liệu thất bại!',
+        req.headers.referer,
+      );
+    }
+
+    // Update the supplier's debtHistory and moneyRetainedHistory
+    const updateSupplierData = await Supplier.findByIdAndUpdate(
+      supplierId,
+      {
+        $pull: {
+          debtHistory: debtId,
+          moneyRetainedHistory: moneyRetainedId,
+        },
+      },
+      { new: true }
+    );
+
+    if (!updateSupplierData) {
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Xóa dữ liệu cho nhà vườn thất bại!',
         req.headers.referer,
       );
     }
