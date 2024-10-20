@@ -56,6 +56,10 @@ const supplierSchema = new mongoose.Schema({
     start: { type: Date, required: true },
     end: { type: Date, required: true },
   },
+  supplierSlug:{
+    type: String,
+    default: () => `${this.code}-${Math.random().toString(36).substr(2, 6)}`
+  }
 }, { toJSON: { virtuals: true }, toObject: { virtuals: true } });
 
 // Virtual field for calculating total debt dynamically
