@@ -272,7 +272,49 @@ async function updateSupplierData(req, res) {
       dailySupply.data[dataIndex].supplier = supplierDoc._id;
     }
 
-    await dailySupply.save();
+    // Calculate and update debt and money retained
+    let totalSupplierProfit = 0;
+    let debtPaid = 0;
+    let moneyRetained = 0;
+
+    for (const material of updatedRawMaterial) {
+      const { name, quantity, percentage, ratioSplit, price } = material;
+
+      if (name === 'Mủ nước') {
+        totalSupplierProfit += quantity * (percentage / 100) * (ratioSplit / 100) * price;
+        debtPaid += quantity * (percentage / 100) * ((100 - ratioSplit) / 100) * price;
+      } else {
+        totalSupplierProfit += quantity * (ratioSplit / 100) * price;
+        debtPaid += quantity * ((100 - ratioSplit) / 100) * price;
+      }
+    }
+
+    moneyRetained = (totalSupplierProfit * dailySupply.data[dataIndex].moneyRetained.percentage) / 100;
+
+    // Ensure debt and moneyRetained are initialized
+    if (!dailySupply.data[dataIndex].debt) {
+      dailySupply.data[dataIndex].debt = { date: new Date(date), debtPaidAmount: 0 };
+    }
+    if (!dailySupply.data[dataIndex].moneyRetained) {
+      dailySupply.data[dataIndex].moneyRetained = { date: new Date(date), retainedAmount: 0, percentage: 0 };
+    }
+
+    // Store old values
+    const oldDebtPaidAmount = dailySupply.data[dataIndex].debt.debtPaidAmount || 0;
+    const oldMoneyRetainedAmount = dailySupply.data[dataIndex].moneyRetained.retainedAmount || 0;
+
+    // Calculate differences
+    const debtPaidDifference = debtPaid - oldDebtPaidAmount;
+    const moneyRetainedDifference = moneyRetained - oldMoneyRetainedAmount;
+
+    // Update with new values
+    dailySupply.data[dataIndex].debt.debtPaidAmount += debtPaidDifference;
+    dailySupply.data[dataIndex].moneyRetained.retainedAmount += moneyRetainedDifference;
+
+    const updatedDailySupply = await dailySupply.save();
+    if(!updatedDailySupply){
+      return handleResponse(req, res, 400, 'fail', 'Cập nhật dữ liệu thất bại!', req.headers.referer);
+    }
 
     return handleResponse(req, res, 200, 'success', 'Cập nhật dữ liệu thành công!', req.headers.referer);
   } catch (err) {
