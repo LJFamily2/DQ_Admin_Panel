@@ -4,6 +4,7 @@ const trimStringFields = require('../utils/trimStringFields');
 const handleResponse = require('../utils/handleResponse');
 const convertToDecimal = require('../utils/convertToDecimal');
 const updatePricesAndRatiosHelper = require('../utils/updatePricesAndRatiosHelper');
+const calculateFinancials = require('../dailySupplyController/helper/calculateFinancials');
 
 module.exports = {
   renderPage,
@@ -31,6 +32,7 @@ async function renderPage(req, res) {
     res.status(500).render('partials/500', { layout: false });
   }
 }
+
 
 async function updatePricesAndRatios(req, res) {
   req.body = trimStringFields(req.body);
@@ -112,26 +114,11 @@ async function updatePricesAndRatios(req, res) {
 
     // Calculate and update debt and money retained for each data entry
     for (const entry of area.data) {
-      let totalSupplierProfit = 0;
-      let debtPaid = 0;
-      let moneyRetained = 0;
-    
-      for (const material of entry.rawMaterial) {
-        const { name, quantity, percentage, ratioSplit, price } = material;
-    
-        if (name === 'Mủ nước') {
-           totalSupplierProfit +=
-            quantity * (percentage / 100) * (ratioSplit / 100) * price;
-           debtPaid +=
-            quantity * (percentage / 100) * ((100 - ratioSplit) / 100) * price;
-        } else {
-           totalSupplierProfit += quantity * (ratioSplit / 100) * price;
-           debtPaid += quantity * ((100 - ratioSplit) / 100) * price;
-        }
-      }
-    
-      moneyRetained = (totalSupplierProfit * entry.moneyRetained.percentage) / 100;
-    
+      const { totalSupplierProfit, debtPaid, moneyRetained } = calculateFinancials(
+        entry.rawMaterial,
+        entry.moneyRetained.percentage
+      );
+
       // Ensure debt and moneyRetained are initialized
       if (!entry.debt) {
         entry.debt = { date: new Date(), debtPaidAmount: 0 };
@@ -139,7 +126,7 @@ async function updatePricesAndRatios(req, res) {
       if (!entry.moneyRetained) {
         entry.moneyRetained = { date: new Date(), retainedAmount: 0, percentage: 0 };
       }
-    
+
       // Store old values
       const oldDebtPaidAmount = entry.debt.debtPaidAmount || 0;
       const oldMoneyRetainedAmount = entry.moneyRetained.retainedAmount || 0;
@@ -152,7 +139,7 @@ async function updatePricesAndRatios(req, res) {
       entry.debt.debtPaidAmount += debtPaidDifference;
       entry.moneyRetained.retainedAmount += moneyRetainedDifference;
     }
-    
+
     const saveData = await area.save();
     if (!saveData) {
       return handleResponse(

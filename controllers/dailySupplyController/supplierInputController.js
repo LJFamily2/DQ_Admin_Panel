@@ -3,6 +3,7 @@ const { Supplier, DailySupply } = require('../../models/dailySupplyModel');
 const handleResponse = require('../utils/handleResponse');
 const convertToDecimal = require('../utils/convertToDecimal');
 const trimStringFields = require('../utils/trimStringFields');
+const calculateFinancials = require('../dailySupplyController/helper/calculateFinancials');
 
 module.exports = {
   // User side for input data
@@ -193,6 +194,7 @@ async function addData(req, res) {
 }
 
 
+
 async function updateSupplierData(req, res) {
   try {
     const { id } = req.params;
@@ -273,31 +275,10 @@ async function updateSupplierData(req, res) {
     }
 
     // Calculate and update debt and money retained
-    let totalSupplierProfit = 0;
-    let debtPaid = 0;
-    let moneyRetained = 0;
-
-    for (const material of updatedRawMaterial) {
-      const { name, quantity, percentage, ratioSplit, price } = material;
-
-      if (name === 'Mủ nước') {
-        totalSupplierProfit += quantity * (percentage / 100) * (ratioSplit / 100) * price;
-        debtPaid += quantity * (percentage / 100) * ((100 - ratioSplit) / 100) * price;
-      } else {
-        totalSupplierProfit += quantity * (ratioSplit / 100) * price;
-        debtPaid += quantity * ((100 - ratioSplit) / 100) * price;
-      }
-    }
-
-    moneyRetained = (totalSupplierProfit * dailySupply.data[dataIndex].moneyRetained.percentage) / 100;
-
-    // Ensure debt and moneyRetained are initialized
-    if (!dailySupply.data[dataIndex].debt) {
-      dailySupply.data[dataIndex].debt = { date: new Date(date), debtPaidAmount: 0 };
-    }
-    if (!dailySupply.data[dataIndex].moneyRetained) {
-      dailySupply.data[dataIndex].moneyRetained = { date: new Date(date), retainedAmount: 0, percentage: 0 };
-    }
+    const { debtPaid, moneyRetained } = calculateFinancials(
+      updatedRawMaterial,
+      dailySupply.data[dataIndex].moneyRetained.percentage
+    );
 
     // Store old values
     const oldDebtPaidAmount = dailySupply.data[dataIndex].debt.debtPaidAmount || 0;
@@ -312,7 +293,7 @@ async function updateSupplierData(req, res) {
     dailySupply.data[dataIndex].moneyRetained.retainedAmount += moneyRetainedDifference;
 
     const updatedDailySupply = await dailySupply.save();
-    if(!updatedDailySupply){
+    if (!updatedDailySupply) {
       return handleResponse(req, res, 400, 'fail', 'Cập nhật dữ liệu thất bại!', req.headers.referer);
     }
 
