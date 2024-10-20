@@ -151,12 +151,19 @@ async function updatePricesAndRatios(req, res) {
       // Update with new values
       entry.debt.debtPaidAmount += debtPaidDifference;
       entry.moneyRetained.retainedAmount += moneyRetainedDifference;
-      
-      // Save each entry sequentially
-      await entry.save();
     }
     
-    await area.save();
+    const saveData = await area.save();
+    if (!saveData) {
+      return handleResponse(
+        req,
+        res,
+        500,
+        'fail',
+        'Lỗi cập nhật dữ liệu!',
+        req.headers.referer,
+      );
+    }
 
     const successMessage = supplierSlug
       ? 'Cập nhật giá thành công cho nhà cung cấp'
