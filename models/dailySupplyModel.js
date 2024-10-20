@@ -6,7 +6,6 @@ mongoose.plugin(slug);
 const debtHistorySchema = new mongoose.Schema({
   date: { type: Date, required: true },
   debtPaidAmount: { type: Number, default: 0 },
-  referenceData: { type: mongoose.Schema.Types.ObjectId, ref: 'DailySupply' }, 
 });
 
 // Retained Money History Schema (not exported)
@@ -14,7 +13,6 @@ const retainedHistorySchema = new mongoose.Schema({
   date: { type: Date, required: true },
   retainedAmount: { type: Number, required: true },
   percentage: { type: Number, default: 0 }, 
-  referenceData: { type: mongoose.Schema.Types.ObjectId, ref: 'DailySupply' },
 });
 
 // Raw Material Schema (with Finalized Price)
@@ -32,8 +30,8 @@ const dataSchema = new mongoose.Schema({
   rawMaterial: [rawMaterialSchema],
   supplier: { type: mongoose.Schema.Types.ObjectId, ref: 'Supplier'},
   note: { type: String },
-  debt: { type: mongoose.Schema.Types.ObjectId, ref: 'DebtHistory' },
-  moneyRetained: { type: mongoose.Schema.Types.ObjectId, ref: 'RetainedHistory' },
+  debt:  debtHistorySchema ,
+  moneyRetained: retainedHistorySchema ,
 });
 
 // Supplier Schema
@@ -50,8 +48,9 @@ const supplierSchema = new mongoose.Schema({
   purchasedAreaPrice: { type: Number, default: 0 },
   areaDeposit: { type: Number, default: 0 },
   initialDebtAmount: {type: Number, default: function() {return this.purchasedAreaDimension * this.purchasedAreaPrice - this.areaDeposit} },
-  debtHistory: [{ debtHistorySchema }],
-  moneyRetainedHistory: [{ retainedHistorySchema }],
+  debtHistory: [ {type: mongoose.Schema.Types.ObjectId, ref: 'DailySupply'} ],
+  moneyRetainedHistory: [ {type: mongoose.Schema.Types.ObjectId, ref: 'DailySupply'} ],
+  moneyRetainedPercentage: {type: Number, default: 0},
   purchasedAreaDimension: { type: Number, default: 0 },
   areaDuration: {
     start: { type: Date, required: true },

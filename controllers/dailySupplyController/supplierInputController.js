@@ -1,5 +1,5 @@
+const mongoose = require('mongoose');
 const { Supplier, DailySupply } = require('../../models/dailySupplyModel');
-
 const handleResponse = require('../utils/handleResponse');
 const convertToDecimal = require('../utils/convertToDecimal');
 const trimStringFields = require('../utils/trimStringFields');
@@ -104,71 +104,53 @@ async function renderInputDataPage(req, res) {
 }
 
 async function addData(req, res) {
-  req.body = trimStringFields(req.body);
-  console.log(req.body);
-  
   try {
+    // Trim request body strings
+    req.body = trimStringFields(req.body);
+
     // Get today's date at midnight
     const today = new Date();
     today.setUTCHours(0, 0, 0, 0);
-    console.log(today);
-    
+
     // Find the DailySupply entry by ID
     const dailySupply = await DailySupply.findById(req.params.id);
-    
+    if (!dailySupply) {
+      return handleResponse(req, res, 404, 'fail', 'Không tìm thấy DailySupply!', req.headers.referer);
+    }
+
     // Check the number of entries for today
     const todayEntries = dailySupply.data.filter(
       entry => new Date(entry.date).toDateString() === today.toDateString()
     );
     if (todayEntries.length >= dailySupply.limitData) {
-      return handleResponse(
-        req,
-        res,
-        400,
-        'fail',
-        'Đã đạt giới hạn dữ liệu hàng ngày!',
-        req.headers.referer
-      );
+      return handleResponse(req, res, 400, 'fail', 'Đã đạt giới hạn dữ liệu hàng ngày!', req.headers.referer);
     }
-    
+
     // Find the existing supplier by name
     const existedSupplier = await Supplier.findOne({ name: req.body.supplier });
     if (!existedSupplier) {
-      return handleResponse(
-        req,
-        res,
-        400,
-        'fail',
-        'Nhà vườn không tồn tại!',
-        req.headers.referer
-      );
+      return handleResponse(req, res, 400, 'fail', 'Nhà vườn không tồn tại!', req.headers.referer);
     }
 
     // Prepare raw material entries
     const rawMaterials = req.body.name.map((name, index) => ({
-      name: name,
-      percentage: name === 'Mủ nước' ? convertToDecimal(req.body.percentage) : 0,
+      name,
+      percentage: name === 'Mủ nước' ? convertToDecimal(req.body.percentage[index]) : 0,
       ratioSplit: existedSupplier.ratioRubberSplit,
       quantity: convertToDecimal(req.body.quantity[index] || 0),
-      price: 0, 
+      price: 0
     }));
 
-    // Prepare the debt and money retained data
-    const debtAmount = 0;
-    const retainedAmount = 0;
-
-    const debt = { 
+    // Create debt and retained money entries
+    const debt = {
       date: today,
-      debtAmount: debtAmount,
       debtPaidAmount: 0,
-      referenceData: dailySupply._id // Reference to DailySupply entry
     };
 
     const moneyRetained = {
       date: today,
-      retainedAmount: retainedAmount,
+      retainedAmount: 0,
       percentage: existedSupplier.moneyRetainedPercentage,
-      referenceData: dailySupply._id // Reference to DailySupply entry
     };
 
     // Create input data for DailySupply
@@ -177,8 +159,8 @@ async function addData(req, res) {
       rawMaterial: rawMaterials,
       supplier: existedSupplier._id,
       note: trimStringFields(req.body.note) || '',
-      debt, 
-      moneyRetained
+      debt: debt,  
+      moneyRetained: moneyRetained  
     };
 
     // Save the new data to DailySupply
@@ -189,46 +171,20 @@ async function addData(req, res) {
     );
 
     if (!newData) {
-      return handleResponse(
-        req,
-        res,
-        404,
-        'fail',
-        'Thêm dữ liệu thất bại!',
-        req.headers.referer
-      );
+      return handleResponse(req, res, 404, 'fail', 'Thêm dữ liệu thất bại!', req.headers.referer);
     }
 
-    // Extract the newly created debt and moneyRetained data
-    const newEntry = newData.data[newData.data.length - 1];
-    const newDebt = newEntry.debt;
-    const newMoneyRetained = newEntry.moneyRetained;
+    // Update the referenceData
+    const lastDataIndex = newData.data.length - 1;
+    const lastDataId = newData.data[lastDataIndex]._id;
 
-    // Push new debt and money retained entries into supplier's history
-    existedSupplier.debtHistory.push(newDebt);
-    existedSupplier.moneyRetainedHistory.push(newMoneyRetained);
+    existedSupplier.moneyRetainedHistory.push(lastDataId);
+    existedSupplier.debtHistory.push(lastDataId);
+    
+    await existedSupplier.save();
 
-    // Save the updated supplier data
-    const updateSupplierData = await existedSupplier.save();
-    if (!updateSupplierData) {
-      return handleResponse(
-        req,
-        res,
-        404,
-        'fail',
-        'Thêm dữ liệu vào nhà vườn thất bại!',
-        req.headers.referer
-      );
-    }
-
-    return handleResponse(
-      req,
-      res,
-      200,
-      'success',
-      'Thêm dữ liệu thành công!',
-      req.headers.referer
-    );
+    // Success response
+    return handleResponse(req, res, 200, 'success', 'Thêm dữ liệu thành công!', req.headers.referer);
 
   } catch (error) {
     console.error('Error adding suppliers:', error);
@@ -342,7 +298,7 @@ async function deleteSupplierData(req, res) {
       );
     }
 
-    // Find the sub-document to be deleted
+    // Extract the sub-document to be deleted
     const subDocument = dailySupply.data.id(id);
     if (!subDocument) {
       return handleResponse(
@@ -355,10 +311,7 @@ async function deleteSupplierData(req, res) {
       );
     }
 
-    // Extract the supplier ID, debt ID, and moneyRetained ID
     const supplierId = subDocument.supplier;
-    const debtAmount = subDocument.debt.amount;
-    const moneyRetainedAmount = subDocument.moneyRetained.amount;
 
     // Remove the sub-document from the DailySupply document
     const updatedData = await DailySupply.findOneAndUpdate(
@@ -385,12 +338,8 @@ async function deleteSupplierData(req, res) {
       supplierId,
       {
         $pull: {
-          debtHistory: subDocument.debt._id,
-          moneyRetainedHistory: subDocument.moneyRetained._id,
-        },
-        $inc: {
-          debtAmount: debtAmount,
-          moneyRetainedAmount: -moneyRetainedAmount,
+          debtHistory: id,
+          moneyRetainedHistory: id,
         },
       },
       { new: true }

@@ -191,7 +191,7 @@
                 <div class="modal-content">
                   <div class="modal-header">
                     <h1 class="modal-title fs-5">
-                      Cập nhật dữ liệu <%= item.supplier.name %> ngày <%= item.date.toLocaleDateString("vi-VN") %>
+                      Cập nhật dữ liệu <%= item.supplier?.name %> ngày <%= item.date.toLocaleDateString("vi-VN") %>
                     </h1>
                     <button
                       type="button"
@@ -228,7 +228,7 @@
                           required
                         >
                           <% area.suppliers.forEach(supplier => { %>
-                          <option value="<%= supplier.supplierSlug %>" <%= supplier.name === item.supplier.name ? 'selected' : '' %>>
+                          <option value="<%= supplier.supplierSlug %>" <%= supplier.name === item.supplier?.name ? 'selected' : '' %>>
                             <%= supplier.name %>
                           </option>
                           <% }) %>
@@ -360,7 +360,7 @@
                     <h1 class="modal-title fs-5" id="exampleModalToggleLabel">
                       Xóa thông tin ngày <%=
                       item.date.toLocaleDateString("vi-VN") %> của <%=
-                      item.supplier.name %>
+                      item.supplier?.name %>
                     </h1>
                     <button
                       type="button"
@@ -375,7 +375,7 @@
                   >
                     <div class="modal-body">
                       Bạn có muốn xóa thông tin của
-                      <strong><%= item.supplier.name %></strong>
+                      <strong><%= item.supplier?.name %></strong>
                       ? Hành động này không thể hoàn tác.
                     </div>
                     <div class="modal-footer">
