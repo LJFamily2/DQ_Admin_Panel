@@ -135,7 +135,7 @@ async function addData(req, res) {
     // Prepare raw material entries
     const rawMaterials = req.body.name.map((name, index) => ({
       name,
-      percentage: name === 'Mủ nước' ? convertToDecimal(req.body.percentage[index]) : 0,
+      percentage: name === 'Mủ nước' ? convertToDecimal(req.body.percentage) : 0,
       ratioSplit: existedSupplier.ratioRubberSplit,
       quantity: convertToDecimal(req.body.quantity[index] || 0),
       price: 0
