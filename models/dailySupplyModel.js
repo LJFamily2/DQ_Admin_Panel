@@ -48,8 +48,8 @@
     purchasedAreaPrice: { type: Number, default: 0 },
     areaDeposit: { type: Number, default: 0 },
     initialDebtAmount: {type: Number, default: function() {return this.purchasedAreaDimension * this.purchasedAreaPrice - this.areaDeposit} },
-    debtHistory: [{ debtRecord :{type: mongoose.Schema.Types.ObjectId, ref: 'dailysupplies'}} ],
-    moneyRetainedHistory: [{ moneyRetainedRecord:  {type: mongoose.Schema.Types.ObjectId, ref: 'dailysupplies'} }],
+    debtHistory: [{type: mongoose.Schema.Types.ObjectId, ref: 'dailysupplydata'} ],
+    moneyRetainedHistory: [{type: mongoose.Schema.Types.ObjectId, ref: 'dailysupplydata'}],
     moneyRetainedPercentage: {type: Number, default: 0},
     purchasedAreaDimension: { type: Number, default: 0 },
     areaDuration: {
@@ -70,7 +70,7 @@
   const dailySupplySchema = new mongoose.Schema({
     accountID: { type: mongoose.Schema.Types.ObjectId, ref: 'Accounts' },
     name: { type: String, required: true },
-    data: [dataSchema],
+    data: [{type: mongoose.Schema.Types.ObjectId, ref: 'dailysupplydata'}],
     suppliers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'suppliers' }],
     limitData: { type: Number },
     areaDimension: { type: Number },
@@ -105,34 +105,36 @@
 
 
 
-// Virtual field for calculating total money retained amount dynamically
-supplierSchema.virtual('totalMoneyRetainedAmount').get(function () {
-  // Ensure moneyRetainedHistory is populated
-  if (!this.moneyRetainedHistory || !this.moneyRetainedHistory.length) return 0;
+// // Virtual field for calculating total money retained amount dynamically
+// supplierSchema.virtual('totalMoneyRetainedAmount').get(function () {
+//   // Ensure moneyRetainedHistory is populated
+//   if (!this.moneyRetainedHistory || !this.moneyRetainedHistory.length) return 0;
 
-  const totalMoneyRetainedAmount = this.moneyRetainedHistory
-    .filter(entry => entry.moneyRetained && entry.moneyRetained.retainedAmount > 0) // Only include entries with a valid retainedAmount
-    .reduce((total, entry) => {
-      return total + entry.moneyRetained.retainedAmount;
-    }, 0);
+//   const totalMoneyRetainedAmount = this.moneyRetainedHistory
+//     .filter(entry => entry.moneyRetained && entry.moneyRetained.retainedAmount > 0) // Only include entries with a valid retainedAmount
+//     .reduce((total, entry) => {
+//       return total + entry.moneyRetained.retainedAmount;
+//     }, 0);
 
-  return totalMoneyRetainedAmount;
-});
+//   return totalMoneyRetainedAmount;
+// });
 
 
-// Virtual field for calculating remaining debt dynamically
-supplierSchema.virtual('remainingDebt').get(function () {
-  const initialDebtAmount = this.initialDebtAmount || 0;
-  const totalDebtPaidAmount = this.totalDebtPaidAmount || 0;
-  return initialDebtAmount - totalDebtPaidAmount;
-});
+// // Virtual field for calculating remaining debt dynamically
+// supplierSchema.virtual('remainingDebt').get(function () {
+//   const initialDebtAmount = this.initialDebtAmount || 0;
+//   const totalDebtPaidAmount = this.totalDebtPaidAmount || 0;
+//   return initialDebtAmount - totalDebtPaidAmount;
+// });
   // ---------------------
 
   // Models Export
+  const DailySupplyData = mongoose.model('dailysupplydata', dataSchema);
   const Supplier = mongoose.model('suppliers', supplierSchema);
   const DailySupply = mongoose.model('dailysupplies', dailySupplySchema);
 
   module.exports = {
+    DailySupplyData,
     Supplier,
     DailySupply,
   };
