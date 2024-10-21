@@ -1,9 +1,5 @@
 const { Supplier, DailySupply } = require('../../models/dailySupplyModel');
 
-const handleResponse = require('../utils/handleResponse');
-const convertToDecimal = require('../utils/convertToDecimal');
-const updatePrices = require('../utils/updatePricesAndRatiosHelper');
-
 module.exports = {
   renderPage,
 };
@@ -14,17 +10,24 @@ async function renderPage(req, res) {
     const { startDate, endDate } = req.query;
 
     const area = await DailySupply.findOne({ slug })
-      .populate('accountID')
-      .populate('suppliers')
-      .populate('data.supplier');
+   .populate('suppliers').populate({
+    path: 'data',
+    populate: {
+      path: 'debt'
+    }
+   })
+  
+
 
     if (!area) {
       return res.status(404).render('partials/404', { layout: false });
     }
 
+    // Find the specific supplier based on the supplierSlug
     const supplierData = area.suppliers.find(
       s => s.supplierSlug === supplierSlug,
     );
+
     if (!supplierData) {
       return res.status(404).render('partials/404', { layout: false });
     }
@@ -34,6 +37,14 @@ async function renderPage(req, res) {
       item => item.supplier._id.toString() === supplierData._id.toString(),
     );
 
+    console.log(area)
+
+
+    const test = await Supplier.findOne({supplierSlug: supplierSlug})
+    .populate('debtHistory.debtRecord')
+
+    console.log(test
+    )
     res.render('src/dailySupplyIndividualExportPage', {
       layout: './layouts/defaultLayout',
       title: `Xuất dữ liệu mủ của ${supplierData.name}`,
