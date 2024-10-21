@@ -4,3 +4,5 @@ config/
 .prettierrc
 .htaccess
 README.md
+test/
+.mocharc.js
