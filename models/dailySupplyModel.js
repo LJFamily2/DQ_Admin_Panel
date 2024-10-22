@@ -106,26 +106,26 @@
 
 
 // Virtual field for calculating total money retained amount dynamically
-supplierSchema.virtual('totalMoneyRetainedAmount').get(function () {
-  // Ensure moneyRetainedHistory is populated
-  if (!this.moneyRetainedHistory || !this.moneyRetainedHistory.length) return 0;
+// supplierSchema.virtual('totalMoneyRetainedAmount').get(function () {
+//   // Ensure moneyRetainedHistory is populated
+//   if (!this.moneyRetainedHistory || !this.moneyRetainedHistory.length) return 0;
 
-  const totalMoneyRetainedAmount = this.moneyRetainedHistory
-    .filter(entry => entry.moneyRetained && entry.moneyRetained.retainedAmount > 0) // Only include entries with a valid retainedAmount
-    .reduce((total, entry) => {
-      return total + entry.moneyRetained.retainedAmount;
-    }, 0);
+//   const totalMoneyRetainedAmount = this.moneyRetainedHistory
+//     .filter(entry => entry.moneyRetained && entry.moneyRetained.retainedAmount > 0) // Only include entries with a valid retainedAmount
+//     .reduce((total, entry) => {
+//       return total + entry.moneyRetained.retainedAmount;
+//     }, 0);
 
-  return totalMoneyRetainedAmount;
-});
+//   return totalMoneyRetainedAmount;
+// });
 
 
 // Virtual field for calculating remaining debt dynamically
-supplierSchema.virtual('remainingDebt').get(function () {
-  const initialDebtAmount = this.initialDebtAmount || 0;
-  const totalDebtPaidAmount = this.totalDebtPaidAmount || 0;
-  return initialDebtAmount - totalDebtPaidAmount;
-});
+// supplierSchema.virtual('remainingDebt').get(function () {
+//   const initialDebtAmount = this.initialDebtAmount || 0;
+//   const totalDebtPaidAmount = this.totalDebtPaidAmount || 0;
+//   return initialDebtAmount - totalDebtPaidAmount;
+// });
   // ---------------------
 
   // Models Export
