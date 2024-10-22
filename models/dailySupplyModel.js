@@ -30,8 +30,8 @@
     rawMaterial: [rawMaterialSchema],
     supplier: { type: mongoose.Schema.Types.ObjectId, ref: 'suppliers'},
     note: { type: String },
-    debt:  debtSchema ,
-    moneyRetained: retainedSchema ,
+    debt:  {type: mongoose.Schema.Types.ObjectId, ref: 'debts'} ,
+    moneyRetained: {type: mongoose.Schema.Types.ObjectId, ref: 'moneyRetained'} ,
   });
 
   // Suppliers Schema
@@ -48,8 +48,8 @@
     purchasedAreaPrice: { type: Number, default: 0 },
     areaDeposit: { type: Number, default: 0 },
     initialDebtAmount: {type: Number, default: function() {return this.purchasedAreaDimension * this.purchasedAreaPrice - this.areaDeposit} },
-    debtHistory: [{ debtRecord :{type: mongoose.Schema.Types.ObjectId, ref: 'dailysupplies'}} ],
-    moneyRetainedHistory: [{ moneyRetainedRecord:  {type: mongoose.Schema.Types.ObjectId, ref: 'dailysupplies'} }],
+    debtHistory: [{type: mongoose.Schema.Types.ObjectId, ref: 'debts'} ],
+    moneyRetainedHistory: [{type: mongoose.Schema.Types.ObjectId, ref: 'moneyRetained'}],
     moneyRetainedPercentage: {type: Number, default: 0},
     purchasedAreaDimension: { type: Number, default: 0 },
     areaDuration: {
@@ -129,10 +129,14 @@
   // ---------------------
 
   // Models Export
+  const Debt = mongoose.model('debts', debtSchema);
+  const MoneyRetained = mongoose.model('moneyRetained', retainedSchema);
   const Supplier = mongoose.model('suppliers', supplierSchema);
   const DailySupply = mongoose.model('dailysupplies', dailySupplySchema);
 
   module.exports = {
     Supplier,
     DailySupply,
+    Debt,
+    MoneyRetained,
   };
