@@ -15,7 +15,6 @@ function calculateFinancials(rawMaterials, percentage) {
   }
 
   const retainedAmount = totalSupplierProfit * percentage / 100;
-  
   return { debtPaid, retainedAmount };
 }
 
