@@ -14,9 +14,9 @@ function calculateFinancials(rawMaterials, percentage) {
     }
   }
 
-  const moneyRetained = (totalSupplierProfit * percentage) / 100;
-
-  return { debtPaid, moneyRetained };
+  const retainedAmount = totalSupplierProfit * percentage / 100;
+  
+  return { debtPaid, retainedAmount };
 }
 
 module.exports = calculateFinancials;

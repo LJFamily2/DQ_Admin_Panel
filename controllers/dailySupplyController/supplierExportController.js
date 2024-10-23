@@ -1,11 +1,16 @@
-const { Supplier, DailySupply } = require('../../models/dailySupplyModel');
+const {
+  Debt,
+  MoneyRetained,
+  Supplier,
+  DailySupply,
+} = require('../../models/dailySupplyModel');
 
 const trimStringFields = require('../utils/trimStringFields');
 const handleResponse = require('../utils/handleResponse');
 const convertToDecimal = require('../utils/convertToDecimal');
 const updatePricesAndRatiosHelper = require('../utils/updatePricesAndRatiosHelper');
 const calculateFinancials = require('../dailySupplyController/helper/calculateFinancials');
-
+const updateAmounts = require('../dailySupplyController/helper/updateDebtAndMoneyRetainedAmount');
 module.exports = {
   renderPage,
   updatePricesAndRatios,
@@ -13,10 +18,9 @@ module.exports = {
 async function renderPage(req, res) {
   try {
     const { startDate, endDate } = req.query;
-    const area = await DailySupply.findOne({ slug: req.params.slug })
-      .populate('accountID')
-      .populate('suppliers')
-      .populate('data.supplier');
+    const area = await DailySupply.findOne({ slug: req.params.slug }).populate(
+      'suppliers',
+    );
 
     res.render('src/dailySupplyExportPage', {
       layout: './layouts/defaultLayout',
@@ -33,7 +37,6 @@ async function renderPage(req, res) {
   }
 }
 
-
 async function updatePricesAndRatios(req, res) {
   req.body = trimStringFields(req.body);
   try {
@@ -48,13 +51,13 @@ async function updatePricesAndRatios(req, res) {
       mixedSplit,
       keSplit,
       dongSplit,
-    } = req.body; 
+    } = req.body;
     const { slug, supplierSlug } = req.params;
 
-    const area = await DailySupply.findOne({ slug })
-      .populate('accountID')
-      .populate('suppliers')
-      .populate('data.supplier');
+    const area = await DailySupply.findOne({ slug }).populate({
+      path: 'data',
+      populate: ['debt', 'moneyRetained'],
+    });
 
     if (!area) {
       return handleResponse(
@@ -113,31 +116,49 @@ async function updatePricesAndRatios(req, res) {
     );
 
     // Calculate and update debt and money retained for each data entry
+    const bulkDebtOps = [];
+    const bulkMoneyRetainedOps = [];
+
     for (const entry of area.data) {
-      const { totalSupplierProfit, debtPaid, moneyRetained } = calculateFinancials(
+      const { debtPaid, retainedAmount } = calculateFinancials(
         entry.rawMaterial,
-        entry.moneyRetained.percentage
+        entry.moneyRetained.percentage,
       );
 
-      // Ensure debt and moneyRetained are initialized
-      if (!entry.debt) {
-        entry.debt = { date: new Date(), debtPaidAmount: 0 };
-      }
-      if (!entry.moneyRetained) {
-        entry.moneyRetained = { date: new Date(), retainedAmount: 0, percentage: 0 };
-      }
+      const debtAmount = entry.debt;
+      const moneyRetainedAmount = entry.moneyRetained;
 
       // Store old values
-      const oldDebtPaidAmount = entry.debt.debtPaidAmount || 0;
-      const oldMoneyRetainedAmount = entry.moneyRetained.retainedAmount || 0;
+      const oldDebtPaidAmount = debtAmount.debtPaidAmount || 0;
+      const oldMoneyRetainedAmount = moneyRetainedAmount.retainedAmount || 0;
 
       // Calculate differences
       const debtPaidDifference = debtPaid - oldDebtPaidAmount;
-      const moneyRetainedDifference = moneyRetained - oldMoneyRetainedAmount;
+      const moneyRetainedDifference = retainedAmount - oldMoneyRetainedAmount;
 
-      // Update with new values
-      entry.debt.debtPaidAmount += debtPaidDifference;
-      entry.moneyRetained.retainedAmount += moneyRetainedDifference;
+      // Prepare bulk update operations
+      bulkDebtOps.push({
+        updateOne: {
+          filter: { _id: debtAmount._id },
+          update: { $inc: { debtPaidAmount: debtPaidDifference } },
+        },
+      });
+
+      bulkMoneyRetainedOps.push({
+        updateOne: {
+          filter: { _id: moneyRetainedAmount._id },
+          update: { $inc: { retainedAmount: moneyRetainedDifference } },
+        },
+      });
+    }
+
+    // Execute bulk update operations
+    if (bulkDebtOps.length > 0) {
+      await Debt.bulkWrite(bulkDebtOps);
+    }
+
+    if (bulkMoneyRetainedOps.length > 0) {
+      await MoneyRetained.bulkWrite(bulkMoneyRetainedOps);
     }
 
     const saveData = await area.save();

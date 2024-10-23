@@ -31,7 +31,7 @@
     supplier: { type: mongoose.Schema.Types.ObjectId, ref: 'suppliers'},
     note: { type: String },
     debt:  {type: mongoose.Schema.Types.ObjectId, ref: 'debts'} ,
-    moneyRetained: {type: mongoose.Schema.Types.ObjectId, ref: 'moneyRetained'} ,
+    moneyRetained: {type: mongoose.Schema.Types.ObjectId, ref: 'moneyRetaineds'} ,
   });
 
   // Suppliers Schema
@@ -49,7 +49,7 @@
     areaDeposit: { type: Number, default: 0 },
     initialDebtAmount: {type: Number, default: function() {return this.purchasedAreaDimension * this.purchasedAreaPrice - this.areaDeposit} },
     debtHistory: [{type: mongoose.Schema.Types.ObjectId, ref: 'debts'} ],
-    moneyRetainedHistory: [{type: mongoose.Schema.Types.ObjectId, ref: 'moneyRetained'}],
+    moneyRetainedHistory: [{type: mongoose.Schema.Types.ObjectId, ref: 'moneyRetaineds'}],
     moneyRetainedPercentage: {type: Number, default: 0},
     purchasedAreaDimension: { type: Number, default: 0 },
     areaDuration: {
@@ -111,9 +111,9 @@
 //   if (!this.moneyRetainedHistory || !this.moneyRetainedHistory.length) return 0;
 
 //   const totalMoneyRetainedAmount = this.moneyRetainedHistory
-//     .filter(entry => entry.moneyRetained && entry.moneyRetained.retainedAmount > 0) // Only include entries with a valid retainedAmount
+//     .filter(entry => entry.moneyRetaineds && entry.moneyRetaineds.retainedAmount > 0) // Only include entries with a valid retainedAmount
 //     .reduce((total, entry) => {
-//       return total + entry.moneyRetained.retainedAmount;
+//       return total + entry.moneyRetaineds.retainedAmount;
 //     }, 0);
 
 //   return totalMoneyRetainedAmount;
@@ -130,7 +130,7 @@
 
   // Models Export
   const Debt = mongoose.model('debts', debtSchema);
-  const MoneyRetained = mongoose.model('moneyRetained', retainedSchema);
+  const MoneyRetained = mongoose.model('moneyRetaineds', retainedSchema);
   const Supplier = mongoose.model('suppliers', supplierSchema);
   const DailySupply = mongoose.model('dailysupplies', dailySupplySchema);
 
