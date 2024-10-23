@@ -1,5 +1,10 @@
 const mongoose = require('mongoose');
-const { Debt,MoneyRetained, Supplier, DailySupply } = require('../../models/dailySupplyModel');
+const {
+  Debt,
+  MoneyRetained,
+  Supplier,
+  DailySupply,
+} = require('../../models/dailySupplyModel');
 const handleResponse = require('../utils/handleResponse');
 const convertToDecimal = require('../utils/convertToDecimal');
 const trimStringFields = require('../utils/trimStringFields');
@@ -166,13 +171,13 @@ async function addData(req, res) {
 
     let debt;
     let moneyRetained;
-    if(dailySupply.areaPrice > 0 && dailySupply.areaDimension > 0){
+    if (dailySupply.areaPrice > 0 && dailySupply.areaDimension > 0) {
       // Create debt and retained money entries
       debt = await Debt.create({
         date: today,
         debtPaidAmount: 0,
       });
-  
+
       moneyRetained = await MoneyRetained.create({
         date: today,
         retainedAmount: 0,
@@ -209,11 +214,11 @@ async function addData(req, res) {
     }
 
     // Update the debt and money retained property
-    existedSupplier.debtHistory.push(  debt._id );
-    existedSupplier.moneyRetainedHistory.push( moneyRetained._id);
+    existedSupplier.debtHistory.push(debt._id);
+    existedSupplier.moneyRetainedHistory.push(moneyRetained._id);
 
     const updateSupplier = await existedSupplier.save();
-    if(!updateSupplier){
+    if (!updateSupplier) {
       return handleResponse(
         req,
         res,
@@ -223,7 +228,6 @@ async function addData(req, res) {
         req.headers.referer,
       );
     }
-
 
     // Success response
     return handleResponse(
@@ -360,13 +364,13 @@ async function updateSupplierData(req, res) {
     await Debt.findByIdAndUpdate(
       dailySupply.data[dataIndex].debt._id,
       { $inc: { debtPaidAmount: debtPaidDifference } },
-      { new: true }
+      { new: true },
     );
 
     await MoneyRetained.findByIdAndUpdate(
       dailySupply.data[dataIndex].moneyRetained._id,
       { $inc: { retainedAmount: moneyRetainedDifference } },
-      { new: true }
+      { new: true },
     );
 
     const updatedDailySupply = await dailySupply.save();
@@ -426,6 +430,8 @@ async function deleteSupplierData(req, res) {
     }
 
     const supplierId = subDocument.supplier;
+    const debtId = subDocument.debt;
+    const moneyRetainedId = subDocument.moneyRetained;
 
     // Remove the sub-document from the DailySupply document
     const updatedData = await DailySupply.findOneAndUpdate(
@@ -452,8 +458,8 @@ async function deleteSupplierData(req, res) {
       supplierId,
       {
         $pull: {
-          debtHistory: id,
-          moneyRetainedHistory: id,
+          debtHistory: debtId,
+          moneyRetainedHistory: moneyRetainedId,
         },
       },
       { new: true },
@@ -469,6 +475,12 @@ async function deleteSupplierData(req, res) {
         req.headers.referer,
       );
     }
+
+    // Delete the corresponding debt and money retained documents
+    await Promise.all([
+      Debt.findByIdAndDelete(debtId),
+      MoneyRetained.findByIdAndDelete(moneyRetainedId),
+    ]);
 
     return handleResponse(
       req,
