@@ -1,5 +1,5 @@
 const AccountModel = require('../../models/accountModel');
-const { Supplier, DailySupply } = require('../../models/dailySupplyModel');
+const { Debt, MoneyRetained, Supplier, DailySupply } = require('../../models/dailySupplyModel');
 const slugify = require('slugify');
 
 const trimStringFields = require('../utils/trimStringFields');
@@ -190,7 +190,7 @@ async function addSupplier(req, res) {
 async function deleteSupplier(req, res) {
   req.body = trimStringFields(req.body);
   try {
-    const supplier = await Supplier.findByIdAndDelete(req.params.id);
+    const supplier = await Supplier.findById(req.params.id);
     if (!supplier) {
       return handleResponse(
         req,
@@ -201,6 +201,45 @@ async function deleteSupplier(req, res) {
         req.headers.referer,
       );
     }
+
+    // Find all data entries associated with the supplier
+    const dataEntries = await DailySupply.find({ 'data.supplier': supplier._id });
+
+    // Collect all debt and moneyRetained IDs
+    const debtIds = [];
+    const moneyRetainedIds = [];
+    dataEntries.forEach(entry => {
+      entry.data.forEach(data => {
+        if (data.supplier.equals(supplier._id)) {
+          if (data.debt) debtIds.push(data.debt);
+          if (data.moneyRetained) moneyRetainedIds.push(data.moneyRetained);
+        }
+      });
+    });
+
+    // Delete all associated data, debt, and moneyRetained documents
+    await Promise.all([
+      DailySupply.updateMany(
+        { 'data.supplier': supplier._id },
+        { $pull: { data: { supplier: supplier._id } } }
+      ),
+      Debt.deleteMany({ _id: { $in: debtIds } }),
+      MoneyRetained.deleteMany({ _id: { $in: moneyRetainedIds } }),
+    ]);
+
+    // Delete the supplier
+    const deleteSupplier = await Supplier.findByIdAndDelete(req.params.id);
+    if(!deleteSupplier){
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Xóa nhà vườn thất bại!',
+        req.headers.referer,
+      );
+    }
+    
     return handleResponse(
       req,
       res,
@@ -210,7 +249,7 @@ async function deleteSupplier(req, res) {
       req.headers.referer,
     );
   } catch (error) {
-    console.error('Error adding suppliers:', error);
+    console.error('Error deleting supplier:', error);
     res.status(500).render('partials/500', { layout: false });
   }
 }
