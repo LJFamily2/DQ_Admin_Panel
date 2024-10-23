@@ -1,5 +1,10 @@
 const AccountModel = require('../../models/accountModel');
-const { Debt, MoneyRetained, Supplier, DailySupply } = require('../../models/dailySupplyModel');
+const {
+  Debt,
+  MoneyRetained,
+  Supplier,
+  DailySupply,
+} = require('../../models/dailySupplyModel');
 const slugify = require('slugify');
 
 const trimStringFields = require('../utils/trimStringFields');
@@ -126,6 +131,7 @@ async function updateArea(req, res) {
 
 async function addSupplier(req, res) {
   req.body = trimStringFields(req.body);
+  console.log(req.body);
   try {
     const area = await DailySupply.findById(req.params.id);
     if (!area) {
@@ -141,18 +147,35 @@ async function addSupplier(req, res) {
 
     const suppliers = await createSuppliers(req);
 
+    // Calculate the total purchasedAreaDimension for new suppliers
+    const totalPurchasedAreaDimension = suppliers.reduce((total, supplier) => {
+      return total + supplier.purchasedAreaDimension;
+    }, 0);
+
+    // Check if remainingAreaDimension is sufficient
+    if (totalPurchasedAreaDimension > area.remainingAreaDimension) {
+      return handleResponse(
+        req,
+        res,
+        400,
+        'fail',
+        'Diện tích khả dụng không đủ!',
+        req.headers.referer,
+      );
+    }
+
     for (const supplier of suppliers) {
       const existingSupplier = await Supplier.findOne({
-        $or: [{ name: supplier.name }, { code: supplier.code }],
+        $or: { code: supplier.code },
       });
 
       if (existingSupplier) {
         return handleResponse(
           req,
           res,
-          404,
+          400,
           'fail',
-          'Trùng tên hoặc mã nhà vườn!',
+          'Trùng mã nhà vườn!',
           req.headers.referer,
         );
       }
@@ -161,12 +184,17 @@ async function addSupplier(req, res) {
       area.suppliers.push(newSupplier._id);
     }
 
+    // Update remainingAreaDimension
+    if (area.areaDimension > 0 && area.areaPrice > 0) {
+      area.remainingAreaDimension -= totalPurchasedAreaDimension;
+    }
+
     const updateData = await area.save();
     if (!updateData) {
       return handleResponse(
         req,
         res,
-        404,
+        500,
         'fail',
         'Thêm nhà vườn mới thất bại!',
         req.headers.referer,
@@ -203,7 +231,9 @@ async function deleteSupplier(req, res) {
     }
 
     // Find all data entries associated with the supplier
-    const dataEntries = await DailySupply.find({ 'data.supplier': supplier._id });
+    const dataEntries = await DailySupply.find({
+      'data.supplier': supplier._id,
+    });
 
     // Collect all debt and moneyRetained IDs
     const debtIds = [];
@@ -221,7 +251,7 @@ async function deleteSupplier(req, res) {
     await Promise.all([
       DailySupply.updateMany(
         { 'data.supplier': supplier._id },
-        { $pull: { data: { supplier: supplier._id } } }
+        { $pull: { data: { supplier: supplier._id } } },
       ),
       Debt.deleteMany({ _id: { $in: debtIds } }),
       MoneyRetained.deleteMany({ _id: { $in: moneyRetainedIds } }),
@@ -229,7 +259,7 @@ async function deleteSupplier(req, res) {
 
     // Delete the supplier
     const deleteSupplier = await Supplier.findByIdAndDelete(req.params.id);
-    if(!deleteSupplier){
+    if (!deleteSupplier) {
       return handleResponse(
         req,
         res,
@@ -239,7 +269,7 @@ async function deleteSupplier(req, res) {
         req.headers.referer,
       );
     }
-    
+
     return handleResponse(
       req,
       res,
