@@ -73,7 +73,7 @@
     data: [dataSchema],
     suppliers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'suppliers' }],
     limitData: { type: Number },
-    areaDimension: { type: Number },
+    areaDimension: { type: Number, default: 0 },
     remainingAreaDimension: {
       type: Number,
       default: function () {
@@ -84,7 +84,7 @@
       start: { type: Date, required: true },
       end: { type: Date, required: true },
     },
-    areaPrice: { type: Number },
+    areaPrice: { type: Number , default: 0},
     address: { type: String, required: true },
     slug: { type: String, slug: 'name' },
   });
