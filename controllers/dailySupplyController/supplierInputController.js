@@ -191,8 +191,8 @@ async function addData(req, res) {
       rawMaterial: rawMaterials,
       supplier: existedSupplier._id,
       note: trimStringFields(req.body.note) || '',
-      debt: debt._id,
-      moneyRetained: moneyRetained._id,
+      debt: debt?._id || null,
+      moneyRetained: moneyRetained?._id || null,
     };
 
     // Save the new data to DailySupply
@@ -214,8 +214,8 @@ async function addData(req, res) {
     }
 
     // Update the debt and money retained property
-    existedSupplier.debtHistory.push(debt._id);
-    existedSupplier.moneyRetainedHistory.push(moneyRetained._id);
+    existedSupplier.debtHistory.push(debt?._id);
+    existedSupplier.moneyRetainedHistory.push(moneyRetained?._id);
 
     const updateSupplier = await existedSupplier.save();
     if (!updateSupplier) {
@@ -344,34 +344,36 @@ async function updateSupplierData(req, res) {
       dailySupply.data[dataIndex].supplier = supplierDoc._id;
     }
 
-    // Calculate and update debt and money retained
-    const { debtPaid, retainedAmount } = calculateFinancials(
-      updatedRawMaterial,
-      dailySupply.data[dataIndex].moneyRetained.percentage,
-    );
+    if (area.areaPrice > 0 && area.areaDimension > 0) {
+      // Calculate and update debt and money retained
+      const { debtPaid, retainedAmount } = calculateFinancials(
+        updatedRawMaterial,
+        dailySupply.data[dataIndex].moneyRetained.percentage,
+      );
 
-    // Store old values
-    const oldDebtPaidAmount =
-      dailySupply.data[dataIndex].debt.debtPaidAmount || 0;
-    const oldMoneyRetainedAmount =
-      dailySupply.data[dataIndex].moneyRetained.retainedAmount || 0;
+      // Store old values
+      const oldDebtPaidAmount =
+        dailySupply.data[dataIndex].debt.debtPaidAmount || 0;
+      const oldMoneyRetainedAmount =
+        dailySupply.data[dataIndex].moneyRetained.retainedAmount || 0;
 
-    // Calculate differences
-    const debtPaidDifference = debtPaid - oldDebtPaidAmount;
-    const moneyRetainedDifference = retainedAmount - oldMoneyRetainedAmount;
+      // Calculate differences
+      const debtPaidDifference = debtPaid - oldDebtPaidAmount;
+      const moneyRetainedDifference = retainedAmount - oldMoneyRetainedAmount;
 
-    // Update debt and money retained amounts using findByIdAndUpdate
-    await Debt.findByIdAndUpdate(
-      dailySupply.data[dataIndex].debt._id,
-      { $inc: { debtPaidAmount: debtPaidDifference } },
-      { new: true },
-    );
+      // Update debt and money retained amounts using findByIdAndUpdate
+      await Debt.findByIdAndUpdate(
+        dailySupply.data[dataIndex].debt._id,
+        { $inc: { debtPaidAmount: debtPaidDifference } },
+        { new: true },
+      );
 
-    await MoneyRetained.findByIdAndUpdate(
-      dailySupply.data[dataIndex].moneyRetained._id,
-      { $inc: { retainedAmount: moneyRetainedDifference } },
-      { new: true },
-    );
+      await MoneyRetained.findByIdAndUpdate(
+        dailySupply.data[dataIndex].moneyRetained._id,
+        { $inc: { retainedAmount: moneyRetainedDifference } },
+        { new: true },
+      );
+    }
 
     const updatedDailySupply = await dailySupply.save();
     if (!updatedDailySupply) {

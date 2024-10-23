@@ -10,7 +10,6 @@ const handleResponse = require('../utils/handleResponse');
 const convertToDecimal = require('../utils/convertToDecimal');
 const updatePricesAndRatiosHelper = require('../utils/updatePricesAndRatiosHelper');
 const calculateFinancials = require('../dailySupplyController/helper/calculateFinancials');
-const updateAmounts = require('../dailySupplyController/helper/updateDebtAndMoneyRetainedAmount');
 module.exports = {
   renderPage,
   updatePricesAndRatios,
@@ -115,50 +114,52 @@ async function updatePricesAndRatios(req, res) {
       supplierId,
     );
 
-    // Calculate and update debt and money retained for each data entry
-    const bulkDebtOps = [];
-    const bulkMoneyRetainedOps = [];
+    if (area.areaPrice > 0 && area.areaDimension > 0) {
+      // Calculate and update debt and money retained for each data entry
+      const bulkDebtOps = [];
+      const bulkMoneyRetainedOps = [];
 
-    for (const entry of area.data) {
-      const { debtPaid, retainedAmount } = calculateFinancials(
-        entry.rawMaterial,
-        entry.moneyRetained.percentage,
-      );
+      for (const entry of area.data) {
+        const { debtPaid, retainedAmount } = calculateFinancials(
+          entry.rawMaterial,
+          entry.moneyRetained.percentage,
+        );
 
-      const debtAmount = entry.debt;
-      const moneyRetainedAmount = entry.moneyRetained;
+        const debtAmount = entry.debt;
+        const moneyRetainedAmount = entry.moneyRetained;
 
-      // Store old values
-      const oldDebtPaidAmount = debtAmount.debtPaidAmount || 0;
-      const oldMoneyRetainedAmount = moneyRetainedAmount.retainedAmount || 0;
+        // Store old values
+        const oldDebtPaidAmount = debtAmount.debtPaidAmount || 0;
+        const oldMoneyRetainedAmount = moneyRetainedAmount.retainedAmount || 0;
 
-      // Calculate differences
-      const debtPaidDifference = debtPaid - oldDebtPaidAmount;
-      const moneyRetainedDifference = retainedAmount - oldMoneyRetainedAmount;
+        // Calculate differences
+        const debtPaidDifference = debtPaid - oldDebtPaidAmount;
+        const moneyRetainedDifference = retainedAmount - oldMoneyRetainedAmount;
 
-      // Prepare bulk update operations
-      bulkDebtOps.push({
-        updateOne: {
-          filter: { _id: debtAmount._id },
-          update: { $inc: { debtPaidAmount: debtPaidDifference } },
-        },
-      });
+        // Prepare bulk update operations
+        bulkDebtOps.push({
+          updateOne: {
+            filter: { _id: debtAmount._id },
+            update: { $inc: { debtPaidAmount: debtPaidDifference } },
+          },
+        });
 
-      bulkMoneyRetainedOps.push({
-        updateOne: {
-          filter: { _id: moneyRetainedAmount._id },
-          update: { $inc: { retainedAmount: moneyRetainedDifference } },
-        },
-      });
-    }
+        bulkMoneyRetainedOps.push({
+          updateOne: {
+            filter: { _id: moneyRetainedAmount._id },
+            update: { $inc: { retainedAmount: moneyRetainedDifference } },
+          },
+        });
+      }
 
-    // Execute bulk update operations
-    if (bulkDebtOps.length > 0) {
-      await Debt.bulkWrite(bulkDebtOps);
-    }
+      // Execute bulk update operations
+      if (bulkDebtOps.length > 0) {
+        await Debt.bulkWrite(bulkDebtOps);
+      }
 
-    if (bulkMoneyRetainedOps.length > 0) {
-      await MoneyRetained.bulkWrite(bulkMoneyRetainedOps);
+      if (bulkMoneyRetainedOps.length > 0) {
+        await MoneyRetained.bulkWrite(bulkMoneyRetainedOps);
+      }
     }
 
     const saveData = await area.save();
