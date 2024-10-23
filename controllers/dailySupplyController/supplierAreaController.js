@@ -1,5 +1,5 @@
 const AccountModel = require('../../models/accountModel');
-const { Supplier, DailySupply } = require('../../models/dailySupplyModel');
+const { Debt, MoneyRetained, Supplier, DailySupply } = require('../../models/dailySupplyModel');
 
 const trimStringFields = require('../utils/trimStringFields');
 const handleResponse = require('../utils/handleResponse');
@@ -136,9 +136,30 @@ async function deleteArea(req, res) {
       );
     }
 
-    // Delete corresponding suppliers
-    await Supplier.deleteMany({ _id: { $in: area.suppliers } });
-    await Supplier.deleteMany({ _id: { $in: area.data.map(d => d.supplier) } });
+    const supplierIds = [
+      ...area.suppliers,
+      ...area.data.map(d => d.supplier),
+    ];
+
+    const debtIds = area.data.map(d => d.debt._id);
+    const moneyRetainedIds = area.data.map(d => d.moneyRetained._id);
+
+    // Run deletion operations concurrently
+    const deletedData = await Promise.all([
+      Supplier.deleteMany({ _id: { $in: supplierIds } }),
+      Debt.deleteMany({ _id: { $in: debtIds } }),
+      MoneyRetained.deleteMany({ _id: { $in: moneyRetainedIds } }),
+    ]);
+
+    if(!deletedData){
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Xóa khu vực thất bại!',
+      )
+    }
 
     return handleResponse(
       req,
@@ -149,7 +170,7 @@ async function deleteArea(req, res) {
       req.headers.referer,
     );
   } catch (error) {
-    console.log(error);
+    console.error('Error deleting area:', error);
     res.status(500).render('partials/500', { layout: false });
   }
 }
