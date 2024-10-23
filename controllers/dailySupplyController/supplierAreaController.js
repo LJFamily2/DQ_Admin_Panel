@@ -141,24 +141,32 @@ async function deleteArea(req, res) {
       ...area.data.map(d => d.supplier),
     ];
 
-    const debtIds = area.data.map(d => d.debt._id);
-    const moneyRetainedIds = area.data.map(d => d.moneyRetained._id);
+    // Initialize arrays for debt and money retained IDs
+    let debtIds = [];
+    let moneyRetainedIds = [];
+
+    // Check if areaPrice and areaDimension are greater than 0
+    if (area.areaPrice > 0 && area.areaDimension > 0) {
+      debtIds = area.data.map(d => d.debt._id);
+      moneyRetainedIds = area.data.map(d => d.moneyRetained._id);
+    }
 
     // Run deletion operations concurrently
     const deletedData = await Promise.all([
       Supplier.deleteMany({ _id: { $in: supplierIds } }),
-      Debt.deleteMany({ _id: { $in: debtIds } }),
-      MoneyRetained.deleteMany({ _id: { $in: moneyRetainedIds } }),
+      debtIds.length > 0 ? Debt.deleteMany({ _id: { $in: debtIds } }) : Promise.resolve(),
+      moneyRetainedIds.length > 0 ? MoneyRetained.deleteMany({ _id: { $in: moneyRetainedIds } }) : Promise.resolve(),
     ]);
 
-    if(!deletedData){
+    if (!deletedData) {
       return handleResponse(
         req,
         res,
         404,
         'fail',
         'Xóa khu vực thất bại!',
-      )
+        req.headers.referer,
+      );
     }
 
     return handleResponse(

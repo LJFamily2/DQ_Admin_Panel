@@ -191,8 +191,8 @@ async function addData(req, res) {
       rawMaterial: rawMaterials,
       supplier: existedSupplier._id,
       note: trimStringFields(req.body.note) || '',
-      debt: debt?._id || null,
-      moneyRetained: moneyRetained?._id || null,
+      debt: debt?._id,
+      moneyRetained: moneyRetained?._id,
     };
 
     // Save the new data to DailySupply
@@ -432,8 +432,6 @@ async function deleteSupplierData(req, res) {
     }
 
     const supplierId = subDocument.supplier;
-    const debtId = subDocument.debt;
-    const moneyRetainedId = subDocument.moneyRetained;
 
     // Remove the sub-document from the DailySupply document
     const updatedData = await DailySupply.findOneAndUpdate(
@@ -455,34 +453,43 @@ async function deleteSupplierData(req, res) {
       );
     }
 
-    // Update the supplier's debtHistory and moneyRetainedHistory
-    const updateSupplierData = await Supplier.findByIdAndUpdate(
-      supplierId,
-      {
-        $pull: {
-          debtHistory: debtId,
-          moneyRetainedHistory: moneyRetainedId,
+    if (dailySupply.areaPrice > 0 && dailySupply.areaDimension > 0) {
+      const debtId = subDocument.debt;
+      const moneyRetainedId = subDocument.moneyRetained;
+
+      // Update the supplier's debtHistory and moneyRetainedHistory
+      const updateSupplierData = await Supplier.findByIdAndUpdate(
+        supplierId,
+        {
+          $pull: {
+            debtHistory: debtId,
+            moneyRetainedHistory: moneyRetainedId,
+          },
         },
-      },
-      { new: true },
-    );
-
-    if (!updateSupplierData) {
-      return handleResponse(
-        req,
-        res,
-        404,
-        'fail',
-        'Xóa dữ liệu cho nhà vườn thất bại!',
-        req.headers.referer,
+        { new: true },
       );
-    }
 
-    // Delete the corresponding debt and money retained documents
-    await Promise.all([
-      Debt.findByIdAndDelete(debtId),
-      MoneyRetained.findByIdAndDelete(moneyRetainedId),
-    ]);
+      if (!updateSupplierData) {
+        return handleResponse(
+          req,
+          res,
+          404,
+          'fail',
+          'Xóa dữ liệu cho nhà vườn thất bại!',
+          req.headers.referer,
+        );
+      }
+
+      // Delete the corresponding debt and money retained documents if they exist
+      const deletePromises = [];
+      if (debtId) {
+        deletePromises.push(Debt.findByIdAndDelete(debtId));
+      }
+      if (moneyRetainedId) {
+        deletePromises.push(MoneyRetained.findByIdAndDelete(moneyRetainedId));
+      }
+      await Promise.all(deletePromises);
+    }
 
     return handleResponse(
       req,
