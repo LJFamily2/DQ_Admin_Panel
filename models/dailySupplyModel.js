@@ -53,8 +53,8 @@
     moneyRetainedPercentage: {type: Number, default: 0},
     purchasedAreaDimension: { type: Number, default: 0 },
     areaDuration: {
-      start: { type: Date, required: true },
-      end: { type: Date, required: true },
+      start: { type: Date, },
+      end: { type: Date, },
     },
     supplierSlug: {
       type: String,
