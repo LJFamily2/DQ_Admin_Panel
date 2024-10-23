@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { Supplier, DailySupply } = require('../../models/dailySupplyModel');
+const { Debt,MoneyRetained, Supplier, DailySupply } = require('../../models/dailySupplyModel');
 const handleResponse = require('../utils/handleResponse');
 const convertToDecimal = require('../utils/convertToDecimal');
 const trimStringFields = require('../utils/trimStringFields');
@@ -164,17 +164,21 @@ async function addData(req, res) {
       price: 0,
     }));
 
-    // Create debt and retained money entries
-    const debt = {
-      date: today,
-      debtPaidAmount: 0,
-    };
-
-    const moneyRetained = {
-      date: today,
-      retainedAmount: 0,
-      percentage: existedSupplier.moneyRetainedPercentage,
-    };
+    let debt;
+    let moneyRetained;
+    if(dailySupply.areaPrice > 0 && dailySupply.areaDimension > 0){
+      // Create debt and retained money entries
+      debt = await Debt.create({
+        date: today,
+        debtPaidAmount: 0,
+      });
+  
+      moneyRetained = await MoneyRetained.create({
+        date: today,
+        retainedAmount: 0,
+        percentage: existedSupplier.moneyRetainedPercentage,
+      });
+    }
 
     // Create input data for DailySupply
     const inputedData = {
@@ -182,8 +186,8 @@ async function addData(req, res) {
       rawMaterial: rawMaterials,
       supplier: existedSupplier._id,
       note: trimStringFields(req.body.note) || '',
-      debt: debt,
-      moneyRetained: moneyRetained,
+      debt: debt._id,
+      moneyRetained: moneyRetained._id,
     };
 
     // Save the new data to DailySupply
@@ -204,16 +208,22 @@ async function addData(req, res) {
       );
     }
 
-    // Update the referenceData
-    const lastDataIndex = newData.data.length - 1;
-    const lastDataId = newData.data[lastDataIndex]._id;
+    // Update the debt and money retained property
+    existedSupplier.debtHistory.push(  debt._id );
+    existedSupplier.moneyRetainedHistory.push( moneyRetained._id);
 
-    existedSupplier.debtHistory.push({ debtRecord: lastDataId });
-    existedSupplier.moneyRetainedHistory.push({
-      moneyRetainedRecord: lastDataId,
-    });
+    const updateSupplier = await existedSupplier.save();
+    if(!updateSupplier){
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Thêm dữ liệu thất bại!',
+        req.headers.referer,
+      );
+    }
 
-    await existedSupplier.save();
 
     // Success response
     return handleResponse(
