@@ -109,7 +109,7 @@ function initializeExportDataTable(
   if (exportPageFooter) {
     if (parseNumber(areaDimension) > 0 && parseNumber(areaPrice) > 0) {
       footerCallbackOptions = setupFooterCallbackOptions([
-        7, 9, 11, 12, 14, 16, 17, 19, 21, 22, 24, 26, 27, 29,
+        3,4,5,6,7,8, 9, 11, 12, 14, 16, 17, 19, 21, 22, 24, 26, 27, 29,
       ]);
     } else {
       footerCallbackOptions = setupFooterCallbackOptions([3, 4, 5, 6, 7]);
