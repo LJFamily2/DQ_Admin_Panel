@@ -147,7 +147,7 @@ async function addData(req, res) {
     }
 
     // Find the existing supplier by name
-    const existedSupplier = await Supplier.findOne({ name: req.body.supplier });
+    const existedSupplier = await Supplier.findOne({ supplierSlug: req.body.supplier });
     if (!existedSupplier) {
       return handleResponse(
         req,

@@ -142,7 +142,7 @@ async function getData(req, res) {
 }
 
 async function getSupplierData(req, res) {
-  await getSupplierInputData(req, res, false);
+  await getSupplierInputData(req, res, true);
 }
 
 async function getAreaSupplierData(req, res) {
