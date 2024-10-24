@@ -276,7 +276,7 @@ async function getSupplierExportData(req, res, isArea) {
     const data = result[0].data;
 
     const flattenedData = flattenData(data, isArea);
-
+    console.log(data);
     res.json({
       draw,
       recordsTotal: totalRecords,
@@ -316,6 +316,22 @@ async function getSupplierExportData(req, res, isArea) {
         },
       },
       { $unwind: '$supplier' },
+      {
+        $lookup: {
+          from: 'debts',
+          localField: 'supplier.debtHistory',
+          foreignField: '_id',
+          as: 'supplier.debtHistory',
+        },
+      },
+      {
+        $lookup: {
+          from: 'moneyretaineds',
+          localField: 'supplier.moneyRetainedHistory',
+          foreignField: '_id',
+          as: 'supplier.moneyRetainedHistory',
+        },
+      },
       matchStage,
       {
         $group: {
@@ -334,6 +350,14 @@ async function getSupplierExportData(req, res, isArea) {
         },
       },
     ];
+  }
+
+  function calculateTotalDebtPaidAmount(debtHistory) {
+    return debtHistory.reduce((total, debt) => total + (debt.debtPaidAmount || 0), 0);
+  }
+
+  function calculateRemainingDebt(initialDebtAmount, totalDebtPaidAmount) {
+    return initialDebtAmount - totalDebtPaidAmount;
   }
 
   function flattenData(data, isArea) {
@@ -362,8 +386,7 @@ async function getSupplierExportData(req, res, isArea) {
           total +=
             raw.name === 'Mủ nước'
               ? ((((raw.quantity * (raw.percentage || 0)) / 100) *
-                  (raw.ratioSplit || 0)) /
-                  100) *
+                  (raw.ratioSplit || 0)) / 100) *
                 raw.price
               : ((raw.quantity * (raw.ratioSplit || 0)) / 100) * raw.price;
         }
@@ -401,8 +424,7 @@ async function getSupplierExportData(req, res, isArea) {
             acc[raw.name].total +=
               raw.name === 'Mủ nước'
                 ? ((((raw.quantity * (raw.percentage || 0)) / 100) *
-                    (raw.ratioSplit || 0)) /
-                    100) *
+                    (raw.ratioSplit || 0)) / 100) *
                   raw.price
                 : ((raw.quantity * (raw.ratioSplit || 0)) / 100) * raw.price;
           }
@@ -428,6 +450,11 @@ async function getSupplierExportData(req, res, isArea) {
       );
       const note = item.notes.filter(Boolean).join(', ');
       const signature = '';
+
+      // Calculate totalDebtPaidAmount and remainingDebt
+      const totalDebtPaidAmount = calculateTotalDebtPaidAmount(item.supplier.debtHistory);
+      const remainingDebt = calculateRemainingDebt(item.supplier.initialDebtAmount, totalDebtPaidAmount);
+
       return {
         no,
         supplier,
@@ -439,6 +466,8 @@ async function getSupplierExportData(req, res, isArea) {
             item.supplier.purchasedAreaPrice,
         ),
         areaDeposit: formatNumber(item.supplier.areaDeposit),
+        debtPaidAmount: formatNumber(totalDebtPaidAmount),
+        remainingDebt: formatNumber(remainingDebt),
         muQuyKhoQuantity: formatNumber(muQuyKhoData.quantity),
         muQuyKhoSplit: formatNumber(muQuyKhoData.ratioSplit),
         muQuyKhoQuantityAfterSplit: formatNumber(muQuyKhoData.afterSplit),

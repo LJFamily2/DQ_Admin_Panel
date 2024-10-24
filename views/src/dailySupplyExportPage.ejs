@@ -87,6 +87,8 @@
               <th rowspan="2">Giá</th>
               <th rowspan="2">Thành tiền</th>
               <th rowspan="2">Cọc</th>
+              <th rowspan="2">Tiền đã thu</th>
+              <th rowspan="2">Còn nợ</th>
               <th colspan="5">Mủ quy khô</th>
               <th colspan="5">Mủ tạp</th>
               <th colspan="5">Mủ ké</th>
@@ -442,6 +444,8 @@
               <th></th>
               <th></th>
               <th></th>
+              <th></th>
+              <th></th>
               <th colspan="3"></th>
             </tr>
             <% } else { %>
@@ -516,6 +520,8 @@
           { data: 'areaPrice', orderable: false },
           { data: 'areaTotal', orderable: false },
           { data: 'areaDeposit', orderable: false },
+          { data: 'debtPaidAmount', orderable: false },
+          { data: 'remainingDebt', orderable: false },
           { data: 'muQuyKhoQuantity', orderable: false },
           { data: 'muQuyKhoSplit', orderable: false },
           { data: 'muQuyKhoQuantityAfterSplit', orderable: false },

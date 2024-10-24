@@ -112,6 +112,7 @@ supplierSchema.virtual('totalDebtPaidAmount').get(function () {
   const totalDebtPaidAmount = this.debtHistory.reduce((total, entry) => {
     return total + (entry.debtPaidAmount || 0);
   }, 0);
+  console.log(totalDebtPaidAmount);
   return totalDebtPaidAmount;
 });
 
@@ -134,6 +135,7 @@ supplierSchema.virtual('totalMoneyRetainedAmount').get(function () {
 supplierSchema.virtual('remainingDebt').get(function () {
   const initialDebtAmount = this.initialDebtAmount || 0;
   const totalDebtPaidAmount = this.totalDebtPaidAmount || 0;
+  console.log(initialDebtAmount - totalDebtPaidAmount)
   return initialDebtAmount - totalDebtPaidAmount;
 });
 // ---------------------
