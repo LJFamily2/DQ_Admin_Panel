@@ -285,11 +285,22 @@ async function deleteSupplier(req, res) {
 }
 
 async function editSupplier(req, res) {
-  console.log(req.body);
   req.body = trimStringFields(req.body);
   try {
-    // Generate new slug only if code is changed
+    // Find the existing supplier
     const existingSupplier = await Supplier.findById(req.params.id);
+    if (!existingSupplier) {
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Nhà vườn không tồn tại!',
+        req.headers.referer,
+      );
+    }
+
+    // Generate new slug only if code is changed
     let newSlug = existingSupplier.supplierSlug;
     if (req.body.code && req.body.code !== existingSupplier.code) {
       newSlug = `${req.body.code}-${Math.floor(
@@ -297,19 +308,48 @@ async function editSupplier(req, res) {
       )}`;
     }
 
+    // Calculate initial debt amount if relevant fields are provided
+    const purchasedAreaDimension = parseFloat(req.body.purchasedAreaDimension) || 0;
+    const purchasedAreaPrice = convertToDecimal(req.body.purchasedAreaPrice) || 0;
+    const areaDeposit = convertToDecimal(req.body.areaDeposit) || 0;
+
+    let initialDebtAmount = existingSupplier.initialDebtAmount;
+    if (purchasedAreaDimension > 0 || purchasedAreaPrice > 0 || areaDeposit > 0) {
+      initialDebtAmount = purchasedAreaDimension * purchasedAreaPrice - areaDeposit;
+    }
+
+    // Check for available purchasedAreaDimension
+    if (purchasedAreaDimension > 0) {
+      const remainingAreaDimension = existingSupplier.remainingAreaDimension - purchasedAreaDimension;
+      if (remainingAreaDimension < 0) {
+        return handleResponse(
+          req,
+          res,
+          400,
+          'fail',
+          'Không còn diện tích trống!',
+          req.headers.referer,
+        );
+      }
+      existingSupplier.remainingAreaDimension = remainingAreaDimension;
+    }
+
+    // Update the supplier
     const supplier = await Supplier.findByIdAndUpdate(
       req.params.id,
       {
         ...req.body,
+        initialDebtAmount,
         supplierSlug: newSlug,
         ratioSumSplit: req.body.ratioSumSplit
           ? req.body.ratioSumSplit.replace(',', '.')
           : 0,
-        purchasedAreaPrice: convertToDecimal(req.body.purchasedAreaPrice),
-        areaDeposit: convertToDecimal(req.body.areaDeposit),
+        purchasedAreaPrice,
+        areaDeposit,
       },
       { new: true },
     );
+
     if (!supplier) {
       return handleResponse(
         req,
@@ -340,11 +380,3 @@ async function editSupplier(req, res) {
     res.status(500).render('partials/500', { layout: false });
   }
 }
-module.exports = {
-  // DetailPage
-  renderDetailPage,
-  updateArea,
-  addSupplier,
-  deleteSupplier,
-  editSupplier,
-};
