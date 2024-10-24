@@ -318,20 +318,34 @@ async function editSupplier(req, res) {
       initialDebtAmount = purchasedAreaDimension * purchasedAreaPrice - areaDeposit;
     }
 
-    // Check for available purchasedAreaDimension
-    if (purchasedAreaDimension > 0) {
-      const remainingAreaDimension = existingSupplier.remainingAreaDimension - purchasedAreaDimension;
-      if (remainingAreaDimension < 0) {
-        return handleResponse(
-          req,
-          res,
-          400,
-          'fail',
-          'Không còn diện tích trống!',
-          req.headers.referer,
-        );
-      }
-      existingSupplier.remainingAreaDimension = remainingAreaDimension;
+    // Fetch the DailySupply document to get the remainingAreaDimension
+    const dailySupply = await DailySupply.findOne({ slug: req.body.slug });
+    if (!dailySupply) {
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Không tìm thấy khu vực!',
+        req.headers.referer,
+      );
+    }
+
+    // Calculate the difference in purchasedAreaDimension
+    const oldPurchasedAreaDimension = existingSupplier.purchasedAreaDimension || 0;
+    const dimensionDifference = purchasedAreaDimension - oldPurchasedAreaDimension;
+
+    // Update remainingAreaDimension
+    const remainingAreaDimension = dailySupply.remainingAreaDimension - dimensionDifference;
+    if (remainingAreaDimension < 0) {
+      return handleResponse(
+        req,
+        res,
+        400,
+        'fail',
+        'Không còn diện tích trống!',
+        req.headers.referer,
+      );
     }
 
     // Update the supplier
@@ -360,6 +374,10 @@ async function editSupplier(req, res) {
         req.headers.referer,
       );
     }
+
+    // Update the remainingAreaDimension in the DailySupply document
+    dailySupply.remainingAreaDimension = remainingAreaDimension;
+    await dailySupply.save();
 
     // Determine the redirect URL based on whether the slug has changed
     const redirectUrl =

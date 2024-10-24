@@ -695,6 +695,8 @@
             </div>
             <div class="mt-3">
               <label for="purchasedAreaDimension" class="form-label fw-bold">Diện tích mua (mẫu)</label>
+              <input type="hidden" name="remainingAreaDimension" value="<%= area.remainingAreaDimension %>">
+              <input type="hidden" name="slug" value="<%= area.slug %>">
               <input
                 type="number"
                 class="form-control"
