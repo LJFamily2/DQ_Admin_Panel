@@ -90,7 +90,7 @@ async function updatePricesAndRatios(req, res) {
 
     let supplierId = null;
     if (supplierSlug) {
-      const supplier = await Supplier.findOne({ slug: supplierSlug });
+      const supplier = await Supplier.findOne({ supplierSlug: supplierSlug });
       if (!supplier) {
         return handleResponse(
           req,

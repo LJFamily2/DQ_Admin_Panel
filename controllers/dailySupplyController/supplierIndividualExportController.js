@@ -1,4 +1,4 @@
-const { Supplier, DailySupply } = require('../../models/dailySupplyModel');
+const { Debt, MoneyRetained, Supplier, DailySupply } = require('../../models/dailySupplyModel');
 
 module.exports = {
   renderPage,
@@ -9,15 +9,16 @@ async function renderPage(req, res) {
     const { slug, supplierSlug } = req.params;
     const { startDate, endDate } = req.query;
 
+    // Find the area and populate only the requested supplier
     const area = await DailySupply.findOne({ slug })
-   .populate('suppliers').populate({
-    path: 'data',
-    populate: {
-      path: 'debt'
-    }
-   })
-  
-
+      .populate({
+        path: 'suppliers',
+        match: { supplierSlug: supplierSlug },
+        populate: [
+          { path: 'moneyRetainedHistory' },
+          { path: 'debtHistory' }
+        ]
+      });
 
     if (!area) {
       return res.status(404).render('partials/404', { layout: false });
@@ -37,14 +38,7 @@ async function renderPage(req, res) {
       item => item.supplier._id.toString() === supplierData._id.toString(),
     );
 
-    console.log(area)
 
-
-    const test = await Supplier.findOne({supplierSlug: supplierSlug})
-    .populate('debtHistory.debtRecord')
-
-    console.log(test
-    )
     res.render('src/dailySupplyIndividualExportPage', {
       layout: './layouts/defaultLayout',
       title: `Xuất dữ liệu mủ của ${supplierData.name}`,

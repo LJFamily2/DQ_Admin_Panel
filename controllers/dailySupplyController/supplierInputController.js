@@ -344,7 +344,7 @@ async function updateSupplierData(req, res) {
       dailySupply.data[dataIndex].supplier = supplierDoc._id;
     }
 
-    if (area.areaPrice > 0 && area.areaDimension > 0) {
+    if (dailySupply.areaPrice > 0 && dailySupply.areaDimension > 0) {
       // Calculate and update debt and money retained
       const { debtPaid, retainedAmount } = calculateFinancials(
         updatedRawMaterial,
