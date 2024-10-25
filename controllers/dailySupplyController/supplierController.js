@@ -257,6 +257,23 @@ async function deleteSupplier(req, res) {
       MoneyRetained.deleteMany({ _id: { $in: moneyRetainedIds } }),
     ]);
 
+    // Add back the purchasedAreaDimension to the remainingAreaDimension
+    const dailySupply = await DailySupply.findOne({ suppliers: supplier._id });
+    if (dailySupply) {
+      dailySupply.remainingAreaDimension += supplier.purchasedAreaDimension;
+      const addedAreaBack = await dailySupply.save();
+      if(!addedAreaBack){
+        return handleResponse(
+          req,
+          res,
+          500,
+          'fail',
+          'Thêm lại diện tích khả dụng thất bại!',
+          req.headers.referer,
+        );
+      }
+    }
+
     // Delete the supplier
     const deleteSupplier = await Supplier.findByIdAndDelete(req.params.id);
     if (!deleteSupplier) {
