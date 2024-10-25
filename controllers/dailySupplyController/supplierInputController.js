@@ -1,10 +1,11 @@
-const mongoose = require('mongoose');
 const {
   Debt,
   MoneyRetained,
   Supplier,
   DailySupply,
 } = require('../../models/dailySupplyModel');
+const ActionHistory = require('../../models/actionHistoryModel')
+
 const handleResponse = require('../utils/handleResponse');
 const convertToDecimal = require('../utils/convertToDecimal');
 const trimStringFields = require('../utils/trimStringFields');
@@ -228,6 +229,25 @@ async function addData(req, res) {
         req.headers.referer,
       );
     }
+    
+    // Adding new action history
+    const actionHistory = await ActionHistory.create({
+      actionType: 'create',
+      userId: req.user._id,
+      details: `Thêm dữ liệu cho ${existedSupplier.supplierName}`,
+      newDocument: inputedData,
+    });
+
+    if (!actionHistory) {
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Thêm dữ liệu thất bại!',
+        req.headers.referer,
+      );
+    }
 
     // Success response
     return handleResponse(
@@ -386,6 +406,25 @@ async function updateSupplierData(req, res) {
         req.headers.referer,
       );
     }
+    
+    // Adding new action history
+    const actionHistory = await ActionHistory.create({
+      actionType: 'update',
+      userId: req.user._id,
+      details: `Cập nhật dữ liệu cho ${updatedDailySupply.name}`,
+      oldDocument: dailySupply.data[dataIndex],
+      newDocument: updatedDailySupply.data[dataIndex],
+    });
+    if (!actionHistory) {
+      return handleResponse(
+        req,
+        res,
+        400,
+        'fail',
+        'Cập nhật dữ liệu thất bại!',
+        req.headers.referer,
+      );
+    }
 
     return handleResponse(
       req,
@@ -490,6 +529,25 @@ async function deleteSupplierData(req, res) {
       }
       await Promise.all(deletePromises);
     }
+
+    // Adding new action history
+    const actionHistory = await ActionHistory.create({
+      actionType: 'delete',
+      userId: req.user._id,
+      details: `Xóa dữ liệu cho ${updatedData.name}`,
+      oldDocument: subDocument,
+    });
+    if (!actionHistory) {
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Xóa dữ liệu thất bại!',
+        req.headers.referer,
+      );
+    }
+
 
     return handleResponse(
       req,

@@ -4,6 +4,7 @@ const {
   Supplier,
   DailySupply,
 } = require('../../models/dailySupplyModel');
+const ActionHistory = require('../../models/actionHistoryModel');
 
 const trimStringFields = require('../utils/trimStringFields');
 const handleResponse = require('../utils/handleResponse');
@@ -174,6 +175,25 @@ async function updatePricesAndRatios(req, res) {
       );
     }
 
+    // Adding new action history
+    const actionHistory = await ActionHistory.create({
+      actionType: 'update',
+      userId: req.user._id,
+      details: `Cập nhật giá cho khu vực ${area.name}`,
+      oldDocument: area,
+      newDocument: saveData,
+    });
+    if(!actionHistory){
+      return handleResponse(
+        req,
+        res,
+        500,
+        'fail',
+        'Lỗi cập nhật dữ liệu!',
+        req.headers.referer,
+      );
+    }
+    
     const successMessage = supplierSlug
       ? 'Cập nhật giá thành công cho nhà cung cấp'
       : 'Cập nhật giá thành công cho khu vực';

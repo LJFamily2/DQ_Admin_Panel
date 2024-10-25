@@ -1,5 +1,6 @@
 const AccountModel = require('../../models/accountModel');
 const { Debt, MoneyRetained, Supplier, DailySupply } = require('../../models/dailySupplyModel');
+const ActionHistory = require('../../models/actionHistoryModel');
 
 const trimStringFields = require('../utils/trimStringFields');
 const handleResponse = require('../utils/handleResponse');
@@ -106,7 +107,7 @@ async function addArea(req, res) {
       const suppliersId = createdSuppliers.map(supplier => supplier._id);
       newArea.suppliers = suppliersId;
       const addSupplier = await newArea.save();
-      if(!addSupplier){
+      if (!addSupplier) {
         return handleResponse(
           req,
           res,
@@ -116,6 +117,30 @@ async function addArea(req, res) {
           req.headers.referer,
         );
       }
+    }
+
+    // Adding new action history with only relevant fields
+    const actionHistory = await ActionHistory.create({
+      actionType: 'create',
+      userId: req.user._id,
+      details: `Tạo khu vực ${newArea.name}`,
+      changedFields: {
+        name: newArea.name,
+        areaDimension: newArea.areaDimension,
+        remainingAreaDimension: newArea.remainingAreaDimension,
+        areaPrice: newArea.areaPrice,
+      },
+    });
+
+    if (!actionHistory) {
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Ghi lại lịch sử hành động thất bại!',
+        req.headers.referer,
+      );
     }
 
     return handleResponse(
@@ -169,6 +194,25 @@ async function deleteArea(req, res) {
     ]);
 
     if (!deletedData) {
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Xóa khu vực thất bại!',
+        req.headers.referer,
+      );
+    }
+
+    // Adding new action history
+    const actionHistory = await ActionHistory.create({
+      actionType: 'delete',
+      userId: req.user._id,
+      details: `Xóa khu vực ${area.name}`,
+      oldDocument: area,
+    });
+
+    if (!actionHistory) {
       return handleResponse(
         req,
         res,

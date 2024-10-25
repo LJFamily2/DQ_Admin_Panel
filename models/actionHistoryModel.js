@@ -10,7 +10,7 @@ const actionHistorySchema = new mongoose.Schema({
   userId: { 
     type: mongoose.Schema.Types.ObjectId, 
     required: true, 
-    ref: 'User' // Reference to the User model
+    ref: 'Accounts'
   },
   timestamp: { 
     type: Date, 
@@ -20,12 +20,8 @@ const actionHistorySchema = new mongoose.Schema({
     type: String, 
     default: '' 
   },
-  oldDocument: { 
+  changedFields: { 
     type: Object, 
-    default: {} 
-  },
-  newDocument: { 
-    type: Object,
     default: {} 
   },
 });

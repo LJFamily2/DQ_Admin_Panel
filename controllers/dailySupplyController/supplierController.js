@@ -5,8 +5,9 @@ const {
   Supplier,
   DailySupply,
 } = require('../../models/dailySupplyModel');
-const slugify = require('slugify');
+const ActionHistory = require('../../models/actionHistoryModel');
 
+const slugify = require('slugify');
 const trimStringFields = require('../utils/trimStringFields');
 const handleResponse = require('../utils/handleResponse');
 const createSuppliers = require('./helper/createSuppliers');
@@ -115,6 +116,26 @@ async function updateArea(req, res) {
         req.headers.referer,
       );
     }
+
+    // Adding new action history
+    const actionHistory = await ActionHistory.create({
+      actionType: 'update',
+      userId: req.user._id,
+      details: `Cập nhật khu vực ${newData.name}`,
+      oldDocument: currentArea,
+      newDocument: newData,
+    });
+    if (!actionHistory) {
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Cập nhật khu vực thất bại!',
+        req.headers.referer,
+      );
+    }
+
     return handleResponse(
       req,
       res,
@@ -191,6 +212,25 @@ async function addSupplier(req, res) {
 
     const updateData = await area.save();
     if (!updateData) {
+      return handleResponse(
+        req,
+        res,
+        500,
+        'fail',
+        'Thêm nhà vườn mới thất bại!',
+        req.headers.referer,
+      );
+    }
+
+    // Adding new action history
+    const actionHistory = await ActionHistory.create({
+      actionType: 'create',
+      userId: req.user._id,
+      details: `Thêm nhà vườn vào khu vực ${area.name}`,
+      oldDocument: area,
+      newDocument: updateData,
+    });
+    if (!actionHistory) {
       return handleResponse(
         req,
         res,
@@ -281,6 +321,25 @@ async function deleteSupplier(req, res) {
         req,
         res,
         404,
+        'fail',
+        'Xóa nhà vườn thất bại!',
+        req.headers.referer,
+      );
+    }
+
+    // Adding new action history
+    const actionHistory = await ActionHistory.create({
+      actionType: 'delete',
+      userId: req.user._id,
+      details: `Xóa nhà vườn ${supplier.code}`,
+      oldDocument: dailySupply,
+      newDocument: addedAreaBack,
+    });
+    if (!actionHistory) {
+      return handleResponse(
+        req,
+        res,
+        500,
         'fail',
         'Xóa nhà vườn thất bại!',
         req.headers.referer,
@@ -395,6 +454,25 @@ async function editSupplier(req, res) {
     // Update the remainingAreaDimension in the DailySupply document
     dailySupply.remainingAreaDimension = remainingAreaDimension;
     await dailySupply.save();
+
+    // Adding new action history
+    const actionHistory = await ActionHistory.create({
+      actionType: 'update',
+      userId: req.user._id,
+      details: `Cập nhật nhà vườn ${supplier.code}`,
+      oldDocument: existingSupplier,
+      newDocument: supplier,
+    });
+    if (!actionHistory) {
+      return handleResponse(
+        req,
+        res,
+        500,
+        'fail',
+        'Sửa thông tin nhà vườn thất bại!',
+        req.headers.referer,
+      );
+    }
 
     // Determine the redirect URL based on whether the slug has changed
     const redirectUrl =
