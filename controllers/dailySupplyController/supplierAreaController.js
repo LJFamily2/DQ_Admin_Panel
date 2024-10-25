@@ -105,7 +105,17 @@ async function addArea(req, res) {
       const createdSuppliers = await Supplier.create(suppliers);
       const suppliersId = createdSuppliers.map(supplier => supplier._id);
       newArea.suppliers = suppliersId;
-      await newArea.save();
+      const addSupplier = await newArea.save();
+      if(!addSupplier){
+        return handleResponse(
+          req,
+          res,
+          404,
+          'fail',
+          'Thêm nhà vườn vào khu vực thất bại!',
+          req.headers.referer,
+        );
+      }
     }
 
     return handleResponse(

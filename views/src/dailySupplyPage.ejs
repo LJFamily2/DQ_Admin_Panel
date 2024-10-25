@@ -567,11 +567,14 @@
         document.getElementById('areaPrice').value.replace(/,/g, ''),
       ) || 0;
     const conditionalFields = document.querySelectorAll('.conditional-field');
+    const inputFields = document.querySelectorAll('.conditional-field input');
 
     if (areaDimension > 0 && areaPrice > 0) {
       conditionalFields.forEach(field => (field.style.display = 'block'));
+      inputFields.forEach(input => (input.disabled = false));
     } else {
       conditionalFields.forEach(field => (field.style.display = 'none'));
+      inputFields.forEach(input => (input.disabled = true));
     }
   }
 

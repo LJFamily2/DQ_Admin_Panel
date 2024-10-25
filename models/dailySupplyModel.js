@@ -95,8 +95,8 @@ const dailySupplySchema = new mongoose.Schema({
     },
   },
   contractDuration: {
-    start: { type: Date, required: true },
-    end: { type: Date, required: true },
+    start: { type: Date },
+    end: { type: Date },
   },
   areaPrice: { type: Number, default: 0 },
   address: { type: String, required: true },
