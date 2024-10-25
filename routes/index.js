@@ -11,7 +11,7 @@ const saleRoute = require("./src/saleRoute")
 const spendRoute = require("./src/spendRoute")
 const dailySupplyRoute = require("./src/dailySupplyRoute")
 const dashboard = require("./src/dashboardRoute")
-
+const actionHistory = require("./src/actionHistoryRoute")
 
 const routes = [
     {path: "/tong", route: dashboard},
@@ -28,6 +28,7 @@ const routes = [
     {path: "/quan-ly-chi-tieu", route: spendRoute},
     {path: "/du-lieu-hang-ngay", route: dailySupplyRoute},
     {path: "/nhap-du-lieu", route: dailySupplyRoute},
+    {path: "/du-lieu", route: actionHistory},
 
 ]
 

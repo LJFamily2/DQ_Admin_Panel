@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity History</title>
+    <style>
+        .activity-header {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        .activity-time {
+            font-size: 0.9rem;
+            color: gray;
+        }
+        .highlight {
+            color: green; /* Change color for highlights */
+            font-weight: bold;
+        }
+        .transferred {
+            color: red; /* Change color for transferred text */
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Activity Log</h1>
+
+        <% activities.forEach((activity) => { %>
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="activity-header">
+                    <%= activity.actionType %> by User: <%= activity.userId.username %>
+                    <span class="activity-time float-right"><%= new Date(activity.timestamp).toLocaleString() %></span>
+                </div>
+                <p class="mb-1">
+                    <%= activity.details %>
+                </p>
+                <small class="text-muted">Changed Fields: <%= JSON.stringify(activity.changedFields) %></small>
+            </div>
+        </div>
+        <% }); %>
+
+        <a href="/du-lieu-hang-ngay" class="btn btn-primary mt-3">Back to Data</a>
+    </div>
+
+</body>
+</html>

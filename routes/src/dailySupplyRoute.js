@@ -37,5 +37,4 @@ router.post("/:slug/updatePrice/:supplierSlug?", authMiddlewares.ensureRoles(['A
 router.get("/:slug/xuat-file/:supplierSlug", authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.supplierIndividualExportController.renderPage)
 router.post("/:slug/getSupplierExportData/:supplierSlug", authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.getSupplierDataController.getIndividualSupplierExportData)
 
-
 module.exports = router;

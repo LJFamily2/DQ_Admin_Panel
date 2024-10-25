@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Accounts = require('../models/accountModel');
 
 // Define the schema for action history
 const actionHistorySchema = new mongoose.Schema({

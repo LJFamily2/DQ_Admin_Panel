@@ -11,5 +11,5 @@ module.exports = {
   supplierController,
   supplierInputController,
   supplierExportController,
-  supplierIndividualExportController
+  supplierIndividualExportController,
 };
