@@ -8,6 +8,7 @@ const {
 const ActionHistory = require('../../models/actionHistoryModel');
 
 const slugify = require('slugify');
+const getChangedFields = require('../utils/getChangedFields');
 const trimStringFields = require('../utils/trimStringFields');
 const handleResponse = require('../utils/handleResponse');
 const createSuppliers = require('./helper/createSuppliers');
@@ -118,12 +119,12 @@ async function updateArea(req, res) {
     }
 
     // Adding new action history
+    const changedFields = getChangedFields(currentArea, newData);
     const actionHistory = await ActionHistory.create({
       actionType: 'update',
       userId: req.user._id,
       details: `Cập nhật khu vực ${newData.name}`,
-      oldDocument: currentArea,
-      newDocument: newData,
+      changedFields
     });
     if (!actionHistory) {
       return handleResponse(
@@ -152,7 +153,6 @@ async function updateArea(req, res) {
 
 async function addSupplier(req, res) {
   req.body = trimStringFields(req.body);
-  console.log(req.body);
   try {
     const area = await DailySupply.findById(req.params.id);
     if (!area) {
@@ -223,12 +223,12 @@ async function addSupplier(req, res) {
     }
 
     // Adding new action history
+    const changedFields = getChangedFields(area, updateData);
     const actionHistory = await ActionHistory.create({
       actionType: 'create',
       userId: req.user._id,
       details: `Thêm nhà vườn vào khu vực ${area.name}`,
-      oldDocument: area,
-      newDocument: updateData,
+      changedFields
     });
     if (!actionHistory) {
       return handleResponse(
@@ -328,12 +328,11 @@ async function deleteSupplier(req, res) {
     }
 
     // Adding new action history
+
     const actionHistory = await ActionHistory.create({
       actionType: 'delete',
       userId: req.user._id,
       details: `Xóa nhà vườn ${supplier.code}`,
-      oldDocument: dailySupply,
-      newDocument: addedAreaBack,
     });
     if (!actionHistory) {
       return handleResponse(
@@ -456,12 +455,12 @@ async function editSupplier(req, res) {
     await dailySupply.save();
 
     // Adding new action history
+    const changedFields = getChangedFields(existingSupplier, supplier);
     const actionHistory = await ActionHistory.create({
       actionType: 'update',
       userId: req.user._id,
       details: `Cập nhật nhà vườn ${supplier.code}`,
-      oldDocument: existingSupplier,
-      newDocument: supplier,
+      changedFields
     });
     if (!actionHistory) {
       return handleResponse(

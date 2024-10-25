@@ -119,17 +119,13 @@ async function addArea(req, res) {
       }
     }
 
+
     // Adding new action history with only relevant fields
     const actionHistory = await ActionHistory.create({
       actionType: 'create',
       userId: req.user._id,
       details: `Tạo khu vực ${newArea.name}`,
-      changedFields: {
-        name: newArea.name,
-        areaDimension: newArea.areaDimension,
-        remainingAreaDimension: newArea.remainingAreaDimension,
-        areaPrice: newArea.areaPrice,
-      },
+      changedFields: newArea,
     });
 
     if (!actionHistory) {
@@ -209,7 +205,6 @@ async function deleteArea(req, res) {
       actionType: 'delete',
       userId: req.user._id,
       details: `Xóa khu vực ${area.name}`,
-      oldDocument: area,
     });
 
     if (!actionHistory) {
