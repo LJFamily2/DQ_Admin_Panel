@@ -6,6 +6,7 @@ const {
 } = require('../../models/dailySupplyModel');
 const ActionHistory = require('../../models/actionHistoryModel');
 
+const getChangedFields = require('../utils/getChangedFields');
 const trimStringFields = require('../utils/trimStringFields');
 const handleResponse = require('../utils/handleResponse');
 const convertToDecimal = require('../utils/convertToDecimal');
@@ -176,12 +177,12 @@ async function updatePricesAndRatios(req, res) {
     }
 
     // Adding new action history
+    const changedFields = getChangedFields(area, saveData);
     const actionHistory = await ActionHistory.create({
       actionType: 'update',
       userId: req.user._id,
       details: `Cập nhật giá cho khu vực ${area.name}`,
-      oldDocument: area,
-      newDocument: saveData,
+      changedFields
     });
     if(!actionHistory){
       return handleResponse(

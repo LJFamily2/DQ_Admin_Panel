@@ -6,6 +6,7 @@ const {
 } = require('../../models/dailySupplyModel');
 const ActionHistory = require('../../models/actionHistoryModel')
 
+const getChangedFields = require('../utils/getChangedFields');
 const handleResponse = require('../utils/handleResponse');
 const convertToDecimal = require('../utils/convertToDecimal');
 const trimStringFields = require('../utils/trimStringFields');
@@ -229,13 +230,14 @@ async function addData(req, res) {
         req.headers.referer,
       );
     }
-    
+
     // Adding new action history
+    const changedFields = getChangedFields(dailySupply,updateSupplier)
     const actionHistory = await ActionHistory.create({
       actionType: 'create',
       userId: req.user._id,
       details: `Thêm dữ liệu cho ${existedSupplier.supplierName}`,
-      newDocument: inputedData,
+      changedFields
     });
 
     if (!actionHistory) {
@@ -408,12 +410,12 @@ async function updateSupplierData(req, res) {
     }
     
     // Adding new action history
+    const changedFields = getChangedFields(dailySupply,updatedDailySupply)
     const actionHistory = await ActionHistory.create({
       actionType: 'update',
       userId: req.user._id,
       details: `Cập nhật dữ liệu cho ${updatedDailySupply.name}`,
-      oldDocument: dailySupply.data[dataIndex],
-      newDocument: updatedDailySupply.data[dataIndex],
+      changedFields
     });
     if (!actionHistory) {
       return handleResponse(
@@ -535,7 +537,6 @@ async function deleteSupplierData(req, res) {
       actionType: 'delete',
       userId: req.user._id,
       details: `Xóa dữ liệu cho ${updatedData.name}`,
-      oldDocument: subDocument,
     });
     if (!actionHistory) {
       return handleResponse(
