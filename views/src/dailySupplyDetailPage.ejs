@@ -473,7 +473,7 @@
                         class="form-control"
                         id="contractStart"
                         name="contractDuration[start]"
-                        value="<%= area.contractDuration.start.toISOString().split('T')[0] %>"
+                        value="<%= area.contractDuration.start?  area.contractDuration.start.toISOString().split('T')[0] : '' %>"
                       />
                     </div>
                     <div class="col-6">
@@ -485,7 +485,7 @@
                         class="form-control"
                         id="contractEnd"
                         name="contractDuration[end]"
-                        value="<%= area.contractDuration.end.toISOString().split('T')[0] %>"
+                        value="<%=area.contractDuration.end ?  area.contractDuration.end.toISOString().split('T')[0] : '' %>"
                       />
                     </div>
                   </div>
