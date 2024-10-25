@@ -7,6 +7,8 @@
   <script src="/js/slim-select.js" defer></script>
   <script src="/js/toggleButtons.js" defer></script>
   <script src="/js/inputFieldRestriction.js" defer></script>
+  <script src="/js/toggleFields.js"></script>
+
   <style>
     .hide {
       display: none;
@@ -1086,38 +1088,13 @@
       toggleFields(); 
     }
   
-    // Toggle fields based on area dimension and area price input values
-    function debounce(func, timeout = 700) {
-      let timer;
-      return (...args) => {
-        clearTimeout(timer);
-        timer = setTimeout(() => {
-          func.apply(this, args);
-        }, timeout);
-      };
-    }
-  
-    const debouncedToggleFields = debounce(toggleFields);
-  
     // Use EJS variables for initial values
     const initialAreaPrice = parseFloat('<%= area.areaPrice %>');
     const initialAreaDimension = parseFloat('<%= area.areaDimension %>');
-  
-    function toggleFields() {
-      const areaDimension = initialAreaDimension;
-      const areaPrice = initialAreaPrice;
-      const conditionalFields = document.querySelectorAll('.conditional-field');
-  
-      if (areaDimension > 0 && areaPrice > 0) {
-        conditionalFields.forEach(field => (field.style.display = 'block'));
-      } else {
-        conditionalFields.forEach(field => (field.style.display = 'none'));
-      }
-    }
-  
-    document.addEventListener('DOMContentLoaded', () => {
-      toggleFields();
-    });
+
+    // Initialize toggle fields with initial values
+    toggleFields(initialAreaDimension, initialAreaPrice);
+    initializeToggleFields('areaDimension', 'areaPrice');
 
     function checkAdditionalFields() {
     const suppliers = document.querySelectorAll('.additionalField .supplier');
