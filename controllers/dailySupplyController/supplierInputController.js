@@ -237,8 +237,8 @@ async function addData(req, res) {
       actionType: 'create',
       userId: req.user._id,
       details: `Thêm dữ liệu cho ${existedSupplier.supplierName}`,
-      oldValues: Object.fromEntries(Object.entries(changedFields).map(([key, { oldValue }]) => [key, oldValue])),
-      newValues: Object.fromEntries(Object.entries(changedFields).map(([key, { newValue }]) => [key, newValue]))
+      // oldValues: Object.fromEntries(Object.entries(changedFields).map(([key, { oldValue }]) => [key, oldValue])),
+      // newValues: Object.fromEntries(Object.entries(changedFields).map(([key, { newValue }]) => [key, newValue]))
     });
 
     if (!actionHistory) {

@@ -1,63 +1,100 @@
-<!DOCTYPE html>
-<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Activity History</title>
-    <style>
-        .activity-header {
-            font-weight: bold;
-            font-size: 1.5rem;
-        }
-        .activity-time {
-            font-size: 0.9rem;
-            color: gray;
-        }
-        .highlight {
-            color: green; /* Change color for highlights */
-            font-weight: bold;
-        }
-        .transferred {
-            color: red; /* Change color for transferred text */
-            font-weight: bold;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Activity History</title>
+  <style>
+    .activity-header {
+      font-weight: bold;
+      font-size: 1.5rem;
+    }
+    .activity-time {
+      font-size: 0.9rem;
+      color: gray;
+    }
+  </style>
 </head>
+
 <body>
-    <div class="container mt-5">
-        <h1 class="mb-4">Activity Log</h1>
-        <% activities.forEach((activity) => { %>
-        <div class="card mb-3">
-            <div class="card-body">
-                <div class="activity-header">
-                    <% 
-                    let actionText; 
-                    switch (activity.actionType) {
-                        case 'create':
-                            actionText = 'Tạo';
-                            break;
-                        case 'delete':
-                            actionText = 'Xóa';
-                            break;
-                        case 'update':
-                            actionText = 'Cập nhật';
-                            break;
-                        default:
-                            actionText = activity.actionType;
-                    }
-                    %>
-                    <%= actionText %> bởi: <%= activity.userId.username %>
-                    <span class="activity-time float-right"><%= new Date(activity.timestamp).toLocaleString() %></span>
-                </div>
-                <p class="mb-1">
-                    <%= activity.details %>
-                </p>
-                <small class="text-muted">Các thay đổi: <span>Xem</span></small>
-            </div>
+  <div class="container mt-5">
+    <h1 class="mb-4">Hoạt động</h1>
+    <% activities.forEach((activity) => { %>
+    <div class="card mb-3">
+      <div class="card-body">
+        <div class="activity-header">
+          <% let actionText; switch (activity.actionType) { case 'create':
+        actionText = 'Tạo'; break; case 'delete': actionText = 'Xóa'; break;
+          case 'update': actionText = 'Cập nhật'; break; default: actionText =
+          activity.actionType; } %> <%= actionText %> bởi: <%=
+          activity.userId.username %>
+          <span class="activity-time float-right"
+            ><%= new Date(activity.timestamp).toLocaleString() %></span
+          >
         </div>
-        <% }); %>
-
+        <p class="mb-1"><%= activity.details %></p>
+        <small class="text-muted"
+          >Các thay đổi:
+          <button
+          class="btn btn-link p-0"
+            type="button"
+            data-bs-toggle="modal"
+            data-bs-target="#<%= activity._id %>"
+          >
+            Xem
+          </button>
+        </small>
+      </div>
     </div>
-
+    <!-- Modal -->
+    <div
+      class="modal fade"
+      id="<%= activity._id %>"
+      tabindex="-1"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Các thay đổi</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col">
+                <h6>Giá trị cũ:</h6>
+                <% Object.entries(activity.oldValues).forEach(([key, value]) => { %>
+                <% if (key !== '_id' && key !== '__v') { %>
+                <p><%= key %>: <%= value %></p>
+                <% } %>
+                <% }); %>
+              </div>
+              <div class="col">
+                <h6>Giá trị mới:</h6>
+                <% Object.entries(activity.newValues).forEach(([key, value]) => { %>
+                <% if (key !== '_id' && key !== '__v') { %>
+                <p><%= key %>: <%= value %></p>
+                <% } %>
+                <% }); %>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Đóng
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <% }); %>
+  </div>
 </body>
-</html>
