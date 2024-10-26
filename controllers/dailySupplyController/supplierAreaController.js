@@ -6,6 +6,7 @@ const trimStringFields = require('../utils/trimStringFields');
 const handleResponse = require('../utils/handleResponse');
 const createSuppliers = require('./helper/createSuppliers');
 const convertToDecimal = require('../utils/convertToDecimal');
+const getChangedFields = require('../utils/getChangedFields');
 
 module.exports = {
   renderPage,
@@ -119,13 +120,14 @@ async function addArea(req, res) {
       }
     }
 
-
+    
     // Adding new action history with only relevant fields
+    const changedFields = getChangedFields(existingArea, newArea);
     const actionHistory = await ActionHistory.create({
       actionType: 'create',
       userId: req.user._id,
-      details: `Tạo khu vực ${newArea.name}`,
-      changedFields: newArea,
+      details: `Tạo khu vực mới ${newArea.name}`,
+      newValues: Object.fromEntries(Object.entries(changedFields).map(([key, { newValue }]) => [key, newValue]))
     });
 
     if (!actionHistory) {

@@ -21,7 +21,11 @@ const actionHistorySchema = new mongoose.Schema({
     type: String, 
     default: '' 
   },
-  changedFields: { 
+  oldValues: { 
+    type: Object, 
+    default: {} 
+  },
+  newValues: { 
     type: Object, 
     default: {} 
   },

@@ -182,7 +182,8 @@ async function updatePricesAndRatios(req, res) {
       actionType: 'update',
       userId: req.user._id,
       details: `Cập nhật giá cho khu vực ${area.name}`,
-      changedFields
+      oldValues: Object.fromEntries(Object.entries(changedFields).map(([key, { oldValue }]) => [key, oldValue])),
+      newValues: Object.fromEntries(Object.entries(changedFields).map(([key, { newValue }]) => [key, newValue]))
     });
     if(!actionHistory){
       return handleResponse(

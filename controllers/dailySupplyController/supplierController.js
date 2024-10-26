@@ -124,7 +124,8 @@ async function updateArea(req, res) {
       actionType: 'update',
       userId: req.user._id,
       details: `Cập nhật khu vực ${newData.name}`,
-      changedFields
+      oldValues: Object.fromEntries(Object.entries(changedFields).map(([key, { oldValue }]) => [key, oldValue])),
+      newValues: Object.fromEntries(Object.entries(changedFields).map(([key, { newValue }]) => [key, newValue]))
     });
     if (!actionHistory) {
       return handleResponse(
@@ -228,7 +229,8 @@ async function addSupplier(req, res) {
       actionType: 'create',
       userId: req.user._id,
       details: `Thêm nhà vườn vào khu vực ${area.name}`,
-      changedFields
+      oldValues: Object.fromEntries(Object.entries(changedFields).map(([key, { oldValue }]) => [key, oldValue])),
+      newValues: Object.fromEntries(Object.entries(changedFields).map(([key, { newValue }]) => [key, newValue]))
     });
     if (!actionHistory) {
       return handleResponse(
@@ -460,7 +462,8 @@ async function editSupplier(req, res) {
       actionType: 'update',
       userId: req.user._id,
       details: `Cập nhật nhà vườn ${supplier.code}`,
-      changedFields
+      oldValues: Object.fromEntries(Object.entries(changedFields).map(([key, { oldValue }]) => [key, oldValue])),
+      newValues: Object.fromEntries(Object.entries(changedFields).map(([key, { newValue }]) => [key, newValue]))
     });
     if (!actionHistory) {
       return handleResponse(

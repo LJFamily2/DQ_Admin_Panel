@@ -237,7 +237,8 @@ async function addData(req, res) {
       actionType: 'create',
       userId: req.user._id,
       details: `Thêm dữ liệu cho ${existedSupplier.supplierName}`,
-      changedFields
+      oldValues: Object.fromEntries(Object.entries(changedFields).map(([key, { oldValue }]) => [key, oldValue])),
+      newValues: Object.fromEntries(Object.entries(changedFields).map(([key, { newValue }]) => [key, newValue]))
     });
 
     if (!actionHistory) {
@@ -415,7 +416,8 @@ async function updateSupplierData(req, res) {
       actionType: 'update',
       userId: req.user._id,
       details: `Cập nhật dữ liệu cho ${updatedDailySupply.name}`,
-      changedFields
+      oldValues: Object.fromEntries(Object.entries(changedFields).map(([key, { oldValue }]) => [key, oldValue])),
+      newValues: Object.fromEntries(Object.entries(changedFields).map(([key, { newValue }]) => [key, newValue]))
     });
     if (!actionHistory) {
       return handleResponse(
