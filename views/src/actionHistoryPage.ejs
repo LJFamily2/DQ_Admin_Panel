@@ -26,23 +26,37 @@
 <body>
     <div class="container mt-5">
         <h1 class="mb-4">Activity Log</h1>
-
         <% activities.forEach((activity) => { %>
         <div class="card mb-3">
             <div class="card-body">
                 <div class="activity-header">
-                    <%= activity.actionType %> by User: <%= activity.userId.username %>
+                    <% 
+                    let actionText; 
+                    switch (activity.actionType) {
+                        case 'create':
+                            actionText = 'Tạo';
+                            break;
+                        case 'delete':
+                            actionText = 'Xóa';
+                            break;
+                        case 'update':
+                            actionText = 'Cập nhật';
+                            break;
+                        default:
+                            actionText = activity.actionType;
+                    }
+                    %>
+                    <%= actionText %> bởi: <%= activity.userId.username %>
                     <span class="activity-time float-right"><%= new Date(activity.timestamp).toLocaleString() %></span>
                 </div>
                 <p class="mb-1">
                     <%= activity.details %>
                 </p>
-                <small class="text-muted">Changed Fields: <%= JSON.stringify(activity.changedFields) %></small>
+                <small class="text-muted">Các thay đổi: <span>Xem</span></small>
             </div>
         </div>
         <% }); %>
 
-        <a href="/du-lieu-hang-ngay" class="btn btn-primary mt-3">Back to Data</a>
     </div>
 
 </body>

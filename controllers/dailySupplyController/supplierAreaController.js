@@ -122,12 +122,11 @@ async function addArea(req, res) {
 
     
     // Adding new action history with only relevant fields
-    const changedFields = getChangedFields(existingArea, newArea);
     const actionHistory = await ActionHistory.create({
       actionType: 'create',
       userId: req.user._id,
       details: `Tạo khu vực mới ${newArea.name}`,
-      newValues: Object.fromEntries(Object.entries(changedFields).map(([key, { newValue }]) => [key, newValue]))
+      newValues: newArea
     });
 
     if (!actionHistory) {
