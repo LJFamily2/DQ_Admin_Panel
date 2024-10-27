@@ -11,6 +11,18 @@
       font-size: 0.9rem;
       color: gray;
     }
+
+    pre {
+      background-color: #f8f9fa;
+      padding: 10px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+
+    code {
+      font-family: monospace;
+      white-space: pre-wrap;
+    }
   </style>
 </head>
 
@@ -22,7 +34,7 @@
       <div class="card-body">
         <div class="activity-header">
           <% let actionText; switch (activity.actionType) { case 'create':
-        actionText = 'Tạo'; break; case 'delete': actionText = 'Xóa'; break;
+          actionText = 'Tạo'; break; case 'delete': actionText = 'Xóa'; break;
           case 'update': actionText = 'Cập nhật'; break; default: actionText =
           activity.actionType; } %> <%= actionText %> bởi: <%=
           activity.userId.username %>
@@ -34,7 +46,7 @@
         <small class="text-muted"
           >Các thay đổi:
           <button
-          class="btn btn-link p-0"
+            class="btn btn-link p-0"
             type="button"
             data-bs-toggle="modal"
             data-bs-target="#<%= activity._id %>"
@@ -52,7 +64,9 @@
       aria-labelledby="exampleModalLabel"
       aria-hidden="true"
     >
-      <div class="modal-dialog">
+      <div
+        class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable"
+      >
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="exampleModalLabel">Các thay đổi</h5>
@@ -65,21 +79,30 @@
           </div>
           <div class="modal-body">
             <div class="row">
-              <div class="col">
+              <div class="col col-md-6">
                 <h6>Giá trị cũ:</h6>
-                <% Object.entries(activity.oldValues).forEach(([key, value]) => { %>
-                <% if (key !== '_id' && key !== '__v') { %>
-                <p><%= key %>: <%= value %></p>
-                <% } %>
-                <% }); %>
+                <% const oldValues = activity.oldValues || {}; %> <% const
+                replacer = (key, value) => key === '_id' ? undefined : value; %>
+                <% Object.entries(oldValues).forEach(([key, value]) => { %> <%
+                if (key !== '_id' && key !== '__v' && key !== 'slug' && key !==
+                'supplierSlug') { %>
+                <div>
+                  <strong><%= key %>:</strong>
+                  <pre><code><%= value == null ? '' : (typeof value === 'object' ? JSON.stringify(value, replacer, 2) : value) %></code></pre>
+                </div>
+                <% } %> <% }); %>
               </div>
-              <div class="col">
+              <div class="col col-md-6">
                 <h6>Giá trị mới:</h6>
-                <% Object.entries(activity.newValues).forEach(([key, value]) => { %>
-                <% if (key !== '_id' && key !== '__v') { %>
-                <p><%= key %>: <%= value %></p>
-                <% } %>
-                <% }); %>
+                <% const newValues = activity.newValues || {}; %> <%
+                Object.entries(newValues).forEach(([key, value]) => { %> <% if
+                (key !== '_id' && key !== '__v' && key !== 'slug' && key !==
+                'supplierSlug') { %>
+                <div>
+                  <strong><%= key %>:</strong>
+                  <pre><code><%= value == null ? '' : (typeof value === 'object' ? JSON.stringify(value, replacer, 2) : value) %></code></pre>
+                </div>
+                <% } %> <% }); %>
               </div>
             </div>
           </div>

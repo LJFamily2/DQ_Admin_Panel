@@ -206,6 +206,7 @@ async function deleteArea(req, res) {
       actionType: 'delete',
       userId: req.user._id,
       details: `Xóa khu vực ${area.name}`,
+      oldValues: area,
     });
 
     if (!actionHistory) {

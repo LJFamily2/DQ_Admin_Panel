@@ -232,13 +232,11 @@ async function addData(req, res) {
     }
 
     // Adding new action history
-    const changedFields = getChangedFields(dailySupply,updateSupplier)
     const actionHistory = await ActionHistory.create({
       actionType: 'create',
       userId: req.user._id,
-      details: `Thêm dữ liệu cho ${existedSupplier.supplierName}`,
-      // oldValues: Object.fromEntries(Object.entries(changedFields).map(([key, { oldValue }]) => [key, oldValue])),
-      // newValues: Object.fromEntries(Object.entries(changedFields).map(([key, { newValue }]) => [key, newValue]))
+      details: `Thêm dữ liệu cho ${existedSupplier.name} của vườn ${newData.name}`,
+      newValues: inputedData,
     });
 
     if (!actionHistory) {
@@ -335,6 +333,9 @@ async function updateSupplierData(req, res) {
       );
     }
 
+    // Make a deep copy of the data before updating
+    const dataBeforeUpdate = JSON.parse(JSON.stringify(dailySupply.data[dataIndex]));
+
     const updatedRawMaterial = dailySupply.data[dataIndex].rawMaterial.map(
       item => {
         const updatedItem = { ...item };
@@ -411,13 +412,12 @@ async function updateSupplierData(req, res) {
     }
     
     // Adding new action history
-    const changedFields = getChangedFields(dailySupply,updatedDailySupply)
     const actionHistory = await ActionHistory.create({
       actionType: 'update',
       userId: req.user._id,
       details: `Cập nhật dữ liệu cho ${updatedDailySupply.name}`,
-      oldValues: Object.fromEntries(Object.entries(changedFields).map(([key, { oldValue }]) => [key, oldValue])),
-      newValues: Object.fromEntries(Object.entries(changedFields).map(([key, { newValue }]) => [key, newValue]))
+      oldValues: dataBeforeUpdate,
+      newValues: dailySupply.data[dataIndex]
     });
     if (!actionHistory) {
       return handleResponse(
@@ -539,6 +539,7 @@ async function deleteSupplierData(req, res) {
       actionType: 'delete',
       userId: req.user._id,
       details: `Xóa dữ liệu cho ${updatedData.name}`,
+      oldValues: subDocument,
     });
     if (!actionHistory) {
       return handleResponse(

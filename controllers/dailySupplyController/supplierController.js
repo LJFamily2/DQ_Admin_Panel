@@ -119,13 +119,12 @@ async function updateArea(req, res) {
     }
 
     // Adding new action history
-    const changedFields = getChangedFields(currentArea, newData);
     const actionHistory = await ActionHistory.create({
       actionType: 'update',
       userId: req.user._id,
       details: `Cập nhật khu vực ${newData.name}`,
-      oldValues: Object.fromEntries(Object.entries(changedFields).map(([key, { oldValue }]) => [key, oldValue])),
-      newValues: Object.fromEntries(Object.entries(changedFields).map(([key, { newValue }]) => [key, newValue]))
+      oldValues: currentArea,
+      newValues:newData
     });
     if (!actionHistory) {
       return handleResponse(
@@ -186,6 +185,7 @@ async function addSupplier(req, res) {
       );
     }
 
+    let newSupplier;
     for (const supplier of suppliers) {
       const existingSupplier = await Supplier.findOne({
         $or: { code: supplier.code },
@@ -202,7 +202,7 @@ async function addSupplier(req, res) {
         );
       }
 
-      const newSupplier = await Supplier.create(supplier);
+      newSupplier = await Supplier.create(supplier);
       area.suppliers.push(newSupplier._id);
     }
 
@@ -224,13 +224,11 @@ async function addSupplier(req, res) {
     }
 
     // Adding new action history
-    const changedFields = getChangedFields(area, updateData);
     const actionHistory = await ActionHistory.create({
       actionType: 'create',
       userId: req.user._id,
       details: `Thêm nhà vườn vào khu vực ${area.name}`,
-      oldValues: Object.fromEntries(Object.entries(changedFields).map(([key, { oldValue }]) => [key, oldValue])),
-      newValues: Object.fromEntries(Object.entries(changedFields).map(([key, { newValue }]) => [key, newValue]))
+      newValues: newSupplier
     });
     if (!actionHistory) {
       return handleResponse(
@@ -335,6 +333,7 @@ async function deleteSupplier(req, res) {
       actionType: 'delete',
       userId: req.user._id,
       details: `Xóa nhà vườn ${supplier.code}`,
+      oldValues: deleteSupplier
     });
     if (!actionHistory) {
       return handleResponse(
@@ -457,13 +456,12 @@ async function editSupplier(req, res) {
     await dailySupply.save();
 
     // Adding new action history
-    const changedFields = getChangedFields(existingSupplier, supplier);
     const actionHistory = await ActionHistory.create({
       actionType: 'update',
       userId: req.user._id,
       details: `Cập nhật nhà vườn ${supplier.code}`,
-      oldValues: Object.fromEntries(Object.entries(changedFields).map(([key, { oldValue }]) => [key, oldValue])),
-      newValues: Object.fromEntries(Object.entries(changedFields).map(([key, { newValue }]) => [key, newValue]))
+      oldValues: existingSupplier,
+      newValues: supplier
     });
     if (!actionHistory) {
       return handleResponse(

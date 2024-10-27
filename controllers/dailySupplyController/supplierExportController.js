@@ -107,6 +107,7 @@ async function updatePricesAndRatios(req, res) {
       supplierId = supplier._id;
     }
 
+    initialAreaData = area.data;
     // Update prices and ratios
     area.data = updatePricesAndRatiosHelper(
       area.data,
@@ -178,13 +179,12 @@ async function updatePricesAndRatios(req, res) {
     }
 
     // Adding new action history
-    const changedFields = getChangedFields(area, saveData);
     const actionHistory = await ActionHistory.create({
       actionType: 'update',
       userId: req.user._id,
       details: `Cập nhật giá cho khu vực ${area.name}`,
-      oldValues: Object.fromEntries(Object.entries(changedFields).map(([key, { oldValue }]) => [key, oldValue])),
-      newValues: Object.fromEntries(Object.entries(changedFields).map(([key, { newValue }]) => [key, newValue]))
+      oldValues: initialAreaData,
+      newValues: area.data
     });
     if (!actionHistory) {
       return handleResponse(
