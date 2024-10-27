@@ -27,97 +27,172 @@
 </head>
 
 <body>
-  <div class="container mt-5">
-    <h1 class="mb-4">Hoạt động</h1>
-    <% activities.forEach((activity) => { %>
-    <div class="card mb-3">
-      <div class="card-body">
-        <div class="activity-header">
-          <% let actionText; switch (activity.actionType) { case 'create':
-          actionText = 'Tạo'; break; case 'delete': actionText = 'Xóa'; break;
-          case 'update': actionText = 'Cập nhật'; break; default: actionText =
-          activity.actionType; } %> <%= actionText %> bởi: <%=
-          activity.userId.username %>
-          <span class="activity-time float-right"
-            ><%= new Date(activity.timestamp).toLocaleString() %></span
-          >
-        </div>
-        <p class="mb-1"><%= activity.details %></p>
-        <small class="text-muted"
-          >Các thay đổi:
-          <button
-            class="btn btn-link p-0"
-            type="button"
-            data-bs-toggle="modal"
-            data-bs-target="#<%= activity._id %>"
-          >
-            Xem
-          </button>
-        </small>
-      </div>
-    </div>
-    <!-- Modal -->
-    <div
-      class="modal fade"
-      id="<%= activity._id %>"
-      tabindex="-1"
-      aria-labelledby="exampleModalLabel"
-      aria-hidden="true"
-    >
-      <div
-        class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable"
-      >
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Các thay đổi</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
+  <div class="container-fluid mt-3">
+    <div class="row">
+      <div class="col-12 col-md-6">
+        <h3 class="mb-4">Hoạt động</h3>
+        <% activities.forEach((activity) => { %>
+        <div class="card mb-3">
+          <div class="card-body">
+            <div class="activity-header">
+              <% let actionText; switch (activity.actionType) { case 'create':
+              actionText = 'Tạo'; break; case 'delete': actionText = 'Xóa';
+              break; case 'update': actionText = 'Cập nhật'; break; default:
+              actionText = activity.actionType; } %> <%= actionText %> bởi: <%=
+              activity.userId.username %>
+              <span class="activity-time float-right"
+                ><%= new Date(activity.timestamp).toLocaleString() %></span
+              >
+            </div>
+            <p class="mb-1"><%= activity.details %></p>
+            <small class="text-muted"
+              >Các thay đổi:
+              <button
+                class="btn btn-link p-0"
+                type="button"
+                data-bs-toggle="modal"
+                data-bs-target="#<%= activity._id %>"
+              >
+                Xem
+              </button>
+            </small>
           </div>
-          <div class="modal-body">
-            <div class="row">
-              <div class="col col-md-6">
-                <h6>Giá trị cũ:</h6>
-                <% const oldValues = activity.oldValues || {}; %> <% const
-                replacer = (key, value) => key === '_id' ? undefined : value; %>
-                <% Object.entries(oldValues).forEach(([key, value]) => { %> <%
-                if (key !== '_id' && key !== '__v' && key !== 'slug' && key !==
-                'supplierSlug') { %>
+        </div>
+        <!-- Modal -->
+        <div
+          class="modal fade"
+          id="<%= activity._id %>"
+          tabindex="-1"
+          aria-labelledby="exampleModalLabel"
+          aria-hidden="true"
+        >
+          <div
+            class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable"
+          >
+            <div class="modal-content">
+              <div class="modal-header">
                 <div>
-                  <strong><%= key %>:</strong>
-                  <pre><code><%= value == null ? '' : (typeof value === 'object' ? JSON.stringify(value, replacer, 2) : value) %></code></pre>
+                  <h5 class="modal-title" id="exampleModalLabel">
+                    <%= activity.details %>
+                  </h5>
+                  <p class="m-0">
+                    Người thao tác:
+                    <strong><%= activity.userId.username %></strong> (<%=
+                    activity.userId.role %>)
+                  </p>
                 </div>
-                <% } %> <% }); %>
+                <button
+                  type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
               </div>
-              <div class="col col-md-6">
-                <h6>Giá trị mới:</h6>
-                <% const newValues = activity.newValues || {}; %> <%
-                Object.entries(newValues).forEach(([key, value]) => { %> <% if
-                (key !== '_id' && key !== '__v' && key !== 'slug' && key !==
-                'supplierSlug') { %>
-                <div>
-                  <strong><%= key %>:</strong>
-                  <pre><code><%= value == null ? '' : (typeof value === 'object' ? JSON.stringify(value, replacer, 2) : value) %></code></pre>
+              <div class="modal-body">
+                <div class="container">
+                  <div class="row g-3">
+                    <div class="col-12 col-md-6">
+                      <div class="p-2 border border-1">
+                        <h6>Giá trị cũ:</h6>
+                        <% const oldValues = activity.oldValues || {}; %> <%
+                        const replacer = (key, value) => key === '_id' ?
+                        undefined : value; %> <%
+                        Object.entries(oldValues).forEach(([key, value]) => { %>
+                        <% if (key !== '_id' && key !== '__v' && key !== 'slug'
+                        && key !== 'supplierSlug') { %>
+                        <div>
+                          <strong><%= key %>:</strong>
+                          <pre><code><%= value == null ? '' : (typeof value === 'object' ? JSON.stringify(value, replacer, 2) : value) %></code></pre>
+                        </div>
+                        <% } %> <% }); %>
+                      </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                      <div class="p-2 border border-1">
+                        <h6>Giá trị mới:</h6>
+                        <% const newValues = activity.newValues || {}; %> <%
+                        Object.entries(newValues).forEach(([key, value]) => { %>
+                        <% if (key !== '_id' && key !== '__v' && key !== 'slug'
+                        && key !== 'supplierSlug') { %>
+                        <div>
+                          <strong><%= key %>:</strong>
+                          <pre><code><%= value == null ? '' : (typeof value === 'object' ? JSON.stringify(value, replacer, 2) : value) %></code></pre>
+                        </div>
+                        <% } %> <% }); %>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <% } %> <% }); %>
+              </div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                >
+                  Đóng
+                </button>
               </div>
             </div>
           </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-bs-dismiss="modal"
-            >
-              Đóng
-            </button>
+        </div>
+        <% }); %>
+      </div>
+      <div class="col-12 col-md-6">
+        <h3 class="mb-4">Lọc</h3>
+        <div class="card">
+          <div class="card-body">
+            <form action="/du-lieu/nhat-ky-hoat-dong" method="get">
+              <%- include('../partials/dateSelection.ejs') %>
+              <div class="my-3">
+                <div class="input-group mb-3">
+                  <label for="userId" class="input-group-text"
+                    >Người thao tác</label
+                  >
+                  <select name="selectedUser" class="form-select" id="userId">
+                    <option disabled selected>Choose...</option>
+                    <% users.forEach(user => { %>
+                    <option value="<%= user._id %>"  <% if (user._id === selectedUser) { %> selected <% } %>>
+
+                      <%= user.username %>
+                    </option>
+                    <% }); %>
+                  </select>
+                </div>
+              </div>
+              <div class="my-3">
+                  <label class="form-label">Loại hành động</label>
+                  <br>
+                  <div class="g-3">
+                    <input type="checkbox" class="btn-check" name="createAction" value="createAction" id="Create" autocomplete="off" <%= createAction ? 'checked' : '' %> />
+                    <label class="btn btn-outline-success" for="Create">Tạo</label>
+                    <input type="checkbox" class="btn-check" name="updateAction" value="updateAction" id="Update" autocomplete="off" <%= updateAction ? 'checked' : '' %> />
+                    <label class="btn btn-outline-primary" for="Update">Cập nhật</label>
+                    <input type="checkbox" class="btn-check" name="deleteAction" value="deleteAction" id="Delete" autocomplete="off" <%= deleteAction ? 'checked' : '' %> />
+                    <label class="btn btn-outline-danger" for="Delete">Xóa</label>
+                  </div>
+              </div>
+              <div class="my-3">
+                <button type="submit" class="btn btn-primary">Lọc kết quả</button>
+                <button type="reset" class="btn text-dark" id="resetButton"> Bỏ lọc</button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
     </div>
-    <% }); %>
   </div>
 </body>
+
+
+<script>
+  
+  document.getElementById('resetButton').addEventListener('click', function() {
+    // Clear all query parameters from the URL
+    const url = new URL(window.location);
+    url.search = '';
+    window.history.replaceState({}, document.title, url);
+    // Reload the page to apply the new URL
+    window.location.reload();
+  });
+</script>
