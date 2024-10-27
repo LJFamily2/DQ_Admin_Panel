@@ -33,11 +33,17 @@ async function renderPage(req, res) {
       return res.status(404).render('partials/404', { layout: false });
     }
 
+    // Manually calculate totalDebtPaidAmount and totalMoneyRetainedAmount
+    const totalDebtPaidAmount = supplierData.debtHistory.reduce((total, debt) => total + debt.debtPaidAmount, 0);
+    const totalMoneyRetainedAmount = supplierData.moneyRetainedHistory.reduce((total, retained) => total + retained.retainedAmount, 0);
+
+    // Calculate remainingDebt
+    const remainingDebt = supplierData.initialDebtAmount - totalDebtPaidAmount 
+    
     // Filter data for the specific supplier
     const supplierSpecificData = area.data.filter(
       item => item.supplier._id.toString() === supplierData._id.toString(),
-    );
-
+    );  
 
     res.render('src/dailySupplyIndividualExportPage', {
       layout: './layouts/defaultLayout',
@@ -49,6 +55,9 @@ async function renderPage(req, res) {
       startDate,
       endDate,
       messages: req.flash(),
+      totalDebtPaidAmount, 
+      totalMoneyRetainedAmount, 
+      remainingDebt, 
     });
   } catch (error) {
     console.error('Error fetching supplier data:', error);

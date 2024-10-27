@@ -89,7 +89,8 @@ async function updatePricesAndRatios(req, res) {
       'Mủ ké': convertToDecimal(keSplit),
       'Mủ đông': convertToDecimal(dongSplit),
     };
-
+    
+    console.log(prices)
     let supplierId = null;
     if (supplierSlug) {
       const supplier = await Supplier.findOne({ supplierSlug: supplierSlug });
@@ -107,7 +108,7 @@ async function updatePricesAndRatios(req, res) {
     }
 
     // Update prices and ratios
-    updatePricesAndRatiosHelper(
+    area.data = updatePricesAndRatiosHelper(
       area.data,
       start,
       end,
@@ -134,9 +135,9 @@ async function updatePricesAndRatios(req, res) {
         const oldDebtPaidAmount = debtAmount.debtPaidAmount || 0;
         const oldMoneyRetainedAmount = moneyRetainedAmount.retainedAmount || 0;
 
-        // Calculate differences
-        const debtPaidDifference = debtPaid - oldDebtPaidAmount;
-        const moneyRetainedDifference = retainedAmount - oldMoneyRetainedAmount;
+        // Validate and ensure numeric values
+        const debtPaidDifference = (debtPaid || 0) - oldDebtPaidAmount;
+        const moneyRetainedDifference = (retainedAmount || 0) - oldMoneyRetainedAmount;
 
         // Prepare bulk update operations
         bulkDebtOps.push({
@@ -185,7 +186,7 @@ async function updatePricesAndRatios(req, res) {
       oldValues: Object.fromEntries(Object.entries(changedFields).map(([key, { oldValue }]) => [key, oldValue])),
       newValues: Object.fromEntries(Object.entries(changedFields).map(([key, { newValue }]) => [key, newValue]))
     });
-    if(!actionHistory){
+    if (!actionHistory) {
       return handleResponse(
         req,
         res,
