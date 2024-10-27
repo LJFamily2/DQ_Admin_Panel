@@ -23,11 +23,9 @@ const actionHistorySchema = new mongoose.Schema({
   },
   oldValues: { 
     type: Object, 
-    default: {} 
   },
   newValues: { 
     type: Object, 
-    default: {} 
   },
 });
 
