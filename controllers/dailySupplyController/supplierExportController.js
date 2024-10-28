@@ -90,7 +90,6 @@ async function updatePricesAndRatios(req, res) {
       'Mủ đông': convertToDecimal(dongSplit),
     };
     
-    console.log(prices)
     let supplierId = null;
     if (supplierSlug) {
       const supplier = await Supplier.findOne({ supplierSlug: supplierSlug });

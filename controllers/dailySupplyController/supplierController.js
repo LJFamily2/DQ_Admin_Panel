@@ -332,7 +332,7 @@ async function deleteSupplier(req, res) {
     const actionHistory = await ActionHistory.create({
       actionType: 'delete',
       userId: req.user._id,
-      details: `Xóa nhà vườn ${supplier.code}`,
+      details: `Xóa nhà vườn ${supplier.name} (${supplier.code})`,
       oldValues: deleteSupplier
     });
     if (!actionHistory) {
