@@ -1,7 +1,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Activity History</title>
+
+  <!-- Tippy -->
+  <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css" />
+  <script src="https://unpkg.com/@popperjs/core@2"></script>
+  <script src="https://unpkg.com/tippy.js@6"></script>
+
   <style>
     .activity-header {
       font-weight: bold;
@@ -10,6 +15,18 @@
     .activity-time {
       font-size: 0.9rem;
       color: gray;
+    }
+
+    .shadow-success {
+      box-shadow: 0 0 0.5rem rgba(40, 167, 69, .5) !important;
+    }
+
+    .shadow-danger {
+      box-shadow: 0 0 0.5rem rgba(220, 53, 69, .5) !important;
+    }
+
+    .shadow-primary {
+      box-shadow: 0 0 0.5rem rgba(0, 123, 255, .5) !important;
     }
 
     pre {
@@ -23,11 +40,25 @@
       font-family: monospace;
       white-space: pre-wrap;
     }
+    .tooltip-wrapper {
+      display: inline-block; 
+    }
   </style>
 </head>
 
 <body>
   <div class="container-fluid mt-3">
+    <% if(user.role === 'Admin'){ %>
+      <button
+        type="button"
+        class="btn btn-danger my-2"
+        data-bs-toggle="modal"
+        data-bs-target="#deleteAll"
+        style="width: max-content"
+      >
+        Xóa tất cả thông tin
+      </button>
+      <% } %>
     <div class="row">
       <div class="col-12 col-md-6">
         <h3 class="mb-4">Hoạt động</h3>
@@ -37,7 +68,19 @@
               break; case 'update': actionText = 'Cập nhật'; break; default:
               actionText = activity.actionType; } %>
 
-        <div class="card mb-3 border border-2 <%= activity.actionType === 'create' ? 'border-success' : activity.actionType === 'delete' ? 'border-danger' : activity.actionType === 'update' ? 'border-primary' : '' %> ">
+        <div class="card mb-3 shadow <%= activity.actionType === 'create' ? 'shadow-success' : activity.actionType === 'delete' ? 'shadow-danger' : activity.actionType === 'update' ? 'shadow-primary' : '' %> ">
+          <div class="card-header bg-light d-flex">
+            <button
+              type="button"
+              class="btn-close ms-auto tooltip-wrapper"
+              aria-label="Close"
+              data-bs-toggle="modal"
+              data-bs-target="#deleteModal<%= activity._id %>"
+              data-tippy-content="Xóa nhật ký dữ liệu"
+              tabindex="0"
+
+            ></button>
+          </div>
           <div class="card-body">
             <div class="activity-header">
                <%= actionText %> bởi: <%=
@@ -53,17 +96,17 @@
                 class="btn btn-link p-0"
                 type="button"
                 data-bs-toggle="modal"
-                data-bs-target="#<%= activity._id %>"
+                data-bs-target="#detailModal<%= activity._id %>"
               >
                 Xem
               </button>
             </small>
           </div>
         </div>
-        <!-- Modal -->
+        <!-- Detail Modal -->
         <div
           class="modal fade"
-          id="<%= activity._id %>"
+          id="detailModal<%= activity._id %>"
           tabindex="-1"
           aria-labelledby="exampleModalLabel"
           aria-hidden="true"
@@ -138,12 +181,68 @@
             </div>
           </div>
         </div>
+
+        <!-- Delete Modal -->
+        <div
+        class="modal fade"
+        id="deleteModal<%= activity._id %>"
+        aria-hidden="true"
+        aria-labelledby="exampleModalToggleLabel"
+        tabindex="-1"
+      >
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="exampleModalToggleLabel">
+                Xóa nhật ký dữ liệu của ngày <%=
+                activity.timestamp.toLocaleDateString("vi-VN") %>
+              </h1>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <form
+              action="/du-lieu/nhat-ky-hoat-dong/deleteData/<%= activity._id %>"
+              method="post"
+            >
+              <div class="modal-body">
+                <p> <strong>Hành động: </strong> <%= activity.details %></p>
+                Bạn có muốn xóa nhật ký dữ liệu của
+                <strong><%= activity.userId.username %></strong>
+                ? Hành động này không thể hoàn tác.
+              </div>
+              <div class="modal-footer">
+                <% if(user.role === 'Admin'){ %>
+                <button type="submit" class="btn btn-danger">
+                  Xác nhận
+                </button>
+                <% } else { %>
+                <div
+                  class="tooltip-wrapper"
+                  data-tippy-content="Bạn không có quyền sử dụng"
+                  tabindex="0"
+                >
+                  <button type="button" class="btn btn-danger" disabled>
+                    Xác nhận
+                  </button>
+                </div>
+                <% } %>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
         <% }); %>
       </div>
       <div class="col-12 col-md-6">
         <h3 class="mb-4">Lọc</h3>
         <div class="card">
           <div class="card-body">
+            <%- include('../partials/notificationMessage.ejs') %>
+            
             <form action="/du-lieu/nhat-ky-hoat-dong" method="get">
               <%- include('../partials/dateSelection.ejs') %>
               <div class="my-3">
@@ -184,10 +283,47 @@
       </div>
     </div>
   </div>
+
+  <!-- Modal for deleting all actionHistory -->
+  <div
+  class="modal fade"
+  id="deleteAll"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="deleteUsers"
+  aria-hidden="true"
+  >
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="deleteUsers">Xóa tất cả hàng hóa</h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+
+      <form action="/du-lieu/nhat-ky-hoat-dong/deleteAllData" method="post">
+        <div class="modal-body">
+          Bạn có muốn xóa <strong class="fs-3">tất cả</strong> thông tin ? Hành
+          động này không thể hoàn tác.
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-danger">Xác nhận</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 </body>
 
 
+
 <script>
+  tippy('.tooltip-wrapper');
   
   document.getElementById('resetButton').addEventListener('click', function() {
     // Clear all query parameters from the URL

@@ -1,8 +1,11 @@
 const ActionHistory = require('../models/actionHistoryModel');
-const Accounts = require('../models/accountModel');
+
+const handleResponse = require('../controllers/utils/handleResponse');
 
 module.exports = {
   renderPage,
+  deleteData,
+  deleteAllData
 };
 
 async function renderPage(req, res) {
@@ -67,5 +70,66 @@ async function renderPage(req, res) {
   } catch (err) {
     console.log(err);
     res.status(500).render('partials/500', { layout: false });
+  }
+}
+
+async function deleteData(req, res) {
+  try {
+    const { id } = req.params;
+
+    const deletedData = await ActionHistory.findByIdAndDelete(id);
+
+    if (!deletedData) {
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Xóa dữ liệu thất bại',
+        req.headers.referer,
+      );
+    }
+
+    return handleResponse(
+      req,
+      res,
+      200,
+      'success',
+      'Xóa dữ liệu thành công',
+      req.headers.referer,
+    );
+  } catch (error) {
+    console.log(error);
+    return res.status(500).render('partials/500', { layout: false });
+  }
+}
+
+async function deleteAllData(req, res) {
+  try {
+    const deletedData = await ActionHistory.deleteMany();
+
+    if (!deletedData) {
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Xóa tất cả dữ liệu thất bại',
+        req.headers.referer,
+      );
+    }
+
+    return handleResponse(
+      req,
+      res,
+      200,
+      'success',
+      'Xóa dữ tất cả liệu thành công',
+      req.headers.referer,
+    );
+    
+  } catch (error) {
+    console.log(error);
+    return res.status(500).render('partials/500', { layout: false });
   }
 }
