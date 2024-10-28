@@ -17,6 +17,8 @@ async function renderPage(req, res) {
       createAction,
       updateAction,
       deleteAction,
+      page = 1,
+      limit = 10,
     } = req.query;
 
     // Build the query object
@@ -35,10 +37,26 @@ async function renderPage(req, res) {
     if (deleteAction) actionTypes.push('delete');
     if (actionTypes.length > 0) query.actionType = { $in: actionTypes };
 
-    const activities = await ActionHistory.find(query).populate({
-      path: 'userId',
-      select: ['username', 'role'],
-    });
+    // Calculate pagination parameters
+    const pageNumber = parseInt(page, 10);
+    const pageSize = parseInt(limit, 10);
+    const skip = (pageNumber - 1) * pageSize;
+
+    // Fetch activities with pagination
+    const [activities, totalActivities] = await Promise.all([
+      ActionHistory.find(query)
+        .sort({ timestamp: -1 })
+        .skip(skip)
+        .limit(pageSize)
+        .populate({
+          path: 'userId',
+          select: ['username', 'role'],
+        }),
+      ActionHistory.countDocuments(query),
+    ]);
+
+    // Calculate total pages
+    const totalPages = Math.ceil(totalActivities / pageSize);
 
     // Extract unique users from activities
     const usersMap = new Map();
@@ -66,6 +84,8 @@ async function renderPage(req, res) {
       createAction,
       updateAction,
       deleteAction,
+      currentPage: pageNumber,
+      totalPages,
     });
   } catch (err) {
     console.log(err);
