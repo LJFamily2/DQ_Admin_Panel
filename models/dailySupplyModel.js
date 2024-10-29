@@ -100,44 +100,18 @@ const dailySupplySchema = new mongoose.Schema({
   areaPrice: { type: Number, default: 0 },
   address: { type: String, required: true },
   slug: { type: String, slug: 'name' },
+  deletionRequests: [
+    {
+      requestedBy: {type: mongoose.Schema.Types.ObjectId, ref: 'Accounts' },
+      reason: String,
+      requestedAt: { type: Date, default: Date.now },
+      status: { type: String, default: 'pending' },
+      dataId: {type: mongoose.Schema.Types.ObjectId, ref: 'dailysupplies.data'}
+    }
+  ]
 });
 
-// ---------------------
-// Virtual field for calculating total debt paid amount dynamically
-// supplierSchema.virtual('totalDebtPaidAmount').get(function () {
-//   // Ensure debtHistory is populated
-//   if (!this.debtHistory || !this.debtHistory.length) return 0;
 
-//   const totalDebtPaidAmount = this.debtHistory.reduce((total, entry) => {
-//     return total + (entry.debtPaidAmount || 0);
-//   }, 0);
-//   console.log(totalDebtPaidAmount);
-//   return totalDebtPaidAmount;
-// });
-
-// // Virtual field for calculating total money retained amount dynamically
-// supplierSchema.virtual('totalMoneyRetainedAmount').get(function () {
-//   // Ensure moneyRetainedHistory is populated
-//   if (!this.moneyRetainedHistory || !this.moneyRetainedHistory.length) return 0;
-
-//   const totalMoneyRetainedAmount = this.moneyRetainedHistory.reduce(
-//     (total, entry) => {
-//       return total + entry.retainedAmount;
-//     },
-//     0,
-//   );
-//   console.log(totalMoneyRetainedAmount);
-//   return totalMoneyRetainedAmount;
-// });
-
-// // Virtual field for calculating remaining debt dynamically
-// supplierSchema.virtual('remainingDebt').get(function () {
-//   const initialDebtAmount = this.initialDebtAmount || 0;
-//   const totalDebtPaidAmount = this.totalDebtPaidAmount || 0;
-//   console.log(initialDebtAmount - totalDebtPaidAmount)
-//   return initialDebtAmount - totalDebtPaidAmount;
-// });
-// ---------------------
 
 // Models Export
 const Debt = mongoose.model('debts', debtSchema);
