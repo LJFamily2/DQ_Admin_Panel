@@ -56,7 +56,7 @@
         data-bs-target="#deleteAll"
         style="width: max-content"
       >
-        Xóa tất cả thông tin
+        Xóa tất cả 
       </button>
       <% } %>
     <div class="row">
@@ -140,31 +140,30 @@
                     <div class="col-12 col-md-6">
                       <div class="p-2 border border-1">
                         <h6>Giá trị cũ:</h6>
-                        <% const oldValues = activity.oldValues || {}; %> <%
-                        const replacer = (key, value) => key === '_id' ?
-                        undefined : value; %> <%
-                        Object.entries(oldValues).forEach(([key, value]) => { %>
-                        <% if (key !== '_id' && key !== '__v' && key !== 'slug'
-                        && key !== 'supplierSlug') { %>
-                        <div>
-                          <strong><%= key %>:</strong>
-                          <pre><code><%= value == null ? '' : (typeof value === 'object' ? JSON.stringify(value, replacer, 2) : value) %></code></pre>
-                        </div>
-                        <% } %> <% }); %>
+                        <% const oldValues = activity.oldValues || {}; %> 
+                        <% const replacer = (key, value) => key === '_id' ? undefined : value; %> 
+                        <% Object.entries(oldValues).forEach(([key, value]) => { %>
+                        <% if (key !== '_id' && key !== '__v' && key !== 'slug' && key !== 'supplierSlug') { %>
+                          <div>
+                            <strong><%= key %>:</strong>
+                            <pre><code><%= value == null ? '' : (typeof value === 'object' ? JSON.stringify(value, replacer, 2) : value) %></code></pre>
+                          </div>
+                          <% } %> 
+                        <% }); %>
                       </div>
                     </div>
                     <div class="col-12 col-md-6">
                       <div class="p-2 border border-1">
-                        <h6>Giá trị mới:</h6>
-                        <% const newValues = activity.newValues || {}; %> <%
-                        Object.entries(newValues).forEach(([key, value]) => { %>
-                        <% if (key !== '_id' && key !== '__v' && key !== 'slug'
-                        && key !== 'supplierSlug') { %>
-                        <div>
-                          <strong><%= key %>:</strong>
-                          <pre><code><%= value == null ? '' : (typeof value === 'object' ? JSON.stringify(value, replacer, 2) : value) %></code></pre>
-                        </div>
-                        <% } %> <% }); %>
+                        <% const newValues = activity.newValues || {}; %>  
+                        <h6 class="<%= Object.keys(newValues).length > 0 ? '' : 'm-0' %>">Giá trị mới:</h6> 
+                        <% Object.entries(newValues).forEach(([key, value]) => { %>
+                        <% if (key !== '_id' && key !== '__v' && key !== 'slug' && key !== 'supplierSlug') { %>
+                          <div>
+                            <strong><%= key %>:</strong>
+                            <pre><code><%= value == null ? '' : (typeof value === 'object' ? JSON.stringify(value, replacer, 2) : value) %></code></pre>
+                          </div>
+                          <% } %> 
+                        <% }); %>
                       </div>
                     </div>
                   </div>
@@ -237,7 +236,10 @@
         </div>
       </div>
         <% }); %>
-        <nav aria-label="Page navigation"  class="d-flex justify-content-end">
+        <div class="text-center bg-light mt-5 <%= activities.length > 0 ? 'd-none' : '' %>">
+          <h4 class="text-muted">Không có dữ liệu</h4>
+        </div>
+        <nav aria-label="Page navigation"  class="justify-content-end <%= activities.length > 0 ? 'd-flex' : 'd-none' %>">
           <ul class="pagination">
             <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
               <a class="page-link" href="<%= currentPage === 1 ? '#' : '?page=' + (currentPage - 1) %>" aria-label="Previous">
