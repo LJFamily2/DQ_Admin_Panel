@@ -447,6 +447,7 @@ async function updateSupplierData(req, res) {
 async function deleteSupplierData(req, res) {
   try {
     const { id } = req.params;
+    const userRole = req.user.role;
 
     // Find the DailySupply document containing the sub-document to be deleted
     const dailySupply = await DailySupply.findOne({ 'data._id': id });
@@ -461,111 +462,127 @@ async function deleteSupplierData(req, res) {
       );
     }
 
-    // Extract the sub-document to be deleted
-    const subDocument = dailySupply.data.id(id);
-    if (!subDocument) {
+    if (userRole === 'Văn phòng') {
+      // Add a deletion request
+      dailySupply.deletionRequests.push({
+        ...req.body,
+        requestedBy: req.user._id,
+        dataId: id,
+      });
+      await dailySupply.save();
       return handleResponse(
         req,
         res,
-        404,
-        'fail',
-        'Không tìm thấy dữ liệu!',
+        200,
+        'success',
+        'Yêu cầu xóa dữ liệu đã được gửi!',
         req.headers.referer,
       );
-    }
-
-    const supplierId = subDocument.supplier;
-
-    // Remove the sub-document from the DailySupply document
-    const updatedData = await DailySupply.findOneAndUpdate(
-      { 'data._id': id },
-      {
-        $pull: { data: { _id: id } },
-      },
-      { new: true },
-    );
-
-    if (!updatedData) {
-      return handleResponse(
-        req,
-        res,
-        404,
-        'fail',
-        'Xóa dữ liệu thất bại!',
-        req.headers.referer,
-      );
-    }
-
-    let updateSupplierDataPromise = Promise.resolve();
-    let deletePromises = [];
-
-    if (dailySupply.areaPrice > 0 && dailySupply.areaDimension > 0) {
-      const debtId = subDocument.debt;
-      const moneyRetainedId = subDocument.moneyRetained;
-
-      // Update the supplier's debtHistory and moneyRetainedHistory
-      updateSupplierDataPromise = Supplier.findByIdAndUpdate(
-        supplierId,
+    } else if (userRole === 'Giám đốc') {
+      // Extract the sub-document to be deleted
+      const subDocument = dailySupply.data.id(id);
+      if (!subDocument) {
+        return handleResponse(
+          req,
+          res,
+          404,
+          'fail',
+          'Không tìm thấy dữ liệu!',
+          req.headers.referer,
+        );
+      }
+      const supplierId = subDocument.supplier;
+      // Remove the sub-document from the DailySupply document
+      const updatedData = await DailySupply.findOneAndUpdate(
+        { 'data._id': id },
         {
-          $pull: {
-            debtHistory: debtId,
-            moneyRetainedHistory: moneyRetainedId,
-          },
+          $pull: { data: { _id: id } },
         },
         { new: true },
       );
-
-      // Delete the corresponding debt and money retained documents if they exist
-      if (debtId) {
-        deletePromises.push(Debt.findByIdAndDelete(debtId));
+      if (!updatedData) {
+        return handleResponse(
+          req,
+          res,
+          404,
+          'fail',
+          'Xóa dữ liệu thất bại!',
+          req.headers.referer,
+        );
       }
-      if (moneyRetainedId) {
-        deletePromises.push(MoneyRetained.findByIdAndDelete(moneyRetainedId));
+      let updateSupplierDataPromise = Promise.resolve();
+      let deletePromises = [];
+      if (dailySupply.areaPrice > 0 && dailySupply.areaDimension > 0) {
+        const debtId = subDocument.debt;
+        const moneyRetainedId = subDocument.moneyRetained;
+        // Update the supplier's debtHistory and moneyRetainedHistory
+        updateSupplierDataPromise = Supplier.findByIdAndUpdate(
+          supplierId,
+          {
+            $pull: {
+              debtHistory: debtId,
+              moneyRetainedHistory: moneyRetainedId,
+            },
+          },
+          { new: true },
+        );
+        // Delete the corresponding debt and money retained documents if they exist
+        if (debtId) {
+          deletePromises.push(Debt.findByIdAndDelete(debtId));
+        }
+        if (moneyRetainedId) {
+          deletePromises.push(MoneyRetained.findByIdAndDelete(moneyRetainedId));
+        }
       }
-    }
-
-    const [updateSupplierData, ...deleteResults] = await Promise.all([
-      updateSupplierDataPromise,
-      ...deletePromises,
-    ]);
-
-    if (!updateSupplierData) {
+      const [updateSupplierData, ...deleteResults] = await Promise.all([
+        updateSupplierDataPromise,
+        ...deletePromises,
+      ]);
+      if (!updateSupplierData) {
+        return handleResponse(
+          req,
+          res,
+          404,
+          'fail',
+          'Xóa dữ liệu cho nhà vườn thất bại!',
+          req.headers.referer,
+        );
+      }
+      // Adding new action history
+      const actionHistory = await ActionHistory.create({
+        actionType: 'delete',
+        userId: req.user._id,
+        details: `Xóa dữ liệu cho ${updatedData.name}`,
+        oldValues: subDocument,
+      });
+      if (!actionHistory) {
+        return handleResponse(
+          req,
+          res,
+          404,
+          'fail',
+          'Xóa dữ liệu thất bại!',
+          req.headers.referer,
+        );
+      }
       return handleResponse(
         req,
         res,
-        404,
-        'fail',
-        'Xóa dữ liệu cho nhà vườn thất bại!',
+        200,
+        'success',
+        'Xóa dữ liệu thành công!',
         req.headers.referer,
       );
-    }
-
-    // Adding new action history
-    const actionHistory = await ActionHistory.create({
-      actionType: 'delete',
-      userId: req.user._id,
-      details: `Xóa dữ liệu cho ${updatedData.name}`,
-      oldValues: subDocument,
-    });
-    if (!actionHistory) {
+    } else {
       return handleResponse(
         req,
         res,
-        404,
+        403,
         'fail',
-        'Xóa dữ liệu thất bại!',
+        'Không có quyền thao tác!',
         req.headers.referer,
       );
     }
-
-    return handleResponse(
-      req,
-      res,
-      200,
-      'success',
-      'Xóa dữ liệu thành công!',
-      req.headers.referer,
-    );
   } catch (err) {
     console.error('Error deleting supplier data:', err);
     res.status(500).render('partials/500', { layout: false });
