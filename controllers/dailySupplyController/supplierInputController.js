@@ -478,7 +478,7 @@ async function deleteSupplierData(req, res) {
         'Yêu cầu xóa dữ liệu đã được gửi!',
         req.headers.referer,
       );
-    } else if (userRole === 'Giám đốc') {
+    } else if (userRole === 'Giám đốc' && userRole === 'Admin') {
       // Extract the sub-document to be deleted
       const subDocument = dailySupply.data.id(id);
       if (!subDocument) {
