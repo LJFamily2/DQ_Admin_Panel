@@ -50,7 +50,7 @@
     <div class="row">
       <div class="col-12 col-md-6">
         <% Object.keys(groupedActivities).forEach((date) => { %>
-          <h5 class="mb-2"><%= date %></h5>
+          <h6 class="mb-2"><%= date %></h6>
           <% groupedActivities[date].forEach((activity) => { %>
             <% let actionText; switch (activity.actionType) { case 'create':
                 actionText = 'Tạo'; break; case 'delete': actionText = 'Xóa';
@@ -203,8 +203,10 @@
         </nav>
       </div>
       <div class="col-12 col-md-6">
-        <h3 class="mb-4">Lọc</h3>
         <div class="card">
+          <div class="card-header bg-light">
+            <h4 class="m-0">Bộ lọc</h4>
+          </div>
           <div class="card-body">
             <%- include('../partials/notificationMessage.ejs') %>
             
