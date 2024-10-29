@@ -189,20 +189,11 @@ async function deleteArea(req, res) {
     // Run deletion operations concurrently
     const [deletedSuppliers, deletedDebts, deletedMoneyRetained] = await Promise.all([
       Supplier.deleteMany({ _id: { $in: supplierIds } }),
-      debtIds.length > 0 ? Debt.deleteMany({ _id: { $in: debtIds } }) : Promise.resolve(),
-      moneyRetainedIds.length > 0 ? MoneyRetained.deleteMany({ _id: { $in: moneyRetainedIds } }) : Promise.resolve(),
+      debtIds.length > 0 ? Debt.deleteMany({ _id: { $in: debtIds } }) : Promise.resolve({ acknowledged: true, deletedCount: 0 }),
+      moneyRetainedIds.length > 0 ? MoneyRetained.deleteMany({ _id: { $in: moneyRetainedIds } }) : Promise.resolve({ acknowledged: true, deletedCount: 0 }),
     ]);
 
     if (!deletedSuppliers || !deletedDebts || !deletedMoneyRetained) {
-      if(deletedSuppliers){
-        console.log('done deletedSuppliers')
-      }
-      if(deletedDebts){
-        console.log('done deletedDebts')
-      }
-      if(deletedMoneyRetained){
-        console.log('done deletedMoneyRetained')
-      }
       return handleResponse(
         req,
         res,
