@@ -7,7 +7,6 @@ module.exports = {
   deleteData,
   deleteAllData
 };
-
 async function renderPage(req, res) {
   try {
     const {
@@ -58,6 +57,16 @@ async function renderPage(req, res) {
     // Calculate total pages
     const totalPages = Math.ceil(totalActivities / pageSize);
 
+    // Group activities by date
+    const groupedActivities = activities.reduce((acc, activity) => {
+      const date = new Date(activity.timestamp).toLocaleDateString('vi-VN');
+      if (!acc[date]) {
+        acc[date] = [];
+      }
+      acc[date].push(activity);
+      return acc;
+    }, {});
+
     // Extract unique users from activities
     const usersMap = new Map();
     activities.forEach(activity => {
@@ -74,7 +83,7 @@ async function renderPage(req, res) {
     res.render('src/actionHistoryPage', {
       layout: './layouts/defaultLayout',
       title: 'Lịch sử hoạt động',
-      activities,
+      groupedActivities,
       user: req.user,
       users,
       messages: req.flash(),
