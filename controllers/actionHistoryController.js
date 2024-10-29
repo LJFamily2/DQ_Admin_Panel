@@ -20,28 +20,24 @@ async function renderPage(req, res) {
       limit = 10,
     } = req.query;
 
-    // Build the query object
     const query = {};
-    if (startDate) query.date = { $gte: new Date(startDate) };
+    if (startDate) query.timestamp = { $gte: new Date(startDate) };
     if (endDate) {
-      if (!query.date) query.date = {};
-      query.date.$lte = new Date(endDate);
+      if (!query.timestamp) query.timestamp = {};
+      query.timestamp.$lte = new Date(endDate);
     }
     if (selectedUser) query.userId = selectedUser;
 
-    // Filter by action types
     const actionTypes = [];
     if (createAction) actionTypes.push('create');
     if (updateAction) actionTypes.push('update');
     if (deleteAction) actionTypes.push('delete');
     if (actionTypes.length > 0) query.actionType = { $in: actionTypes };
 
-    // Calculate pagination parameters
     const pageNumber = parseInt(page, 10);
     const pageSize = parseInt(limit, 10);
     const skip = (pageNumber - 1) * pageSize;
 
-    // Fetch activities with pagination
     const [activities, totalActivities] = await Promise.all([
       ActionHistory.find(query)
         .sort({ timestamp: -1 })
@@ -54,20 +50,15 @@ async function renderPage(req, res) {
       ActionHistory.countDocuments(query),
     ]);
 
-    // Calculate total pages
     const totalPages = Math.ceil(totalActivities / pageSize);
 
-    // Group activities by date
     const groupedActivities = activities.reduce((acc, activity) => {
       const date = new Date(activity.timestamp).toLocaleDateString('vi-VN');
-      if (!acc[date]) {
-        acc[date] = [];
-      }
+      if (!acc[date]) acc[date] = [];
       acc[date].push(activity);
       return acc;
     }, {});
 
-    // Extract unique users from activities
     const usersMap = new Map();
     activities.forEach(activity => {
       const user = activity.userId;
