@@ -17,18 +17,6 @@
       color: gray;
     }
 
-    .shadow-success {
-      box-shadow: 0 0 0.5rem rgba(40, 167, 69, .5) !important;
-    }
-
-    .shadow-danger {
-      box-shadow: 0 0 0.5rem rgba(220, 53, 69, .5) !important;
-    }
-
-    .shadow-primary {
-      box-shadow: 0 0 0.5rem rgba(0, 123, 255, .5) !important;
-    }
-
     pre {
       background-color: #f8f9fa;
       padding: 10px;
@@ -69,8 +57,8 @@
                 break; case 'update': actionText = 'Cập nhật'; break; default:
                 actionText = activity.actionType; } %>
       
-            <div class="card mb-3 shadow <%= activity.actionType === 'create' ? 'shadow-success' : activity.actionType === 'delete' ? 'shadow-danger' : activity.actionType === 'update' ? 'shadow-primary' : '' %> ">
-              <div class="card-header bg-light d-flex">
+            <div class="card mb-3">
+              <div class="card-header <%= activity.actionType === 'create' ? 'bg-success' : activity.actionType === 'delete' ? 'bg-danger' : activity.actionType === 'update' ? 'bg-primary' : '' %> d-flex">
                 <button
                   type="button"
                   class="btn-close ms-auto tooltip-wrapper"
