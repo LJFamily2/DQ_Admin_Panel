@@ -106,7 +106,7 @@ async function updatePricesAndRatios(req, res) {
       supplierId = supplier._id;
     }
 
-    initialAreaData = area.data;
+    const initialAreaData = area.data;
     // Update prices and ratios
     area.data = updatePricesAndRatiosHelper(
       area.data,
@@ -117,11 +117,11 @@ async function updatePricesAndRatios(req, res) {
       supplierId,
     );
 
+    let bulkDebtOps = [];
+    let bulkMoneyRetainedOps = [];
+
     if (area.areaPrice > 0 && area.areaDimension > 0) {
       // Calculate and update debt and money retained for each data entry
-      const bulkDebtOps = [];
-      const bulkMoneyRetainedOps = [];
-
       for (const entry of area.data) {
         const { debtPaid, retainedAmount } = calculateFinancials(
           entry.rawMaterial,
@@ -154,19 +154,23 @@ async function updatePricesAndRatios(req, res) {
           },
         });
       }
-
-      // Execute bulk update operations
-      if (bulkDebtOps.length > 0) {
-        await Debt.bulkWrite(bulkDebtOps);
-      }
-
-      if (bulkMoneyRetainedOps.length > 0) {
-        await MoneyRetained.bulkWrite(bulkMoneyRetainedOps);
-      }
     }
 
-    const saveData = await area.save();
-    if (!saveData) {
+    // Execute bulk update operations concurrently
+    const [ saveData, actionHistory] = await Promise.all([
+      bulkDebtOps.length > 0 ? Debt.bulkWrite(bulkDebtOps) : Promise.resolve(),
+      bulkMoneyRetainedOps.length > 0 ? MoneyRetained.bulkWrite(bulkMoneyRetainedOps) : Promise.resolve(),
+      area.save(),
+      ActionHistory.create({
+        actionType: 'update',
+        userId: req.user._id,
+        details: `Cập nhật giá cho khu vực ${area.name}`,
+        oldValues: initialAreaData,
+        newValues: area.data,
+      }),
+    ]);
+
+    if (!saveData || !actionHistory) {
       return handleResponse(
         req,
         res,
@@ -177,25 +181,6 @@ async function updatePricesAndRatios(req, res) {
       );
     }
 
-    // Adding new action history
-    const actionHistory = await ActionHistory.create({
-      actionType: 'update',
-      userId: req.user._id,
-      details: `Cập nhật giá cho khu vực ${area.name}`,
-      oldValues: initialAreaData,
-      newValues: area.data
-    });
-    if (!actionHistory) {
-      return handleResponse(
-        req,
-        res,
-        500,
-        'fail',
-        'Lỗi cập nhật dữ liệu!',
-        req.headers.referer,
-      );
-    }
-    
     const successMessage = supplierSlug
       ? 'Cập nhật giá thành công cho nhà cung cấp'
       : 'Cập nhật giá thành công cho khu vực';

@@ -174,17 +174,18 @@ async function addData(req, res) {
     let debt;
     let moneyRetained;
     if (dailySupply.areaPrice > 0 && dailySupply.areaDimension > 0) {
-      // Create debt and retained money entries
-      debt = await Debt.create({
-        date: today,
-        debtPaidAmount: 0,
-      });
-
-      moneyRetained = await MoneyRetained.create({
-        date: today,
-        retainedAmount: 0,
-        percentage: existedSupplier.moneyRetainedPercentage,
-      });
+      // Create debt and retained money entries concurrently
+      [debt, moneyRetained] = await Promise.all([
+        Debt.create({
+          date: today,
+          debtPaidAmount: 0,
+        }),
+        MoneyRetained.create({
+          date: today,
+          retainedAmount: 0,
+          percentage: existedSupplier.moneyRetainedPercentage,
+        }),
+      ]);
     }
 
     // Create input data for DailySupply
@@ -197,30 +198,21 @@ async function addData(req, res) {
       moneyRetained: moneyRetained?._id,
     };
 
-    // Save the new data to DailySupply
-    const newData = await DailySupply.findByIdAndUpdate(
-      req.params.id,
-      { $push: { data: inputedData } },
-      { new: true, upsert: true },
-    );
+    // Save the new data to DailySupply and update the supplier concurrently
+    const [newData, updateSupplier] = await Promise.all([
+      DailySupply.findByIdAndUpdate(
+        req.params.id,
+        { $push: { data: inputedData } },
+        { new: true, upsert: true },
+      ),
+      (async () => {
+        existedSupplier.debtHistory.push(debt?._id);
+        existedSupplier.moneyRetainedHistory.push(moneyRetained?._id);
+        return existedSupplier.save();
+      })(),
+    ]);
 
-    if (!newData) {
-      return handleResponse(
-        req,
-        res,
-        404,
-        'fail',
-        'Thêm dữ liệu thất bại!',
-        req.headers.referer,
-      );
-    }
-
-    // Update the debt and money retained property
-    existedSupplier.debtHistory.push(debt?._id);
-    existedSupplier.moneyRetainedHistory.push(moneyRetained?._id);
-
-    const updateSupplier = await existedSupplier.save();
-    if (!updateSupplier) {
+    if (!newData || !updateSupplier) {
       return handleResponse(
         req,
         res,
@@ -368,6 +360,9 @@ async function updateSupplierData(req, res) {
       dailySupply.data[dataIndex].supplier = supplierDoc._id;
     }
 
+    let debtUpdatePromise = Promise.resolve();
+    let moneyRetainedUpdatePromise = Promise.resolve();
+
     if (dailySupply.areaPrice > 0 && dailySupply.areaDimension > 0) {
       // Calculate and update debt and money retained
       const { debtPaid, retainedAmount } = calculateFinancials(
@@ -386,20 +381,25 @@ async function updateSupplierData(req, res) {
       const moneyRetainedDifference = retainedAmount - oldMoneyRetainedAmount;
 
       // Update debt and money retained amounts using findByIdAndUpdate
-      await Debt.findByIdAndUpdate(
+      debtUpdatePromise = Debt.findByIdAndUpdate(
         dailySupply.data[dataIndex].debt._id,
         { $inc: { debtPaidAmount: debtPaidDifference } },
         { new: true },
       );
 
-      await MoneyRetained.findByIdAndUpdate(
+      moneyRetainedUpdatePromise = MoneyRetained.findByIdAndUpdate(
         dailySupply.data[dataIndex].moneyRetained._id,
         { $inc: { retainedAmount: moneyRetainedDifference } },
         { new: true },
       );
     }
 
-    const updatedDailySupply = await dailySupply.save();
+    const [updatedDailySupply, debtUpdate, moneyRetainedUpdate] = await Promise.all([
+      dailySupply.save(),
+      debtUpdatePromise,
+      moneyRetainedUpdatePromise,
+    ]);
+
     if (!updatedDailySupply) {
       return handleResponse(
         req,
@@ -496,12 +496,15 @@ async function deleteSupplierData(req, res) {
       );
     }
 
+    let updateSupplierDataPromise = Promise.resolve();
+    let deletePromises = [];
+
     if (dailySupply.areaPrice > 0 && dailySupply.areaDimension > 0) {
       const debtId = subDocument.debt;
       const moneyRetainedId = subDocument.moneyRetained;
 
       // Update the supplier's debtHistory and moneyRetainedHistory
-      const updateSupplierData = await Supplier.findByIdAndUpdate(
+      updateSupplierDataPromise = Supplier.findByIdAndUpdate(
         supplierId,
         {
           $pull: {
@@ -512,26 +515,29 @@ async function deleteSupplierData(req, res) {
         { new: true },
       );
 
-      if (!updateSupplierData) {
-        return handleResponse(
-          req,
-          res,
-          404,
-          'fail',
-          'Xóa dữ liệu cho nhà vườn thất bại!',
-          req.headers.referer,
-        );
-      }
-
       // Delete the corresponding debt and money retained documents if they exist
-      const deletePromises = [];
       if (debtId) {
         deletePromises.push(Debt.findByIdAndDelete(debtId));
       }
       if (moneyRetainedId) {
         deletePromises.push(MoneyRetained.findByIdAndDelete(moneyRetainedId));
       }
-      await Promise.all(deletePromises);
+    }
+
+    const [updateSupplierData, ...deleteResults] = await Promise.all([
+      updateSupplierDataPromise,
+      ...deletePromises,
+    ]);
+
+    if (!updateSupplierData) {
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Xóa dữ liệu cho nhà vườn thất bại!',
+        req.headers.referer,
+      );
     }
 
     // Adding new action history
@@ -551,7 +557,6 @@ async function deleteSupplierData(req, res) {
         req.headers.referer,
       );
     }
-
 
     return handleResponse(
       req,

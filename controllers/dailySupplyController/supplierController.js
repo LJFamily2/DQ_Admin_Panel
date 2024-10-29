@@ -104,29 +104,18 @@ async function updateArea(req, res) {
       updateFields.slug = slugify(areaName, { lower: true, trim: true });
     }
 
-    const newData = await DailySupply.findByIdAndUpdate(id, updateFields, {
-      new: true,
-    });
-    if (!newData) {
-      return handleResponse(
-        req,
-        res,
-        404,
-        'fail',
-        'Cập nhật khu vực thất bại!',
-        req.headers.referer,
-      );
-    }
+    const [newData, actionHistory] = await Promise.all([
+      DailySupply.findByIdAndUpdate(id, updateFields, { new: true }),
+      ActionHistory.create({
+        actionType: 'update',
+        userId: req.user._id,
+        details: `Cập nhật khu vực ${areaName}`,
+        oldValues: currentArea,
+        newValues: updateFields,
+      }),
+    ]);
 
-    // Adding new action history
-    const actionHistory = await ActionHistory.create({
-      actionType: 'update',
-      userId: req.user._id,
-      details: `Cập nhật khu vực ${newData.name}`,
-      oldValues: currentArea,
-      newValues:newData
-    });
-    if (!actionHistory) {
+    if (!newData || !actionHistory) {
       return handleResponse(
         req,
         res,
@@ -185,26 +174,29 @@ async function addSupplier(req, res) {
       );
     }
 
-    let newSupplier;
-    for (const supplier of suppliers) {
-      const existingSupplier = await Supplier.findOne({
-        $or: { code: supplier.code },
-      });
+    // Check for existing suppliers concurrently
+    const existingSuppliers = await Promise.all(
+      suppliers.map(supplier => Supplier.findOne({ code: supplier.code }))
+    );
 
-      if (existingSupplier) {
-        return handleResponse(
-          req,
-          res,
-          400,
-          'fail',
-          'Trùng mã nhà vườn!',
-          req.headers.referer,
-        );
-      }
-
-      newSupplier = await Supplier.create(supplier);
-      area.suppliers.push(newSupplier._id);
+    if (existingSuppliers.some(supplier => supplier)) {
+      return handleResponse(
+        req,
+        res,
+        400,
+        'fail',
+        'Trùng mã nhà vườn!',
+        req.headers.referer,
+      );
     }
+
+    // Create new suppliers concurrently
+    const newSuppliers = await Promise.all(
+      suppliers.map(supplier => Supplier.create(supplier))
+    );
+
+    // Update the area with new supplier IDs
+    newSuppliers.forEach(supplier => area.suppliers.push(supplier._id));
 
     // Update remainingAreaDimension
     if (area.areaDimension > 0 && area.areaPrice > 0) {
@@ -228,7 +220,7 @@ async function addSupplier(req, res) {
       actionType: 'create',
       userId: req.user._id,
       details: `Thêm nhà vườn vào khu vực ${area.name}`,
-      newValues: newSupplier
+      newValues: newSuppliers,
     });
     if (!actionHistory) {
       return handleResponse(
@@ -287,7 +279,7 @@ async function deleteSupplier(req, res) {
       });
     });
 
-    // Delete all associated data, debt, and moneyRetained documents
+    // Delete all associated data, debt, and moneyRetained documents concurrently
     await Promise.all([
       DailySupply.updateMany(
         { 'data.supplier': supplier._id },
@@ -302,7 +294,7 @@ async function deleteSupplier(req, res) {
     if (dailySupply) {
       dailySupply.remainingAreaDimension += supplier.purchasedAreaDimension;
       const addedAreaBack = await dailySupply.save();
-      if(!addedAreaBack){
+      if (!addedAreaBack) {
         return handleResponse(
           req,
           res,
@@ -328,12 +320,11 @@ async function deleteSupplier(req, res) {
     }
 
     // Adding new action history
-
     const actionHistory = await ActionHistory.create({
       actionType: 'delete',
       userId: req.user._id,
       details: `Xóa nhà vườn ${supplier.name} (${supplier.code})`,
-      oldValues: deleteSupplier
+      oldValues: deleteSupplier,
     });
     if (!actionHistory) {
       return handleResponse(
@@ -341,7 +332,7 @@ async function deleteSupplier(req, res) {
         res,
         500,
         'fail',
-        'Xóa nhà vườn thất bại!',
+        'Ghi lại lịch sử hành động thất bại!',
         req.headers.referer,
       );
     }
@@ -424,23 +415,30 @@ async function editSupplier(req, res) {
       );
     }
 
-    // Update the supplier
-    const supplier = await Supplier.findByIdAndUpdate(
-      req.params.id,
-      {
-        ...req.body,
-        initialDebtAmount,
-        supplierSlug: newSlug,
-        ratioSumSplit: req.body.ratioSumSplit
-          ? req.body.ratioSumSplit.replace(',', '.')
-          : 0,
-        purchasedAreaPrice,
-        areaDeposit,
-      },
-      { new: true },
-    );
+    // Update the supplier and remainingAreaDimension concurrently
+    const [supplier, updatedDailySupply] = await Promise.all([
+      Supplier.findByIdAndUpdate(
+        req.params.id,
+        {
+          ...req.body,
+          initialDebtAmount,
+          supplierSlug: newSlug,
+          ratioSumSplit: req.body.ratioSumSplit
+            ? req.body.ratioSumSplit.replace(',', '.')
+            : 0,
+          purchasedAreaPrice,
+          areaDeposit,
+        },
+        { new: true },
+      ),
+      DailySupply.findOneAndUpdate(
+        { slug: req.body.slug },
+        { remainingAreaDimension },
+        { new: true },
+      ),
+    ]);
 
-    if (!supplier) {
+    if (!supplier || !updatedDailySupply) {
       return handleResponse(
         req,
         res,
@@ -451,17 +449,13 @@ async function editSupplier(req, res) {
       );
     }
 
-    // Update the remainingAreaDimension in the DailySupply document
-    dailySupply.remainingAreaDimension = remainingAreaDimension;
-    await dailySupply.save();
-
     // Adding new action history
     const actionHistory = await ActionHistory.create({
       actionType: 'update',
       userId: req.user._id,
       details: `Cập nhật nhà vườn ${supplier.code}`,
       oldValues: existingSupplier,
-      newValues: supplier
+      newValues: supplier,
     });
     if (!actionHistory) {
       return handleResponse(

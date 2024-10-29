@@ -81,14 +81,21 @@ async function addArea(req, res) {
 
     const remainingAreaDimension = areaDimension - totalPurchasedAreaDimension;
 
-    const newArea = await DailySupply.create({
+    const newAreaData = {
       ...req.body,
       name: req.body.areaName,
       areaDimension: areaDimension,
       remainingAreaDimension: remainingAreaDimension,
       areaPrice: convertToDecimal(req.body.areaPrice),
       suppliers: [],
-    });
+    };
+
+    const suppliers = await createSuppliers(req);
+
+    const [newArea, createdSuppliers] = await Promise.all([
+      DailySupply.create(newAreaData),
+      suppliers.length > 0 ? Supplier.create(suppliers) : Promise.resolve([]),
+    ]);
 
     if (!newArea) {
       return handleResponse(
@@ -101,10 +108,7 @@ async function addArea(req, res) {
       );
     }
 
-    const suppliers = await createSuppliers(req);
-
-    if (suppliers && suppliers.length > 0) {
-      const createdSuppliers = await Supplier.create(suppliers);
+    if (createdSuppliers.length > 0) {
       const suppliersId = createdSuppliers.map(supplier => supplier._id);
       newArea.suppliers = suppliersId;
       const addSupplier = await newArea.save();
@@ -120,13 +124,12 @@ async function addArea(req, res) {
       }
     }
 
-    
     // Adding new action history with only relevant fields
     const actionHistory = await ActionHistory.create({
       actionType: 'create',
       userId: req.user._id,
       details: `Tạo khu vực mới ${newArea.name}`,
-      newValues: newArea
+      newValues: newArea,
     });
 
     if (!actionHistory) {
@@ -156,7 +159,7 @@ async function addArea(req, res) {
 
 async function deleteArea(req, res) {
   try {
-    const area = await DailySupply.findByIdAndDelete(req.params.id);
+    const area = await DailySupply.findById(req.params.id);
     if (!area) {
       return handleResponse(
         req,
@@ -179,18 +182,40 @@ async function deleteArea(req, res) {
 
     // Check if areaPrice and areaDimension are greater than 0
     if (area.areaPrice > 0 && area.areaDimension > 0) {
-      debtIds = area.data.map(d => d.debt._id);
-      moneyRetainedIds = area.data.map(d => d.moneyRetained._id);
+      debtIds = area.data.map(d => d.debt?._id).filter(Boolean);
+      moneyRetainedIds = area.data.map(d => d.moneyRetained?._id).filter(Boolean);
     }
 
     // Run deletion operations concurrently
-    const deletedData = await Promise.all([
+    const [deletedSuppliers, deletedDebts, deletedMoneyRetained] = await Promise.all([
       Supplier.deleteMany({ _id: { $in: supplierIds } }),
       debtIds.length > 0 ? Debt.deleteMany({ _id: { $in: debtIds } }) : Promise.resolve(),
       moneyRetainedIds.length > 0 ? MoneyRetained.deleteMany({ _id: { $in: moneyRetainedIds } }) : Promise.resolve(),
     ]);
 
-    if (!deletedData) {
+    if (!deletedSuppliers || !deletedDebts || !deletedMoneyRetained) {
+      if(deletedSuppliers){
+        console.log('done deletedSuppliers')
+      }
+      if(deletedDebts){
+        console.log('done deletedDebts')
+      }
+      if(deletedMoneyRetained){
+        console.log('done deletedMoneyRetained')
+      }
+      return handleResponse(
+        req,
+        res,
+        404,
+        'fail',
+        'Xóa khu vực thất bại!',
+        req.headers.referer,
+      );
+    }
+
+    // Delete the area after all related data is deleted
+    const deletedArea = await DailySupply.findByIdAndDelete(req.params.id);
+    if (!deletedArea) {
       return handleResponse(
         req,
         res,
@@ -215,7 +240,7 @@ async function deleteArea(req, res) {
         res,
         404,
         'fail',
-        'Xóa khu vực thất bại!',
+        'Ghi lại lịch sử hành động thất bại!',
         req.headers.referer,
       );
     }
