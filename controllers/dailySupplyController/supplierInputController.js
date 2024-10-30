@@ -463,6 +463,22 @@ async function deleteSupplierData(req, res) {
     }
 
     if (userRole === 'Văn phòng') {
+       // Check if a deletion request with the same dataId already exists
+    const existingRequest = dailySupply.deletionRequests.find(
+      (request) => request.dataId.toString() === id
+    );
+
+    if (existingRequest) {
+      return handleResponse(
+        req,
+        res,
+        400,
+        'fail',
+        'Đã gửi yêu cầu xóa của dữ liệu này!',
+        req.headers.referer,
+      );
+    }
+
       // Add a deletion request
       dailySupply.deletionRequests.push({
         ...req.body,
