@@ -335,14 +335,14 @@
                         <strong>Lý do:</strong>
                         <ul>
                           <li class="form-check">
-                            <input class="form-check-input" name="reason" type="radio" id="reason1">
+                            <input class="form-check-input" name="reason" value="Dữ liệu dư" type="radio" id="reason1">
                             <label class="form-check-label" for="reason1">Dữ liệu dư</label>
                           </li>
-                          <li class="form-check mt-3">
-                            <input class="form-check-input" name="reason" type="radio" id="reason2" onclick="document.getElementById('other').style.display = this.checked ? 'block' : 'none';">
+                          <li class="form-check">
+                            <input class="form-check-input" name="reason" value="Khác" type="radio" id="reason2">
                             <label class="form-check-label" for="reason2">Khác</label>
-                            <input type="text" class="form-control mt-2" id="other" name="otherReason" style="display: none;">
                           </li>
+                          
                         </ul>
                         <% } %>
                       </div>
