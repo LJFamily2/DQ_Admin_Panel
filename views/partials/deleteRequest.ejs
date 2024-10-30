@@ -29,9 +29,11 @@
                     <td><%= new Date(request.requestedAt).toLocaleString() %></td>
                     <td><%= request.requestedBy.username %> (<%= request.requestedBy.role %>)</td>
                     <td><%= request.reason %></td>
-                    <td></td>
+                    <td><button class="btn btn-link p-0" data-bs-target="#dataDetailModal<%= request._id %>" data-bs-toggle="modal">View Details</button></td>
                     <td><span class="<%= request.status === 'pending' ? 'text-danger' : 'text-success' %>"><%= request.status === 'pending' ? 'Chờ xử lý' : 'Hoàn tất' %></span></td>
-                    <td></td>
+                    <td>
+                      
+                    </td>
                 </tr>
             <% }) %>
             </tbody>
@@ -46,3 +48,37 @@
     </div>
   </div>
 </div>
+
+<!-- Modals for viewing the data details -->
+<% deletionRequests.forEach(request => { %>
+<div class="modal fade" id="dataDetailModal<%= request._id %>" tabindex="-1" aria-labelledby="dataDetailModalLabel<%= request._id %>" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="dataDetailModalLabel<%= request._id %>">Chi tiết dữ liệu</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Display the data details here -->
+        <p><strong>Thời gian:</strong> <%= new Date(request.requestedAt).toLocaleString() %></p>
+        <p><strong>Người yêu cầu:</strong> <%= request.requestedBy.username %> (<%= request.requestedBy.role %>)</p>
+        <p><strong>Lý do:</strong> <%= request.reason %></p>
+        <p><strong>Trạng thái:</strong> <%= request.status === 'pending' ? 'Chờ xử lý' : 'Hoàn tất' %></p>
+        <% if (request.dataId && request.dataId.rawMaterial) { %>
+          <ul>
+            <% request.dataId.rawMaterial.forEach(material => { %>
+              <li><%= material.name %>: <%= material.quantity %> units at <%= material.price %> each</li>
+            <% }) %>
+          </ul>
+        <% } else { %>
+          <p>No raw materials found.</p>
+        <% } %>
+        <!-- Add more details as needed -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<% }) %>

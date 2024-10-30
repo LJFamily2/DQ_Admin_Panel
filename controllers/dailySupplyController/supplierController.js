@@ -29,7 +29,7 @@ async function renderDetailPage(req, res) {
     const area = await DailySupply.findOne({ slug: req.params.slug })
       .populate('accountID')
       .populate('suppliers')
-      .populate({path: 'deletionRequests', populate: [{path: 'requestedBy', select: ['username', 'role']}, {path: 'dataId'}]})
+      .populate({path: 'deletionRequests.requestedBy', select: ['username', 'role']})
       .populate('data.supplier');
     const hamLuongAccounts = await AccountModel.find({ role: 'Hàm lượng' });
 
@@ -37,6 +37,7 @@ async function renderDetailPage(req, res) {
     const managerSupplier = area.suppliers.find(
       supplier => supplier.manager === true,
     );
+    
 
     res.render('src/dailySupplyDetailPage', {
       layout: './layouts/defaultLayout',
