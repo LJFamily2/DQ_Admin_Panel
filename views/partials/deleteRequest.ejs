@@ -29,10 +29,11 @@
                     <td><%= new Date(request.requestedAt).toLocaleString() %></td>
                     <td><%= request.requestedBy.username %> (<%= request.requestedBy.role %>)</td>
                     <td><%= request.reason %></td>
-                    <td><button class="btn btn-link p-0" data-bs-target="#dataDetailModal<%= request._id %>" data-bs-toggle="modal">View Details</button></td>
+                    <td><button class="btn btn-link p-0" data-bs-target="#dataDetailModal<%= request._id %>" data-bs-toggle="modal">Chi tiết</button></td>
                     <td><span class="<%= request.status === 'pending' ? 'text-danger' : 'text-success' %>"><%= request.status === 'pending' ? 'Chờ xử lý' : 'Hoàn tất' %></span></td>
-                    <td>
-                      
+                    <td style="display: flex; align-items: center; justify-content: space-evenly;">
+                      <i class="bi bi-check-square-fill" style="cursor: pointer;"></i>
+                      <i class="bi bi-x-square-fill" style="cursor: pointer;"></i>
                     </td>
                 </tr>
             <% }) %>
@@ -43,7 +44,7 @@
         <% } %>     
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
       </div>
     </div>
   </div>
@@ -64,21 +65,54 @@
         <p><strong>Người yêu cầu:</strong> <%= request.requestedBy.username %> (<%= request.requestedBy.role %>)</p>
         <p><strong>Lý do:</strong> <%= request.reason %></p>
         <p><strong>Trạng thái:</strong> <%= request.status === 'pending' ? 'Chờ xử lý' : 'Hoàn tất' %></p>
-        <% if (request.dataId && request.dataId.rawMaterial) { %>
-          <ul>
-            <% request.dataId.rawMaterial.forEach(material => { %>
-              <li><%= material.name %>: <%= material.quantity %> units at <%= material.price %> each</li>
-            <% }) %>
-          </ul>
+        <% if (request.dataId && request.rawMaterial) { %>
+
+          <table class="table table-striped table-bordered">
+            <thead>
+              <tr>
+                <th colspan="3">Mủ nước</th>
+                <th>Mủ tạp</th>
+                <th>Mủ ké</th>
+                <th>Mủ đông</th>
+                <th rowspan="2">Khác</th>
+              </tr>
+              <tr>
+                <th>SL</th>
+                <th>Hàm lượng</th>
+                <th>Quy khô</th>
+                <th>SL</th>
+                <th>SL</th>
+                <th>SL</th>
+              </tr>
+              
+            </thead>
+            <tr>
+              <% request.rawMaterial.forEach(material => { %>
+                <% if(material.name === "Mủ nước"){ %>
+                  <td><%= material.quantity %></td>
+                  <td><%= material.percentage %></td>
+                  <td><%= material.quantity * material.percentage / 100 %></td>
+                <% } else { %>
+                  <td><%= material.quantity %></td>
+                <% } %>
+              <% }) %>
+              <td><%= request.note %></td>
+            </tr>
+          </table>
+
         <% } else { %>
           <p>No raw materials found.</p>
         <% } %>
         <!-- Add more details as needed -->
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <a class="btn btn-secondary" data-bs-toggle="modal" href="#deletionRequestsModal" role="button">Quay lại</a>
       </div>
     </div>
   </div>
 </div>
 <% }) %>
+
+<script>
+  
+</script>

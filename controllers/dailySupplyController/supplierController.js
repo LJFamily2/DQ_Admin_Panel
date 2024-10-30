@@ -45,7 +45,10 @@ async function getRawMaterialData(deletionRequestId) {
       throw new Error('Data entry not found');
     }
 
-    return dataEntry.rawMaterial;
+    return {
+      rawMaterial: dataEntry.rawMaterial,
+      note: dataEntry.note,
+    };
   } catch (error) {
     console.error(error);
     throw error;
@@ -76,13 +79,17 @@ async function renderDetailPage(req, res) {
     // Fetch rawMaterial data for each deletionRequest
     const deletionRequestsWithRawMaterial = await Promise.all(
       area.deletionRequests.map(async (request) => {
-        const rawMaterial = await getRawMaterialData(request.dataId);
+        const { rawMaterial, note } = await getRawMaterialData(request.dataId);
         return {
           ...request.toObject(),
-          rawMaterial,
+          rawMaterial,         
+          note,
         };
       })
     );
+
+    console.log(deletionRequestsWithRawMaterial)
+
     res.render('src/dailySupplyDetailPage', {
       layout: './layouts/defaultLayout',
       title: `Dữ liệu mủ của ${area.name}`,
