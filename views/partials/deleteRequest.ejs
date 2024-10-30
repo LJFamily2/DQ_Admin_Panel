@@ -1,0 +1,48 @@
+<button class="btn btn-outline-danger mb-3" data-bs-target="#deletionRequestsModal" data-bs-toggle="modal">
+    Yêu cầu xóa
+</button>
+
+<!-- Modal for displaying the deletionRequests -->
+<div class="modal fade" id="deletionRequestsModal" tabindex="-1" aria-labelledby="deletionRequestsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deletionRequestsModalLabel">Yêu cầu xóa dữ liệu</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <% if (deletionRequests.length > 0) { %>
+        <table class="table table-striped table-bordered">
+            <thead>
+            <tr>
+                <th>Thời gian</th>
+                <th>Người yêu cầu</th>
+                <th>Lý do</th>
+                <th>Dữ liệu</th>
+                <th>Trạng thái </th>
+                <th>Thao tác </th>
+            </tr>
+            </thead>
+            <tbody>
+            <% deletionRequests.forEach(request => { %>
+                <tr>
+                    <td><%= new Date(request.requestedAt).toLocaleString() %></td>
+                    <td><%= request.requestedBy.username %> (<%= request.requestedBy.role %>)</td>
+                    <td><%= request.reason %></td>
+                    <td></td>
+                    <td><span class="<%= request.status === 'pending' ? 'text-danger' : 'text-success' %>"><%= request.status === 'pending' ? 'Chờ xử lý' : 'Hoàn tất' %></span></td>
+                    <td></td>
+                </tr>
+            <% }) %>
+            </tbody>
+        </table>
+        <% } else { %>
+        <p>Không có dữ liệu.</p>
+        <% } %>     
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

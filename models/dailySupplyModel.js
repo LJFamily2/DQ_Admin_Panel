@@ -106,7 +106,7 @@ const dailySupplySchema = new mongoose.Schema({
       reason: String,
       requestedAt: { type: Date, default: Date.now },
       status: { type: String, default: 'pending' },
-      dataId: {type: mongoose.Schema.Types.ObjectId, ref: 'dailysupplies.data'}
+      dataId: {type: mongoose.Schema.Types.ObjectId, ref: 'dailysupplies'}
     }
   ]
 });
