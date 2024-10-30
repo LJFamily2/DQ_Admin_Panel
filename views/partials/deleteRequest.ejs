@@ -1,3 +1,10 @@
+<head>
+    <!-- Tippy -->
+    <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css" />
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://unpkg.com/tippy.js@6"></script>
+</head>
+
 <button class="btn btn-outline-danger mb-3" data-bs-target="#deletionRequestsModal" data-bs-toggle="modal">
     Yêu cầu xóa
 </button>
@@ -32,8 +39,8 @@
                     <td><button class="btn btn-link p-0" data-bs-target="#dataDetailModal<%= request._id %>" data-bs-toggle="modal">Chi tiết</button></td>
                     <td><span class="<%= request.status === 'pending' ? 'text-danger' : 'text-success' %>"><%= request.status === 'pending' ? 'Chờ xử lý' : 'Hoàn tất' %></span></td>
                     <td style="display: flex; align-items: center; justify-content: space-evenly;">
-                      <i class="bi bi-check-square-fill" style="cursor: pointer;"></i>
-                      <i class="bi bi-x-square-fill" style="cursor: pointer;"></i>
+                      <i class="bi bi-check-square-fill text-success tooltip-wrapper" data-tippy-content="Chấp nhận xóa" style="cursor: pointer;"></i>
+                      <i class="bi bi-x-square-fill text-danger tooltip-wrapper" data-tippy-content="Từ chối xóa" style="cursor: pointer;"></i>
                     </td>
                 </tr>
             <% }) %>
@@ -114,5 +121,5 @@
 <% }) %>
 
 <script>
-  
+  tippy('.tooltip-wrapper');
 </script>
