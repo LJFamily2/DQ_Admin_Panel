@@ -22,6 +22,37 @@ module.exports = {
   editSupplier,
 };
 
+async function getRawMaterialData(deletionRequestId) {
+  try {
+    const dailySupply = await DailySupply.findOne({
+      'deletionRequests.dataId': deletionRequestId,
+    }).populate({
+      path: 'data',
+      populate: {
+        path: 'rawMaterial',
+      },
+    });
+
+    if (!dailySupply) {
+      throw new Error('DailySupply document not found');
+    }
+
+    const dataEntry = dailySupply.data.find((entry) =>
+      entry._id.equals(deletionRequestId)
+    );
+
+    if (!dataEntry) {
+      throw new Error('Data entry not found');
+    }
+
+    return dataEntry.rawMaterial;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+
 async function renderDetailPage(req, res) {
   try {
     const { startDate, endDate } = req.query;
@@ -29,21 +60,37 @@ async function renderDetailPage(req, res) {
     const area = await DailySupply.findOne({ slug: req.params.slug })
       .populate('accountID')
       .populate('suppliers')
-      .populate({path: 'deletionRequests.requestedBy', select: ['username', 'role']})
+      .populate({
+        path: 'deletionRequests.requestedBy',
+        select: ['username', 'role']
+      })
       .populate('data.supplier');
+
     const hamLuongAccounts = await AccountModel.find({ role: 'Hàm lượng' });
 
     // Find the manager supplier
     const managerSupplier = area.suppliers.find(
       supplier => supplier.manager === true,
     );
-    
 
+    // Fetch rawMaterial data for each deletionRequest
+    const deletionRequestsWithRawMaterial = await Promise.all(
+      area.deletionRequests.map(async (request) => {
+        const rawMaterial = await getRawMaterialData(request.dataId);
+        return {
+          ...request.toObject(),
+          rawMaterial,
+        };
+      })
+    );
     res.render('src/dailySupplyDetailPage', {
       layout: './layouts/defaultLayout',
       title: `Dữ liệu mủ của ${area.name}`,
       hamLuongAccounts,
-      area,
+      area: {
+        ...area.toObject(),
+        deletionRequests: deletionRequestsWithRawMaterial,
+      },
       startDate,
       endDate,
       user: req.user,

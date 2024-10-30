@@ -748,7 +748,7 @@
                                     class="form-control"
                                     id="areaDurationStart"
                                     name="areaDuration[start]"
-                                    value="<%= supplier.areaDuration.start ? supplier.areaDuration.start.toISOString().split('T')[0] : '' %>"
+                                    value="<%= supplier.areaDuration && supplier.areaDuration.start ? supplier.areaDuration.start.toISOString().split('T')[0] : '' %>"
                                   />
                                 </div>
                                 <div class="col-6">
@@ -760,7 +760,7 @@
                                     class="form-control"
                                     id="areaDurationEnd"
                                     name="areaDuration[end]"
-                                    value="<%=  supplier.areaDuration.end ? supplier.areaDuration.end.toISOString().split('T')[0] : '' %>"
+                                    value="<%=  supplier.areaDuration && supplier.areaDuration.end ? supplier.areaDuration.end.toISOString().split('T')[0] : '' %>"
                                   />
                                 </div>
                               </div>
