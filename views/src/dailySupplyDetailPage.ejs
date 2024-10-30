@@ -308,7 +308,7 @@
                 <div class="modal-content">
                   <div class="modal-header">
                     <h1 class="modal-title fs-5" id="exampleModalToggleLabel">
-                      Xóa dữ liệu của <%= eachData.supplier?.name %>
+                      <%= user.role === 'Admin' || user.role === 'Giám đốc' ? 'Xóa dữ liệu ' :"Gửi yêu cầu xóa dữ liệu" %> của <%= eachData.supplier?.name %>
                     </h1>
                     <button
                       type="button"
@@ -322,10 +322,30 @@
                     method="post"
                   >
                     <div class="modal-body">
+                      <% if( user.role === 'Admin' || user.role === 'Giám đốc'){%>
+
                       Bạn có muốn xóa dữ liệu của
-                      <strong><%= eachData.supplier?.name %></strong> ? Hành động này
+                      <strong><%= eachData.supplier?.name %> (<%= eachData.date.toLocaleDateString('vi-VN') %>)</strong> ? Hành động này
                       không thể hoàn tác.
-                    </div>
+                      <% } else { %>
+                        Bạn có muốn xóa dữ liệu của
+                        <strong><%= eachData.supplier?.name %> (<%= eachData.date.toLocaleDateString('vi-VN') %>)</strong>?
+                        <br>
+                        <br>
+                        <strong>Lý do:</strong>
+                        <ul>
+                          <li class="form-check">
+                            <input class="form-check-input" name="reason" type="radio" id="reason1">
+                            <label class="form-check-label" for="reason1">Dữ liệu dư</label>
+                          </li>
+                          <li class="form-check mt-3">
+                            <input class="form-check-input" name="reason" type="radio" id="reason2" onclick="document.getElementById('other').style.display = this.checked ? 'block' : 'none';">
+                            <label class="form-check-label" for="reason2">Khác</label>
+                            <input type="text" class="form-control mt-2" id="other" name="otherReason" style="display: none;">
+                          </li>
+                        </ul>
+                        <% } %>
+                      </div>
                     <div class="modal-footer">
                       <button type="submit" class="btn btn-danger">
                         Xác nhận
