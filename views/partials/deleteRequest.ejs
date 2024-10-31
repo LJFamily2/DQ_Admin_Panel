@@ -37,10 +37,14 @@
                     <td><%= request.requestedBy.username %> (<%= request.requestedBy.role %>)</td>
                     <td><%= request.reason %></td>
                     <td><button class="btn btn-link p-0" data-bs-target="#dataDetailModal<%= request._id %>" data-bs-toggle="modal">Chi tiết</button></td>
-                    <td><span class="<%= request.status === 'pending' ? 'text-danger' : 'text-success' %>"><%= request.status === 'pending' ? 'Chờ xử lý' : 'Hoàn tất' %></span></td>
+                    <td><span class="<%= request.status === 'pending' || request.status === 'rejected' ?  'text-danger'  : 'text-success' %>"><%= request.status === 'pending' ? 'Chờ xử lý' : request.status === 'rejected' ? 'Từ chối' :'Hoàn tất' %></span></td>
                     <td style="display: flex; align-items: center; justify-content: space-evenly;">
                       <i class="bi bi-check-square-fill text-success tooltip-wrapper" data-tippy-content="Chấp nhận xóa" style="cursor: pointer;"></i>
-                      <i class="bi bi-x-square-fill text-danger tooltip-wrapper" data-tippy-content="Từ chối xóa" style="cursor: pointer;"></i>
+                      <form action="/du-lieu-hang-ngay/rejectDeletionRequest/<%= request._id %>" method="post">
+                        <button type="submit" class="btn">
+                          <i class="bi bi-x-square-fill text-danger tooltip-wrapper" data-tippy-content="Từ chối xóa" style="cursor: pointer;"></i>
+                        </button>
+                      </form>
                     </td>
                 </tr>
             <% }) %>
@@ -71,7 +75,7 @@
         <p><strong>Thời gian:</strong> <%= new Date(request.requestedAt).toLocaleString() %></p>
         <p><strong>Người yêu cầu:</strong> <%= request.requestedBy.username %> (<%= request.requestedBy.role %>)</p>
         <p><strong>Lý do:</strong> <%= request.reason %></p>
-        <p><strong>Trạng thái:</strong> <%= request.status === 'pending' ? 'Chờ xử lý' : 'Hoàn tất' %></p>
+        <p><strong>Trạng thái:</strong> <%= request.status === 'pending' ? 'Chờ xử lý' : request.status === 'rejected' ? 'Từ chối' :'Hoàn tất' %></p>
         <% if (request.dataId && request.rawMaterial) { %>
 
           <table class="table table-striped table-bordered">
