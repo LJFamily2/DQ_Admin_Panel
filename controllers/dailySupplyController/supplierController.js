@@ -89,8 +89,6 @@ async function renderDetailPage(req, res) {
       })
     );
 
-    console.log(deletionRequestsWithRawMaterial)
-
     res.render('src/dailySupplyDetailPage', {
       layout: './layouts/defaultLayout',
       title: `Dữ liệu mủ của ${area.name}`,

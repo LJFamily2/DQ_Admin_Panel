@@ -4,7 +4,7 @@ const {
   Supplier,
   DailySupply,
 } = require('../../models/dailySupplyModel');
-const ActionHistory = require('../../models/actionHistoryModel')
+const ActionHistory = require('../../models/actionHistoryModel');
 
 const handleResponse = require('../utils/handleResponse');
 const convertToDecimal = require('../utils/convertToDecimal');
@@ -12,7 +12,6 @@ const trimStringFields = require('../utils/trimStringFields');
 const calculateFinancials = require('../dailySupplyController/helper/calculateFinancials');
 
 module.exports = {
-  // User side for input data
   renderInputDataDashboardPage,
   renderInputDataPage,
   addData,
@@ -23,23 +22,16 @@ module.exports = {
 async function renderInputDataDashboardPage(req, res) {
   try {
     const { startDate, endDate } = req.query;
-
     let areas;
 
     if (req.user.role === 'Admin') {
-      // Fetch all areas if the user is an Admin
       areas = await DailySupply.find()
         .populate('suppliers')
         .populate('data.supplier');
     } else {
-      // Fetch only the areas assigned to the user by accountID
-      const area = await DailySupply.findOne({
-        accountID: req.user._id,
-      })
+      const area = await DailySupply.findOne({ accountID: req.user._id })
         .populate('suppliers')
         .populate('data.supplier');
-
-      // Ensure areas is an array
       areas = area ? [area] : [];
     }
 
@@ -61,13 +53,11 @@ async function renderInputDataDashboardPage(req, res) {
 async function renderInputDataPage(req, res) {
   try {
     const { startDate, endDate } = req.query;
-    // Check if the user has the 'Admin' role
     const isAdmin = req.user.role === 'Admin';
 
-    // Find the DailySupply document based on the slug and accountID
     const area = await DailySupply.findOne({
       slug: req.params.slug,
-      ...(isAdmin ? {} : { accountID: req.user._id }), // If not admin, add accountID to the query
+      ...(isAdmin ? {} : { accountID: req.user._id }),
     })
       .populate('suppliers')
       .populate('data.supplier');
@@ -76,13 +66,11 @@ async function renderInputDataPage(req, res) {
       return res.status(404).render('partials/404', { layout: false });
     }
 
-    // Get today's start and end dates
     const startOfToday = new Date();
     startOfToday.setUTCHours(startOfToday.getUTCHours() + 7);
     const endOfToday = new Date();
     endOfToday.setUTCHours(endOfToday.getUTCHours() + 7);
 
-    // Count the number of entries for today
     const todayEntriesCount = await DailySupply.aggregate([
       { $match: { _id: area._id } },
       { $unwind: '$data' },
@@ -112,14 +100,11 @@ async function renderInputDataPage(req, res) {
 
 async function addData(req, res) {
   try {
-    // Trim request body strings
     req.body = trimStringFields(req.body);
 
-    // Get today's date at midnight
     const today = new Date();
     today.setUTCHours(0, 0, 0, 0);
 
-    // Find the DailySupply entry by ID
     const dailySupply = await DailySupply.findById(req.params.id);
     if (!dailySupply) {
       return handleResponse(
@@ -132,7 +117,6 @@ async function addData(req, res) {
       );
     }
 
-    // Check the number of entries for today
     const todayEntries = dailySupply.data.filter(
       entry => new Date(entry.date).toDateString() === today.toDateString(),
     );
@@ -147,7 +131,6 @@ async function addData(req, res) {
       );
     }
 
-    // Find the existing supplier by name
     const existedSupplier = await Supplier.findOne({ supplierSlug: req.body.supplier });
     if (!existedSupplier) {
       return handleResponse(
@@ -160,25 +143,18 @@ async function addData(req, res) {
       );
     }
 
-    // Prepare raw material entries
     const rawMaterials = req.body.name.map((name, index) => ({
       name,
-      percentage:
-        name === 'Mủ nước' ? convertToDecimal(req.body.percentage) : 0,
+      percentage: name === 'Mủ nước' ? convertToDecimal(req.body.percentage) : 0,
       ratioSplit: existedSupplier.ratioRubberSplit,
       quantity: convertToDecimal(req.body.quantity[index] || 0),
       price: 0,
     }));
 
-    let debt;
-    let moneyRetained;
+    let debt, moneyRetained;
     if (dailySupply.areaPrice > 0 && dailySupply.areaDimension > 0) {
-      // Create debt and retained money entries concurrently
       [debt, moneyRetained] = await Promise.all([
-        Debt.create({
-          date: today,
-          debtPaidAmount: 0,
-        }),
+        Debt.create({ date: today, debtPaidAmount: 0 }),
         MoneyRetained.create({
           date: today,
           retainedAmount: 0,
@@ -187,7 +163,6 @@ async function addData(req, res) {
       ]);
     }
 
-    // Create input data for DailySupply
     const inputedData = {
       date: today,
       rawMaterial: rawMaterials,
@@ -197,7 +172,6 @@ async function addData(req, res) {
       moneyRetained: moneyRetained?._id,
     };
 
-    // Save the new data to DailySupply and update the supplier concurrently
     const [newData, updateSupplier] = await Promise.all([
       DailySupply.findByIdAndUpdate(
         req.params.id,
@@ -222,7 +196,6 @@ async function addData(req, res) {
       );
     }
 
-    // Adding new action history
     const actionHistory = await ActionHistory.create({
       actionType: 'create',
       userId: req.user._id,
@@ -241,7 +214,6 @@ async function addData(req, res) {
       );
     }
 
-    // Success response
     return handleResponse(
       req,
       res,
@@ -279,22 +251,6 @@ async function updateSupplierData(req, res) {
       note,
     } = req.body;
 
-    let supplierDoc;
-
-    if (supplier) {
-      supplierDoc = await Supplier.findOne({ supplierSlug: supplier });
-      if (!supplierDoc) {
-        return handleResponse(
-          req,
-          res,
-          400,
-          'fail',
-          'Nhà vườn không tồn tại!',
-          req.headers.referer,
-        );
-      }
-    }
-
     const dailySupply = await DailySupply.findOne({ 'data._id': id }).populate({
       path: 'data',
       populate: ['debt', 'moneyRetained'],
@@ -310,9 +266,7 @@ async function updateSupplierData(req, res) {
       );
     }
 
-    const dataIndex = dailySupply.data.findIndex(
-      item => item._id.toString() === id,
-    );
+    const dataIndex = dailySupply.data.findIndex(item => item._id.toString() === id);
     if (dataIndex === -1) {
       return handleResponse(
         req,
@@ -324,80 +278,81 @@ async function updateSupplierData(req, res) {
       );
     }
 
-    // Make a deep copy of the data before updating
     const dataBeforeUpdate = JSON.parse(JSON.stringify(dailySupply.data[dataIndex]));
 
-    const updatedRawMaterial = dailySupply.data[dataIndex].rawMaterial.map(
-      item => {
-        const updatedItem = { ...item };
-        if (item.name === 'Mủ nước') {
+    const updatedRawMaterial = dailySupply.data[dataIndex].rawMaterial.map(item => {
+      const updatedItem = { ...item };
+      switch (item.name) {
+        case 'Mủ nước':
           updatedItem.quantity = convertToDecimal(muNuocQuantity);
           updatedItem.percentage = convertToDecimal(muNuocPercentage);
           updatedItem.ratioSplit = convertToDecimal(muNuocRatioSplit);
           updatedItem.price = convertToDecimal(muNuocPrice);
-        } else if (item.name === 'Mủ tạp') {
+          break;
+        case 'Mủ tạp':
           updatedItem.quantity = convertToDecimal(muTapQuantity);
           updatedItem.ratioSplit = convertToDecimal(muTapRatioSplit);
           updatedItem.price = convertToDecimal(muTapPrice);
-        } else if (item.name === 'Mủ ké') {
+          break;
+        case 'Mủ ké':
           updatedItem.quantity = convertToDecimal(muKeQuantity);
           updatedItem.ratioSplit = convertToDecimal(muKeRatioSplit);
           updatedItem.price = convertToDecimal(muKePrice);
-        } else if (item.name === 'Mủ đông') {
+          break;
+        case 'Mủ đông':
           updatedItem.quantity = convertToDecimal(muDongQuantity);
           updatedItem.ratioSplit = convertToDecimal(muDongRatioSplit);
           updatedItem.price = convertToDecimal(muDongPrice);
-        }
-        return updatedItem;
-      },
-    );
+          break;
+      }
+      return updatedItem;
+    });
 
     dailySupply.data[dataIndex].date = new Date(date);
     dailySupply.data[dataIndex].rawMaterial = updatedRawMaterial;
     dailySupply.data[dataIndex].note = trimStringFields(note) || '';
-    if (supplierDoc) {
+
+    if (supplier) {
+      const supplierDoc = await Supplier.findOne({ supplierSlug: supplier });
+      if (!supplierDoc) {
+        return handleResponse(
+          req,
+          res,
+          400,
+          'fail',
+          'Nhà vườn không tồn tại!',
+          req.headers.referer,
+        );
+      }
       dailySupply.data[dataIndex].supplier = supplierDoc._id;
     }
 
-    let debtUpdatePromise = Promise.resolve();
-    let moneyRetainedUpdatePromise = Promise.resolve();
+    const updatePromises = [dailySupply.save()];
 
     if (dailySupply.areaPrice > 0 && dailySupply.areaDimension > 0) {
-      // Calculate and update debt and money retained
       const { debtPaid, retainedAmount } = calculateFinancials(
         updatedRawMaterial,
         dailySupply.data[dataIndex].moneyRetained.percentage,
       );
 
-      // Store old values
-      const oldDebtPaidAmount =
-        dailySupply.data[dataIndex].debt.debtPaidAmount || 0;
-      const oldMoneyRetainedAmount =
-        dailySupply.data[dataIndex].moneyRetained.retainedAmount || 0;
+      const debtPaidDifference = debtPaid - (dailySupply.data[dataIndex].debt.debtPaidAmount || 0);
+      const moneyRetainedDifference = retainedAmount - (dailySupply.data[dataIndex].moneyRetained.retainedAmount || 0);
 
-      // Calculate differences
-      const debtPaidDifference = debtPaid - oldDebtPaidAmount;
-      const moneyRetainedDifference = retainedAmount - oldMoneyRetainedAmount;
-
-      // Update debt and money retained amounts using findByIdAndUpdate
-      debtUpdatePromise = Debt.findByIdAndUpdate(
-        dailySupply.data[dataIndex].debt._id,
-        { $inc: { debtPaidAmount: debtPaidDifference } },
-        { new: true },
-      );
-
-      moneyRetainedUpdatePromise = MoneyRetained.findByIdAndUpdate(
-        dailySupply.data[dataIndex].moneyRetained._id,
-        { $inc: { retainedAmount: moneyRetainedDifference } },
-        { new: true },
+      updatePromises.push(
+        Debt.findByIdAndUpdate(
+          dailySupply.data[dataIndex].debt._id,
+          { $inc: { debtPaidAmount: debtPaidDifference } },
+          { new: true },
+        ),
+        MoneyRetained.findByIdAndUpdate(
+          dailySupply.data[dataIndex].moneyRetained._id,
+          { $inc: { retainedAmount: moneyRetainedDifference } },
+          { new: true },
+        )
       );
     }
 
-    const [updatedDailySupply, debtUpdate, moneyRetainedUpdate] = await Promise.all([
-      dailySupply.save(),
-      debtUpdatePromise,
-      moneyRetainedUpdatePromise,
-    ]);
+    const [updatedDailySupply] = await Promise.all(updatePromises);
 
     if (!updatedDailySupply) {
       return handleResponse(
@@ -409,15 +364,15 @@ async function updateSupplierData(req, res) {
         req.headers.referer,
       );
     }
-    
-    // Adding new action history
+
     const actionHistory = await ActionHistory.create({
       actionType: 'update',
       userId: req.user._id,
       details: `Cập nhật dữ liệu cho ${updatedDailySupply.name}`,
       oldValues: dataBeforeUpdate,
-      newValues: dailySupply.data[dataIndex]
+      newValues: dailySupply.data[dataIndex],
     });
+
     if (!actionHistory) {
       return handleResponse(
         req,
@@ -448,7 +403,6 @@ async function deleteSupplierData(req, res) {
     const { id } = req.params;
     const userRole = req.user.role;
 
-    // Find the DailySupply document containing the sub-document to be deleted
     const dailySupply = await DailySupply.findOne({ 'data._id': id });
     if (!dailySupply) {
       return handleResponse(
@@ -462,23 +416,21 @@ async function deleteSupplierData(req, res) {
     }
 
     if (userRole === 'Văn phòng') {
-       // Check if a deletion request with the same dataId already exists
-    const existingRequest = dailySupply.deletionRequests.find(
-      (request) => request.dataId.toString() === id
-    );
-
-    if (existingRequest) {
-      return handleResponse(
-        req,
-        res,
-        400,
-        'fail',
-        'Đã gửi yêu cầu xóa của dữ liệu này!',
-        req.headers.referer,
+      const existingRequest = dailySupply.deletionRequests.find(
+        (request) => request.dataId.toString() === id
       );
-    }
 
-      // Add a deletion request
+      if (existingRequest) {
+        return handleResponse(
+          req,
+          res,
+          400,
+          'fail',
+          'Đã gửi yêu cầu xóa của dữ liệu này!',
+          req.headers.referer,
+        );
+      }
+
       dailySupply.deletionRequests.push({
         ...req.body,
         requestedBy: req.user._id,
@@ -493,8 +445,7 @@ async function deleteSupplierData(req, res) {
         'Yêu cầu xóa dữ liệu đã được gửi!',
         req.headers.referer,
       );
-    } else if (userRole === 'Giám đốc' && userRole === 'Admin') {
-      // Extract the sub-document to be deleted
+    } else if (userRole === 'Giám đốc' || userRole === 'Admin') {
       const subDocument = dailySupply.data.id(id);
       if (!subDocument) {
         return handleResponse(
@@ -502,17 +453,16 @@ async function deleteSupplierData(req, res) {
           res,
           404,
           'fail',
-          'Không tìm thấy dữ liệu!',
+          'Không tìm thấy dữ liệu con!',
           req.headers.referer,
         );
       }
+
       const supplierId = subDocument.supplier;
-      // Remove the sub-document from the DailySupply document
+
       const updatedData = await DailySupply.findOneAndUpdate(
         { 'data._id': id },
-        {
-          $pull: { data: { _id: id } },
-        },
+        { $pull: { data: { _id: id } } },
         { new: true },
       );
       if (!updatedData) {
@@ -525,12 +475,14 @@ async function deleteSupplierData(req, res) {
           req.headers.referer,
         );
       }
-      let updateSupplierDataPromise = Promise.resolve();
+
+      let updateSupplierDataPromise;
       let deletePromises = [];
+
       if (dailySupply.areaPrice > 0 && dailySupply.areaDimension > 0) {
         const debtId = subDocument.debt;
         const moneyRetainedId = subDocument.moneyRetained;
-        // Update the supplier's debtHistory and moneyRetainedHistory
+
         updateSupplierDataPromise = Supplier.findByIdAndUpdate(
           supplierId,
           {
@@ -541,7 +493,7 @@ async function deleteSupplierData(req, res) {
           },
           { new: true },
         );
-        // Delete the corresponding debt and money retained documents if they exist
+
         if (debtId) {
           deletePromises.push(Debt.findByIdAndDelete(debtId));
         }
@@ -549,11 +501,28 @@ async function deleteSupplierData(req, res) {
           deletePromises.push(MoneyRetained.findByIdAndDelete(moneyRetainedId));
         }
       }
-      const [updateSupplierData, ...deleteResults] = await Promise.all([
-        updateSupplierDataPromise,
+
+      const actionHistoryPromise = ActionHistory.create({
+        actionType: 'delete',
+        userId: req.user._id,
+        details: `Xóa dữ liệu cho ${updatedData.name}`,
+        oldValues: subDocument,
+      });
+
+      const promises = [
         ...deletePromises,
-      ]);
-      if (!updateSupplierData) {
+        actionHistoryPromise,
+      ];
+
+      if (updateSupplierDataPromise) {
+        promises.push(updateSupplierDataPromise);
+      }
+
+      const results = await Promise.all(promises);
+
+      const updateSupplierData = updateSupplierDataPromise ? results.pop() : null;
+
+      if (updateSupplierDataPromise && !updateSupplierData) {
         return handleResponse(
           req,
           res,
@@ -563,23 +532,13 @@ async function deleteSupplierData(req, res) {
           req.headers.referer,
         );
       }
-      // Adding new action history
-      const actionHistory = await ActionHistory.create({
-        actionType: 'delete',
-        userId: req.user._id,
-        details: `Xóa dữ liệu cho ${updatedData.name}`,
-        oldValues: subDocument,
-      });
-      if (!actionHistory) {
-        return handleResponse(
-          req,
-          res,
-          404,
-          'fail',
-          'Xóa dữ liệu thất bại!',
-          req.headers.referer,
-        );
-      }
+
+      // Remove the deletionRequests entry that holds the dataId matching the id parameter
+      dailySupply.deletionRequests = dailySupply.deletionRequests.filter(
+        request => request.dataId.toString() !== id
+      );
+      await dailySupply.save();
+
       return handleResponse(
         req,
         res,
