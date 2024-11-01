@@ -45,6 +45,7 @@ async function renderPage(req, res) {
 
 async function addArea(req, res) {
   req.body = trimStringFields(req.body);
+  console.log(req.body)
   try {
     const existingArea = await DailySupply.findOne({ name: req.body.areaName });
     if (existingArea) {

@@ -22,7 +22,7 @@ async function createSuppliers(req) {
   const suppliers = ensureArray(supplierName)
     .map((name, index) => {
       if (name) {
-        return {
+        const supplier = {
           name,
           code: ensureArray(code)[index],
           manager: ensureArray(manager)[index],
@@ -42,8 +42,16 @@ async function createSuppliers(req) {
           moneyRetainedPercentage: convertToDecimal(
             ensureArray(moneyRetainedPercentage)[index],
           ),
-          areaDuration: ensureArray(areaDuration)[index],
         };
+
+        if (areaDuration && ensureArray(areaDuration.start)[index] && ensureArray(areaDuration.end)[index]) {
+          supplier.areaDuration = {
+            start: new Date(ensureArray(areaDuration.start)[index]),
+            end: new Date(ensureArray(areaDuration.end)[index]),
+          };
+        }
+
+        return supplier;
       }
     })
     .filter(Boolean);
