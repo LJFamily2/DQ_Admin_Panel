@@ -197,6 +197,7 @@ async function updateArea(req, res) {
 
 async function addSupplier(req, res) {
   req.body = trimStringFields(req.body);
+  console.log(req.body)
   try {
     const area = await DailySupply.findById(req.params.id);
     if (!area) {
@@ -214,7 +215,7 @@ async function addSupplier(req, res) {
 
     // Calculate the total purchasedAreaDimension for new suppliers
     const totalPurchasedAreaDimension = suppliers.reduce((total, supplier) => {
-      return total + supplier.purchasedAreaDimension;
+      return total + supplier.purchasedAreaDimension || 0;
     }, 0);
 
     // Check if remainingAreaDimension is sufficient

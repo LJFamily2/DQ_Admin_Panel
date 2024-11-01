@@ -15,10 +15,10 @@ function debounce(func, timeout = 700) {
   
     if (areaDimension > 0 && areaPrice > 0) {
       conditionalFields.forEach(field => (field.style.display = 'block'));
-      inputFields.forEach(input => (input.disabled = false));
+      inputFields.forEach(input => (input.disabled = true));
     } else {
       conditionalFields.forEach(field => (field.style.display = 'none'));
-      inputFields.forEach(input => (input.disabled = true));
+      inputFields.forEach(input => (input.disabled = false));
     }
   }
   
