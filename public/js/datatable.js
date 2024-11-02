@@ -32,6 +32,7 @@ function initializeDataTable(
   spendPageFooter,
   dailySupplyFooter,
   dailySupplyDetailFooter,
+  dailySupplyInputFooter
 ) {
   let rowGroupOptions = {};
 
