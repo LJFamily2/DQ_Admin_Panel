@@ -232,7 +232,7 @@
                         >
                           <% area.suppliers.forEach(supplier => { %>
                           <option value="<%= supplier.supplierSlug %>" <%= supplier.name === item.supplier?.name ? 'selected' : '' %>>
-                            <%= supplier.name %>
+                            <%= supplier.name %> (<%= supplier.code %>)
                           </option>
                           <% }) %>
                         </select>
