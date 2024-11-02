@@ -409,6 +409,7 @@ async function deleteSupplier(req, res) {
 
 async function editSupplier(req, res) {
   req.body = trimStringFields(req.body);
+  console.log(req.body)
   try {
     // Find the existing supplier
     const existingSupplier = await Supplier.findById(req.params.id);
@@ -479,9 +480,9 @@ async function editSupplier(req, res) {
           ...req.body,
           initialDebtAmount,
           supplierSlug: newSlug,
-          ratioSumSplit: req.body.ratioSumSplit
-            ? req.body.ratioSumSplit.replace(',', '.')
-            : 0,
+          moneyRetainedPercentage: convertToDecimal(req.body.moneyRetainedPercentage),
+          ratioRubberSplit: convertToDecimal(req.body.ratioRubberSplit),
+          ratioSumSplit: convertToDecimal(req.body.ratioSumSplit),
           purchasedAreaPrice,
           areaDeposit,
         },

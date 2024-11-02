@@ -576,6 +576,8 @@
 
                   <!-- Edit supplier modal -->
                   <form action="/du-lieu-hang-ngay/updateSupplier/<%= supplier._id %>" method="post">
+                    <!-- Additional fields -->
+                    <input type="text" name="slug" value="<%= area.slug %>" hidden>
                     <div
                       class="modal fade"
                       id="editSupplier<%= supplier._id %>"
@@ -596,10 +598,6 @@
                               aria-label="Close"
                             ></button>
                           </div>
-                          <form
-                            action="/quan-ly-nha-vuon/edit/<%= supplier._id %>"
-                            method="post"
-                          >
                             <div class="modal-body">
                             <div class="row">
                               <div class="col col-md-6">
@@ -766,6 +764,17 @@
                               </div>
                             </div>
                             <div class="mt-3">
+                              <label for="moneyRetainedPercentage" class="form-label fw-bold">Ăn chia mủ</label>
+                              <input
+                                type="text"
+                                class="form-control"
+                                id="moneyRetainedPercentage"
+                                name="moneyRetainedPercentage"
+                                value="<%= supplier.moneyRetainedPercentage.toLocaleString('vi-VN') %>"
+                                oninput="handlePercentageInput(this)"
+                              />
+                            </div>
+                            <div class="mt-3">
                               <label for="ratioRubberSplit" class="form-label fw-bold">Ăn chia mủ</label>
                               <input
                                 type="text"
@@ -794,7 +803,6 @@
                             <div class="modal-footer">
                               <button type="submit" class="btn btn-primary">Lưu mới</button>
                             </div>
-                          </form>
                         </div>
                       </div>
                     </div>
