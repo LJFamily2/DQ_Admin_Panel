@@ -12,12 +12,14 @@ async function renderPage(req, res) {
     // Find the area and populate only the requested supplier
     const area = await DailySupply.findOne({ slug })
       .populate({
+        path: 'data',
+        match: { slug: supplierSlug },
+        populate: [ 'debt' ,  'moneyRetained' ],
+      })
+      .populate({
         path: 'suppliers',
-        match: { supplierSlug: supplierSlug },
-        populate: [
-          { path: 'moneyRetainedHistory' },
-          { path: 'debtHistory' }
-        ]
+        match: { supplierSlug },
+        populate: ['moneyRetainedHistory', 'debtHistory'],
       });
 
     if (!area) {
@@ -26,7 +28,7 @@ async function renderPage(req, res) {
 
     // Find the specific supplier based on the supplierSlug
     const supplierData = area.suppliers.find(
-      s => s.supplierSlug === supplierSlug,
+      (s) => s.supplierSlug === supplierSlug,
     );
 
     if (!supplierData) {
@@ -34,16 +36,22 @@ async function renderPage(req, res) {
     }
 
     // Manually calculate totalDebtPaidAmount and totalMoneyRetainedAmount
-    const totalDebtPaidAmount = supplierData.debtHistory.reduce((total, debt) => total + debt.debtPaidAmount, 0);
-    const totalMoneyRetainedAmount = supplierData.moneyRetainedHistory.reduce((total, retained) => total + retained.retainedAmount, 0);
+    const totalDebtPaidAmount = supplierData.debtHistory.reduce(
+      (total, debt) => total + debt.debtPaidAmount,
+      0,
+    );
+    const totalMoneyRetainedAmount = supplierData.moneyRetainedHistory.reduce(
+      (total, retained) => total + retained.retainedAmount,
+      0,
+    );
 
     // Calculate remainingDebt
-    const remainingDebt = supplierData.initialDebtAmount - totalDebtPaidAmount 
-    
+    const remainingDebt = supplierData.initialDebtAmount - totalDebtPaidAmount;
+
     // Filter data for the specific supplier
     const supplierSpecificData = area.data.filter(
-      item => item.supplier._id.toString() === supplierData._id.toString(),
-    );  
+      (item) => item.supplier._id.toString() === supplierData._id.toString(),
+    );
 
     res.render('src/dailySupplyIndividualExportPage', {
       layout: './layouts/defaultLayout',
@@ -55,9 +63,9 @@ async function renderPage(req, res) {
       startDate,
       endDate,
       messages: req.flash(),
-      totalDebtPaidAmount, 
-      totalMoneyRetainedAmount, 
-      remainingDebt, 
+      totalDebtPaidAmount,
+      totalMoneyRetainedAmount,
+      remainingDebt,
     });
   } catch (error) {
     console.error('Error fetching supplier data:', error);
