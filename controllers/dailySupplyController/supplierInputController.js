@@ -231,7 +231,6 @@ async function addData(req, res) {
 async function updateSupplierData(req, res) {
   try {
     const { id } = req.params;
-    req.body = trimStringFields(req.body);
     const {
       date,
       supplier,
@@ -249,7 +248,9 @@ async function updateSupplierData(req, res) {
       muKePrice,
       muDongPrice,
       note,
+      moneyRetainedPercentage, 
     } = req.body;
+    console.log(req.body);
 
     const dailySupply = await DailySupply.findOne({ 'data._id': id }).populate({
       path: 'data',
@@ -265,7 +266,8 @@ async function updateSupplierData(req, res) {
         req.headers.referer,
       );
     }
-
+    console.log(dailySupply.areaPrice > 0)
+    console.log(dailySupply.areaDimension > 0)
     const dataIndex = dailySupply.data.findIndex(item => item._id.toString() === id);
     if (dataIndex === -1) {
       return handleResponse(
@@ -311,7 +313,7 @@ async function updateSupplierData(req, res) {
     dailySupply.data[dataIndex].date = new Date(date);
     dailySupply.data[dataIndex].rawMaterial = updatedRawMaterial;
     dailySupply.data[dataIndex].note = trimStringFields(note) || '';
-
+    
     if (supplier) {
       const supplierDoc = await Supplier.findOne({ supplierSlug: supplier });
       if (!supplierDoc) {
@@ -329,14 +331,20 @@ async function updateSupplierData(req, res) {
 
     const updatePromises = [dailySupply.save()];
 
+
+
     if (dailySupply.areaPrice > 0 && dailySupply.areaDimension > 0) {
       const { debtPaid, retainedAmount } = calculateFinancials(
         updatedRawMaterial,
-        dailySupply.data[dataIndex].moneyRetained.percentage,
+        moneyRetainedPercentage || dailySupply.data[dataIndex].moneyRetained.percentage,
       );
-
       const debtPaidDifference = debtPaid - (dailySupply.data[dataIndex].debt.debtPaidAmount || 0);
       const moneyRetainedDifference = retainedAmount - (dailySupply.data[dataIndex].moneyRetained.retainedAmount || 0);
+
+      console.log('moneyRetainedPercentage:', moneyRetainedPercentage);
+      console.log('current percentage:', dailySupply.data[dataIndex].moneyRetained.percentage);
+      console.log('retainedAmount:', retainedAmount);
+      console.log('moneyRetainedDifference:', moneyRetainedDifference);
 
       if (!isNaN(debtPaidDifference)) {
         updatePromises.push(
@@ -348,15 +356,20 @@ async function updateSupplierData(req, res) {
         );
       }
 
-      if (!isNaN(moneyRetainedDifference)) {
-        updatePromises.push(
-          MoneyRetained.findByIdAndUpdate(
-            dailySupply.data[dataIndex].moneyRetained._id,
-            { $inc: { retainedAmount: moneyRetainedDifference } },
-            { new: true },
-          )
-        );
-      }
+      const moneyRetainedUpdate = {
+        percentage: moneyRetainedPercentage || dailySupply.data[dataIndex].moneyRetained.percentage,
+        retainedAmount: dailySupply.data[dataIndex].moneyRetained.retainedAmount + moneyRetainedDifference
+      };
+
+      console.log('moneyRetainedUpdate:', moneyRetainedUpdate);
+
+      updatePromises.push(
+        MoneyRetained.findByIdAndUpdate(
+          dailySupply.data[dataIndex].moneyRetained._id,
+          moneyRetainedUpdate,
+          { new: true },
+        )
+      );
     }
 
     const [updatedDailySupply] = await Promise.all(updatePromises);

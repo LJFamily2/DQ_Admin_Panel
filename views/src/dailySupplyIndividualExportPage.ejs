@@ -439,7 +439,7 @@
                         </div>
                         <div class="my-3">
                           <label for="moneyRetainedPercentage<%= index %>" class="form-label fw-bold">% tiền giữ lại</label>
-                          <input type="text" class="form-control" id="moneyRetainedPercentage<%= index %>" name="moneyRetainedPercentage" value="<%= item.moneyRetained?.percentage ? item.moneyRetained?.percentage.toLocaleString('vi-VN') : ''  %>">
+                          <input type="text" class="form-control" id="moneyRetainedPercentage<%= index %>" name="moneyRetainedPercentage" value="<%= item.moneyRetained?.percentage ? item.moneyRetained?.percentage.toLocaleString('vi-VN') : ''  %>" oninput="handlePercentageInput(this)">
                         </div>
                       </div>
                       <div class="modal-footer bg-transparent">
