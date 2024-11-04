@@ -13,23 +13,21 @@ const flash = require("connect-flash");
 var app = express();
 
 
-// LiveReload Setup
-if (process.env.NODE_ENV !== "production") {
-    // Include connect-livereload middleware
+   // LiveReload Setup
+   if (process.env.NODE_ENV !== "production") {
     var livereload = require("livereload");
     var connectLiveReload = require("connect-livereload");
-  const liveReloadServer = livereload.createServer();
-  liveReloadServer.watch(path.join(__dirname, 'public'));
+    const liveReloadServer = livereload.createServer();
+    liveReloadServer.watch(path.join(__dirname, 'public'));
 
-  liveReloadServer.server.once("connection", () => {
-    setTimeout(() => {
-      liveReloadServer.refresh("/");
-    }, 800);
-  });
+    liveReloadServer.server.once("connection", () => {
+        setTimeout(() => {
+            liveReloadServer.refresh("/");
+        }, 800);
+    });
 
-  app.use(connectLiveReload());
+    app.use(connectLiveReload());
 }
-
 
 // Setup Session
 const SessionMongoDB = require('./sessionMongoDB')
