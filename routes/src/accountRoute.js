@@ -31,7 +31,6 @@ router.post(
 // Update a user by ID
 router.post(
   '/update/:id',
-  authMiddlewares.ensureLoggedIn,authMiddlewares.ensureAdmin,
   accountController.updateUser,
 );
 

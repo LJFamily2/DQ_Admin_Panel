@@ -146,8 +146,7 @@ async function getUsers(req, res) {
 
 async function updateUser(req, res) {
   req.body = trimStringFields(req.body);
-  const userID = req.params.id;
-
+  const userID = req.params.id; 
   if (!userID) {
     return handleResponse(
       req,

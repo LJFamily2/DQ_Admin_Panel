@@ -52,31 +52,36 @@
               required
             >
               <% area.suppliers.forEach(supplier => { %>
-              <option value="<%= supplier.name %>"><%= supplier.name %></option>
+              <option value="<%= supplier.supplierSlug %>"><%= supplier.name %> (<%= supplier.code %>)</option>
               <% }) %>
             </select>
           </div>
 
-          <button
-            type="button"
-            class="btn btn-secondary btn-sm d-block d-md-none mt-2"
-            data-bs-toggle="modal"
-            data-bs-target="#addNewSupplier"
+          <div
+            class="tooltip-wrapper mt-1 d-none d-md-inline-flex"
+            data-tippy-content="Tạo nhà vườn mới"
+            tabindex="0"
           >
-            Tạo nhà vườn mới
-          </button>
+            <i
+              class="ri-add-circle-line fs-5"
+              data-bs-toggle="modal"
+              data-bs-target="#addNewSupplier"
+              style="cursor: pointer"
+            ></i>
+          </div>
 
           <div class="itemLists my-3">
             <div class="itemList">
               <div class="row my-3">
                 <label class="form-label fw-bold">Mủ nước</label>
+                <input type="text" name="name" value="Mủ nước" hidden />
                 <div class="col col-md-6">
                   <label class="form-label">Số lượng</label>
                   <input
-                    type="number"
+                    type="text"
                     class="form-control"
-                    id="dryQuantity"
-                    name="dryQuantity"
+                    id="quantity"
+                    name="quantity"
                     required
                     oninput="handleQuantityInput(this)"
                   />
@@ -84,11 +89,9 @@
                 <div class="col col-md-6">
                   <label for="percentage" class="form-label">Hàm lượng</label>
                   <input
-                    type="number"
+                    type="text"
                     class="form-control"
-                    id="percentage"
                     name="percentage"
-                    max="100"
                     required
                     oninput="handlePercentageInput(this)"
                   />
@@ -99,13 +102,13 @@
             <div class="itemList">
               <div class="row my-3">
                 <label class="form-label fw-bold">Mủ tạp</label>
+                <input type="text" name="name" value="Mủ tạp" hidden  />
                 <div class="col-12">
-                  <label for="mixedQuantity" class="form-label">Số lượng</label>
+                  <label  class="form-label">Số lượng</label>
                   <input
-                    type="number"
+                    type="text"
                     class="form-control"
-                    id="mixedQuantity"
-                    name="mixedQuantity"
+                    name="quantity"
                     required
                     oninput="handleQuantityInput(this)"
                   />
@@ -114,17 +117,51 @@
             </div>
             <div class="itemList">
               <div class="row my-3">
-                <label class="form-label fw-bold">Mủ Ké</label>
-                <div class="col">
-                  <label for="keQuantity" class="form-label">Số lượng</label>
-                  <input
-                    type="number"
-                    class="form-control"
-                    id="keQuantity"
-                    name="keQuantity"
-                    required
-                    oninput="handleQuantityInput(this)"
-                  />
+                <label class="form-label fw-bold">Mủ ké</label>
+                <div class="col-12">
+                    <label class="form-label"
+                      >Số lượng</label
+                    >
+                    <input type="text" name="name" value="Mủ ké" hidden />
+
+                    <input
+                      type="text"
+                      class="form-control"
+                      name="quantity"
+                      required
+                      oninput="handleQuantityInput(this)"
+                    />
+                </div>
+              </div>
+            </div>
+            <div class="itemList">
+              <div class="row my-3">
+                <label class="form-label fw-bold">Mủ đông</label>
+                <div class="col-12">
+                    <label class="form-label"
+                      >Số lượng</label
+                    >
+                    <input type="text" name="name" value="Mủ đông" hidden />
+
+                    <input
+                      type="text"
+                      class="form-control"
+                      name="quantity"
+                      required
+                      oninput="handleQuantityInput(this)"
+                    />
+                </div>
+              </div>
+            </div>
+            <div class="itemList">
+              <div class="row my-3">
+                <label class="form-label fw-bold">Ghi chú</label>
+                <div class="col-12">
+                    <textarea
+                      type="text"
+                      class="form-control"
+                      name="note"
+                    ></textarea>
                 </div>
               </div>
             </div>
