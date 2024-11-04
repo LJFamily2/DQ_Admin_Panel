@@ -61,57 +61,63 @@
           </thead>
           <tbody>
             <% deletionRequests.forEach(request => { %>
-            <tr>
-              <td><%= new Date(request.requestedAt).toLocaleString() %></td>
-              <td>
-                <%= request.requestedBy.username %> (<%= request.requestedBy.role %>)
-              </td>
-              <td><%= request.reason %></td>
-              <td>
-                <button
-                  class="btn btn-link p-0"
-                  data-bs-target="#dataDetailModal<%= request._id %>"
-                  data-bs-toggle="modal"
-                >
-                  Chi tiết
-                </button>
-              </td>
-              <td>
-                <span
-                  class="<%= request.status === 'pending' || request.status === 'rejected' ? 'text-danger' : 'text-success' %>"
-                >
-                  <%= request.status === 'pending' ? 'Chờ xử lý' : request.status === 'rejected' ? 'Từ chối' :'Hoàn tất' %>
-                </span>
-              </td>
-              <td style="display: flex; align-items: center; justify-content: space-evenly;">
-                <button
-                  type="button"
-                  class="btn"
-                  data-bs-target="#ActionHistoryDeletion<%= request._id %>"
-                  data-bs-toggle="modal"
-                >
-                  <i
-                    class="bi bi-check-square-fill text-success tooltip-wrapper"
-                    data-tippy-content="Chấp nhận xóa"
-                    style="cursor: pointer"
-                  ></i>
-                </button>
-                <form
-                  action="/du-lieu-hang-ngay/rejectDeletionRequest/<%= request._id %>"
-                  method="post"
-                >
-                  <button type="submit" class="btn">
-                    <i
-                      class="bi bi-x-square-fill text-danger tooltip-wrapper"
-                      data-tippy-content="Từ chối xóa"
-                      style="cursor: pointer"
-                    ></i>
-                  </button>
-                </form>
-              </td>
-            </tr>
-
-
+              <% 
+                // Check if the user is Admin or Giám đốc
+                const isAdminOrDirector = user.role === 'Admin' || user.role === 'Giám đốc';
+                // Check if the request is made by the current user
+                const isUserRequest = request.requestedBy && request.requestedBy._id.toString() === user._id.toString();
+              %>
+              <% if (isAdminOrDirector || isUserRequest) { %>
+                <tr>
+                  <td><%= new Date(request.requestedAt).toLocaleString() %></td>
+                  <td>
+                    <%= request.requestedBy.username %> 
+                  </td>
+                  <td><%= request.reason %></td>
+                  <td>
+                    <button
+                      class="btn btn-link p-0"
+                      data-bs-target="#dataDetailModal<%= request._id %>"
+                      data-bs-toggle="modal"
+                    >
+                      Chi tiết
+                    </button>
+                  </td>
+                  <td>
+                    <span
+                      class="<%= request.status === 'pending' || request.status === 'rejected' ? 'text-danger' : 'text-success' %>"
+                    >
+                      <%= request.status === 'pending' ? 'Chờ xử lý' : request.status === 'rejected' ? 'Từ chối' :'Hoàn tất' %>
+                    </span>
+                  </td>
+                  <td style="display: flex; align-items: center; justify-content: space-evenly;">
+                    <button
+                      type="button"
+                      class="btn"
+                      data-bs-target="#ActionHistoryDeletion<%= request._id %>"
+                      data-bs-toggle="modal"
+                    >
+                      <i
+                        class="bi bi-check-square-fill text-success tooltip-wrapper"
+                        data-tippy-content="Chấp nhận xóa"
+                        style="cursor: pointer"
+                      ></i>
+                    </button>
+                    <form
+                      action="/du-lieu-hang-ngay/rejectDeletionRequest/<%= request._id %>"
+                      method="post"
+                    >
+                      <button type="submit" class="btn">
+                        <i
+                          class="bi bi-x-square-fill text-danger tooltip-wrapper"
+                          data-tippy-content="Từ chối xóa"
+                          style="cursor: pointer"
+                        ></i>
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+              <% } %>
             <% }) %>
           </tbody>
         </table>

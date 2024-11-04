@@ -89,21 +89,13 @@ async function renderDetailPage(req, res) {
       })
     );
 
-    // Filter deletion requests based on user role
-    const filteredDeletionRequests = deletionRequestsWithRawMaterial.filter(request => {
-      if (req.user.role === 'Admin' || req.user.role === 'Giám đốc') {
-        return true; // Admin and Giám đốc can see all requests
-      }
-      return request.requestedBy.equals(req.user._id); // Other users can only see their own requests
-    });
-
     res.render('src/dailySupplyDetailPage', {
       layout: './layouts/defaultLayout',
       title: `Dữ liệu mủ của ${area.name}`,
       hamLuongAccounts,
       area: {
         ...area.toObject(),
-        deletionRequests: filteredDeletionRequests, 
+        deletionRequests: deletionRequestsWithRawMaterial,
       },
       startDate,
       endDate,
