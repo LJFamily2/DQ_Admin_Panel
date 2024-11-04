@@ -12,7 +12,7 @@ router.get('/nguyen-lieu/:slug', authMiddlewares.ensureRoles(['Admin', 'Hàm lư
 router.post('/nguyen-lieu/addData/:id', authMiddlewares.ensureRoles(['Admin', 'Hàm lượng']), dailySupplyController.supplierInputController.addData);
 router.post('/nguyen-lieu/getSupplierData/:slug', authMiddlewares.ensureRoles(['Admin', 'Hàm lượng']), dailySupplyController.getSupplierDataController.getSupplierData);
 router.post('/nguyen-lieu/updateData/:id', authMiddlewares.ensureRoles(['Admin', 'Hàm lượng', 'Văn phòng']), dailySupplyController.supplierInputController.updateSupplierData);
-router.post('/nguyen-lieu/deleteData/:id', authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.supplierInputController.deleteSupplierData);
+router.post('/nguyen-lieu/deleteData/:id', authMiddlewares.ensureRoles(['Admin', 'Văn phòng', "Giám đốc"]), dailySupplyController.supplierInputController.deleteSupplierData);
 
 // Admin side
 router.get('/', authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.supplierAreaController.renderPage);
@@ -27,7 +27,7 @@ router.post('/addSupplier/:id', authMiddlewares.ensureRoles(['Admin', 'Văn phò
 router.post('/deleteSupplier/:id', authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.supplierController.deleteSupplier);
 router.post('/updateSupplier/:id', authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.supplierController.editSupplier);
 router.post('/getAreaSupplierData/:slug', authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.getSupplierDataController.getAreaSupplierData);
-router.post('/rejectDeletionRequest/:id', authMiddlewares.ensureRoles(['Admin']), dailySupplyController.supplierController.rejectDeletionRequest);
+router.post('/rejectDeletionRequest/:id', authMiddlewares.ensureRoles(['Admin', 'Giám đốc']), dailySupplyController.supplierController.rejectDeletionRequest);
 
 // Admin side for export
 router.get("/:slug/xuat-file", authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.supplierExportController.renderPage)
