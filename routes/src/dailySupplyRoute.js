@@ -27,7 +27,7 @@ router.post('/addSupplier/:id', authMiddlewares.ensureRoles(['Admin', 'Văn phò
 router.post('/deleteSupplier/:id', authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.supplierController.deleteSupplier);
 router.post('/updateSupplier/:id', authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.supplierController.editSupplier);
 router.post('/getAreaSupplierData/:slug', authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.getSupplierDataController.getAreaSupplierData);
-router.post('/rejectDeletionRequest/:id', authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.supplierController.rejectDeletionRequest);
+router.post('/rejectDeletionRequest/:id', authMiddlewares.ensureRoles(['Admin']), dailySupplyController.supplierController.rejectDeletionRequest);
 
 // Admin side for export
 router.get("/:slug/xuat-file", authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.supplierExportController.renderPage)
