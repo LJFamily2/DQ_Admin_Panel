@@ -28,6 +28,8 @@ router.post('/deleteSupplier/:id', authMiddlewares.ensureRoles(['Admin', 'Văn p
 router.post('/updateSupplier/:id', authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.supplierController.editSupplier);
 router.post('/getAreaSupplierData/:slug', authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.getSupplierDataController.getAreaSupplierData);
 router.post('/rejectDeletionRequest/:id', authMiddlewares.ensureRoles(['Admin', 'Giám đốc']), dailySupplyController.supplierController.rejectDeletionRequest);
+router.post('/:slug/removeAllDeletionRequests', authMiddlewares.ensureRoles(['Admin', 'Giám đốc']), dailySupplyController.supplierController.
+deleteAllRequests);
 
 // Admin side for export
 router.get("/:slug/xuat-file", authMiddlewares.ensureRoles(['Admin', 'Văn phòng']), dailySupplyController.supplierExportController.renderPage)

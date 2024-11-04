@@ -39,14 +39,14 @@
       </div>
       <div class="modal-body">
         <button
-        type="button"
-        class="btn btn-danger mb-2"
-        data-bs-toggle="modal"
-        data-bs-target="#deleteAll"
-        style="width: max-content"
-      >
-        Xóa tất cả thông tin
-      </button>
+          type="button"
+          class="btn btn-danger mb-2"
+          data-bs-toggle="modal"
+          data-bs-target="#deleteAll"
+          style="width: max-content"
+        >
+          Xóa tất cả thông tin
+        </button>
         <% if (deletionRequests.length > 0) { %>
         <table class="table table-striped table-bordered">
           <thead>
@@ -260,6 +260,48 @@
   </div>
 </div>
 <% }) %>
+
+<!-- Modal for delete all data  -->
+<div
+  class="modal fade"
+  id="deleteAll"
+  aria-hidden="true"
+  aria-labelledby="deleteAllLabel"
+  tabindex="-1"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="deleteAllLabel">Xác nhận xóa</h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <form
+        action="/du-lieu-hang-ngay/<%= slug %>/removeAllDeletionRequests"
+        method="post"
+      >
+        <div class="modal-body">
+          Bạn có chắc chắn muốn xóa tất cả dữ liệu không? Hành động này không thể hoàn tác.
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-danger">Xác nhận</button>
+          <a
+          class="btn btn-secondary"
+          data-bs-toggle="modal"
+          href="#deletionRequestsModal"
+          role="button"
+        >
+          Quay lại
+        </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {

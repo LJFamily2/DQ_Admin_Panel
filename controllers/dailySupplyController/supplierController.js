@@ -20,7 +20,8 @@ module.exports = {
   addSupplier,
   deleteSupplier,
   editSupplier,
-  rejectDeletionRequest
+  rejectDeletionRequest,
+  deleteAllRequests,
 };
 
 async function getRawMaterialData(deletionRequestId) {
@@ -38,8 +39,8 @@ async function getRawMaterialData(deletionRequestId) {
       throw new Error('DailySupply document not found');
     }
 
-    const dataEntry = dailySupply.data.find((entry) =>
-      entry._id.equals(deletionRequestId)
+    const dataEntry = dailySupply.data.find(entry =>
+      entry._id.equals(deletionRequestId),
     );
 
     if (!dataEntry) {
@@ -56,7 +57,6 @@ async function getRawMaterialData(deletionRequestId) {
   }
 }
 
-
 async function renderDetailPage(req, res) {
   try {
     const { startDate, endDate } = req.query;
@@ -66,7 +66,7 @@ async function renderDetailPage(req, res) {
       .populate('suppliers')
       .populate({
         path: 'deletionRequests.requestedBy',
-        select: ['username', 'role']
+        select: ['username', 'role'],
       })
       .populate('data.supplier');
 
@@ -79,14 +79,14 @@ async function renderDetailPage(req, res) {
 
     // Fetch rawMaterial data for each deletionRequest
     const deletionRequestsWithRawMaterial = await Promise.all(
-      area.deletionRequests.map(async (request) => {
+      area.deletionRequests.map(async request => {
         const { rawMaterial, note } = await getRawMaterialData(request.dataId);
         return {
           ...request.toObject(),
-          rawMaterial,         
+          rawMaterial,
           note,
         };
-      })
+      }),
     );
 
     res.render('src/dailySupplyDetailPage', {
@@ -197,7 +197,7 @@ async function updateArea(req, res) {
 
 async function addSupplier(req, res) {
   req.body = trimStringFields(req.body);
-  console.log(req.body)
+  console.log(req.body);
   try {
     const area = await DailySupply.findById(req.params.id);
     if (!area) {
@@ -232,7 +232,7 @@ async function addSupplier(req, res) {
 
     // Check for existing suppliers concurrently
     const existingSuppliers = await Promise.all(
-      suppliers.map(supplier => Supplier.findOne({ code: supplier.code }))
+      suppliers.map(supplier => Supplier.findOne({ code: supplier.code })),
     );
 
     if (existingSuppliers.some(supplier => supplier)) {
@@ -248,7 +248,7 @@ async function addSupplier(req, res) {
 
     // Create new suppliers concurrently
     const newSuppliers = await Promise.all(
-      suppliers.map(supplier => Supplier.create(supplier))
+      suppliers.map(supplier => Supplier.create(supplier)),
     );
 
     // Update the area with new supplier IDs
@@ -409,7 +409,7 @@ async function deleteSupplier(req, res) {
 
 async function editSupplier(req, res) {
   req.body = trimStringFields(req.body);
-  console.log(req.body)
+  console.log(req.body);
   try {
     // Find the existing supplier
     const existingSupplier = await Supplier.findById(req.params.id);
@@ -433,13 +433,20 @@ async function editSupplier(req, res) {
     }
 
     // Calculate initial debt amount if relevant fields are provided
-    const purchasedAreaDimension = parseFloat(req.body.purchasedAreaDimension) || 0;
-    const purchasedAreaPrice = convertToDecimal(req.body.purchasedAreaPrice) || 0;
+    const purchasedAreaDimension =
+      parseFloat(req.body.purchasedAreaDimension) || 0;
+    const purchasedAreaPrice =
+      convertToDecimal(req.body.purchasedAreaPrice) || 0;
     const areaDeposit = convertToDecimal(req.body.areaDeposit) || 0;
 
     let initialDebtAmount = existingSupplier.initialDebtAmount;
-    if (purchasedAreaDimension > 0 || purchasedAreaPrice > 0 || areaDeposit > 0) {
-      initialDebtAmount = purchasedAreaDimension * purchasedAreaPrice - areaDeposit;
+    if (
+      purchasedAreaDimension > 0 ||
+      purchasedAreaPrice > 0 ||
+      areaDeposit > 0
+    ) {
+      initialDebtAmount =
+        purchasedAreaDimension * purchasedAreaPrice - areaDeposit;
     }
 
     // Fetch the DailySupply document to get the remainingAreaDimension
@@ -456,11 +463,14 @@ async function editSupplier(req, res) {
     }
 
     // Calculate the difference in purchasedAreaDimension
-    const oldPurchasedAreaDimension = existingSupplier.purchasedAreaDimension || 0;
-    const dimensionDifference = purchasedAreaDimension - oldPurchasedAreaDimension;
+    const oldPurchasedAreaDimension =
+      existingSupplier.purchasedAreaDimension || 0;
+    const dimensionDifference =
+      purchasedAreaDimension - oldPurchasedAreaDimension;
 
     // Update remainingAreaDimension
-    const remainingAreaDimension = dailySupply.remainingAreaDimension - dimensionDifference;
+    const remainingAreaDimension =
+      dailySupply.remainingAreaDimension - dimensionDifference;
     if (remainingAreaDimension < 0) {
       return handleResponse(
         req,
@@ -480,7 +490,9 @@ async function editSupplier(req, res) {
           ...req.body,
           initialDebtAmount,
           supplierSlug: newSlug,
-          moneyRetainedPercentage: convertToDecimal(req.body.moneyRetainedPercentage),
+          moneyRetainedPercentage: convertToDecimal(
+            req.body.moneyRetainedPercentage,
+          ),
           ratioRubberSplit: convertToDecimal(req.body.ratioRubberSplit),
           ratioSumSplit: convertToDecimal(req.body.ratioSumSplit),
           purchasedAreaPrice,
@@ -553,7 +565,7 @@ async function rejectDeletionRequest(req, res) {
     const dailySupply = await DailySupply.findOneAndUpdate(
       { 'deletionRequests._id': requestId },
       { 'deletionRequests.$.status': 'rejected' },
-      { new: true }
+      { new: true },
     );
 
     if (!dailySupply) {
@@ -597,6 +609,48 @@ async function rejectDeletionRequest(req, res) {
     );
   } catch (error) {
     console.error('Error rejecting deletion request:', error);
+    res.status(500).render('partials/500', { layout: false });
+  }
+}
+
+async function deleteAllRequests(req, res) {
+  try {
+    const { slug } = req.params;
+
+    // Find the dailySupply document
+    const dailySupply = await DailySupply.findOne({ slug }).populate('deletionRequests.requestedBy');
+    if (!dailySupply) {
+      return handleResponse(req, res, 404, 'fail', 'Không tìm thấy khu vực!', req.headers.referer);
+    }
+
+    // Find the deletion requests
+    const deletionRequests = dailySupply.deletionRequests;
+    if (!deletionRequests.length) {
+      return handleResponse(req, res, 404, 'fail', 'Không có yêu cầu xóa!', req.headers.referer);
+    }
+
+    // Delete all deletion requests and create action history concurrently
+    dailySupply.deletionRequests = [];
+    const [updatedDailySupply, actionHistory] = await Promise.all([
+      dailySupply.save(),
+      ActionHistory.create({
+        actionType: 'delete',
+        userId: req.user._id,
+        details: `Xóa tất cả yêu cầu xóa dữ liệu của ${slug}`,
+        oldValues: deletionRequests,
+      }),
+    ]);
+
+    if (!updatedDailySupply) {
+      return handleResponse(req, res, 500, 'fail', 'Xóa yêu cầu xóa thất bại!', req.headers.referer);
+    }
+    if (!actionHistory) {
+      return handleResponse(req, res, 500, 'fail', 'Ghi lại lịch sử hành động thất bại!', req.headers.referer);
+    }
+
+    return handleResponse(req, res, 200, 'success', 'Xóa tất cả yêu cầu xóa thành công!', req.headers.referer);
+  } catch (error) {
+    console.error('Error deleting all requests:', error);
     res.status(500).render('partials/500', { layout: false });
   }
 }
