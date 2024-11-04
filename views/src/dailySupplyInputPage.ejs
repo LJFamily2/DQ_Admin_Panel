@@ -3,6 +3,7 @@
   <script src="/js/datatable.js"></script>
   <script src="https://cdn.datatables.net/rowgroup/1.5.0/js/dataTables.rowGroup.js"></script>
   <script src="/js/inputFieldRestriction.js" defer></script>
+
   <!-- Slim select -->
   <script src="/js/slim-select.js" defer></script>
 
@@ -22,9 +23,6 @@
     /* Hide the spinners in input type number for Firefox */
     input[type='number'] {
       -moz-appearance: textfield;
-    }
-    .tooltip-wrapper {
-      display: inline-block; /* Ensure the wrapper does not take full width */
     }
   </style>
 </head>
@@ -613,18 +611,18 @@
 
 
 <!-- Modal for adding new supplier -->
+<form action="/du-lieu-hang-ngay/addSupplierd/<%= area._id %>" method="post">
 <div
   class="modal fade"
   id="addNewSupplier"
-  data-bs-backdrop="static"
-  data-bs-keyboard="false"
+  aria-labelledby="staticBackdropLabel"
   tabindex="-1"
   aria-hidden="true"
 >
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5">Tạo nhà vườn mới</h1>
+        <h1 class="modal-title fs-5" id="staticBackdropLabel">Tạo nhà vườn mới</h1>
         <button
           type="button"
           class="btn-close"
@@ -633,11 +631,7 @@
         ></button>
       </div>
 
-      <form
-        action="/du-lieu-hang-ngay/addSupplier/<%= area._id %>"
-        method="post"
-      >
-        <div class="modal-body">
+      <div class="modal-body">
           <div class="row">
             <div class="col col-md-6">
               <label for="supplierName" class="form-label fw-bold">Tên</label>
@@ -712,16 +706,132 @@
               required
             />
           </div>
+          <% if(area.areaDimension > 0 && area.areaPrice > 0){ %>
+          <div class="mt-3">
+            <label
+              for="purchasedAreaDimension"
+              class="form-label fw-bold"
+              >Diện tích mua (mẫu)</label
+            >
+            <input
+              type="number"
+              class="form-control"
+              id="purchasedAreaDimension"
+              name="purchasedAreaDimension"
+              step="0.1"
+              min="0"
+            />
+          </div>
+          <div class="mt-3">
+            <label
+              for="purchasedAreaPrice"
+              class="form-label fw-bold"
+              >Giá mua (VNĐ/mẫu)</label
+            >
+            <input
+              type="text"
+              class="form-control"
+              id="purchasedAreaPrice"
+              name="purchasedAreaPrice"
+              oninput="handleQuantityInput(this)"
+            />
+          </div>
+          <div class="mt-3">
+            <label for="areaDeposit" class="form-label fw-bold"
+              >Tiền đặt cọc</label
+            >
+            <input
+              type="text"
+              class="form-control"
+              id="areaDeposit"
+              name="areaDeposit"
+              min="0"
+              oninput="handleQuantityInput(this)"
+            />
+          </div>
+          <div class="mt-3">
+            <label class="form-label fw-bold">Thời hạn mua</label>
+            <div class="row">
+              <div class="col-6">
+                <label for="areaDurationStart" class="form-label"
+                  >Ngày bắt đầu</label
+                >
+                <input
+                  type="date"
+                  class="form-control"
+                  id="areaDurationStart"
+                  name="areaDuration[start]"
+                  onfocus="this.min = document.getElementById('contractStart').value; this.max = document.getElementById('contractEnd').value;"
+                />
+              </div>
+              <div class="col-6">
+                <label for="areaDurationEnd" class="form-label"
+                  >Ngày kết thúc</label
+                >
+                <input
+                  type="date"
+                  class="form-control"
+                  id="areaDurationEnd"
+                  name="areaDuration[end]"
+                  onfocus="this.min = document.getElementById('areaDurationStart').value; this.max = document.getElementById('contractEnd').value;"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="mt-3">
+            <label
+              for="moneyRetainedPercentage"
+              class="form-label fw-bold"
+              >% Tiền giữ lại</label
+            >
+            <input
+              type="text"
+              class="form-control"
+              id="moneyRetainedPercentage"
+              name="moneyRetainedPercentage"
+              oninput="handlePercentageInput(this)"
+            />
+          </div>
+          <div class="mt-3">
+            <label
+              for="ratioRubberSplit"
+              class="form-label fw-bold"
+              >% nhận mủ mặc định</label
+            >
+            <input
+              type="text"
+              class="form-control"
+              id="ratioRubberSplit"
+              name="ratioRubberSplit"
+              value="100"
+              oninput="handlePercentageInput(this)"
+            />
+          </div>
+          <div class="mt-3">
+            <label for="ratioSumSplit" class="form-label fw-bold"
+              >% nhận tổng mặc định</label
+            >
+            <input
+              type="text"
+              class="form-control"
+              id="ratioSumSplit"
+              name="ratioSumSplit"
+              value="100"
+              oninput="handlePercentageInput(this)"
+            />
+          </div>
+          <% } %>
         </div>
         <div class="modal-footer bg-transparent">
           <!-- Buttons -->
           <button type="submit" class="btn btn-primary">Tạo</button>
           <button type="reset" class="btn text-dark">Làm mới</button>
         </div>
-      </form>
+      </div>
     </div>
   </div>
-</div>
+</form>
+  
 <script>
    const columns = [
     { data: 'no', orderable: false },
