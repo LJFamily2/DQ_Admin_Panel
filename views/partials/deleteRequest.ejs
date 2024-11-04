@@ -44,36 +44,49 @@
       </div>
       <div class="modal-body">
         <% if (deletionRequests.length > 0) { %>
-        <button
-          type="button"
-          class="btn btn-danger mb-2"
-          data-bs-toggle="modal"
-          data-bs-target="#deleteAll"
-          style="width: max-content"
-        >
-          Xóa tất cả thông tin
-        </button>
+
+        <% if(user.role === 'Admin' || user.role === 'Giám đốc') { %>
+          <button
+            type="button"
+            class="btn btn-danger mb-2"
+            data-bs-toggle="modal"
+            data-bs-target="#deleteAll"
+            style="width: max-content"
+          >
+            Xóa tất cả thông tin
+          </button>
+          <% } %>
         <table class="table table-striped table-bordered">
           <thead>
             <tr>
+              <% if(user.role === "Admin" || user.role === "Giám đốc"){ %>
               <th>Thời gian</th>
               <th>Người yêu cầu</th>
               <th>Lý do</th>
               <th>Dữ liệu</th>
               <th>Trạng thái</th>
               <th>Thao tác</th>
+              <% } else { %>
+                <th>Thời gian</th>
+                <th>Lý do</th>
+                <th>Dữ liệu</th>
+                <th>Trạng thái</th>
+              <% } %>
+
             </tr>
           </thead>
           <tbody>
-            <% deletionRequests.forEach(request => { %> <% // Check if the user
-            is Admin or Giám đốc const isAdminOrDirector = user.role === 'Admin'
-            || user.role === 'Giám đốc'; // Check if the request is made by the
-            current user const isUserRequest = request.requestedBy &&
-            request.requestedBy._id.toString() === user._id.toString(); %> <% if
-            (isAdminOrDirector || isUserRequest) { %>
+            <% deletionRequests.forEach(request => { %> 
+              <% 
+              // Check if the user is Admin or Giám đốc 
+              const isAdminOrDirector = user.role === 'Admin' || user.role === 'Giám đốc'; 
+              // Check if the request is made by the current user 
+              const isUserRequest = request.requestedBy && request.requestedBy._id.toString() === user._id.toString(); 
+              %> 
+            <% if(isAdminOrDirector || isUserRequest) { %>
             <tr>
               <td><%= new Date(request.requestedAt).toLocaleString() %></td>
-              <td><%= request.requestedBy.username %></td>
+              <% if(isAdminOrDirector) { %> <td><%= request.requestedBy.username %></td><% } %>
               <td><%= request.reason %></td>
               <td>
                 <button
@@ -92,13 +105,8 @@
                   request.status === 'rejected' ? 'Từ chối' :'Hoàn tất' %>
                 </span>
               </td>
-              <td
-                style="
-                  display: flex;
-                  align-items: center;
-                  justify-content: space-evenly;
-                "
-              >
+              <% if(isAdminOrDirector) { %>
+              <td style="display: flex; align-items: center; justify-content: space-evenly;">
                 <button
                   type="button"
                   class="btn"
@@ -123,9 +131,11 @@
                     ></i>
                   </button>
                 </form>
-              </td>
+              </td> 
+              <% } %>
             </tr>
-            <% } %> <% }) %>
+            <% } %> 
+          <% }) %>
           </tbody>
         </table>
         <% } else { %>
@@ -168,17 +178,14 @@
       <div class="modal-body">
         <!-- Display the data details here -->
         <p>
-          <strong>Thời gian:</strong> <%= new
-          Date(request.requestedAt).toLocaleString() %>
+          <strong>Thời gian:</strong> <%= new Date(request.requestedAt).toLocaleString() %>
         </p>
         <p>
-          <strong>Người yêu cầu:</strong> <%= request.requestedBy.username %>
-          (<%= request.requestedBy.role %>)
+          <strong>Người yêu cầu:</strong> <%= request.requestedBy.username %> (<%= request.requestedBy.role %>)
         </p>
         <p><strong>Lý do:</strong> <%= request.reason %></p>
         <p>
-          <strong>Trạng thái:</strong> <%= request.status === 'pending' ? 'Chờ
-          xử lý' : request.status === 'rejected' ? 'Từ chối' :'Hoàn tất' %>
+          <strong>Trạng thái:</strong> <%= request.status === 'pending' ? 'Chờ xử lý' : request.status === 'rejected' ? 'Từ chối' :'Hoàn tất' %>
         </p>
         <% if (request.dataId && request.rawMaterial) { %>
         <table class="table table-striped table-bordered">
@@ -200,14 +207,15 @@
             </tr>
           </thead>
           <tr>
-            <% request.rawMaterial.forEach(material => { %> <% if(material.name
-            === "Mủ nước"){ %>
+            <% request.rawMaterial.forEach(material => { %>
+               <% if(material.name === "Mủ nước"){ %>
             <td><%= material.quantity %></td>
             <td><%= material.percentage %></td>
             <td><%= material.quantity * material.percentage / 100 %></td>
             <% } else { %>
             <td><%= material.quantity %></td>
-            <% } %> <% }) %>
+            <% } %> 
+            <% }) %>
             <td><%= request.note %></td>
           </tr>
         </table>
