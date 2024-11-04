@@ -106,7 +106,7 @@
       </a>
     </li>
     <% } %>
-    <% if(user.role === "Admin" || user.role === "Văn phòng"){ %>
+    <% if(user.role === "Admin" || user.role === "Văn phòng" || user.role === "Giám đốc"){ %>
     <li class="nav-item">
       <a
         href="/du-lieu-hang-ngay"
@@ -115,6 +115,7 @@
         Dữ liệu nguyên liệu
         <i class="ri-numbers-line"></i>
       </a>
+      <% if( user.role !== "Văn phòng"){ %>
       <ul class="nav flex-column ms-3">
         <li class="nav-item">
           <a
@@ -124,10 +125,11 @@
             Lịch sử hoạt động
           </a>
         </li>
-      </ul> <!-- End of sub-item list -->
+      </ul>
+      <% } %>
     </li>
     <% } %>
-    <% if(user.role === "Admin" || user.role === "Hàm lượng"){ %>
+    <% if(user.role === "Admin" || user.role === "Hàm lượng" || user.role === "Giám đốc"){ %>
     <li class="nav-item">
       <a
         href="/nhap-du-lieu/nguyen-lieu"
