@@ -214,18 +214,31 @@ async function updateUser(req, res) {
           if (saveErr) {
             return res.status(500).render('partials/500', { layout: false });
           }
+
+          // Send success response after session is saved
+          return handleResponse(
+            req,
+            res,
+            200,
+            'success',
+            'Cập nhập tài khoản thành công',
+            req.headers.referer,
+          );
         });
       });
+    } else {
+      // Send success response if password was not changed
+      return handleResponse(
+        req,
+        res,
+        200,
+        'success',
+        'Cập nhập tài khoản thành công',
+        req.headers.referer,
+      );
     }
-    handleResponse(
-      req,
-      res,
-      200,
-      'success',
-      'Cập nhập tài khoản thành công',
-      req.headers.referer,
-    );
   } catch (error) {
+    console.error('Error updating user:', error);
     res.status(500).render('partials/500', { layout: false });
   }
 }

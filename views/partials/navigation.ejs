@@ -186,14 +186,15 @@
         { roles: ["Admin", "Giám đốc"], href: "/quan-ly-hop-dong", icon: "ri-contract-line", text: "Hợp đồng" },
         { roles: ["Admin", "Giám đốc"], href: "/quan-ly-chi-tieu", icon: "ri-bill-line", text: "Chi tiêu" },
         { roles: ["Admin", "Văn phòng"], href: "/du-lieu-hang-ngay", icon: "ri-numbers-line", text: "Dữ liệu nguyên liệu" },
-        { roles: ["Admin", "Hàm lượng"], href: "/nhap-du-lieu/nguyen-lieu", icon: "ri-edit-line", text: "Nhập nguyên liệu " },
+        { roles: ["Admin", "Hàm lượng"], href: "/nhap-du-lieu/nguyen-lieu", icon: "ri-edit-line", text: "Nhập dữ liệu" },
+
         { roles: ["Admin"], href: "/quan-ly-tai-khoan", icon: "ri-group-line", text: "Tài khoản" }
       ];
 
       navItems.forEach(item => {
         if (item.roles.includes(user.role)) {
     %>
-          <a class="nav-link link-dark p-1" href="<%= item.href %>" style="text-align: center; font-size: 0.9rem; display: inline-block; margin-right: 10px;">
+          <a class="nav-link link-dark p-1" href="<%= item.href %>" style="text-align: center; font-size: 0.9rem; display: inline-block; margin: 5px;">
             <i class="<%= item.icon %>" style="font-size: 1.4rem; display: block"></i><%= item.text %>
           </a>
     <% 
