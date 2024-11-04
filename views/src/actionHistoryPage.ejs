@@ -36,7 +36,7 @@
 
 <body>
   <div class="container-fluid">
-    <% if(user.role === 'Admin'){ %>
+    <% if(user.role === 'Admin' || user.role === 'Giám đốc'){ %>
       <button
         type="button"
         class="btn btn-danger mb-3"
@@ -161,7 +161,7 @@
                       Bạn có muốn xóa nhật ký dữ liệu của <strong><%= activity.userId.username %></strong>? Hành động này không thể hoàn tác.
                     </div>
                     <div class="modal-footer">
-                      <% if(user.role === 'Admin'){ %>
+                      <% if(user.role === 'Admin' || user.role === 'Giám đốc'){ %>
                       <button type="submit" class="btn btn-danger">Xác nhận</button>
                       <% } else { %>
                       <div class="tooltip-wrapper" data-tippy-content="Bạn không có quyền thao tác" tabindex="0">
