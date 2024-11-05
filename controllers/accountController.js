@@ -202,8 +202,8 @@ async function updateUser(req, res) {
       );
     }
 
-    // If the password was changed, regenerate the session without logging the user out
-    if (passwordChanged) {
+    // If the password was changed and the user being updated is the logged-in user, regenerate the session
+    if (passwordChanged && req.user._id.toString() === userID) {
       req.session.regenerate(function (err) {
         if (err) {
           return res.status(500).render('partials/500', { layout: false });
@@ -227,7 +227,7 @@ async function updateUser(req, res) {
         });
       });
     } else {
-      // Send success response if password was not changed
+      // Send success response if password was not changed or user being updated is not the logged-in user
       return handleResponse(
         req,
         res,
