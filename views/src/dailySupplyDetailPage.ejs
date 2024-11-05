@@ -8,6 +8,9 @@
   <script src="/js/toggleButtons.js" defer></script>
   <script src="/js/inputFieldRestriction.js" defer></script>
   <script src="/js/toggleFields.js"></script>
+  <script src="/js/debounce.js" defer></script>
+  <script src="/js/filterSuppliers.js" defer></script>
+
 
   <style>
     .hide {
@@ -418,12 +421,20 @@
               data-bs-parent="#areaAccordion"
             >
               <h4>Nhà vườn</h4>
-              <ol class="list-group list-group-numbered my-2">
+              <!-- Search for a supplier  -->
+              <input
+                type="text"
+                class="form-control mb-3"
+                id="supplierSearch"
+                placeholder="Tìm kiếm nhà vườn"
+                oninput="debounce(() => filterSuppliers('supplierSearch', 'supplierList', 'li' ,'supplier-name'), 200)()"
+              />
+              <ol class="list-group list-group-numbered my-2" id="supplierList">
                 <% area.suppliers.forEach((supplier, index) =>{ %>
                 <li
                   class="list-group-item d-flex justify-content-between align-items-start"
                 >
-                  <div class="ms-2 me-auto">
+                  <div class="supplier-name ms-2 me-auto">
                     <div class="fw-bold"><%= supplier.name %> <%= supplier.manager ? '(Quản lý)' : '' %></div>
                     <%= supplier.code %>
                   </div>
@@ -553,12 +564,20 @@
 
               <!-- Suppliers -->
                 <h5 class="my-2">Nhà vườn</h5>
-                <ol class="list-group list-group-numbered my-2">
+                <!-- Search for a supplier  -->
+                <input
+                  type="text"
+                  class="form-control mb-3"
+                  id="supplierSearchDetail"
+                  placeholder="Tìm kiếm nhà vườn"
+                  oninput="debounce(() => filterSuppliers('supplierSearchDetail', 'supplierListDetail', 'li' ,'supplier-name-detail'), 200)()"
+                />
+                <ol class="list-group list-group-numbered my-2" id="supplierListDetail">
                   <% area.suppliers.forEach((supplier, index) =>{ %>
                   <li
                     class="list-group-item d-flex justify-content-between align-items-center"
                   >
-                    <div class="ms-2 me-auto">
+                    <div class="supplier-name-detail ms-2 me-auto">
                       <div class="fw-bold"><%= supplier.name %></div>
                       <%= supplier.code %>
                     </div>
@@ -1135,5 +1154,4 @@
       submitButton.style.display = 'block';
     }
   }
-
 </script>
