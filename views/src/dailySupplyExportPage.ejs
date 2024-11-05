@@ -9,10 +9,14 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
   <script src="https://cdn.datatables.net/buttons/3.1.2/js/buttons.print.min.js"></script>
   <script src="/js/exportDatatable.js"></script>
-
+  <script src="/js/debounce.js" defer></script>
+  <script src="/js/filterSuppliers.js" defer></script>
   <script src="/js/inputFieldRestriction.js" defer></script>
+
   <!-- Slim select -->
   <script src="/js/slim-select.js" defer></script>
+
+  <!-- Tippy.js -->
   <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css" />
   <script src="https://unpkg.com/@popperjs/core@2"></script>
   <script src="https://unpkg.com/tippy.js@6"></script>
@@ -471,13 +475,21 @@
       </div>
 
       <div class="card-body">
+        <!-- Search for a supplier  -->
+        <input
+          type="text"
+          class="form-control mb-3"
+          id="supplierSearch"
+          placeholder="Tìm kiếm nhà vườn"
+          oninput="debounce(() => filterSuppliers('supplierSearch', 'supplierList', 'li' ,'supplier-name'), 200)()"
+        />
         <%- include('../partials/notificationMessage.ejs') %>
-        <ol class="list-group list-group-numbered my-2">
+        <ol class="list-group list-group-numbered my-2" id="supplierList">
           <% area.suppliers.forEach((supplier, index) =>{ %>
           <li
             class="list-group-item d-flex justify-content-between align-items-center"
           >
-            <div class="ms-2 me-auto">
+            <div class="supplier-name ms-2 me-auto">
               <div class="fw-bold"><%= supplier.name %></div>
               <%= supplier.code %>
             </div>
