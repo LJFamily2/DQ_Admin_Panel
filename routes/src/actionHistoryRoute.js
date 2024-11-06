@@ -7,12 +7,12 @@ const actionHistory = require('../../controllers/actionHistoryController');
 // Activity history
 router.get(
   '/nhat-ky-hoat-dong',
-  authMiddlewares.ensureRoles(['Admin']),
+  authMiddlewares.ensureRoles(['Admin', 'Giám đốc']),
   actionHistory.renderPage,
 );
-router.post('/nhat-ky-hoat-dong/deleteData/:id', authMiddlewares.ensureRoles(['Admin']),
+router.post('/nhat-ky-hoat-dong/deleteData/:id', authMiddlewares.ensureRoles(['Admin', 'Giám đốc']),
 actionHistory.deleteData)
-router.post('/nhat-ky-hoat-dong/deleteAllData', authMiddlewares.ensureRoles(['Admin']),
+router.post('/nhat-ky-hoat-dong/deleteAllData', authMiddlewares.ensureRoles(['Admin', 'Giám đốc']),
 actionHistory.deleteAllData)
 
 module.exports = router;

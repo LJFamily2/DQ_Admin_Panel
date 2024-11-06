@@ -9,22 +9,19 @@ router.get('/tao-tai-khoan', accountController.initialSetupPage);
 router.post('/tao-tai-khoan', accountController.initialSetupCreateAccount);
 
 router.get(
-  '/',
-  authMiddlewares.ensureLoggedIn,authMiddlewares.ensureAdmin,
+  '/',authMiddlewares.ensureAdmin,
   accountController.renderPage,
 );
 
 // Get all users
 router.post(
-  '/getUsers',
-  authMiddlewares.ensureLoggedIn,authMiddlewares.ensureAdmin,
+  '/getUsers',authMiddlewares.ensureAdmin,
   accountController.getUsers,
 );
 
 // Create a new user
 router.post(
-  '/createUser',
-  authMiddlewares.ensureLoggedIn,authMiddlewares.ensureAdmin,
+  '/createUser',authMiddlewares.ensureAdmin,
   accountController.createUser,
 );
 
@@ -36,22 +33,19 @@ router.post(
 
 // Delete a user by ID
 router.post(
-  '/delete/:id',
-  authMiddlewares.ensureLoggedIn,authMiddlewares.ensureAdmin,
+  '/delete/:id',authMiddlewares.ensureAdmin,
   accountController.deleteUser,
 );
 
 // Delete all users
 router.post(
-  '/deleteAll',
-  authMiddlewares.ensureLoggedIn,authMiddlewares.ensureAdmin,
+  '/deleteAll',authMiddlewares.ensureAdmin,
   accountController.deleteAllUsers,
 );
 
 // Log out
 router.post(
   '/logOut',
-  authMiddlewares.ensureLoggedIn,
   accountController.logOut,
 );
 

@@ -3,9 +3,6 @@ const router = express.Router();
 const dailySupplyController = require('../../controllers/dailySupplyController');
 const authMiddlewares = require('../../middlewares/authMiddlewares');
 
-// Apply ensureLoggedIn middleware to all routes
-router.use(authMiddlewares.ensureLoggedIn);
-
 // User side for input data
 router.get('/nguyen-lieu', authMiddlewares.ensureRoles(['Admin', 'Hàm lượng', 'Giám đốc']), dailySupplyController.supplierInputController.renderInputDataDashboardPage);
 router.get('/nguyen-lieu/:slug', authMiddlewares.ensureRoles(['Admin', 'Hàm lượng', 'Giám đốc']), dailySupplyController.supplierInputController.renderInputDataPage);

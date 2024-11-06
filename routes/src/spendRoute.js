@@ -3,9 +3,6 @@ const router = express.Router();
 const spendController = require('../../controllers/spendController')
 const authMiddlewares = require('../../middlewares/authMiddlewares');
 
-// Apply ensureLoggedIn middleware to all routes
-router.use(authMiddlewares.ensureLoggedIn);
-
 router.get("/", authMiddlewares.ensureRoles(['Admin', 'Giám đốc']), spendController.renderPage )
 router.post("/addData", authMiddlewares.ensureRoles(['Admin', 'Giám đốc']), spendController.createData )
 router.post("/getData", authMiddlewares.ensureRoles(['Admin', 'Giám đốc']), spendController.getData )
