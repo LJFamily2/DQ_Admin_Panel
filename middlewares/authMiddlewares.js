@@ -25,18 +25,24 @@ function ensureRoles(roles) {
 
 function ensureWorkingHours(req, res, next) {
   const currentHour = new Date().getHours();
-  const workingHoursStart = 9; // 9 AM
+  const workingHoursStart = 7; // 7 AM
   const workingHoursEnd = 17; // 5 PM
 
-  if (req.isAuthenticated() && (req.user.role === 'Admin' || req.user.role === 'Giám đốc')) {
+  if (req.isAuthenticated && req.isAuthenticated() && req.user && (req.user.role === 'Admin' || req.user.role === 'Giám đốc')) {
     return next();
   }
 
   if (currentHour >= workingHoursStart && currentHour < workingHoursEnd) {
     return next();
   } else {
-    req.flash('fail', 'Ngoài giờ làm việc!');
-    return res.status(403).redirect('/dang-nhap');
+    req.logout(err => {
+      if (err) {
+        req.flash('fail', 'Đăng xuất không thành công!');
+        return next(err);
+      }
+      req.flash('fail', 'Ngoài giờ làm việc!');
+      return res.status(403).redirect('/dang-nhap');
+    });
   }
 }
 

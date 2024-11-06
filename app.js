@@ -8,7 +8,6 @@ var path = require('path');
 const session = require('express-session');
 const passport = require('passport');
 const flash = require('connect-flash');
-const authMiddlewares = require('./middlewares/authMiddlewares');
 
 var app = express();
 
@@ -74,10 +73,6 @@ const routes = require('./routes');
 routes.forEach(routeConfig => {
   app.use(routeConfig.path, routeConfig.route);
 });
-
-// Routes Middleware
-app.use(authMiddlewares.ensureLoggedIn);
-app.use(authMiddlewares.ensureWorkingHours);
 
 // Default path when route doesn't existed
 app.use((req, res) => {

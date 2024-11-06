@@ -9,19 +9,22 @@ router.get('/tao-tai-khoan', accountController.initialSetupPage);
 router.post('/tao-tai-khoan', accountController.initialSetupCreateAccount);
 
 router.get(
-  '/',authMiddlewares.ensureAdmin,
+  '/',
+  authMiddlewares.ensureLoggedIn,authMiddlewares.ensureWorkingHours,authMiddlewares.ensureAdmin,
   accountController.renderPage,
 );
 
 // Get all users
 router.post(
-  '/getUsers',authMiddlewares.ensureAdmin,
+  '/getUsers',
+  authMiddlewares.ensureLoggedIn,authMiddlewares.ensureWorkingHours,authMiddlewares.ensureAdmin,
   accountController.getUsers,
 );
 
 // Create a new user
 router.post(
-  '/createUser',authMiddlewares.ensureAdmin,
+  '/createUser',
+  authMiddlewares.ensureLoggedIn,authMiddlewares.ensureWorkingHours,authMiddlewares.ensureAdmin,
   accountController.createUser,
 );
 
@@ -33,19 +36,22 @@ router.post(
 
 // Delete a user by ID
 router.post(
-  '/delete/:id',authMiddlewares.ensureAdmin,
+  '/delete/:id',
+  authMiddlewares.ensureLoggedIn,authMiddlewares.ensureWorkingHours,authMiddlewares.ensureAdmin,
   accountController.deleteUser,
 );
 
 // Delete all users
 router.post(
-  '/deleteAll',authMiddlewares.ensureAdmin,
+  '/deleteAll',
+  authMiddlewares.ensureLoggedIn,authMiddlewares.ensureWorkingHours,authMiddlewares.ensureAdmin,
   accountController.deleteAllUsers,
 );
 
 // Log out
 router.post(
   '/logOut',
+  authMiddlewares.ensureLoggedIn,authMiddlewares.ensureWorkingHours,
   accountController.logOut,
 );
 
