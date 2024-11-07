@@ -99,7 +99,7 @@
     <!-- Table -->
     <div class="card" style="box-shadow: 0 1px 2px">
       <div class="card-header bg-transparent">
-        <%- include('../partials/dateSelection.ejs') %>
+        <%- include('../partials/dateSelection.ejs', {submitButton: false}) %>
       </div>
       <div class="card-body">
         <table class="table table-striped" id="table">
@@ -476,7 +476,7 @@
                       <option disabled selected>Chọn tài khoản</option>
                     <% } %>
                     <% hamLuongAccounts.forEach(account => { %>
-                      <option value="<%= account._id %>" <%= account._id.equals(area.accountID) ? 'selected' : '' %>>
+                      <option value="<%= account._id %>" <%= account._id.equals(area.accountID._id) ? 'selected' : '' %>>
                         <%= account.username %>
                       </option>
                     <% }) %>
