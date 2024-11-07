@@ -1,12 +1,12 @@
 const AccountModel = require('../../models/accountModel');
 const { Debt, MoneyRetained, Supplier, DailySupply } = require('../../models/dailySupplyModel');
 const ActionHistory = require('../../models/actionHistoryModel');
+const DateRangeAccess = require('../../models/dateRangeAccessModel');
 
 const trimStringFields = require('../utils/trimStringFields');
 const handleResponse = require('../utils/handleResponse');
 const createSuppliers = require('./helper/createSuppliers');
 const convertToDecimal = require('../utils/convertToDecimal');
-const getChangedFields = require('../utils/getChangedFields');
 
 module.exports = {
   renderPage,
@@ -19,6 +19,7 @@ const ensureArray = input => (Array.isArray(input) ? input : [input]);
 async function renderPage(req, res) {
   try {
     const areas = await DailySupply.find({}).populate('accountID');
+    const dateRangeAccess = await DateRangeAccess.findOne();
 
     const hamLuongAccounts = await AccountModel.find({ role: 'Hàm lượng' });
     const assignedAccounts = await DailySupply.distinct('accountID');
@@ -34,6 +35,7 @@ async function renderPage(req, res) {
       title: 'Dữ liệu mủ hằng ngày',
       unassignedHamLuongAccounts,
       areas,
+      dateRangeAccess,
       user: req.user,
       messages: req.flash(),
     });

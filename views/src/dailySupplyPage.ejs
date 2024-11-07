@@ -6,7 +6,6 @@
   <script src="/js/toggleButtons.js" defer></script>
   <script src="/js/inputFieldRestriction.js" defer></script>
   <script src="/js/toggleFields.js"></script>
-
   <style>
     .hide {
       display: none;
@@ -21,6 +20,40 @@
 <div class="row m-0 m-md-2 g-3 mb-4">
   <div class="col-12 col-md-9 mt-2">
     <div class="card" style="box-shadow: 0 1px 2px">
+      <div class="card-header bg-transparent">
+        <form action="/date-access-range/setDateRange" method="post">
+          <% if(user.role === 'Admin' || user.role === 'Giám đốc'){ %>
+          <!-- Date picker range -->
+           <h5>Ngày truy cập dữ liệu</h5>
+           <div class="row">
+             <div class="col col-md-3">
+               <div class="form-group">
+                 <label for="startDate" class="form-label fw-bold">Ngày bắt đầu</label>
+                 <input type="date" id="startDate" name="startDate" class="form-control" required oninput="document.getElementById('endDate').min = this.value;">
+                <button type="submit" class="btn btn-primary mt-2">Lưu</button>
+               </div>
+             </div>
+             <div class="col col-md-3">
+               <div class="form-group">
+                 <label for="endDate" class="form-label fw-bold">Ngày kết thúc</label>
+                  <input type="date" id="endDate" name="endDate" class="form-control" oninput="document.getElementById('startDate').max = this.value;" />
+                </div>
+             </div>
+             <% } %>
+             <div class="col col-md-6 text-end">
+              <!-- Display the date range of accessible data -->
+              <h6>
+                <% if (dateRangeAccess.startDate === null && dateRangeAccess.endDate === null) { %>
+                  Dữ liệu có thể truy cập: <span class="text-danger">Không cho phép truy cập tất cả dữ liệu</span> 
+                <% } else { %>
+                  Dữ liệu có thể truy cập: <%= dateRangeAccess.startDate.toLocaleDateString() %> - <%= dateRangeAccess.endDate.toLocaleDateString() %>
+                <% } %>
+              </h6>
+             </div> 
+
+          </div>
+        </form>
+      </div>
       <div class="card-body">
         <table class="table table-striped" id="datatable">
           <thead>

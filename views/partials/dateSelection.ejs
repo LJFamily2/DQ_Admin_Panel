@@ -35,9 +35,7 @@
               id="startDate"
               class="form-control"
               name="startDate"
-              <% if (startDate) { %>
-                value="<%= startDate %>"
-              <% } %>
+              value="<%= startDate || '' %>"
               onchange="
                let endDateField = document.getElementById('endDate'); 
                endDateField.min = this.value;
@@ -55,9 +53,7 @@
               id="endDate"
               class="form-control"
               name="endDate"
-              <% if (endDate) { %>
-                value="<%= endDate %>"
-              <% } %>
+              value="<%= endDate || '' %>"
               onchange="               
               let startDateField = document.getElementById('startDate'); 
               startDateField.max = this.value;
@@ -72,6 +68,16 @@
       </div>
       <div class="modal-footer">
         <div class="col my-2 d-flex align-items-end">
+          <% if(submitButton){ %>
+            <button
+            type="submit"
+            id="filterButton"
+            class="btn btn-primary"
+          >
+            <i class="ri-menu-search-fill"></i>
+          </button>
+          <% } else { %>
+           
           <button
             type="button"
             id="filterButton"
@@ -81,6 +87,7 @@
           >
             <i class="ri-menu-search-fill"></i>
           </button>
+          <% } %>
           <button
             type="button"
             id="clearFilterButton"
