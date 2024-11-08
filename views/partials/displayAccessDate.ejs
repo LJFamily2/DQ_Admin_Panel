@@ -1,0 +1,10 @@
+<div class="row text-end">
+    <!-- Display the date range of accessible data -->
+    <h6 class="m-0">
+        <% if (dateRangeAccess.startDate === null && dateRangeAccess.endDate === null) { %>
+        (Dữ liệu có thể truy cập: <span class="text-danger">Không cho phép truy cập tất cả dữ liệu</span>) 
+        <% } else { %>
+        (Dữ liệu có thể truy cập: <%= dateRangeAccess.startDate.toLocaleDateString() %> - <%= dateRangeAccess.endDate.toLocaleDateString() %>)
+        <% } %>
+    </h6>
+</div> 
