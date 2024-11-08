@@ -5,4 +5,6 @@ const DateRangeAccessSettingSchema = new mongoose.Schema({
   endDate: { type: Date, required: true },
 });
 
-module.exports = mongoose.model('DateRangeAccessSetting', DateRangeAccessSettingSchema);
+const DateRangeAccess = mongoose.model('DateRangeAccessSetting', DateRangeAccessSettingSchema);
+
+module.exports = DateRangeAccess;
