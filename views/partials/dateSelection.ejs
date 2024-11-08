@@ -18,6 +18,10 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
+        <% 
+          var startDate = typeof startDate !== 'undefined' ? startDate : '';
+          var endDate = typeof endDate !== 'undefined' ? endDate : '';
+        %>
         <h5>Lọc kết quả</h5>
         <button
           type="button"
@@ -36,14 +40,7 @@
               class="form-control"
               name="startDate"
               value="<%= startDate || '' %>"
-              onchange="
-               let endDateField = document.getElementById('endDate'); 
-               endDateField.min = this.value;
-               updateDateDisplay(); 
-               if(!endDateField.value){
-                 endDateField.focus();
-               }
-              "
+              onchange="updateDateFields('startDate', 'endDate')"
             />
           </div>
           <div class="col">
@@ -54,14 +51,7 @@
               class="form-control"
               name="endDate"
               value="<%= endDate || '' %>"
-              onchange="               
-              let startDateField = document.getElementById('startDate'); 
-              startDateField.max = this.value;
-              updateDateDisplay(); 
-              if(!startDateField.value){
-                startDateField.focus();
-              }
-              "
+              onchange="updateDateFields('endDate', 'startDate')"
             />
           </div>
         </div>
@@ -95,7 +85,7 @@
             class="btn btn-secondary mx-2"
             style="display: none"
             data-bs-dismiss="modal"
-            onclick="this.style.display ='none', document.querySelector('.dateSelectionSelector span').textContent = ''"
+            onclick="clearFilters()"
           >
             <i class="ri-calendar-close-line"></i>
           </button>
@@ -105,52 +95,67 @@
   </div>
 </div>
 
-<script>
-  const startDateEl = document.getElementById('startDate');
-  const endDateEl = document.getElementById('endDate');
-  const dateDisplayEl = document.querySelector('.dateSelectionSelector span');
-  const clearFilterBtn = document.getElementById('clearFilterButton');
+<% if(!submitButton){ %>
+  <script>
+    const startDateEl = document.getElementById('startDate');
+    const endDateEl = document.getElementById('endDate');
+    const dateDisplayEl = document.querySelector('.dateSelectionSelector span');
+    const clearFilterBtn = document.getElementById('clearFilterButton');
 
-  function formatDate(dateString) {
-    return dateString ? dateString.split('-').reverse().join('-') : '';
-  }
+    function formatDate(dateString) {
+      return dateString ? dateString.split('-').reverse().join('-') : '';
+    }
 
-  function updateDateDisplay() {
-    const startDate = formatDate(startDateEl.value);
-    const endDate = formatDate(endDateEl.value);
+    function updateDateDisplay() {
+      const startDate = formatDate(startDateEl.value);
+      const endDate = formatDate(endDateEl.value);
+      dateDisplayEl.innerHTML = startDate && endDate
+        ? `${startDate} <i class="ri-arrow-right-line"></i> ${endDate}`
+        : startDate || endDate
+          ? `: ${startDate || endDate}`
+          : '';
+    }
 
-    dateDisplayEl.innerHTML = startDate && endDate
-      ? `${startDate} <i class="ri-arrow-right-line"></i> ${endDate}`
-      : startDate || endDate
-        ? `: ${startDate || endDate}`
-        : '';
-  }
+    function updateURLAndDisplay() {
+      const url = new URL(window.location.href);
+      [startDateEl, endDateEl].forEach(el => {
+        el.value ? url.searchParams.set(el.id, el.value) : url.searchParams.delete(el.id);
+      });
+      history.replaceState({}, '', url);
+      updateDateDisplay();
+      clearFilterBtn.style.display = startDateEl.value || endDateEl.value ? 'inline' : 'none';
+    }
 
-  function updateURLAndDisplay() {
-    const url = new URL(window.location.href);
-    [startDateEl, endDateEl].forEach(el => {
-      el.value ? url.searchParams.set(el.id, el.value) : url.searchParams.delete(el.id);
+    function updateDateFields(changedFieldId, otherFieldId) {
+      const changedField = document.getElementById(changedFieldId);
+      const otherField = document.getElementById(otherFieldId);
+      if (changedFieldId === 'startDate') {
+        otherField.min = changedField.value;
+      } else {
+        otherField.max = changedField.value;
+      }
+      updateURLAndDisplay();
+      if (!otherField.value) {
+        otherField.focus();
+      }
+    }
+
+    function clearFilters() {
+      startDateEl.value = endDateEl.value = '';
+      dateDisplayEl.textContent = '';
+      history.pushState({}, '', window.location.pathname);
+      clearFilterBtn.style.display = 'none';
+    }
+
+    window.addEventListener('load', () => {
+      const url = new URL(window.location.href);
+      startDateEl.value = url.searchParams.get('startDate') || '';
+      endDateEl.value = url.searchParams.get('endDate') || '';
+      updateURLAndDisplay();
     });
-    history.replaceState({}, '', url);
-    updateDateDisplay();
-    clearFilterBtn.style.display = startDateEl.value || endDateEl.value ? 'inline' : 'none';
-  }
 
-  window.addEventListener('load', () => {
-    const url = new URL(window.location.href);
-    startDateEl.value = url.searchParams.get('startDate') || '';
-    endDateEl.value = url.searchParams.get('endDate') || '';
-    updateURLAndDisplay();
-  });
-
-  [startDateEl, endDateEl].forEach(el => el.addEventListener('change', updateURLAndDisplay));
-
-  document.getElementById('filterButton').addEventListener('click', updateURLAndDisplay);
-
-  clearFilterBtn.addEventListener('click', () => {
-    startDateEl.value = endDateEl.value = '';
-    dateDisplayEl.textContent = '';
-    history.pushState({}, '', window.location.pathname);
-    clearFilterBtn.style.display = 'none';
-  });
-</script>
+    [startDateEl, endDateEl].forEach(el => el.addEventListener('change', updateURLAndDisplay));
+    document.getElementById('filterButton').addEventListener('click', updateURLAndDisplay);
+    clearFilterBtn.addEventListener('click', clearFilters);
+  </script>
+<% } %>
