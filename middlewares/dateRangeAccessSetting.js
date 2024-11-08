@@ -2,7 +2,6 @@ const DateRangeAccessSetting = require('../models/dateRangeAccessModel');
 const handleResponse = require('../controllers/utils/handleResponse');
 
 async function checkDateRange(req, res, next) {
-  console.log(req.body)
   try {
     // Bypass check for Admin or Giám đốc
     if (req.user.role === 'Admin' || req.user.role === 'Giám đốc') {
