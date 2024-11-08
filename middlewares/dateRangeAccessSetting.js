@@ -1,27 +1,32 @@
 const DateRangeAccessSetting = require('../models/dateRangeAccessModel');
-const  handleResponse  = require('../controllers/utils/handleResponse');
+const handleResponse = require('../controllers/utils/handleResponse');
 
 async function checkDateRange(req, res, next) {
+  console.log(req.body)
   try {
-    const dateRangeSetting = await DateRangeAccessSetting.findOne().sort({
-      createdAt: -1,
-    });
+    // Bypass check for Admin or Giám đốc
+    if (req.user.role === 'Admin' || req.user.role === 'Giám đốc') {
+      return next();
+    }
+
+    const dateRangeSetting = await DateRangeAccessSetting.findOne();
 
     if (!dateRangeSetting) {
-     return handleResponse(
+      return handleResponse(
         req,
         res,
         403,
         'fail',
         'Lỗi truy cập vào giới hạn chỉnh sửa dữ liệu!',
         req.headers.referer,
-      )
+      );
     }
 
-    const currentDate = new Date();
+    const updateDate = new Date(req.body.date).setUTCHours(0, 0, 0, 0); 
+    let endDate = new Date(dateRangeSetting.endDate).setUTCHours(23, 59, 59, 999);
     if (
-      currentDate < dateRangeSetting.startDate ||
-      currentDate > dateRangeSetting.endDate
+      updateDate < dateRangeSetting.startDate ||
+      updateDate > endDate
     ) {
       return handleResponse(
         req,
@@ -30,7 +35,7 @@ async function checkDateRange(req, res, next) {
         'fail',
         'Truy cập vào dữ liệu đã bị từ chối',
         req.headers.referer,
-      )
+      );
     }
 
     next();
