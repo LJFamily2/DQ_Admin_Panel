@@ -1,4 +1,5 @@
-const { Debt, MoneyRetained, Supplier, DailySupply } = require('../../models/dailySupplyModel');
+const { DailySupply } = require('../../models/dailySupplyModel');
+const DateRangeAccess = require('../../models/dateRangeAccessModel');
 
 module.exports = {
   renderPage,
@@ -9,6 +10,7 @@ async function renderPage(req, res) {
     const { slug, supplierSlug } = req.params;
     const { startDate, endDate } = req.query;
 
+    const dateRangeAccess = await DateRangeAccess.findOne();
     // Find the area and populate only the requested supplier
     const area = await DailySupply.findOne({ slug })
       .populate({
@@ -61,6 +63,7 @@ async function renderPage(req, res) {
       area,
       user: req.user,
       startDate,
+      dateRangeAccess,
       endDate,
       messages: req.flash(),
       totalDebtPaidAmount,

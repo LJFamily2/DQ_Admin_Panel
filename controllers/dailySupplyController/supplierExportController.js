@@ -5,8 +5,8 @@ const {
   DailySupply,
 } = require('../../models/dailySupplyModel');
 const ActionHistory = require('../../models/actionHistoryModel');
+const DateRangeAccess = require('../../models/dateRangeAccessModel');
 
-const getChangedFields = require('../utils/getChangedFields');
 const trimStringFields = require('../utils/trimStringFields');
 const handleResponse = require('../utils/handleResponse');
 const convertToDecimal = require('../utils/convertToDecimal');
@@ -19,6 +19,8 @@ module.exports = {
 async function renderPage(req, res) {
   try {
     const { startDate, endDate } = req.query;
+
+    const dateRangeAccess = await DateRangeAccess.findOne();
     const area = await DailySupply.findOne({ slug: req.params.slug }).populate(
       'suppliers',
     );
@@ -29,6 +31,7 @@ async function renderPage(req, res) {
       area,
       user: req.user,
       startDate,
+      dateRangeAccess,
       endDate,
       messages: req.flash(),
     });

@@ -6,9 +6,9 @@ const {
   DailySupply,
 } = require('../../models/dailySupplyModel');
 const ActionHistory = require('../../models/actionHistoryModel');
+const DateRangeAccess = require('../../models/dateRangeAccessModel');
 
 const slugify = require('slugify');
-const getChangedFields = require('../utils/getChangedFields');
 const trimStringFields = require('../utils/trimStringFields');
 const handleResponse = require('../utils/handleResponse');
 const createSuppliers = require('./helper/createSuppliers');
@@ -60,7 +60,7 @@ async function getRawMaterialData(deletionRequestId) {
 async function renderDetailPage(req, res) {
   try {
     const { startDate, endDate } = req.query;
-
+    const dateRangeAccess = await DateRangeAccess.findOne();
     const area = await DailySupply.findOne({ slug: req.params.slug })
       .populate('accountID')
       .populate('suppliers')
@@ -99,6 +99,7 @@ async function renderDetailPage(req, res) {
       },
       startDate,
       endDate,
+      dateRangeAccess,
       user: req.user,
       messages: req.flash(),
       managerSupplier,
