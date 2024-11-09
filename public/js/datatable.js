@@ -2,12 +2,12 @@ const formatNumberForDisplay = (number, locale) => {
   return new Intl.NumberFormat(locale).format(number);
 };
 
-const parseNumber = value => {
-  if (typeof value === 'string') {
-    value = value.replace(/\./g, '').replace(',', '.');
+const parseNumber = (value) => {
+  if (typeof value === "string") {
+    value = value.replace(/\./g, "").replace(",", ".");
     return parseFloat(value);
   }
-  return typeof value === 'number' ? value : 0;
+  return typeof value === "number" ? value : 0;
 };
 
 function initializeDataTable(
@@ -44,10 +44,10 @@ function initializeDataTable(
 
   let footerCallbackOptions = {};
 
-  const setupFooterCallback = (columns, api, locale = 'vi-VN') => {
-    columns.forEach(colIndex => {
+  const setupFooterCallback = (columns, api, locale = "vi-VN") => {
+    columns.forEach((colIndex) => {
       const total = api
-        .column(colIndex, { search: 'applied' })
+        .column(colIndex, { search: "applied" })
         .data()
         .reduce((acc, val) => {
           const num = parseNumber(val);
@@ -59,7 +59,7 @@ function initializeDataTable(
           `<strong style='float: left'>${formatted}</strong>`
         );
       } else {
-        $(api.column(colIndex).footer()).html('');
+        $(api.column(colIndex).footer()).html("");
       }
     });
   };
@@ -107,7 +107,7 @@ function initializeDataTable(
     };
   }
   if (dailySupplyDetailFooter) {
-    const columns = [6,7,8,9];
+    const columns = [6, 7, 8, 9];
     footerCallbackOptions = {
       footerCallback: function () {
         setupFooterCallback(columns, this.api());
@@ -118,7 +118,7 @@ function initializeDataTable(
     const columns = [5, 6, 7, 8];
     footerCallbackOptions = {
       footerCallback: function () {
-        setupFooterCallback(columns, this.api(), 'en-US');
+        setupFooterCallback(columns, this.api(), "en-US");
       },
     };
   }
@@ -132,34 +132,34 @@ function initializeDataTable(
     buttons: exportsOption
       ? [
           {
-            extend: 'pdf',
+            extend: "pdf",
           },
           {
-            extend: 'excel',
+            extend: "excel",
           },
           {
-            extend: 'print',
+            extend: "print",
             exportOptions: {
               columns: [1, 4, 5, 6, 7, 8, 9, 10],
             },
-            title: 'Mủ Nguyên Liệu ',
+            title: "Mủ Nguyên Liệu ",
             customize: function (win) {
               // Center the title
               $(win.document.body)
-                .css('text-align', 'center')
-                .find('h1')
-                .css('text-align', 'center');
+                .css("text-align", "center")
+                .find("h1")
+                .css("text-align", "center");
               // Add a subheader under the title
               $(win.document.body)
-                .find('h1')
+                .find("h1")
                 .after(`<h2 style="text-align: center;">Từ ngày </h2>`);
               $(win.document.body)
-                .find('table')
+                .find("table")
                 .after(
                   '<p style="text-align: left; margin-top: 20px;">Tổng cộng số tiền </p>',
                   '<p style="text-align: left; margin-top: 20px;">Cộng</p>',
                   '<p style="text-align: left; margin-top: 20px;">Trừ</p>',
-                  '<p style="text-align: left; margin-top: 20px;">Thực nhận</p>',
+                  '<p style="text-align: left; margin-top: 20px;">Thực nhận</p>'
                 );
             },
           },
@@ -170,11 +170,11 @@ function initializeDataTable(
     responsive: true,
     paging: !(queryPageFooter || dailySupplyFooter),
     scrollX: isMobile,
-    pagingType: 'first_last_numbers',
+    pagingType: "first_last_numbers",
     rowGroup: rowGroupOptions,
     ajax: {
       url: ajaxUrl,
-      type: 'POST',
+      type: "POST",
       data: function (d) {
         // always initialize the date range
         d.startDate = $(startDateId).val();
@@ -190,24 +190,24 @@ function initializeDataTable(
       },
     },
     language: {
-      emptyTable: 'Không có dữ liệu',
-      loadingRecords: 'Đang tải...',
-      zeroRecords: 'Không có dữ liệu',
+      emptyTable: "Không có dữ liệu",
+      loadingRecords: "Đang tải...",
+      zeroRecords: "Không có dữ liệu",
       paginate: {
-        first: 'Đầu',
-        last: 'Cuối',
-        next: 'Sau',
-        previous: 'Trước',
+        first: "Đầu",
+        last: "Cuối",
+        next: "Sau",
+        previous: "Trước",
       },
-      search: 'Tìm kiếm:',
-      lengthMenu: 'Hiển thị _MENU_ bản ghi',
-      info: 'Hiển thị _START_ đến _END_ của _TOTAL_ bản ghi',
-      infoEmpty: 'Hiển thị 0 đến 0 của 0 bản ghi',
-      infoFiltered: '(lọc từ _MAX_ bản ghi)',
+      search: "Tìm kiếm:",
+      lengthMenu: "Hiển thị _MENU_ bản ghi",
+      info: "Hiển thị _START_ đến _END_ của _TOTAL_ bản ghi",
+      infoEmpty: "Hiển thị 0 đến 0 của 0 bản ghi",
+      infoFiltered: "(lọc từ _MAX_ bản ghi)",
     },
     lengthMenu: [10, 20],
-    columns: columns.map(column => {
-      if (column.data === 'id') {
+    columns: columns.map((column) => {
+      if (column.data === "id") {
         return {
           ...column,
           render: function (data, type, row) {
@@ -238,27 +238,25 @@ function initializeDataTable(
   const table = $(tableId).DataTable(tableOptions);
 
   // Filter button click handler
-  $(filterButtonId).on('click', function () {
+  $(filterButtonId).on("click", function () {
     table.ajax.reload();
   });
 
   // Clear filter button click handler
-  $(clearFilterButton).on('click', function () {
+  $(clearFilterButton).on("click", function () {
     // Clear the date inputs
-    $(startDateId).val('');
-    $(endDateId).val('');
+    $(startDateId).val("");
+    $(endDateId).val("");
     // Reset the DataTable to show all data
     table.ajax.reload();
   });
 
-  $(inputPrice).on('click', function () {
+  $(inputPrice).on("click", function () {
     table.ajax.reload();
   });
 
   // Reload the table every 30 seconds
-  if (dailySupplyInputFooter) {
-    setInterval(function() {
-      table.ajax.reload(null, false); 
-    }, 30000);
-  }
+  setInterval(function () {
+    table.ajax.reload(null, false);
+  }, 30000);
 }
