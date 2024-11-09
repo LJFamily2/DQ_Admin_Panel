@@ -356,7 +356,7 @@
                 name="supplier"
                 required
               >
-                <% area.suppliers.forEach(supplier => { %>
+                <% area.suppliers.sort((a, b) => a.name.localeCompare(b.name)).forEach(supplier => { %>
                 <option value="<%= supplier.supplierSlug %>"><%= supplier.name %> (<%= supplier.code %>)</option>
                 <% }) %>
               </select>

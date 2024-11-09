@@ -431,7 +431,7 @@
                 oninput="debounce(() => filterSuppliers('supplierSearch', 'supplierList', 'li' ,'supplier-name'), 200)()"
               />
               <ol class="list-group list-group-numbered my-2" id="supplierList">
-                <% area.suppliers.forEach((supplier, index) =>{ %>
+                <% area.suppliers.sort((a, b) => a.name.localeCompare(b.name)).forEach((supplier, index) =>{ %>
                 <li
                   class="list-group-item d-flex justify-content-between align-items-start"
                 >
