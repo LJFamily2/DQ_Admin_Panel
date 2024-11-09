@@ -296,23 +296,24 @@ function initializeExportDataTable(
                       <p style="text-align: left; width: 50%;">Thực nhận: ${totalAfterRatio.toLocaleString(
                         "vi-VN"
                       )}</p>
-                     
-                    ${
-                      debt > 0
-                        ? `<p style="text-align: right; width: 50%;">Công nợ: ${formatNumberForDisplay(
-                            debt,
-                            "vi-VN"
-                          )}</p>`
-                        : ""
-                    }
-                    ${
-                      retainedAmount > 0
-                        ? `<p style="text-align: right; width: 50%;">Tiền giữ lại: ${formatNumberForDisplay(
-                            retainedAmount,
-                            "vi-VN"
-                          )}</p>`
-                        : ""
-                    }
+                    <div style= "display:flex; flex-direction: column; align-items: flex-end; width: 50%" >
+                      ${
+                        debt > 0
+                          ? `<p ">Công nợ còn lại: ${formatNumberForDisplay(
+                              debt,
+                              "vi-VN"
+                            )}</p>`
+                          : ""
+                      }
+                      ${
+                        retainedAmount > 0
+                          ? `<p ">Tiền giữ lại tổng: ${formatNumberForDisplay(
+                              retainedAmount,
+                              "vi-VN"
+                            )}</p>`
+                          : ""
+                      }
+                    </div>
                   </div>`
                   );
 
