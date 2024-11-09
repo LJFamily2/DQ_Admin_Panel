@@ -629,7 +629,8 @@ async function getIndividualSupplierExportData(req, res) {
       const muTapTotalPrice = muTapTotalAfterSplit * muTap.price;
       const muKeTotalPrice = muKeTotalAfterSplit * muKe.price;
       const muDongTotalPrice = muDongTotalAfterSplit * muDong.price;
-
+      const totalPrice = muQuyKhoTotalPrice + muTapTotalPrice + muKeTotalPrice + muDongTotalPrice;
+      
       return {
         no: index + 1,
         date: item.date.toLocaleDateString('vi-VN'),
@@ -656,6 +657,7 @@ async function getIndividualSupplierExportData(req, res) {
         muDongRatioSplit: muDong.ratioSplit.toLocaleString('vi-VN'),
         muDongTotalAfterSplit: muDongTotalAfterSplit.toLocaleString('vi-VN'),
         muDongTotalPrice: muDongTotalPrice.toLocaleString('vi-VN'),
+        totalPrice: totalPrice.toLocaleString('vi-VN'),
         note: item.note || '',
         id: item._id,
       };

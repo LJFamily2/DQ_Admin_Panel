@@ -173,13 +173,22 @@ async function updatePricesAndRatios(req, res) {
       }),
     ]);
 
-    if (!saveData || !actionHistory) {
+    if (!saveData) {
       return handleResponse(
         req,
         res,
         500,
         'fail',
         'Lỗi cập nhật dữ liệu!',
+        req.headers.referer,
+      );
+    }if(!actionHistory){
+      return handleResponse(
+        req,
+        res,
+        500,
+        'fail',
+        'Lỗi lưu lịch sử dữ liệu!',
         req.headers.referer,
       );
     }
