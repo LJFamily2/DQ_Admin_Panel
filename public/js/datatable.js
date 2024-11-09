@@ -258,5 +258,5 @@ function initializeDataTable(
   // Reload the table every 30 seconds
   setInterval(function () {
     table.ajax.reload(null, false);
-  }, 30000);
+  }, 60000);
 }

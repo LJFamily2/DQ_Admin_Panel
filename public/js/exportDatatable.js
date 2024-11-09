@@ -249,7 +249,8 @@ function initializeExportDataTable(
                 const finalAmount = totalAmount + addPrice - minusPrice;
                 const totalAfterRatio =
                   finalAmount * (ratioSumSplit.replace(",", ".") / 100);
-
+                console.log(ratioSumSplit);
+                console.log(totalAfterRatio);
                 /// Add the date range and supplier name to the top of the table
                 $(win.document.body)
                   .find("h1")
@@ -263,83 +264,56 @@ function initializeExportDataTable(
                   .end()
                   .find("table")
                   .after(
-                    `<p style="text-align: left; margin-top: 20px;">Tổng số tiền: ${formatNumberForDisplay(
-                      totalAmount,
-                      "vi-VN"
-                    )} </p>`,
-                    `${
+                    `<p style="text-align: left; margin-top: 20px;">Tổng số tiền: 
+                    ${totalAmount.toLocaleString("vi-VN")} </p>`,
+                    `
+                    ${
                       addPrice > 0
-                        ? `<p style="text-align: left; margin-top: 20px;">Cộng: ${formatNumberForDisplay(
-                            addPrice,
-                            "vi-VN"
-                          )} </p>`
+                        ? `<p style="text-align: left; margin-top: 20px;">Cộng: 
+                        ${addPrice.toLocaleString("vi-VN")} </p>`
                         : ""
                     }`,
                     `${
                       minusPrice > 0
-                        ? `<p style="text-align: left; margin-top: 20px;">Trừ: ${formatNumberForDisplay(
-                            minusPrice,
-                            "vi-VN"
-                          )} </p>`
+                        ? `<p style="text-align: left; margin-top: 20px;">Trừ: 
+                        ${minusPrice.toLocaleString("vi-VN")} </p>`
                         : ""
                     }`,
-                    ratioSumSplit < 0
-                      ? `${
-                          addPrice > 0 || minusPrice > 0
-                            ? `<p style="text-align: left; margin-top: 20px;">Tổng sau cộng/trừ: ${formatNumberForDisplay(
-                                finalAmount,
-                                "vi-VN"
-                              )} </p>`
-                            : ""
-                        }
-                    <p style="text-align: left; margin-top: 20px;">Tỉ lệ phân chia: ${ratioSumSplit}%</p>
+                    `${
+                      addPrice > 0 || minusPrice > 0
+                        ? `<p style="text-align: left; margin-top: 20px;">Tổng sau cộng/trừ: 
+                              ${finalAmount.toLocaleString("vi-VN")}
+                             </p>`
+                        : ""
+                    }
+                    ${
+                      ratioSumSplit < 100
+                        ? `<p style="text-align: left; margin-top: 20px;">Tỉ lệ phân chia tổng: ${ratioSumSplit}%</p>`
+                        : ""
+                    }
                     <hr>
                     <div style="display: flex; justify-content: space-between; margin-top: 20px;">
-                      <p style="text-align: left; width: 50%;">Thực nhận: ${formatNumberForDisplay(
-                        totalAfterRatio,
+                      <p style="text-align: left; width: 50%;">Thực nhận: ${totalAfterRatio.toLocaleString(
                         "vi-VN"
                       )}</p>
-                      ${
-                        debt > 0
-                          ? `<p style="text-align: right; width: 50%;">Công nợ: ${formatNumberForDisplay(
-                              debt,
-                              "vi-VN"
-                            )}</p>
-                          ${
-                            retainedAmount > 0
-                              ? `<p style="text-align: right; width: 50%;">Tiền giữ lại: ${formatNumberForDisplay(
-                                  retainedAmount,
-                                  "vi-VN"
-                                )}</p>`
-                              : ""
-                          }
-                          `
-                          : ""
-                      }
-                    </div>`
-                      : `${
-                          addPrice > 0 || minusPrice > 0
-                            ? `<p style="text-align: left; margin-top: 20px;">Tổng sau cộng/trừ: ${formatNumberForDisplay(
-                                finalAmount,
-                                "vi-VN"
-                              )} </p>`
-                            : ""
-                        }
-                    <hr>
-                    <div style="display: flex; justify-content: space-between; margin-top: 20px;">
-                      <p style="text-align: left; width: 50%;">Thực nhận: ${formatNumberForDisplay(
-                        totalAfterRatio,
-                        "vi-VN"
-                      )}</p>
-                      ${
-                        debt > 0
-                          ? `<p style="text-align: right; width: 50%;">Công nợ: ${formatNumberForDisplay(
-                              debt,
-                              "vi-VN"
-                            )}</p>`
-                          : ""
-                      }
-                    </div>`
+                     
+                    ${
+                      debt > 0
+                        ? `<p style="text-align: right; width: 50%;">Công nợ: ${formatNumberForDisplay(
+                            debt,
+                            "vi-VN"
+                          )}</p>`
+                        : ""
+                    }
+                    ${
+                      retainedAmount > 0
+                        ? `<p style="text-align: right; width: 50%;">Tiền giữ lại: ${formatNumberForDisplay(
+                            retainedAmount,
+                            "vi-VN"
+                          )}</p>`
+                        : ""
+                    }
+                  </div>`
                   );
 
                 ///Set the css for the table
@@ -381,7 +355,7 @@ function initializeExportDataTable(
     language: {
       emptyTable: "Không có dữ liệu",
       loadingRecords: "Đang tải...",
-      zeroRecords: "Kh��ng có dữ liệu",
+      zeroRecords: "Không có dữ liệu",
       paginate: {
         first: "Đầu",
         last: "Cuối",
@@ -441,33 +415,5 @@ function initializeExportDataTable(
   // Reload the table every 30 seconds
   setInterval(function () {
     table.ajax.reload(null, false);
-  }, 30000);
-
-  if (individualExportPage) {
-    const startDate = new Date($(startDateId).val()).toLocaleDateString(
-      "vi-VN"
-    );
-    const endDate = new Date($(endDateId).val()).toLocaleDateString("vi-VN");
-    const dateRange =
-      startDate && endDate ? `Từ ngày ${startDate} đến ngày ${endDate}` : "";
-
-    const table = $(tableId).DataTable();
-    let totalAmount = 0;
-
-    if (parseNumber(areaDimension) > 0 && parseNumber(areaPrice) > 0) {
-      const cellValue = $(table.column(24).footer())
-        .text()
-        .replace(/\./g, "")
-        .replace(",", ".");
-      totalAmount = parseFloat(cellValue) || 0;
-    } else {
-      const footerRow = $(table.table().footer()).find("tr:last");
-      footerRow.find("th").each(function (index) {
-        if (index > 0 && index < 4) {
-          const cellValue = $(this).text().replace(/\./g, "").replace(",", ".");
-          totalAmount += parseFloat(cellValue) || 0;
-        }
-      });
-    }
-  }
+  }, 60000);
 }
