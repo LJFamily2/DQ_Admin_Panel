@@ -414,4 +414,11 @@ function initializeExportDataTable(
     $(endDateId).val('');
     table.ajax.reload();
   });
+
+  // Reload the table every 30 seconds
+  if (individualExportPage) {
+    setInterval(function() {
+      table.ajax.reload(null, false); 
+    }, 30000);
+  }
 }

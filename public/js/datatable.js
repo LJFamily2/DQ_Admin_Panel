@@ -254,4 +254,11 @@ function initializeDataTable(
   $(inputPrice).on('click', function () {
     table.ajax.reload();
   });
+
+  // Reload the table every 30 seconds
+  if (dailySupplyInputFooter) {
+    setInterval(function() {
+      table.ajax.reload(null, false); 
+    }, 30000);
+  }
 }

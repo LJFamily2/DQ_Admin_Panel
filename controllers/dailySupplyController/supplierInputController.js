@@ -120,7 +120,7 @@ async function addData(req, res) {
     const todayEntries = dailySupply.data.filter(
       entry => new Date(entry.date).toDateString() === today.toDateString(),
     );
-    if (todayEntries.length >= dailySupply.limitData) {
+    if (todayEntries.length >= dailySupply.limitData !== 0) {
       return handleResponse(
         req,
         res,
