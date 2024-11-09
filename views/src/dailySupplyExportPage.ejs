@@ -23,13 +23,13 @@
 
   <style>
     /* Hide the spinners in input type number for Chrome, Safari, Edge, and Opera */
-    input[type='number']::-webkit-outer-spin-button,
-    input[type='number']::-webkit-inner-spin-button {
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
       -webkit-appearance: none;
       margin: 0;
     }
     /* Hide the spinners in input type number for Firefox */
-    input[type='number'] {
+    input[type="number"] {
       -moz-appearance: textfield;
     }
     .tooltip-wrapper {
@@ -80,7 +80,6 @@
           </div>
         </form>
         <%- include('../partials/displayAccessDate.ejs') %>
-
       </div>
       <div class="card-body">
         <table class="table table-striped order-column" id="table">
@@ -488,7 +487,8 @@
         />
         <%- include('../partials/notificationMessage.ejs') %>
         <ol class="list-group list-group-numbered my-2" id="supplierList">
-          <% area.suppliers.forEach((supplier, index) =>{ %>
+          <% area.suppliers.sort((a, b) =>
+          a.name.localeCompare(b.name)).forEach((supplier, index) => { %>
           <li
             class="list-group-item d-flex justify-content-between align-items-center"
           >
@@ -522,82 +522,82 @@
 </div>
 
 <script>
-  let areaDimension = '<%= area.areaDimension %>';
-  let areaPrice = '<%= area.areaPrice %>';
+  let areaDimension = "<%= area.areaDimension %>";
+  let areaPrice = "<%= area.areaPrice %>";
 
   const columns =
     parseFloat(areaDimension) > 0 && parseFloat(areaPrice) > 0
       ? [
-          { data: 'no', orderable: false },
-          { data: 'supplier' },
-          { data: 'code', orderable: false },
-          { data: 'areaPurchased', orderable: false },
-          { data: 'areaPrice', orderable: false },
-          { data: 'areaTotal', orderable: false },
-          { data: 'areaDeposit', orderable: false },
-          { data: 'debtPaidAmount', orderable: false },
-          { data: 'remainingDebt', orderable: false },
-          { data: 'muQuyKhoQuantity', orderable: false },
-          { data: 'muQuyKhoSplit', orderable: false },
-          { data: 'muQuyKhoQuantityAfterSplit', orderable: false },
-          { data: 'muQuyKhoDonGia', orderable: false },
-          { data: 'muQuyKhoTotal', orderable: false },
-          { data: 'muTapQuantity', orderable: false },
-          { data: 'muTapSplit', orderable: false },
-          { data: 'muTapAfterSplit', orderable: false },
-          { data: 'muTapDonGia', orderable: false },
-          { data: 'muTapTotal', orderable: false },
-          { data: 'muKeQuantity', orderable: false },
-          { data: 'muKeSplit', orderable: false },
-          { data: 'muKeAfterSplit', orderable: false },
-          { data: 'muKeDonGia', orderable: false },
-          { data: 'muKeTotal', orderable: false },
-          { data: 'muDongQuantity', orderable: false },
-          { data: 'muDongSplit', orderable: false },
-          { data: 'muDongAfterSplit', orderable: false },
-          { data: 'muDongDonGia', orderable: false },
-          { data: 'muDongTotal', orderable: false },
-          { data: 'totalSum', orderable: false },
-          { data: 'note', orderable: false },
-          { data: 'signature', orderable: false },
+          { data: "no", orderable: false },
+          { data: "supplier" },
+          { data: "code", orderable: false },
+          { data: "areaPurchased", orderable: false },
+          { data: "areaPrice", orderable: false },
+          { data: "areaTotal", orderable: false },
+          { data: "areaDeposit", orderable: false },
+          { data: "debtPaidAmount", orderable: false },
+          { data: "remainingDebt", orderable: false },
+          { data: "muQuyKhoQuantity", orderable: false },
+          { data: "muQuyKhoSplit", orderable: false },
+          { data: "muQuyKhoQuantityAfterSplit", orderable: false },
+          { data: "muQuyKhoDonGia", orderable: false },
+          { data: "muQuyKhoTotal", orderable: false },
+          { data: "muTapQuantity", orderable: false },
+          { data: "muTapSplit", orderable: false },
+          { data: "muTapAfterSplit", orderable: false },
+          { data: "muTapDonGia", orderable: false },
+          { data: "muTapTotal", orderable: false },
+          { data: "muKeQuantity", orderable: false },
+          { data: "muKeSplit", orderable: false },
+          { data: "muKeAfterSplit", orderable: false },
+          { data: "muKeDonGia", orderable: false },
+          { data: "muKeTotal", orderable: false },
+          { data: "muDongQuantity", orderable: false },
+          { data: "muDongSplit", orderable: false },
+          { data: "muDongAfterSplit", orderable: false },
+          { data: "muDongDonGia", orderable: false },
+          { data: "muDongTotal", orderable: false },
+          { data: "totalSum", orderable: false },
+          { data: "note", orderable: false },
+          { data: "signature", orderable: false },
         ]
       : [
-          { data: 'no', orderable: false },
-          { data: 'supplier' },
-          { data: 'code', orderable: false },
-          { data: 'muQuyKhoQuantity', orderable: false },
-          { data: 'muTapQuantity', orderable: false },
-          { data: 'muKeQuantity', orderable: false },
-          { data: 'muDongQuantity', orderable: false },
-          { data: 'totalSum', orderable: false },
-          { data: 'signature', orderable: false },
+          { data: "no", orderable: false },
+          { data: "supplier" },
+          { data: "code", orderable: false },
+          { data: "muQuyKhoQuantity", orderable: false },
+          { data: "muTapQuantity", orderable: false },
+          { data: "muKeQuantity", orderable: false },
+          { data: "muDongQuantity", orderable: false },
+          { data: "totalSum", orderable: false },
+          { data: "signature", orderable: false },
         ];
 
   initializeExportDataTable(
-    '#table',
+    "#table",
     `/du-lieu-hang-ngay/<%= area.slug %>/xuat-file`,
-    '#staticBackdrop',
-    '#deleteModalToggle',
+    "#staticBackdrop",
+    "#deleteModalToggle",
     columns,
-    'date',
-    '#filterButton',
-    '#startDate',
-    '#endDate',
-    '#clearFilterButton',
+    null,
+    "#filterButton",
+    "#startDate",
+    "#endDate",
+    "#clearFilterButton",
     true,
     true,
     false,
     false,
     false,
-    '<%= area.name %>',
+    "<%= area.name %>",
     false,
     false,
     false,
     {
-      areaDimension: '<%= area.areaDimension %>',
-      areaPrice: '<%= area.areaPrice %>',
-    },
+      areaDimension: "<%= area.areaDimension %>",
+      areaPrice: "<%= area.areaPrice %>",
+    }
   );
 
-  tippy('.tooltip-wrapper');
+  tippy(".tooltip-wrapper");
 </script>

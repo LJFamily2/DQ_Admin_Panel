@@ -258,7 +258,7 @@ async function getSupplierInputData(req, res, isArea) {
 
 async function getSupplierExportData(req, res, isArea) {
   try {
-    const { draw, search, startDate, endDate } = req.body;
+    const { draw, search, startDate, endDate, order } = req.body;
     const searchValue = search?.value?.toLowerCase() || '';
 
     const { startDateUTC, endDateUTC } = parseDates(startDate, endDate);
@@ -274,6 +274,9 @@ async function getSupplierExportData(req, res, isArea) {
     const result = await DailySupply.aggregate(pipeline);
     const totalRecords = result[0].totalRecords[0]?.count || 0;
     const data = result[0].data;
+
+    // Sort the data by supplier name as it is in the database
+    data.sort((a, b) => a.supplier.name.localeCompare(b.supplier.name));
 
     const flattenedData = flattenData(data, isArea);
     console.log(data);
