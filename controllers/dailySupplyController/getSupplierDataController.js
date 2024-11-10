@@ -15,6 +15,7 @@ module.exports = {
   // Admin side for exportin individual data
   getIndividualSupplierExportData,
 };
+const formatNumber = num => (num > 0 ? num.toLocaleString('vi-VN') : '');
 
 // Get today date in UTC+7
 function getTodayDate() {
@@ -364,7 +365,6 @@ async function getSupplierExportData(req, res, isArea) {
   }
 
   function flattenData(data, isArea) {
-    const formatNumber = num => (num > 0 ? num.toLocaleString('vi-VN') : '');
 
     const calculateMaterialData = material => {
       if (!material)
@@ -471,21 +471,25 @@ async function getSupplierExportData(req, res, isArea) {
         areaDeposit: formatNumber(item.supplier.areaDeposit),
         debtPaidAmount: formatNumber(totalDebtPaidAmount),
         remainingDebt: formatNumber(remainingDebt),
+        // Mu nuoc
         muQuyKhoQuantity: formatNumber(muQuyKhoData.quantity),
         muQuyKhoSplit: formatNumber(muQuyKhoData.ratioSplit),
         muQuyKhoQuantityAfterSplit: formatNumber(muQuyKhoData.afterSplit),
         muQuyKhoDonGia: formatNumber(muQuyKhoData.price),
         muQuyKhoTotal: formatNumber(muQuyKhoData.total),
+        // Mu tap
         muTapQuantity: formatNumber(muTapData.quantity),
         muTapSplit: formatNumber(muTapData.ratioSplit),
         muTapAfterSplit: formatNumber(muTapData.afterSplit),
         muTapDonGia: formatNumber(muTapData.price),
-        muTapTotal: formatNumber(muTapData.total),
+        muTapTotal: muTapData.total,
+        // Mu ke
         muKeQuantity: formatNumber(muKeData.quantity),
         muKeSplit: formatNumber(muKeData.ratioSplit),
         muKeAfterSplit: formatNumber(muKeData.afterSplit),
         muKeDonGia: formatNumber(muKeData.price),
         muKeTotal: formatNumber(muKeData.total),
+        // Mu dong
         muDongQuantity: formatNumber(muDongData.quantity),
         muDongSplit: formatNumber(muDongData.ratioSplit),
         muDongAfterSplit: formatNumber(muDongData.afterSplit),
@@ -630,34 +634,33 @@ async function getIndividualSupplierExportData(req, res) {
       const muKeTotalPrice = muKeTotalAfterSplit * muKe.price;
       const muDongTotalPrice = muDongTotalAfterSplit * muDong.price;
       const totalPrice = muQuyKhoTotalPrice + muTapTotalPrice + muKeTotalPrice + muDongTotalPrice;
-      
+
       return {
         no: index + 1,
         date: item.date.toLocaleDateString('vi-VN'),
-        muNuocQuantity: muNuoc.quantity.toLocaleString('vi-VN'),
-        muHamLuong: muNuoc.percentage.toLocaleString('vi-VN'),
-        muQuyKhoTotal: muQuyKhoTotal.toLocaleString('vi-VN'),
-        muQuyKhoPrice: muNuoc.price.toLocaleString('vi-VN'),
-        muNuocRatioSplit: muNuoc.ratioSplit.toLocaleString('vi-VN'),
-        muQuyKhoTotalAfterSplit:
-          muQuyKhoTotalAfterSplit.toLocaleString('vi-VN'),
-        muQuyKhoTotalPrice: muQuyKhoTotalPrice.toLocaleString('vi-VN'),
-        muTapQuantity: muTap.quantity.toLocaleString('vi-VN'),
-        muTapPrice: muTap.price.toLocaleString('vi-VN'),
-        muTapRatioSplit: muTap.ratioSplit.toLocaleString('vi-VN'),
-        muTapTotalAfterSplit: muTapTotalAfterSplit.toLocaleString('vi-VN'),
-        muTapTotalPrice: muTapTotalPrice.toLocaleString('vi-VN'),
-        muKeQuantity: muKe.quantity.toLocaleString('vi-VN'),
-        muKePrice: muKe.price.toLocaleString('vi-VN'),
-        muKeRatioSplit: muKe.ratioSplit.toLocaleString('vi-VN'),
-        muKeTotalAfterSplit: muKeTotalAfterSplit.toLocaleString('vi-VN'),
-        muKeTotalPrice: muKeTotalPrice.toLocaleString('vi-VN'),
-        muDongQuantity: muDong.quantity.toLocaleString('vi-VN'),
-        muDongPrice: muDong.price.toLocaleString('vi-VN'),
-        muDongRatioSplit: muDong.ratioSplit.toLocaleString('vi-VN'),
-        muDongTotalAfterSplit: muDongTotalAfterSplit.toLocaleString('vi-VN'),
-        muDongTotalPrice: muDongTotalPrice.toLocaleString('vi-VN'),
-        totalPrice: totalPrice.toLocaleString('vi-VN'),
+        muNuocQuantity: formatNumber(muNuoc.quantity),
+        muHamLuong: formatNumber(muNuoc.percentage),
+        muQuyKhoTotal: formatNumber(muQuyKhoTotal),
+        muQuyKhoPrice: formatNumber(muNuoc.price),
+        muNuocRatioSplit: formatNumber(muNuoc.ratioSplit),
+        muQuyKhoTotalAfterSplit: formatNumber(muQuyKhoTotalAfterSplit),
+        muQuyKhoTotalPrice: formatNumber(muQuyKhoTotalPrice),
+        muTapQuantity: formatNumber(muTap.quantity),
+        muTapPrice: formatNumber(muTap.price),
+        muTapRatioSplit: formatNumber(muTap.ratioSplit),
+        muTapTotalAfterSplit: formatNumber(muTapTotalAfterSplit),
+        muTapTotalPrice: formatNumber(muTapTotalPrice),
+        muKeQuantity: formatNumber(muKe.quantity),
+        muKePrice: formatNumber(muKe.price),
+        muKeRatioSplit: formatNumber(muKe.ratioSplit),
+        muKeTotalAfterSplit: formatNumber(muKeTotalAfterSplit),
+        muKeTotalPrice: formatNumber(muKeTotalPrice),
+        muDongQuantity: formatNumber(muDong.quantity),
+        muDongPrice: formatNumber(muDong.price),
+        muDongRatioSplit: formatNumber(muDong.ratioSplit),
+        muDongTotalAfterSplit: formatNumber(muDongTotalAfterSplit),
+        muDongTotalPrice: formatNumber(muDongTotalPrice),
+        totalPrice: formatNumber(totalPrice),
         note: item.note || '',
         id: item._id,
       };
