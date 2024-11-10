@@ -51,6 +51,7 @@ const supplierSchema = new mongoose.Schema(
     ratioSumSplit: { type: Number, default: 100 },
     purchasedAreaPrice: { type: Number, default: 0 },
     areaDeposit: { type: Number, default: 0 },
+    advancePayment: { type: Number, default: 0 },
     initialDebtAmount: {
       type: Number,
       default: function () {
