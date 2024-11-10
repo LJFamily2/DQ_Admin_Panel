@@ -15,13 +15,12 @@ module.exports = {
   // Admin side for exportin individual data
   getIndividualSupplierExportData,
 };
-const formatNumber = num => (num > 0 ? num.toLocaleString('vi-VN') : '');
+const formatNumber = num => (num = num.toLocaleString('vi-VN') );
 
 // Get today date in UTC+7
 function getTodayDate() {
   const today = new Date();
   today.setUTCHours(0, 0, 0, 0);
-  console.log(today);
   return today;
 }
 
@@ -280,7 +279,6 @@ async function getSupplierExportData(req, res, isArea) {
     data.sort((a, b) => a.supplier.name.localeCompare(b.supplier.name));
 
     const flattenedData = flattenData(data, isArea);
-    console.log(data);
     res.json({
       draw,
       recordsTotal: totalRecords,
@@ -365,7 +363,6 @@ async function getSupplierExportData(req, res, isArea) {
   }
 
   function flattenData(data, isArea) {
-
     const calculateMaterialData = material => {
       if (!material)
         return {
@@ -380,36 +377,41 @@ async function getSupplierExportData(req, res, isArea) {
       let total = 0;
       let ratioSplit = 0;
       let price = 0;
+      let afterSplit = 0;
 
       material.rawMaterial.forEach(raw => {
-        quantity += raw.quantity || 0;
-        ratioSplit += raw.ratioSplit || 0;
-        if (raw.price) {
-          price += raw.price;
-          total +=
-            raw.name === 'Mủ nước'
-              ? ((((raw.quantity * (raw.percentage || 0)) / 100) *
-                  (raw.ratioSplit || 0)) / 100) *
-                raw.price
-              : ((raw.quantity * (raw.ratioSplit || 0)) / 100) * raw.price;
+        const { quantity: rawQuantity = 0, ratioSplit: rawRatioSplit = 0, price: rawPrice = 0, percentage = 0, name } = raw;
+        quantity += rawQuantity;
+        ratioSplit += rawRatioSplit;
+        if (name === 'Mủ nước') {
+          afterSplit += (rawQuantity * (percentage / 100) * rawRatioSplit) / 100;
+        } else {
+          afterSplit += (rawQuantity * rawRatioSplit) / 100;
+        }
+        if (rawPrice) {
+          price += rawPrice;
+          total += name === 'Mủ nước'
+            ? (((rawQuantity * (percentage / 100)) * rawRatioSplit) / 100) * rawPrice
+            : ((rawQuantity * rawRatioSplit) / 100) * rawPrice;
         }
       });
 
-      const count = material.count;
+      const count = material.rawMaterial.length;
       return {
         quantity,
         ratioSplit: count > 0 ? ratioSplit / count : 0,
         price: count > 0 ? price / count : 0,
         total,
-        afterSplit: quantity * (ratioSplit / 100) || 0,
+        afterSplit ,
       };
     };
 
     return data.map((item, index) => {
       const rawMaterials = item.rawMaterials.reduce((acc, rawMaterialArray) => {
         rawMaterialArray.forEach(raw => {
-          if (!acc[raw.name]) {
-            acc[raw.name] = {
+          const { name, quantity = 0, ratioSplit = 0, price = 0, percentage = 0 } = raw;
+          if (!acc[name]) {
+            acc[name] = {
               quantity: 0,
               percentage: 0,
               price: 0,
@@ -419,56 +421,46 @@ async function getSupplierExportData(req, res, isArea) {
               rawMaterial: [],
             };
           }
-          acc[raw.name].quantity += raw.quantity || 0;
-          acc[raw.name].ratioSplit += raw.ratioSplit || 0;
-          acc[raw.name].count++;
-          if (raw.price) {
-            acc[raw.name].price += raw.price;
-            acc[raw.name].total +=
-              raw.name === 'Mủ nước'
-                ? ((((raw.quantity * (raw.percentage || 0)) / 100) *
-                    (raw.ratioSplit || 0)) / 100) *
-                  raw.price
-                : ((raw.quantity * (raw.ratioSplit || 0)) / 100) * raw.price;
+          acc[name].quantity += quantity;
+          acc[name].ratioSplit += ratioSplit;
+          acc[name].count++;
+          if (price) {
+            acc[name].price += price;
+            acc[name].total += name === 'Mủ nước'
+              ? (((quantity * (percentage / 100)) * ratioSplit) / 100) * price
+              : ((quantity * ratioSplit) / 100) * price;
           }
-          acc[raw.name].rawMaterial.push(raw);
+          acc[name].rawMaterial.push(raw);
         });
         return acc;
       }, {});
 
       const no = index + 1;
-      const supplier = item.supplier.name || '';
-      const code = isArea ? item.supplier.code || '' : undefined;
+      const { name: supplier = '', code: supplierCode = '', purchasedAreaDimension, purchasedAreaPrice, areaDeposit, debtHistory, initialDebtAmount } = item.supplier;
+      const code = isArea ? supplierCode : undefined;
 
       const muQuyKhoData = calculateMaterialData(rawMaterials['Mủ nước']);
       const muTapData = calculateMaterialData(rawMaterials['Mủ tạp']);
       const muKeData = calculateMaterialData(rawMaterials['Mủ ké']);
       const muDongData = calculateMaterialData(rawMaterials['Mủ đông']);
+      
+      const totalSum = muQuyKhoData.total + muTapData.total + muKeData.total + muDongData.total;
 
-      const totalSum = formatNumber(
-        Object.values(rawMaterials).reduce(
-          (sum, material) => sum + (material?.total || 0),
-          0,
-        ),
-      );
       const note = item.notes.filter(Boolean).join(', ');
       const signature = '';
 
       // Calculate totalDebtPaidAmount and remainingDebt
-      const totalDebtPaidAmount = calculateTotalDebtPaidAmount(item.supplier.debtHistory);
-      const remainingDebt = calculateRemainingDebt(item.supplier.initialDebtAmount, totalDebtPaidAmount);
+      const totalDebtPaidAmount = calculateTotalDebtPaidAmount(debtHistory);
+      const remainingDebt = calculateRemainingDebt(initialDebtAmount, totalDebtPaidAmount);
 
       return {
         no,
         supplier,
         ...(isArea && { code }),
-        areaPurchased: item.supplier.purchasedAreaDimension,
-        areaPrice: formatNumber(item.supplier.purchasedAreaPrice),
-        areaTotal: formatNumber(
-          item.supplier.purchasedAreaDimension *
-            item.supplier.purchasedAreaPrice,2
-        ),
-        areaDeposit: formatNumber(item.supplier.areaDeposit),
+        areaPurchased: purchasedAreaDimension,
+        areaPrice: formatNumber(purchasedAreaPrice),
+        areaTotal: formatNumber(purchasedAreaDimension * purchasedAreaPrice, 2),
+        areaDeposit: formatNumber(areaDeposit),
         debtPaidAmount: formatNumber(totalDebtPaidAmount),
         remainingDebt: formatNumber(remainingDebt),
         // Mu nuoc
@@ -482,7 +474,7 @@ async function getSupplierExportData(req, res, isArea) {
         muTapSplit: formatNumber(muTapData.ratioSplit),
         muTapAfterSplit: formatNumber(muTapData.afterSplit),
         muTapDonGia: formatNumber(muTapData.price),
-        muTapTotal: muTapData.total,
+        muTapTotal: formatNumber(muTapData.total),
         // Mu ke
         muKeQuantity: formatNumber(muKeData.quantity),
         muKeSplit: formatNumber(muKeData.ratioSplit),
@@ -495,7 +487,7 @@ async function getSupplierExportData(req, res, isArea) {
         muDongAfterSplit: formatNumber(muDongData.afterSplit),
         muDongDonGia: formatNumber(muDongData.price),
         muDongTotal: formatNumber(muDongData.total),
-        totalSum,
+        totalSum: formatNumber(totalSum),
         note,
         signature,
       };
@@ -638,6 +630,7 @@ async function getIndividualSupplierExportData(req, res) {
       return {
         no: index + 1,
         date: item.date.toLocaleDateString('vi-VN'),
+
         muNuocQuantity: formatNumber(muNuoc.quantity),
         muHamLuong: formatNumber(muNuoc.percentage),
         muQuyKhoTotal: formatNumber(muQuyKhoTotal),
@@ -645,16 +638,19 @@ async function getIndividualSupplierExportData(req, res) {
         muNuocRatioSplit: formatNumber(muNuoc.ratioSplit),
         muQuyKhoTotalAfterSplit: formatNumber(muQuyKhoTotalAfterSplit),
         muQuyKhoTotalPrice: formatNumber(muQuyKhoTotalPrice),
+        
         muTapQuantity: formatNumber(muTap.quantity),
         muTapPrice: formatNumber(muTap.price),
         muTapRatioSplit: formatNumber(muTap.ratioSplit),
         muTapTotalAfterSplit: formatNumber(muTapTotalAfterSplit),
         muTapTotalPrice: formatNumber(muTapTotalPrice),
+        
         muKeQuantity: formatNumber(muKe.quantity),
         muKePrice: formatNumber(muKe.price),
         muKeRatioSplit: formatNumber(muKe.ratioSplit),
         muKeTotalAfterSplit: formatNumber(muKeTotalAfterSplit),
         muKeTotalPrice: formatNumber(muKeTotalPrice),
+        
         muDongQuantity: formatNumber(muDong.quantity),
         muDongPrice: formatNumber(muDong.price),
         muDongRatioSplit: formatNumber(muDong.ratioSplit),
