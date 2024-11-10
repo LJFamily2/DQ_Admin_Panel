@@ -17,6 +17,7 @@ async function createSuppliers(req) {
     purchasedAreaDimension,
     areaDuration,
     moneyRetainedPercentage,
+    advancePayment
   } = req.body;
 
   const suppliers = ensureArray(supplierName)
@@ -42,6 +43,7 @@ async function createSuppliers(req) {
           moneyRetainedPercentage: convertToDecimal(
             ensureArray(moneyRetainedPercentage)[index],
           ),
+          advancePayment: convertToDecimal(ensureArray(advancePayment)[index]),
         };
 
         if (areaDuration && ensureArray(areaDuration.start)[index] && ensureArray(areaDuration.end)[index]) {

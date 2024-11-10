@@ -427,6 +427,21 @@
                         </div>
                         <div class="mt-3">
                           <label
+                            for="advancePayment"
+                            class="form-label fw-bold"
+                            >Tiền ứng</label
+                          >
+                          <input
+                            type="text"
+                            class="form-control"
+                            id="advancePayment"
+                            name="advancePayment"
+                            value="0"
+                            oninput="handleQuantityInput(this)"
+                          />
+                        </div>
+                        <div class="mt-3">
+                          <label
                             for="ratioRubberSplit"
                             class="form-label fw-bold"
                             >% nhận mủ mặc định</label
