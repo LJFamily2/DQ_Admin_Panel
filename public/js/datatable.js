@@ -56,7 +56,7 @@ function initializeDataTable(
       if (total !== 0) {
         const formatted = formatNumberForDisplay(total, locale);
         $(api.column(colIndex).footer()).html(
-          `<strong style='float: left'>${formatted}</strong>`
+          `<strong>${formatted}</strong>`
         );
       } else {
         $(api.column(colIndex).footer()).html("");
