@@ -26,7 +26,7 @@ function ensureRoles(roles) {
 function ensureWorkingHours(req, res, next) {
   const currentHour = new Date().getHours();
   const workingHoursStart = 7; // 7 AM
-  const workingHoursEnd = 17; // 5 PM
+  const workingHoursEnd = 23; // 11 PM
 
   if (req.isAuthenticated && req.isAuthenticated() && req.user && (req.user.role === 'Admin' || req.user.role === 'Giám đốc')) {
     return next();
