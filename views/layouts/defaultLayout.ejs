@@ -78,12 +78,28 @@
     <style>
       table {
         table-layout: fixed;
-        & th, td{
+        & th,
+        td {
           text-align: center;
           white-space: nowrap;
         }
       }
-      
+      /* Hide the spinners in input type number for Chrome, Safari, Edge, and Opera */
+      input[type="number"]::-webkit-outer-spin-button,
+      input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+
+      /* Hide the spinners in input type number for Firefox */
+      input[type="number"] {
+        -moz-appearance: textfield;
+      }
+
+      .tooltip-wrapper {
+        display: inline-block; /* Ensure the wrapper does not take full width */
+      }
+
       @media (max-width: 768px) {
         .paddingMobile {
           padding-bottom: 100px;
