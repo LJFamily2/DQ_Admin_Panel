@@ -161,8 +161,6 @@ async function updatePricesAndRatios(req, res) {
 
     // Execute bulk update operations concurrently
     const [ saveData, actionHistory] = await Promise.all([
-      bulkDebtOps.length > 0 ? Debt.bulkWrite(bulkDebtOps) : Promise.resolve(),
-      bulkMoneyRetainedOps.length > 0 ? MoneyRetained.bulkWrite(bulkMoneyRetainedOps) : Promise.resolve(),
       area.save(),
       ActionHistory.create({
         actionType: 'update',
