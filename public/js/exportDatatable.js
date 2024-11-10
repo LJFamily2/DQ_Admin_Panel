@@ -192,9 +192,11 @@ function initializeExportDataTable(
                   );
                 $(win.document.body).find("th, td").css({
                   "font-size": "0.75rem",
+                  "padding": "5px" // Add this line to reduce padding
                 });
                 $(win.document.body).find("th").css({
                   "white-space": "nowrap",
+                  "padding": "5px" // Add this line to reduce padding
                 });
               }
               if (individualExportPage) {
@@ -320,9 +322,11 @@ function initializeExportDataTable(
                 ///Set the css for the table
                 $(win.document.body).find("th, td").css({
                   "font-size": "0.75rem",
+                  "padding": "5px" // Add this line to reduce padding
                 });
                 $(win.document.body).find("th").css({
                   "white-space": "nowrap",
+                  "padding": "5px" // Add this line to reduce padding
                 });
               }
             },
@@ -337,12 +341,9 @@ function initializeExportDataTable(
     processing: true,
     responsive: true,
     paging: !exportPageFooter,
-    scrollX: window.innerWidth > 1900 ? false : true,
+    scrollX: true,
     pagingType: "first_last_numbers",
     rowGroup: rowGroupOptions,
-    // columnDefs: [
-    //   { targets: '*', className: 'dt-body-center' }
-    // ],
     ajax: {
       url: ajaxUrl,
       type: "POST",
