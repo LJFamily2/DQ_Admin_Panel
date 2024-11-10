@@ -307,7 +307,7 @@ function initializeExportDataTable(
                       }
                       ${
                         retainedAmount > 0
-                          ? `<p ">Tiền giữ lại tổng: ${formatNumberForDisplay(
+                          ? `<p ">Tổng tiền giữ lại: ${formatNumberForDisplay(
                               retainedAmount,
                               "vi-VN"
                             )}</p>`

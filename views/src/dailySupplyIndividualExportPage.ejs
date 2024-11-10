@@ -721,22 +721,22 @@
             <div class="mt-3">
               <div class="row">
                 <div class="col-6">
-                  <label for="debt" class="form-label fw-bold">Nợ</label>
+                  <label for="debt" class="form-label fw-bold">Nợ còn lại</label>
                   <input
                     type="text"
                     class="form-control"
                     id="debt"
-                    value="<%= remainingDebt %>"
+                    value="<%= remainingDebt > 0 ? remainingDebt.toLocaleString('vi-VN') : 0 %>"
                     disabled
                   />
                 </div>
                 <div class="col-6">
-                  <label for="remaining" class="form-label fw-bold">Tiền giữ lại</label>
+                  <label for="remaining" class="form-label fw-bold">Tổng tiền giữ lại</label>
                   <input
                     type="text"
                     class="form-control"
                     id="remaining"
-                    value="<%= totalMoneyRetainedAmount %>"
+                    value="<%= totalMoneyRetainedAmount > 0 ? totalMoneyRetainedAmount.toLocaleString('vi-VN') : 0 %>"
                     disabled
                   />
                 </div>
