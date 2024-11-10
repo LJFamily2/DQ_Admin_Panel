@@ -494,6 +494,7 @@ async function editSupplier(req, res) {
           moneyRetainedPercentage: convertToDecimal(
             req.body.moneyRetainedPercentage,
           ),
+          advancePayment : convertToDecimal(req.body.advancePayment),
           ratioRubberSplit: convertToDecimal(req.body.ratioRubberSplit),
           ratioSumSplit: convertToDecimal(req.body.ratioSumSplit),
           purchasedAreaPrice,
