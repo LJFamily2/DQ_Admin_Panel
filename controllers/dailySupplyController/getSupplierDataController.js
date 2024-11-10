@@ -466,7 +466,7 @@ async function getSupplierExportData(req, res, isArea) {
         areaPrice: formatNumber(item.supplier.purchasedAreaPrice),
         areaTotal: formatNumber(
           item.supplier.purchasedAreaDimension *
-            item.supplier.purchasedAreaPrice,
+            item.supplier.purchasedAreaPrice,2
         ),
         areaDeposit: formatNumber(item.supplier.areaDeposit),
         debtPaidAmount: formatNumber(totalDebtPaidAmount),

@@ -192,11 +192,11 @@ function initializeExportDataTable(
                   );
                 $(win.document.body).find("th, td").css({
                   "font-size": "0.75rem",
-                  "padding": "5px" // Add this line to reduce padding
+                  "padding": "2px" // Add this line to reduce padding
                 });
                 $(win.document.body).find("th").css({
                   "white-space": "nowrap",
-                  "padding": "5px" // Add this line to reduce padding
+                  "padding": "2px" // Add this line to reduce padding
                 });
               }
               if (individualExportPage) {
@@ -322,11 +322,11 @@ function initializeExportDataTable(
                 ///Set the css for the table
                 $(win.document.body).find("th, td").css({
                   "font-size": "0.75rem",
-                  "padding": "5px" // Add this line to reduce padding
+                  "padding": "2px" // Add this line to reduce padding
                 });
                 $(win.document.body).find("th").css({
                   "white-space": "nowrap",
-                  "padding": "5px" // Add this line to reduce padding
+                  "padding": "2px" // Add this line to reduce padding
                 });
               }
             },

@@ -77,12 +77,12 @@
 
     <style>
       table {
-        table-layout: fixed;
-        & th,
-        td {
-          text-align: center;
-          white-space: nowrap;
-        }
+        width: 100% !important;
+        white-space: nowrap !important;
+      }
+      
+      table td, table th {
+        text-align: center !important;
       }
       /* Hide the spinners in input type number for Chrome, Safari, Edge, and Opera */
       input[type="number"]::-webkit-outer-spin-button,
