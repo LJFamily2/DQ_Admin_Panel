@@ -25,11 +25,12 @@ function createColvisGroup(text, columns) {
       columns.visible(visible);
     },
     init: function (dt, node, config) {
-      this.active(Array.from(dt.columns(config.columns).visible()).every(v => v));
-    }
+      this.active(
+        Array.from(dt.columns(config.columns).visible()).every((v) => v)
+      );
+    },
   };
 }
-
 
 function initializeExportDataTable(
   tableId,
@@ -182,6 +183,10 @@ function initializeExportDataTable(
               : "Bảng Kê Ký Nhận Tiền Thanh Toán Mua Mủ Cao Su",
             exportOptions: {
               columns: ":visible",
+            },
+            key: {
+              shiftKey: true,
+              key: "x",
             },
             customize: function (win) {
               if (exportPageFooter) {
@@ -359,27 +364,52 @@ function initializeExportDataTable(
                 text: "Chọn cột đơn",
                 collectionLayout: "fixed columns",
               },
-              ...(exportPageFooter && areaDimension > 0 && areaPrice > 0 ? [
-                createColvisGroup("Thông tin nhà vườn", [2, 3, 4, 5, 6, 7, 8, 9]),
-                createColvisGroup("Mủ nước", [10,11,12,13,14]),
-                createColvisGroup("Mủ tạp", [15, 16, 17, 18, 19]),
-                createColvisGroup("Mủ ké", [20, 21, 22, 23, 24]),
-                createColvisGroup("Mủ đông", [25, 26, 27, 28, 29]),
-              ] : []),
-              ...(individualExportPage && areaDimension > 0 && areaPrice > 0
+              ...(exportPageFooter && areaDimension > 0 && areaPrice > 0
                 ? [
-                    createColvisGroup("Mủ nước", [2, 3, 4, 5, 6, 7, 8]),
-                    createColvisGroup("Mủ tạp", [9, 10, 11, 12, 13]),
-                    createColvisGroup("Mủ ké", [14, 15, 16, 17, 18]),
-                    createColvisGroup("Mủ đông", [19, 20, 21, 22, 23]),
+                    createColvisGroup(
+                      "Thông tin nhà vườn",
+                      [2, 3, 4, 5, 6, 7, 8, 9]
+                    ),
+                    createColvisGroup("Mủ nước", [10, 11, 12, 13, 14]),
+                    createColvisGroup("Mủ tạp", [15, 16, 17, 18, 19]),
+                    createColvisGroup("Mủ ké", [20, 21, 22, 23, 24]),
+                    createColvisGroup("Mủ đông", [25, 26, 27, 28, 29]),
                   ]
-                : [
-                  createColvisGroup("Mủ nước", [2, 3, 4, 5]),
-                  createColvisGroup("Mủ tạp", [6,7]),
-                  createColvisGroup("Mủ ké", [8,9]),
-                  createColvisGroup("Mủ đông", [10,11]),
-
-                ]),
+                : []),
+              ...(individualExportPage
+                ? [
+                    createColvisGroup(
+                      "Mủ nước",
+                      areaDimension > 0 && areaPrice > 0
+                        ? [2, 3, 4, 5, 6, 7, 8]
+                        : [2, 3, 4, 5]
+                    ),
+                    createColvisGroup(
+                      "Mủ tạp",
+                      areaDimension > 0 && areaPrice > 0
+                        ? [9, 10, 11, 12, 13]
+                        : [6, 7]
+                    ),
+                    createColvisGroup(
+                      "Mủ ké",
+                      areaDimension > 0 && areaPrice > 0
+                        ? [14, 15, 16, 17, 18]
+                        : [8, 9]
+                    ),
+                    createColvisGroup(
+                      "Mủ đông",
+                      areaDimension > 0 && areaPrice > 0
+                        ? [19, 20, 21, 22, 23]
+                        : [10, 11]
+                    ),
+                    {
+                      extend: "colvisGroup",
+                      text: "Chế độ in",
+                      show: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+                      hide: [0, 13],
+                    },
+                  ]
+                : []),
               {
                 extend: "colvisGroup",
                 text: "Hiển thị tất cả",
