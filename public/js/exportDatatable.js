@@ -359,7 +359,7 @@ function initializeExportDataTable(
                 text: "Chọn cột đơn",
                 collectionLayout: "fixed columns",
               },
-              ...(exportPageFooter ? [
+              ...(exportPageFooter && areaDimension > 0 && areaPrice > 0 ? [
                 createColvisGroup("Thông tin nhà vườn", [2, 3, 4, 5, 6, 7, 8, 9]),
                 createColvisGroup("Mủ nước", [10,11,12,13,14]),
                 createColvisGroup("Mủ tạp", [15, 16, 17, 18, 19]),
