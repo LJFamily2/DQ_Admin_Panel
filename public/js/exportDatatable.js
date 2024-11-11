@@ -15,15 +15,15 @@ const parseNumber = (value) => {
 
 function createColvisGroup(text, columns) {
   return {
-      extend: "colvisGroup",
-      text: text,
-      columns: columns,
-      action: function (e, dt, node, config) {
-          var columns = dt.columns(config.columns);
-          var visible = !columns.visible()[0];
-          columns.visible(visible);
-          $(node).html(visible ? '✔ ' + text : text);
-      }
+    extend: "colvisGroup",
+    text: text,
+    columns: columns,
+    action: function (e, dt, node, config) {
+      var columns = dt.columns(config.columns);
+      var visible = !columns.visible()[0];
+      columns.visible(visible);
+      this.active(!this.active());
+    },
   };
 }
 
@@ -205,11 +205,11 @@ function initializeExportDataTable(
                   );
                 $(win.document.body).find("th, td").css({
                   "font-size": "0.75rem",
-                  "padding": "5px"
+                  padding: "5px",
                 });
                 $(win.document.body).find("th").css({
                   "white-space": "nowrap",
-                  "padding": "5px"
+                  padding: "5px",
                 });
               }
               if (individualExportPage) {
@@ -335,34 +335,41 @@ function initializeExportDataTable(
                 ///Set the css for the table
                 $(win.document.body).find("th, td").css({
                   "font-size": "0.75rem",
-                  "padding": "5px"
+                  padding: "5px",
                 });
                 $(win.document.body).find("th").css({
                   "white-space": "nowrap",
-                  "padding": "5px"
+                  padding: "5px",
                 });
               }
             },
           },
           {
-              extend: "colvis",
-              text: "Chọn cột",
-              collectionLayout: "fixed columns",
-              popoverTitle: 'Chọn cột',
-              buttons: [
-                  createColvisGroup("Mủ nước", [2, 3, 4, 5, 6, 7, 8]),
-                  createColvisGroup("Mủ tạp", [9, 10, 11, 12, 13]),
-                  createColvisGroup("Mủ ké", [14, 15, 16, 17, 18]),
-                  createColvisGroup("Mủ đông", [19, 20, 21, 22, 23]),
-                  {
-                      extend: 'colvisGroup',
-                      text: "Hiển thị tất cả",
-                      show: ':hidden'
-                  }
-              ]
-          }
-          
-
+            extend: "collection",
+            text: "Chọn cột",
+            collectionLayout: "fixed columns",
+            popoverTitle: "Chọn cột",
+            buttons: [
+              {
+                extend: "colvis",
+                text: "Chọn cột đơn",
+                collectionLayout: "fixed columns",
+              },
+              ...(individualExportPage
+                ? [
+                    createColvisGroup("Mủ nước", [2, 3, 4, 5, 6, 7, 8]),
+                    createColvisGroup("Mủ tạp", [9, 10, 11, 12, 13]),
+                    createColvisGroup("Mủ ké", [14, 15, 16, 17, 18]),
+                    createColvisGroup("Mủ đông", [19, 20, 21, 22, 23]),
+                  ]
+                : []),
+              {
+                extend: "colvisGroup",
+                text: "Hiển thị tất cả",
+                show: ":hidden",
+              },
+            ],
+          },
         ]
       : [],
     stateSave: true,
