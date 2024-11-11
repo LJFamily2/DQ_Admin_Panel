@@ -358,6 +358,10 @@ async function getSupplierExportData(req, res, isArea) {
     return debtHistory.reduce((total, debt) => total + (debt.debtPaidAmount || 0), 0);
   }
 
+  function getTotalRetainedAmount(moneyRetainedHistory) {
+    return moneyRetainedHistory.reduce((total, retained) => total + (retained.retainedAmount || 0), 0);
+  }
+
   function calculateRemainingDebt(initialDebtAmount, totalDebtPaidAmount) {
     return initialDebtAmount - totalDebtPaidAmount;
   }
@@ -436,7 +440,7 @@ async function getSupplierExportData(req, res, isArea) {
       }, {});
 
       const no = index + 1;
-      const { name: supplier = '', code: supplierCode = '', purchasedAreaDimension, purchasedAreaPrice, areaDeposit, debtHistory, initialDebtAmount } = item.supplier;
+      const { name: supplier = '', code: supplierCode = '', purchasedAreaDimension, purchasedAreaPrice, areaDeposit, debtHistory, initialDebtAmount, moneyRetainedHistory } = item.supplier;
       const code = isArea ? supplierCode : undefined;
 
       const muQuyKhoData = calculateMaterialData(rawMaterials['Mủ nước']);
@@ -449,9 +453,10 @@ async function getSupplierExportData(req, res, isArea) {
       const note = item.notes.filter(Boolean).join(', ');
       const signature = '';
 
-      // Calculate totalDebtPaidAmount and remainingDebt
+      // Calculate totalDebtPaidAmount and remainingDebt, retainedAmount
       const totalDebtPaidAmount = calculateTotalDebtPaidAmount(debtHistory);
       const remainingDebt = calculateRemainingDebt(initialDebtAmount, totalDebtPaidAmount);
+      const retainedAmount = getTotalRetainedAmount(moneyRetainedHistory); 
 
       return {
         no,
@@ -462,7 +467,8 @@ async function getSupplierExportData(req, res, isArea) {
         areaTotal: formatNumber(purchasedAreaDimension * purchasedAreaPrice, 2),
         areaDeposit: formatNumber(areaDeposit),
         debtPaidAmount: formatNumber(totalDebtPaidAmount),
-        remainingDebt: formatNumber(remainingDebt),
+        remainingDebt: formatNumber(remainingDebt > 0 ? remainingDebt : 0),
+        retainedAmount: formatNumber(retainedAmount > 0 ? retainedAmount : 0),
         // Mu nuoc
         muQuyKhoQuantity: formatNumber(muQuyKhoData.quantity),
         muQuyKhoSplit: formatNumber(muQuyKhoData.ratioSplit),
