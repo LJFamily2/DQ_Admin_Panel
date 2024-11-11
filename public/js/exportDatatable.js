@@ -366,14 +366,20 @@ function initializeExportDataTable(
                 createColvisGroup("Mủ ké", [20, 21, 22, 23, 24]),
                 createColvisGroup("Mủ đông", [25, 26, 27, 28, 29]),
               ] : []),
-              ...(individualExportPage
+              ...(individualExportPage && areaDimension > 0 && areaPrice > 0
                 ? [
                     createColvisGroup("Mủ nước", [2, 3, 4, 5, 6, 7, 8]),
                     createColvisGroup("Mủ tạp", [9, 10, 11, 12, 13]),
                     createColvisGroup("Mủ ké", [14, 15, 16, 17, 18]),
                     createColvisGroup("Mủ đông", [19, 20, 21, 22, 23]),
                   ]
-                : []),
+                : [
+                  createColvisGroup("Mủ nước", [2, 3, 4, 5]),
+                  createColvisGroup("Mủ tạp", [6,7]),
+                  createColvisGroup("Mủ ké", [8,9]),
+                  createColvisGroup("Mủ đông", [10,11]),
+
+                ]),
               {
                 extend: "colvisGroup",
                 text: "Hiển thị tất cả",
