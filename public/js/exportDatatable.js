@@ -13,6 +13,20 @@ const parseNumber = (value) => {
   return typeof value === "number" ? value : 0;
 };
 
+function createColvisGroup(text, columns) {
+  return {
+      extend: "colvisGroup",
+      text: text,
+      columns: columns,
+      action: function (e, dt, node, config) {
+          var columns = dt.columns(config.columns);
+          var visible = !columns.visible()[0];
+          columns.visible(visible);
+          $(node).html(visible ? '✔ ' + text : text);
+      }
+  };
+}
+
 function initializeExportDataTable(
   tableId,
   ajaxUrl,
@@ -331,45 +345,24 @@ function initializeExportDataTable(
             },
           },
           {
-            extend: "colvis",
-            text: "Chọn cột",
-            collectionLayout: "fixed column",
-            popoverTitle: 'Chọn cột',
-            columnText: function (dt, idx, title) {
-              return (idx + 1) + ': ' + title;
-            },
-            buttons: [
-              {
-                extend: "colvisGroup",
-                text: "Mủ nước",
-                show: [2, 3, 4, 5, 6, 7, 8],
-                hide: [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
-              },
-              {
-                extend: "colvisGroup",
-                text: "Mủ tạp",
-                show: [9, 10, 11, 12, 13],
-                hide: [2, 3, 4, 5, 6, 7, 8, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
-              },
-              {
-                extend: "colvisGroup",
-                text: "Mủ ké",
-                show: [14, 15, 16, 17, 18],
-                hide: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 19, 20, 21, 22, 23, 24, 25, 26]
-              },
-              {
-                extend: "colvisGroup",
-                text: "Mủ đông",
-                show: [19, 20, 21, 22, 23],
-                hide: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 24, 25, 26]
-              },
-              {
-                extend: 'colvisGroup',
-                text: "Hiển thị tất cả",
-                show: ':hidden'
-              }
-            ]
-          },
+              extend: "colvis",
+              text: "Chọn cột",
+              collectionLayout: "fixed columns",
+              popoverTitle: 'Chọn cột',
+              buttons: [
+                  createColvisGroup("Mủ nước", [2, 3, 4, 5, 6, 7, 8]),
+                  createColvisGroup("Mủ tạp", [9, 10, 11, 12, 13]),
+                  createColvisGroup("Mủ ké", [14, 15, 16, 17, 18]),
+                  createColvisGroup("Mủ đông", [19, 20, 21, 22, 23]),
+                  {
+                      extend: 'colvisGroup',
+                      text: "Hiển thị tất cả",
+                      show: ':hidden'
+                  }
+              ]
+          }
+          
+
         ]
       : [],
     stateSave: true,
