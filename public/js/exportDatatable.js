@@ -357,7 +357,7 @@ function initializeExportDataTable(
             extend: "collection",
             text: "Chọn cột",
             collectionLayout: "fixed columns",
-            popoverTitle: "Chọn cột",
+            popoverTitle: `<h4 class='m-0'>Chọn cột để hiện</h4><hr>`,
             buttons: [
               {
                 extend: "colvis",
@@ -405,8 +405,8 @@ function initializeExportDataTable(
                     {
                       extend: "colvisGroup",
                       text: "Chế độ in",
-                      show: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
-                      hide: [0, 13],
+                      show: [2, 3, 4, 6],
+                      hide: [0, 13,5,7,9, 11],
                     },
                   ]
                 : []),
