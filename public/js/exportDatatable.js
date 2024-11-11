@@ -337,6 +337,7 @@ function initializeExportDataTable(
           },
         ]
       : [],
+    stateSave: true,
     serverSide: true,
     processing: true,
     responsive: true,
