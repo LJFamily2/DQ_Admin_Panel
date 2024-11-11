@@ -335,6 +335,40 @@ function initializeExportDataTable(
             text: "Chọn cột",
             collectionLayout: "fixed column",
             popoverTitle: 'Chọn cột',
+            columnText: function (dt, idx, title) {
+              return (idx + 1) + ': ' + title;
+            },
+            buttons: [
+              {
+                extend: "colvisGroup",
+                text: "Mủ nước",
+                show: [2, 3, 4, 5, 6, 7, 8],
+                hide: [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
+              },
+              {
+                extend: "colvisGroup",
+                text: "Mủ tạp",
+                show: [9, 10, 11, 12, 13],
+                hide: [2, 3, 4, 5, 6, 7, 8, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
+              },
+              {
+                extend: "colvisGroup",
+                text: "Mủ ké",
+                show: [14, 15, 16, 17, 18],
+                hide: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 19, 20, 21, 22, 23, 24, 25, 26]
+              },
+              {
+                extend: "colvisGroup",
+                text: "Mủ đông",
+                show: [19, 20, 21, 22, 23],
+                hide: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 24, 25, 26]
+              },
+              {
+                extend: 'colvisGroup',
+                text: "Hiển thị tất cả",
+                show: ':hidden'
+              }
+            ]
           },
         ]
       : [],
