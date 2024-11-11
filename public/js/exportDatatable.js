@@ -132,7 +132,6 @@ function initializeExportDataTable(
 
   const pdfButton = {
     extend: "pdf",
-    className: "btn btn-secondary",
   };
 
   if (exportPageFooter) {
@@ -335,28 +334,7 @@ function initializeExportDataTable(
             extend: "colvis",
             text: "Chọn cột",
             collectionLayout: "fixed column",
-            popoverTitle: 'Column visibility control',
-            columnText: function (dt, idx, title) {
-              return (idx + 1) + ': ' + title;
-            },
-            buttons: [
-              {
-                extend: "colvisGroup",
-                text: "Group 1",
-                show: [0, 1, 2, 3],
-                hide: [4, 5, 6, 7]
-              },
-              {
-                extend: "colvisGroup",
-                text: "Group 2",
-                show: [4, 5, 6, 7],
-                hide: [0, 1, 2, 3]
-              },
-              {
-                extend: "colvisRestore",
-                text: "Hiển thị tất cả"
-              }
-            ]
+            popoverTitle: 'Chọn cột',
           },
         ]
       : [],
