@@ -21,11 +21,15 @@ function createColvisGroup(text, columns) {
     action: function (e, dt, node, config) {
       var columns = dt.columns(config.columns);
       var visible = !columns.visible()[0];
+      this.active(visible);
       columns.visible(visible);
-      this.active(!this.active());
     },
+    init: function (dt, node, config) {
+      this.active(Array.from(dt.columns(config.columns).visible()).every(v => v));
+    }
   };
 }
+
 
 function initializeExportDataTable(
   tableId,
@@ -355,6 +359,13 @@ function initializeExportDataTable(
                 text: "Chọn cột đơn",
                 collectionLayout: "fixed columns",
               },
+              ...(exportPageFooter ? [
+                createColvisGroup("Thông tin nhà vườn", [2, 3, 4, 5, 6, 7, 8, 9]),
+                createColvisGroup("Mủ nước", [10,11,12,13,14]),
+                createColvisGroup("Mủ tạp", [15, 16, 17, 18, 19]),
+                createColvisGroup("Mủ ké", [20, 21, 22, 23, 24]),
+                createColvisGroup("Mủ đông", [25, 26, 27, 28, 29]),
+              ] : []),
               ...(individualExportPage
                 ? [
                     createColvisGroup("Mủ nước", [2, 3, 4, 5, 6, 7, 8]),
