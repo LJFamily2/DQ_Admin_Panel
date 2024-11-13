@@ -185,171 +185,91 @@ function initializeExportDataTable(
               columns: ":visible",
             },
             key: {
-              shiftKey: true,
-              key: "x",
+              altKey: true,
+              key: "q",
             },
             customize: function (win) {
-              if (exportPageFooter) {
-                2;
-                const startDate = new Date(
-                  $(startDateId).val()
-                ).toLocaleDateString("vi-VN");
-                const endDate = new Date($(endDateId).val()).toLocaleDateString(
-                  "vi-VN"
-                );
-                const dateRange =
-                  startDate && endDate
-                    ? `Từ ngày ${startDate} đến ngày ${endDate}`
-                    : "";
-
-                $(win.document.body)
-                  .find("h1")
-                  .css("text-align", "center")
-                  .css("font-size", "1.5rem")
-                  .after(`<h6 style="text-align: center;">${dateRange}</h6>`)
-                  .end()
-                  .find("h6")
-                  .after(
-                    `<h6 style="text-align: left;">Khu vực: ${supplierName}</h6>`
-                  );
+              const formatDateRange = () => {
+                const startDate = new Date($(startDateId).val()).toLocaleDateString("vi-VN");
+                const endDate = new Date($(endDateId).val()).toLocaleDateString("vi-VN");
+                return startDate && endDate ? `(${startDate} - ${endDate})` : "";
+              };
+            
+              const setCommonStyles = () => {
                 $(win.document.body).find("th, td").css({
-                  "font-size": "0.75rem",
+                  "font-size": "0.65rem",
                   padding: "5px",
                 });
                 $(win.document.body).find("th").css({
                   "white-space": "nowrap",
                   padding: "5px",
                 });
-              }
-              if (individualExportPage) {
-                const startDate = new Date(
-                  $(startDateId).val()
-                ).toLocaleDateString("vi-VN");
-                const endDate = new Date($(endDateId).val()).toLocaleDateString(
-                  "vi-VN"
-                );
-                const dateRange =
-                  startDate && endDate
-                    ? `Từ ngày ${startDate} đến ngày ${endDate}`
-                    : "";
-
-                // Use the DataTable instance directly
-                const table = $(tableId).DataTable();
-
+              };
+            
+              const addHeaderInfo = (dateRange, supplierName) => {
+                $(win.document.body)
+                  .find("h1")
+                  .css("text-align", "center")
+                  .css("font-size", "1.2rem")
+                  .after(`<h6 style="text-align: center;">${dateRange}</h6>`)
+                  .end()
+                  .find("h6")
+                  .after(`<h6 style="text-align: left;">${supplierName}</h6>`);
+              };
+            
+              const calculateTotalAmount = (table, areaDimension, areaPrice) => {
                 let totalAmount = 0;
-
-                if (
-                  parseNumber(areaDimension) > 0 &&
-                  parseNumber(areaPrice) > 0
-                ) {
-                  const cellValue = $(table.column(24).footer())
-                    .text()
-                    .replace(/\./g, "")
-                    .replace(",", ".");
+                if (parseNumber(areaDimension) > 0 && parseNumber(areaPrice) > 0) {
+                  const cellValue = $(table.column(24).footer()).text().replace(/\./g, "").replace(",", ".");
                   totalAmount = parseFloat(cellValue) || 0;
                 } else {
                   const footerRow = $(table.table().footer()).find("tr:last");
                   footerRow.find("th").each(function (index) {
                     if (index > 0 && index < 4) {
-                      // Columns 2, 3, 4 in the footer
-                      const cellValue = $(this)
-                        .text()
-                        .replace(/\./g, "")
-                        .replace(",", ".");
+                      const cellValue = $(this).text().replace(/\./g, "").replace(",", ".");
                       totalAmount += parseFloat(cellValue) || 0;
                     }
                   });
                 }
-
-                /// Add the addPrice and minusPrice to the top of the table
-                const addPrice =
-                  parseFloat(
-                    $(addPriceId).val().replace(/\./g, "").replace(",", ".")
-                  ) || 0;
-                const minusPrice =
-                  parseFloat(
-                    $(minusPriceId).val().replace(/\./g, "").replace(",", ".")
-                  ) || 0;
-                const finalAmount = totalAmount + addPrice - minusPrice;
-                const totalAfterRatio =
-                  finalAmount * (ratioSumSplit.replace(",", ".") / 100);
-                console.log(ratioSumSplit);
-                console.log(totalAfterRatio);
-                /// Add the date range and supplier name to the top of the table
-                $(win.document.body)
-                  .find("h1")
-                  .css("text-align", "center")
-                  .after(`<h6 style="text-align: center;">${dateRange}</h6>`)
-                  .end()
-                  .find("h6")
-                  .after(
-                    `<h6 style="text-align: left;">Tên: ${supplierName}</h6>`
-                  )
-                  .end()
-                  .find("table")
-                  .after(
-                    `<p style="text-align: left; margin-top: 20px;">Tổng số tiền: 
-                    ${totalAmount.toLocaleString("vi-VN")} </p>`,
-                    `
-                    ${
-                      addPrice > 0
-                        ? `<p style="text-align: left; margin-top: 20px;">Cộng: 
-                        ${addPrice.toLocaleString("vi-VN")} </p>`
-                        : ""
-                    }`,
-                    `${
-                      minusPrice > 0
-                        ? `<p style="text-align: left; margin-top: 20px;">Trừ: 
-                        ${minusPrice.toLocaleString("vi-VN")} </p>`
-                        : ""
-                    }`,
-                    `${
-                      addPrice > 0 || minusPrice > 0
-                        ? `<p style="text-align: left; margin-top: 20px;">Tổng sau cộng/trừ: 
-                              ${finalAmount.toLocaleString("vi-VN")}
-                             </p>`
-                        : ""
-                    }
-                    ${
-                      ratioSumSplit < 100
-                        ? `<p style="text-align: left; margin-top: 20px;">Tỉ lệ phân chia tổng: ${ratioSumSplit}%</p>`
-                        : ""
-                    }
-                    <hr>
-                    <div style="display: flex; justify-content: space-between; margin-top: 20px;">
-                      <p style="text-align: left; width: 50%;">Thực nhận: ${totalAfterRatio.toLocaleString(
-                        "vi-VN"
-                      )}</p>
-                    <div style= "display:flex; flex-direction: column; align-items: flex-end; width: 50%" >
-                      ${
-                        debt > 0
-                          ? `<p ">Công nợ còn lại: ${formatNumberForDisplay(
-                              debt,
-                              "vi-VN"
-                            )}</p>`
-                          : ""
-                      }
-                      ${
-                        retainedAmount > 0
-                          ? `<p ">Tổng tiền giữ lại: ${formatNumberForDisplay(
-                              retainedAmount,
-                              "vi-VN"
-                            )}</p>`
-                          : ""
-                      }
+                return totalAmount;
+              };
+            
+              const addFooterInfo = (win, totalAmount, addPrice, minusPrice, finalAmount, totalAfterRatio, debt, retainedAmount) => {
+                $(win.document.body).find("table").after(
+                  `<p style="text-align: left; margin-top: 20px;">Tổng số tiền: ${totalAmount.toLocaleString("vi-VN")}</p>`,
+                  addPrice > 0 ? `<p style="text-align: left; margin-top: 20px;">Cộng: ${addPrice.toLocaleString("vi-VN")}</p>` : "",
+                  minusPrice > 0 ? `<p style="text-align: left; margin-top: 20px;">Trừ: ${minusPrice.toLocaleString("vi-VN")}</p>` : "",
+                  (addPrice > 0 || minusPrice > 0) ? `<p style="text-align: left; margin-top: 20px;">Tổng sau cộng/trừ: ${finalAmount.toLocaleString("vi-VN")}</p>` : "",
+                  ratioSumSplit < 100 ? `<p style="text-align: left; margin-top: 20px;">Tỉ lệ phân chia tổng: ${ratioSumSplit}%</p>` : "",
+                  `<hr>
+                  <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+                    <p style="text-align: left; width: 50%;">Thực nhận: ${totalAfterRatio.toLocaleString("vi-VN")}</p>
+                    <div style="display:flex; flex-direction: column; align-items: flex-end; width: 50%">
+                      ${debt > 0 ? `<p>Công nợ còn lại: ${formatNumberForDisplay(debt, "vi-VN")}</p>` : ""}
+                      ${retainedAmount > 0 ? `<p>Tổng tiền giữ lại: ${formatNumberForDisplay(retainedAmount, "vi-VN")}</p>` : ""}
                     </div>
                   </div>`
-                  );
-
-                ///Set the css for the table
-                $(win.document.body).find("th, td").css({
-                  "font-size": "0.75rem",
-                  padding: "5px",
-                });
-                $(win.document.body).find("th").css({
-                  "white-space": "nowrap",
-                  padding: "5px",
-                });
+                );
+              };
+            
+              const dateRange = formatDateRange();
+              const table = $(tableId).DataTable();
+            
+              if (exportPageFooter) {
+                addHeaderInfo(dateRange, `Khu vực: ${supplierName}`);
+                setCommonStyles();
+              }
+            
+              if (individualExportPage) {
+                const totalAmount = calculateTotalAmount(table, areaDimension, areaPrice);
+                const addPrice = parseFloat($(addPriceId).val().replace(/\./g, "").replace(",", ".")) || 0;
+                const minusPrice = parseFloat($(minusPriceId).val().replace(/\./g, "").replace(",", ".")) || 0;
+                const finalAmount = totalAmount + addPrice - minusPrice;
+                const totalAfterRatio = finalAmount * (ratioSumSplit.replace(",", ".") / 100);
+            
+                addHeaderInfo(dateRange, `Nhà vườn: ${supplierName}`);
+                addFooterInfo(win, totalAmount, addPrice, minusPrice, finalAmount, totalAfterRatio, debt, retainedAmount);
+                setCommonStyles();
               }
             },
           },
