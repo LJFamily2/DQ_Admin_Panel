@@ -7,46 +7,28 @@
     }
   </style>
 </head>
-<nav
-  class="min-vh-100 d-none d-md-flex flex-column flex-shrink-0 p-3"
-  style="width: 230px; background: white;"
->
+<nav class="min-vh-100 d-none d-md-flex flex-column flex-shrink-0 p-3" style="width: 230px; background: white;">
   <div class="d-flex align-items-center justify-content-center">
     <a href="/tong">
-      <img
-        src="/images/OIG3.HcFjYMBA3iNvsE-removebg-preview.png"
-        alt="Logo"
-        loading="eager"
-        height="100px"
-        width="100px"
-      />
+      <img src="/images/OIG3.HcFjYMBA3iNvsE-removebg-preview.png" alt="Logo" loading="eager" height="100px" width="100px" />
     </a>
   </div>
   <ul class="nav nav-pills flex-column mb-auto">
-    <% if(user.role === "Admin" || user.role === "Giám đốc"){ %>
+    <% if(user.role === "Admin" || user.role === "Quản lý"){ %>
     <li class="nav-item">
-      <a
-        href="/tong"
-        class="nav-link link-dark d-flex justify-content-between"
-      >
+      <a href="/tong" class="nav-link link-dark d-flex justify-content-between">
         Tổng
         <i class="ri-line-chart-line"></i>
       </a>
     </li>
     <li class="nav-item">
-      <a
-        href="/truy-van"
-        class="nav-link link-dark d-flex justify-content-between"
-      >
+      <a href="/truy-van" class="nav-link link-dark d-flex justify-content-between">
         Truy Vấn
         <i class="ri-search-line"></i>
       </a>
     </li>
     <li class="nav-item">
-      <a
-        href="/quan-ly-du-lieu"
-        class="nav-link link-dark d-flex justify-content-between"
-      >
+      <a href="/quan-ly-du-lieu" class="nav-link link-dark d-flex justify-content-between">
         Nguyên liệu tổng
         <i class="ri-database-line"></i>
       </a>
@@ -79,71 +61,50 @@
       </a>
     </li> -->
     <li class="nav-item">
-      <a
-        href="/quan-ly-hang-hoa"
-        class="nav-link link-dark d-flex justify-content-between"
-      >
+      <a href="/quan-ly-hang-hoa" class="nav-link link-dark d-flex justify-content-between">
         Chạy lò
         <i class="ri-instance-line"></i>
       </a>
     </li>
     <li class="nav-item">
-      <a
-        href="/quan-ly-hop-dong"
-        class="nav-link link-dark d-flex justify-content-between"
-      >
-        Hợp đồng 
+      <a href="/quan-ly-hop-dong" class="nav-link link-dark d-flex justify-content-between">
+        Hợp đồng
         <i class="ri-contract-line"></i>
       </a>
     </li>
     <li class="nav-item">
-      <a
-        href="/quan-ly-chi-tieu"
-        class="nav-link link-dark d-flex justify-content-between"
-      >
+      <a href="/quan-ly-chi-tieu" class="nav-link link-dark d-flex justify-content-between">
         Chi tiêu
         <i class="ri-bill-line"></i>
       </a>
     </li>
     <% } %>
-    <% if(user.role === "Admin" || user.role === "Văn phòng" || user.role === "Giám đốc"){ %>
+    <% if(user.role === "Admin" || user.role === "Văn phòng" || user.role === "Quản lý"){ %>
     <li class="nav-item">
-      <a
-        href="/du-lieu-hang-ngay"
-        class="nav-link link-dark d-flex justify-content-between"
-      >
+      <a href="/du-lieu-hang-ngay" class="nav-link link-dark d-flex justify-content-between">
         Dữ liệu nguyên liệu
         <i class="ri-numbers-line"></i>
       </a>
       <ul class="nav flex-column ms-3">
         <li class="nav-item">
-          <a
-            href="/du-lieu/nhat-ky-hoat-dong"
-            class="nav-link link-dark"
-          >
+          <a href="/du-lieu/nhat-ky-hoat-dong" class="nav-link link-dark">
             Lịch sử hoạt động
           </a>
         </li>
       </ul>
     </li>
     <% } %>
-    <% if(user.role === "Admin" || user.role === "Hàm lượng" || user.role === "Giám đốc"){ %>
+    <% if(user.role === "Admin" || user.role === "Hàm lượng" || user.role === "Quản lý"){ %>
     <li class="nav-item">
-      <a
-        href="/nhap-du-lieu/nguyen-lieu"
-        class="nav-link link-dark d-flex justify-content-between"
-      >
-        Nhập nguyên liệu 
+      <a href="/nhap-du-lieu/nguyen-lieu" class="nav-link link-dark d-flex justify-content-between">
+        Nhập nguyên liệu
         <i class="ri-edit-line"></i>
       </a>
     </li>
     <% } %>
     <% if(user.role === 'Admin'){ %>
     <li class="nav-item">
-      <a
-        href="/quan-ly-tai-khoan"
-        class="nav-link link-dark d-flex justify-content-between"
-      >
+      <a href="/quan-ly-tai-khoan" class="nav-link link-dark d-flex justify-content-between">
         Quản lý tài khoản
         <i class="ri-group-line"></i>
       </a>
@@ -158,16 +119,8 @@
   </ul>
   <hr />
   <div class="logOut">
-    <form
-      action="/quan-ly-tai-khoan/logOut"
-      method="post"
-      style="cursor: pointer"
-    >
-      <button
-        type="submit"
-        class="fs-6 border-0 w-100 d-flex justify-content-between"
-        style="background: none"
-      >
+    <form action="/quan-ly-tai-khoan/logOut" method="post" style="cursor: pointer">
+      <button type="submit" class="fs-6 border-0 w-100 d-flex justify-content-between" style="background: none">
         Đăng xuất
         <i class="ri-logout-box-r-line"></i>
       </button>
@@ -179,12 +132,12 @@
   <div class="d-flex flex-nowrap justify-content-start">
     <% 
       const navItems = [
-        { roles: ["Admin", "Giám đốc"], href: "/tong", icon: "ri-line-chart-line", text: "Tổng" },
-        { roles: ["Admin", "Giám đốc"], href: "/truy-van", icon: "ri-search-line", text: "Truy vấn" },
-        { roles: ["Admin", "Giám đốc"], href: "/quan-ly-du-lieu", icon: "ri-database-line", text: "Dữ liệu" },
-        { roles: ["Admin", "Giám đốc"], href: "/quan-ly-hang-hoa", icon: "ri-instance-line", text: "Hàng hóa" },
-        { roles: ["Admin", "Giám đốc"], href: "/quan-ly-hop-dong", icon: "ri-contract-line", text: "Hợp đồng" },
-        { roles: ["Admin", "Giám đốc"], href: "/quan-ly-chi-tieu", icon: "ri-bill-line", text: "Chi tiêu" },
+        { roles: ["Admin", "Quản lý"], href: "/tong", icon: "ri-line-chart-line", text: "Tổng" },
+        { roles: ["Admin", "Quản lý"], href: "/truy-van", icon: "ri-search-line", text: "Truy vấn" },
+        { roles: ["Admin", "Quản lý"], href: "/quan-ly-du-lieu", icon: "ri-database-line", text: "Dữ liệu" },
+        { roles: ["Admin", "Quản lý"], href: "/quan-ly-hang-hoa", icon: "ri-instance-line", text: "Hàng hóa" },
+        { roles: ["Admin", "Quản lý"], href: "/quan-ly-hop-dong", icon: "ri-contract-line", text: "Hợp đồng" },
+        { roles: ["Admin", "Quản lý"], href: "/quan-ly-chi-tieu", icon: "ri-bill-line", text: "Chi tiêu" },
         { roles: ["Admin", "Văn phòng"], href: "/du-lieu-hang-ngay", icon: "ri-numbers-line", text: "Dữ liệu nguyên liệu" },
         { roles: ["Admin", "Hàm lượng"], href: "/nhap-du-lieu/nguyen-lieu", icon: "ri-edit-line", text: "Nhập dữ liệu" },
 
@@ -194,9 +147,9 @@
       navItems.forEach(item => {
         if (item.roles.includes(user.role)) {
     %>
-          <a class="nav-link link-dark p-1" href="<%= item.href %>" style="text-align: center; font-size: 0.9rem; display: inline-block; margin: 5px;">
-            <i class="<%= item.icon %>" style="font-size: 1.4rem; display: block"></i><%= item.text %>
-          </a>
+    <a class="nav-link link-dark p-1" href="<%= item.href %>" style="text-align: center; font-size: 0.9rem; display: inline-block; margin: 5px;">
+      <i class="<%= item.icon %>" style="font-size: 1.4rem; display: block"></i><%= item.text %>
+    </a>
     <% 
         }
       });

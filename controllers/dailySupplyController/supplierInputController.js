@@ -3,13 +3,13 @@ const {
   MoneyRetained,
   Supplier,
   DailySupply,
-} = require('../../models/dailySupplyModel');
-const ActionHistory = require('../../models/actionHistoryModel');
+} = require("../../models/dailySupplyModel");
+const ActionHistory = require("../../models/actionHistoryModel");
 
-const handleResponse = require('../utils/handleResponse');
-const convertToDecimal = require('../utils/convertToDecimal');
-const trimStringFields = require('../utils/trimStringFields');
-const calculateFinancials = require('../dailySupplyController/helper/calculateFinancials');
+const handleResponse = require("../utils/handleResponse");
+const convertToDecimal = require("../utils/convertToDecimal");
+const trimStringFields = require("../utils/trimStringFields");
+const calculateFinancials = require("../dailySupplyController/helper/calculateFinancials");
 
 module.exports = {
   renderInputDataDashboardPage,
@@ -24,19 +24,19 @@ async function renderInputDataDashboardPage(req, res) {
     const { startDate, endDate } = req.query;
     let areas;
 
-    if (req.user.role === 'Admin') {
+    if (req.user.role === "Admin") {
       areas = await DailySupply.find()
-        .populate('suppliers')
-        .populate('data.supplier');
+        .populate("suppliers")
+        .populate("data.supplier");
     } else {
       const area = await DailySupply.findOne({ accountID: req.user._id })
-        .populate('suppliers')
-        .populate('data.supplier');
+        .populate("suppliers")
+        .populate("data.supplier");
       areas = area ? [area] : [];
     }
 
-    res.render('src/dailySupplyInputDashboardPage', {
-      layout: './layouts/defaultLayout',
+    res.render("src/dailySupplyInputDashboardPage", {
+      layout: "./layouts/defaultLayout",
       title: `Nguyên liệu hằng ngày`,
       areas,
       user: req.user,
@@ -45,25 +45,25 @@ async function renderInputDataDashboardPage(req, res) {
       messages: req.flash(),
     });
   } catch (error) {
-    console.error('Error adding suppliers:', error);
-    res.status(500).render('partials/500', { layout: false });
+    console.error("Error adding suppliers:", error);
+    res.status(500).render("partials/500", { layout: false });
   }
 }
 
 async function renderInputDataPage(req, res) {
   try {
     const { startDate, endDate } = req.query;
-    const isAdmin = req.user.role === 'Admin';
+    const isAdmin = req.user.role === "Admin";
 
     const area = await DailySupply.findOne({
       slug: req.params.slug,
       ...(isAdmin ? {} : { accountID: req.user._id }),
     })
-      .populate('suppliers')
-      .populate('data.supplier');
+      .populate("suppliers")
+      .populate("data.supplier");
 
     if (!area) {
-      return res.status(404).render('partials/404', { layout: false });
+      return res.status(404).render("partials/404", { layout: false });
     }
 
     const startOfToday = new Date();
@@ -73,9 +73,9 @@ async function renderInputDataPage(req, res) {
 
     const todayEntriesCount = await DailySupply.aggregate([
       { $match: { _id: area._id } },
-      { $unwind: '$data' },
-      { $match: { 'data.date': { $gte: startOfToday, $lte: endOfToday } } },
-      { $count: 'count' },
+      { $unwind: "$data" },
+      { $match: { "data.date": { $gte: startOfToday, $lte: endOfToday } } },
+      { $count: "count" },
     ]);
 
     const limitReached =
@@ -83,8 +83,8 @@ async function renderInputDataPage(req, res) {
         ? todayEntriesCount[0].count >= area.limitData
         : false;
 
-    res.render('src/dailySupplyInputPage', {
-      layout: './layouts/defaultLayout',
+    res.render("src/dailySupplyInputPage", {
+      layout: "./layouts/defaultLayout",
       title: `Nguyên liệu hằng ngày ${area.name}`,
       area,
       user: req.user,
@@ -94,7 +94,7 @@ async function renderInputDataPage(req, res) {
       limitReached,
     });
   } catch (error) {
-    res.status(500).render('partials/500', { layout: false });
+    res.status(500).render("partials/500", { layout: false });
   }
 }
 
@@ -111,41 +111,47 @@ async function addData(req, res) {
         req,
         res,
         404,
-        'fail',
-        'Không tìm thấy DailySupply!',
-        req.headers.referer,
+        "fail",
+        "Không tìm thấy DailySupply!",
+        req.headers.referer
       );
     }
 
     const todayEntries = dailySupply.data.filter(
-      entry => new Date(entry.date).toDateString() === today.toDateString(),
+      (entry) => new Date(entry.date).toDateString() === today.toDateString()
     );
-    if (todayEntries.length >= dailySupply.limitData && dailySupply.limitData !== 0) {
+    if (
+      todayEntries.length >= dailySupply.limitData &&
+      dailySupply.limitData !== 0
+    ) {
       return handleResponse(
         req,
         res,
         400,
-        'fail',
-        'Đã đạt giới hạn dữ liệu hàng ngày!',
-        req.headers.referer,
+        "fail",
+        "Đã đạt giới hạn dữ liệu hàng ngày!",
+        req.headers.referer
       );
     }
 
-    const existedSupplier = await Supplier.findOne({ supplierSlug: req.body.supplier });
+    const existedSupplier = await Supplier.findOne({
+      supplierSlug: req.body.supplier,
+    });
     if (!existedSupplier) {
       return handleResponse(
         req,
         res,
         400,
-        'fail',
-        'Nhà vườn không tồn tại!',
-        req.headers.referer,
+        "fail",
+        "Nhà vườn không tồn tại!",
+        req.headers.referer
       );
     }
 
     const rawMaterials = req.body.name.map((name, index) => ({
       name,
-      percentage: name === 'Mủ nước' ? convertToDecimal(req.body.percentage) : 0,
+      percentage:
+        name === "Mủ nước" ? convertToDecimal(req.body.percentage) : 0,
       ratioSplit: existedSupplier.ratioRubberSplit,
       quantity: convertToDecimal(req.body.quantity[index] || 0),
       price: 0,
@@ -167,7 +173,7 @@ async function addData(req, res) {
       date: today,
       rawMaterial: rawMaterials,
       supplier: existedSupplier._id,
-      note: trimStringFields(req.body.note) || '',
+      note: trimStringFields(req.body.note) || "",
       debt: debt?._id,
       moneyRetained: moneyRetained?._id,
     };
@@ -176,7 +182,7 @@ async function addData(req, res) {
       DailySupply.findByIdAndUpdate(
         req.params.id,
         { $push: { data: inputedData } },
-        { new: true, upsert: true },
+        { new: true, upsert: true }
       ),
       (async () => {
         existedSupplier.debtHistory.push(debt?._id);
@@ -190,14 +196,14 @@ async function addData(req, res) {
         req,
         res,
         404,
-        'fail',
-        'Thêm dữ liệu thất bại!',
-        req.headers.referer,
+        "fail",
+        "Thêm dữ liệu thất bại!",
+        req.headers.referer
       );
     }
 
     const actionHistory = await ActionHistory.create({
-      actionType: 'create',
+      actionType: "create",
       userId: req.user._id,
       details: `Thêm dữ liệu cho ${existedSupplier.name} của vườn ${newData.name}`,
       newValues: inputedData,
@@ -208,9 +214,9 @@ async function addData(req, res) {
         req,
         res,
         404,
-        'fail',
-        'Thêm dữ liệu thất bại!',
-        req.headers.referer,
+        "fail",
+        "Thêm dữ liệu thất bại!",
+        req.headers.referer
       );
     }
 
@@ -218,20 +224,20 @@ async function addData(req, res) {
       req,
       res,
       200,
-      'success',
-      'Thêm dữ liệu thành công!',
-      req.headers.referer,
+      "success",
+      "Thêm dữ liệu thành công!",
+      req.headers.referer
     );
   } catch (error) {
-    console.error('Error adding suppliers:', error);
-    res.status(500).render('partials/500', { layout: false });
+    console.error("Error adding suppliers:", error);
+    res.status(500).render("partials/500", { layout: false });
   }
 }
 
 async function updateSupplierData(req, res) {
   try {
     const { id } = req.params;
-    req.body = trimStringFields(req.body)
+    req.body = trimStringFields(req.body);
     const {
       date,
       supplier,
@@ -249,70 +255,76 @@ async function updateSupplierData(req, res) {
       muKePrice,
       muDongPrice,
       note,
-      moneyRetainedPercentage, 
+      moneyRetainedPercentage,
     } = req.body;
 
-    const dailySupply = await DailySupply.findOne({ 'data._id': id }).populate({
-      path: 'data',
-      populate: ['debt', 'moneyRetained'],
+    const dailySupply = await DailySupply.findOne({ "data._id": id }).populate({
+      path: "data",
+      populate: ["debt", "moneyRetained"],
     });
     if (!dailySupply) {
       return handleResponse(
         req,
         res,
         404,
-        'fail',
-        'Không tìm thấy dữ liệu!',
-        req.headers.referer,
+        "fail",
+        "Không tìm thấy dữ liệu!",
+        req.headers.referer
       );
     }
 
-    const dataIndex = dailySupply.data.findIndex(item => item._id.toString() === id);
+    const dataIndex = dailySupply.data.findIndex(
+      (item) => item._id.toString() === id
+    );
     if (dataIndex === -1) {
       return handleResponse(
         req,
         res,
         404,
-        'fail',
-        'Không tìm thấy dữ liệu!',
-        req.headers.referer,
+        "fail",
+        "Không tìm thấy dữ liệu!",
+        req.headers.referer
       );
     }
 
-    const dataBeforeUpdate = JSON.parse(JSON.stringify(dailySupply.data[dataIndex]));
+    const dataBeforeUpdate = JSON.parse(
+      JSON.stringify(dailySupply.data[dataIndex])
+    );
 
-    const updatedRawMaterial = dailySupply.data[dataIndex].rawMaterial.map(item => {
-      const updatedItem = { ...item };
-      switch (item.name) {
-        case 'Mủ nước':
-          updatedItem.quantity = convertToDecimal(muNuocQuantity);
-          updatedItem.percentage = convertToDecimal(muNuocPercentage);
-          updatedItem.ratioSplit = convertToDecimal(muNuocRatioSplit);
-          updatedItem.price = convertToDecimal(muNuocPrice);
-          break;
-        case 'Mủ tạp':
-          updatedItem.quantity = convertToDecimal(muTapQuantity);
-          updatedItem.ratioSplit = convertToDecimal(muTapRatioSplit);
-          updatedItem.price = convertToDecimal(muTapPrice);
-          break;
-        case 'Mủ ké':
-          updatedItem.quantity = convertToDecimal(muKeQuantity);
-          updatedItem.ratioSplit = convertToDecimal(muKeRatioSplit);
-          updatedItem.price = convertToDecimal(muKePrice);
-          break;
-        case 'Mủ đông':
-          updatedItem.quantity = convertToDecimal(muDongQuantity);
-          updatedItem.ratioSplit = convertToDecimal(muDongRatioSplit);
-          updatedItem.price = convertToDecimal(muDongPrice);
-          break;
+    const updatedRawMaterial = dailySupply.data[dataIndex].rawMaterial.map(
+      (item) => {
+        const updatedItem = { ...item };
+        switch (item.name) {
+          case "Mủ nước":
+            updatedItem.quantity = convertToDecimal(muNuocQuantity);
+            updatedItem.percentage = convertToDecimal(muNuocPercentage);
+            updatedItem.ratioSplit = convertToDecimal(muNuocRatioSplit);
+            updatedItem.price = convertToDecimal(muNuocPrice);
+            break;
+          case "Mủ tạp":
+            updatedItem.quantity = convertToDecimal(muTapQuantity);
+            updatedItem.ratioSplit = convertToDecimal(muTapRatioSplit);
+            updatedItem.price = convertToDecimal(muTapPrice);
+            break;
+          case "Mủ ké":
+            updatedItem.quantity = convertToDecimal(muKeQuantity);
+            updatedItem.ratioSplit = convertToDecimal(muKeRatioSplit);
+            updatedItem.price = convertToDecimal(muKePrice);
+            break;
+          case "Mủ đông":
+            updatedItem.quantity = convertToDecimal(muDongQuantity);
+            updatedItem.ratioSplit = convertToDecimal(muDongRatioSplit);
+            updatedItem.price = convertToDecimal(muDongPrice);
+            break;
+        }
+        return updatedItem;
       }
-      return updatedItem;
-    });
+    );
 
     dailySupply.data[dataIndex].date = new Date(date);
     dailySupply.data[dataIndex].rawMaterial = updatedRawMaterial;
-    dailySupply.data[dataIndex].note = trimStringFields(note) || '';
-    
+    dailySupply.data[dataIndex].note = trimStringFields(note) || "";
+
     if (supplier) {
       const supplierDoc = await Supplier.findOne({ supplierSlug: supplier });
       if (!supplierDoc) {
@@ -320,9 +332,9 @@ async function updateSupplierData(req, res) {
           req,
           res,
           400,
-          'fail',
-          'Nhà vườn không tồn tại!',
-          req.headers.referer,
+          "fail",
+          "Nhà vườn không tồn tại!",
+          req.headers.referer
         );
       }
       dailySupply.data[dataIndex].supplier = supplierDoc._id;
@@ -333,31 +345,40 @@ async function updateSupplierData(req, res) {
     if (dailySupply.areaPrice > 0 && dailySupply.areaDimension > 0) {
       const { debtPaid, retainedAmount } = calculateFinancials(
         updatedRawMaterial,
-        moneyRetainedPercentage || dailySupply.data[dataIndex].moneyRetained.percentage,
+        moneyRetainedPercentage ||
+          dailySupply.data[dataIndex].moneyRetained.percentage
       );
-      const debtPaidDifference = debtPaid - (dailySupply.data[dataIndex].debt.debtPaidAmount || 0);
-      const moneyRetainedDifference = retainedAmount - (dailySupply.data[dataIndex].moneyRetained.retainedAmount || 0);
+      const debtPaidDifference =
+        debtPaid - (dailySupply.data[dataIndex].debt.debtPaidAmount || 0);
+      const moneyRetainedDifference =
+        retainedAmount -
+        (dailySupply.data[dataIndex].moneyRetained.retainedAmount || 0);
 
       if (!isNaN(debtPaidDifference)) {
         updatePromises.push(
           Debt.findByIdAndUpdate(
             dailySupply.data[dataIndex].debt._id,
             { $inc: { debtPaidAmount: debtPaidDifference } },
-            { new: true },
+            { new: true }
           )
         );
       }
 
       const moneyRetainedUpdate = {
-        percentage: moneyRetainedPercentage || dailySupply.data[dataIndex].moneyRetained.percentage,
-        retainedAmount: !isNaN(debtPaidDifference) ? dailySupply.data[dataIndex].moneyRetained.retainedAmount + moneyRetainedDifference : dailySupply.data[dataIndex].moneyRetained.retainedAmount
+        percentage:
+          moneyRetainedPercentage ||
+          dailySupply.data[dataIndex].moneyRetained.percentage,
+        retainedAmount: !isNaN(debtPaidDifference)
+          ? dailySupply.data[dataIndex].moneyRetained.retainedAmount +
+            moneyRetainedDifference
+          : dailySupply.data[dataIndex].moneyRetained.retainedAmount,
       };
 
       updatePromises.push(
         MoneyRetained.findByIdAndUpdate(
           dailySupply.data[dataIndex].moneyRetained._id,
           moneyRetainedUpdate,
-          { new: true },
+          { new: true }
         )
       );
     }
@@ -369,14 +390,14 @@ async function updateSupplierData(req, res) {
         req,
         res,
         400,
-        'fail',
-        'Cập nhật dữ liệu thất bại!',
-        req.headers.referer,
+        "fail",
+        "Cập nhật dữ liệu thất bại!",
+        req.headers.referer
       );
     }
 
     const actionHistory = await ActionHistory.create({
-      actionType: 'update',
+      actionType: "update",
       userId: req.user._id,
       details: `Cập nhật dữ liệu cho ${updatedDailySupply.name}`,
       oldValues: dataBeforeUpdate,
@@ -388,9 +409,9 @@ async function updateSupplierData(req, res) {
         req,
         res,
         400,
-        'fail',
-        'Cập nhật dữ liệu thất bại!',
-        req.headers.referer,
+        "fail",
+        "Cập nhật dữ liệu thất bại!",
+        req.headers.referer
       );
     }
 
@@ -398,13 +419,13 @@ async function updateSupplierData(req, res) {
       req,
       res,
       200,
-      'success',
-      'Cập nhật dữ liệu thành công!',
-      req.headers.referer,
+      "success",
+      "Cập nhật dữ liệu thành công!",
+      req.headers.referer
     );
   } catch (err) {
-    console.error('Error updating supplier data:', err);
-    res.status(500).render('partials/500', { layout: false });
+    console.error("Error updating supplier data:", err);
+    res.status(500).render("partials/500", { layout: false });
   }
 }
 
@@ -413,19 +434,19 @@ async function deleteSupplierData(req, res) {
     const { id } = req.params;
     const userRole = req.user.role;
 
-    const dailySupply = await DailySupply.findOne({ 'data._id': id });
+    const dailySupply = await DailySupply.findOne({ "data._id": id });
     if (!dailySupply) {
       return handleResponse(
         req,
         res,
         404,
-        'fail',
-        'Không tìm thấy dữ liệu!',
-        req.headers.referer,
+        "fail",
+        "Không tìm thấy dữ liệu!",
+        req.headers.referer
       );
     }
 
-    if (userRole === 'Văn phòng') {
+    if (userRole === "Văn phòng") {
       const existingRequest = dailySupply.deletionRequests.find(
         (request) => request.dataId.toString() === id
       );
@@ -435,9 +456,9 @@ async function deleteSupplierData(req, res) {
           req,
           res,
           400,
-          'fail',
-          'Đã gửi yêu cầu xóa của dữ liệu này!',
-          req.headers.referer,
+          "fail",
+          "Đã gửi yêu cầu xóa của dữ liệu này!",
+          req.headers.referer
         );
       }
 
@@ -451,38 +472,38 @@ async function deleteSupplierData(req, res) {
         req,
         res,
         200,
-        'success',
-        'Yêu cầu xóa dữ liệu đã được gửi!',
-        req.headers.referer,
+        "success",
+        "Yêu cầu xóa dữ liệu đã được gửi!",
+        req.headers.referer
       );
-    } else if (userRole === 'Giám đốc' || userRole === 'Admin') {
+    } else if (userRole === "Quản lý" || userRole === "Admin") {
       const subDocument = dailySupply.data.id(id);
       if (!subDocument) {
         return handleResponse(
           req,
           res,
           404,
-          'fail',
-          'Không tìm thấy dữ liệu con!',
-          req.headers.referer,
+          "fail",
+          "Không tìm thấy dữ liệu con!",
+          req.headers.referer
         );
       }
 
       const supplierId = subDocument.supplier;
 
       const updatedData = await DailySupply.findOneAndUpdate(
-        { 'data._id': id },
+        { "data._id": id },
         { $pull: { data: { _id: id } } },
-        { new: true },
+        { new: true }
       );
       if (!updatedData) {
         return handleResponse(
           req,
           res,
           404,
-          'fail',
-          'Xóa dữ liệu thất bại!',
-          req.headers.referer,
+          "fail",
+          "Xóa dữ liệu thất bại!",
+          req.headers.referer
         );
       }
 
@@ -501,7 +522,7 @@ async function deleteSupplierData(req, res) {
               moneyRetainedHistory: moneyRetainedId,
             },
           },
-          { new: true },
+          { new: true }
         );
 
         if (debtId) {
@@ -513,16 +534,13 @@ async function deleteSupplierData(req, res) {
       }
 
       const actionHistoryPromise = ActionHistory.create({
-        actionType: 'delete',
+        actionType: "delete",
         userId: req.user._id,
         details: `Xóa dữ liệu cho ${updatedData.name}`,
         oldValues: subDocument,
       });
 
-      const promises = [
-        ...deletePromises,
-        actionHistoryPromise,
-      ];
+      const promises = [...deletePromises, actionHistoryPromise];
 
       if (updateSupplierDataPromise) {
         promises.push(updateSupplierDataPromise);
@@ -530,22 +548,24 @@ async function deleteSupplierData(req, res) {
 
       const results = await Promise.all(promises);
 
-      const updateSupplierData = updateSupplierDataPromise ? results.pop() : null;
+      const updateSupplierData = updateSupplierDataPromise
+        ? results.pop()
+        : null;
 
       if (updateSupplierDataPromise && !updateSupplierData) {
         return handleResponse(
           req,
           res,
           404,
-          'fail',
-          'Xóa dữ liệu cho nhà vườn thất bại!',
-          req.headers.referer,
+          "fail",
+          "Xóa dữ liệu cho nhà vườn thất bại!",
+          req.headers.referer
         );
       }
 
       // Remove the deletionRequests entry that holds the dataId matching the id parameter
       dailySupply.deletionRequests = dailySupply.deletionRequests.filter(
-        request => request.dataId.toString() !== id
+        (request) => request.dataId.toString() !== id
       );
       await dailySupply.save();
 
@@ -553,22 +573,22 @@ async function deleteSupplierData(req, res) {
         req,
         res,
         200,
-        'success',
-        'Xóa dữ liệu thành công!',
-        req.headers.referer,
+        "success",
+        "Xóa dữ liệu thành công!",
+        req.headers.referer
       );
     } else {
       return handleResponse(
         req,
         res,
         403,
-        'fail',
-        'Không có quyền thao tác!',
-        req.headers.referer,
+        "fail",
+        "Không có quyền thao tác!",
+        req.headers.referer
       );
     }
   } catch (err) {
-    console.error('Error deleting supplier data:', err);
-    res.status(500).render('partials/500', { layout: false });
+    console.error("Error deleting supplier data:", err);
+    res.status(500).render("partials/500", { layout: false });
   }
 }

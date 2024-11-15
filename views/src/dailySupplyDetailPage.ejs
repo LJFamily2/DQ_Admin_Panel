@@ -312,7 +312,7 @@
                 <div class="modal-content">
                   <div class="modal-header">
                     <h1 class="modal-title fs-5" id="exampleModalToggleLabel">
-                      <%= user.role === 'Admin' || user.role === 'Giám đốc' ? 'Xóa dữ liệu ' :"Gửi yêu cầu xóa dữ liệu" %> của <%= eachData.supplier?.name %>
+                      <%= user.role === 'Admin' || user.role === 'Quản lý' ? 'Xóa dữ liệu ' :"Gửi yêu cầu xóa dữ liệu" %> của <%= eachData.supplier?.name %>
                     </h1>
                     <button
                       type="button"
@@ -326,7 +326,7 @@
                     method="post"
                   >
                     <div class="modal-body">
-                      <% if( user.role === 'Admin' || user.role === 'Giám đốc'){%>
+                      <% if( user.role === 'Admin' || user.role === 'Quản lý'){%>
 
                       Bạn có muốn xóa dữ liệu của
                       <strong><%= eachData.supplier?.name %> (<%= eachData.date.toLocaleDateString('vi-VN') %>)</strong> ? Hành động này

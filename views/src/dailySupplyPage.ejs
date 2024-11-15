@@ -24,15 +24,15 @@
         <form action="/date-access-range/setDateRange" method="post">
           <!-- Date picker range -->
           <div class="row">
-            <% if(user.role === 'Admin' || user.role === 'Giám đốc'){ %>
-              <h5>Ngày truy cập dữ liệu</h5>
-              <div class="col-6">
-                <%- include('../partials/dateSelection.ejs', {submitButton: true}) %>
-              </div>
-              <% } %>
+            <% if(user.role === 'Admin' || user.role === 'Quản lý'){ %>
+            <h5>Ngày truy cập dữ liệu</h5>
+            <div class="col-6">
+              <%- include('../partials/dateSelection.ejs', {submitButton: true})
+              %>
+            </div>
+            <% } %>
           </div>
           <%- include('../partials/displayAccessDate.ejs') %>
-
         </form>
       </div>
       <div class="card-body">
@@ -426,9 +426,7 @@
                           />
                         </div>
                         <div class="mt-3">
-                          <label
-                            for="advancePayment"
-                            class="form-label fw-bold"
+                          <label for="advancePayment" class="form-label fw-bold"
                             >Tiền ứng</label
                           >
                           <input
@@ -500,25 +498,25 @@
 </div>
 
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const productLists = document.querySelectorAll('.supplierInfor .supplier');
-    const displayStyle = productLists.length > 1 ? 'block' : 'none';
+  document.addEventListener("DOMContentLoaded", () => {
+    const productLists = document.querySelectorAll(".supplierInfor .supplier");
+    const displayStyle = productLists.length > 1 ? "block" : "none";
     productLists.forEach(
-      el => (el.querySelector('.ri-close-line').style.display = displayStyle),
+      (el) => (el.querySelector(".ri-close-line").style.display = displayStyle)
     );
   });
 
   let columns = [
-    { data: 'no', orderable: false, width: '1%' },
-    { data: 'area', orderable: false, width: '1%' },
-    { data: 'accountID', orderable: false, width: '1%' },
+    { data: "no", orderable: false, width: "1%" },
+    { data: "area", orderable: false, width: "1%" },
+    { data: "accountID", orderable: false, width: "1%" },
     {
-      data: 'contractDuration',
+      data: "contractDuration",
       orderable: false,
-      width: '1%',
+      width: "1%",
       render: function (data, type, row) {
         const badges = {
-          'No contract':
+          "No contract":
             '<span class="badge bg-light text-dark">Không hợp đồng</span>',
           valid: `<span class="badge bg-success">Còn ${data.duration} ngày</span>`,
           expired: '<span class="badge bg-danger">Hết hạn</span>',
@@ -530,9 +528,9 @@
       },
     },
     {
-      data: 'link',
+      data: "link",
       orderable: false,
-      width: '1%',
+      width: "1%",
       render: function (data, type, row) {
         return `
             <div class="d-flex justify-content-between fs-5">
@@ -555,10 +553,10 @@
   ];
 
   initializeDataTable(
-    '#datatable',
-    '/du-lieu-hang-ngay/getData',
-    '#staticBackdrop',
-    '#deleteModalToggle',
+    "#datatable",
+    "/du-lieu-hang-ngay/getData",
+    "#staticBackdrop",
+    "#deleteModalToggle",
     columns,
     false,
     false,
@@ -572,8 +570,8 @@
     false,
     false,
     false,
-    false,
+    false
   );
 
-  initializeToggleFields('areaDimension', 'areaPrice');
+  initializeToggleFields("areaDimension", "areaPrice");
 </script>
