@@ -14,12 +14,12 @@
   <script src="https://unpkg.com/tippy.js@6"></script>
 
   <style>
-
     .btn-light[aria-expanded="true"] {
       font-weight: bold;
       color: #ffffff;
       background: #007bff !important;
-    } 
+    }
+
     /* Hide the spinners in input type number for Chrome, Safari, Edge, and Opera */
     input[type='number']::-webkit-outer-spin-button,
     input[type='number']::-webkit-inner-spin-button {
@@ -69,54 +69,26 @@
           <tbody>
             <% area.data.forEach((item, index) => { %>
             <!-- Modal for updating -->
-            <div
-              class="modal fade"
-              id="staticBackdrop<%= item._id %>"
-              data-bs-backdrop="static"
-              data-bs-keyboard="false"
-              tabindex="-1"
-              aria-hidden="true"
-            >
+            <div class="modal fade" id="staticBackdrop<%= item._id %>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
               <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                 <div class="modal-content">
                   <div class="modal-header">
                     <h1 class="modal-title fs-5">
                       Cập nhật dữ liệu <%= item.supplier?.name %> ngày <%= item.date.toLocaleDateString("vi-VN") %>
                     </h1>
-                    <button
-                      type="button"
-                      class="btn-close"
-                      data-bs-dismiss="modal"
-                      aria-label="Close"
-                    ></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
-            
-                  <form
-                    action="/nhap-du-lieu/nguyen-lieu/updateData/<%= item._id %>"
-                    method="post"
-                  >
+
+                  <form action="/nhap-du-lieu/<%= item._id %>?_method=PUT" method="post">
                     <div class="modal-body">
                       <div>
                         <label for="date<%= index %>" class="form-label fw-bold">Ngày nhập</label>
-                        <input
-                          type="date"
-                          class="form-control"
-                          id="date<%= index %>"
-                          name="date"
-                          value="<%= item.date.toISOString().slice(0,10) %>"
-                          required
-                        />
+                        <input type="date" class="form-control" id="date<%= index %>" name="date" value="<%= item.date.toISOString().slice(0,10) %>" required />
                       </div>
-            
+
                       <div class="my-3">
                         <label for="supplier<%= index %>" class="form-label fw-bold">Nhà vườn</label>
-                        <select
-                          type="text"
-                          class="form-control slim-select"
-                          id="supplier<%= index %>"
-                          name="supplier"
-                          required
-                        >
+                        <select type="text" class="form-control slim-select" id="supplier<%= index %>" name="supplier" required>
                           <% area.suppliers.forEach(supplier => { %>
                           <option value="<%= supplier.supplierSlug %>" <%= supplier.name === item.supplier?.name ? 'selected' : '' %>>
                             <%= supplier.name %> (<%= supplier.code %>)
@@ -124,105 +96,61 @@
                           <% }) %>
                         </select>
                       </div>
-            
+
                       <div class="itemLists my-3">
                         <% item.rawMaterial.forEach((raw, rawIndex) => { %>
-                          <% if (raw.name === 'Mủ nước') { %>
-                            <div class="itemList">
-                              <div class="row my-3">
-                                <label class="form-label fw-bold">Mủ nước</label>
-                                <div class="col col-md-6">
-                                  <label for="muNuocQuantity<%= index %>" class="form-label">Số lượng</label>
-                                  <input
-                                    type="text"
-                                    class="form-control"
-                                    id="muNuocQuantity<%= index %>"
-                                    name="muNuocQuantity"
-                                    value="<%= raw.quantity.toLocaleString('vi-VN') %>"
-                                    required
-                                    oninput="handleQuantityInput(this)"
-                                    />
-                                </div>
-                                <div class="col col-md-6">
-                                  <label for="muNuocPercentage<%= index %>" class="form-label">Hàm lượng</label>
-                                  <input
-                                    type="text"
-                                    class="form-control"
-                                    id="muNuocPercentage<%= index %>"
-                                    name="muNuocPercentage"
-                                    value="<%= raw.percentage.toLocaleString('vi-VN') %>"
-                                    oninput="handlePercentageInput(this)"
-                                    required
-                                  />
-                                </div>
-                              </div>
+                        <% if (raw.name === 'Mủ nước') { %>
+                        <div class="itemList">
+                          <div class="row my-3">
+                            <label class="form-label fw-bold">Mủ nước</label>
+                            <div class="col col-md-6">
+                              <label for="muNuocQuantity<%= index %>" class="form-label">Số lượng</label>
+                              <input type="text" class="form-control" id="muNuocQuantity<%= index %>" name="muNuocQuantity" value="<%= raw.quantity.toLocaleString('vi-VN') %>" required oninput="handleQuantityInput(this)" />
                             </div>
-                          <% } else if (raw.name === 'Mủ tạp') { %>
-                            <div class="itemList">
-                              <div class="row my-3">
-                                <label class="form-label fw-bold">Mủ tạp</label>
-                                <div class="col">
-                                  <label for="muTapQuantity<%= index %>" class="form-label">Số lượng</label>
-                                  <input
-                                    type="text"
-                                    class="form-control"
-                                    id="muTapQuantity<%= index %>"
-                                    name="muTapQuantity"
-                                    value="<%= raw.quantity.toLocaleString('vi-VN') %>"
-                                    required
-                                    oninput="handleQuantityInput(this)"
-                                  />
-                                </div>
-                              </div>
+                            <div class="col col-md-6">
+                              <label for="muNuocPercentage<%= index %>" class="form-label">Hàm lượng</label>
+                              <input type="text" class="form-control" id="muNuocPercentage<%= index %>" name="muNuocPercentage" value="<%= raw.percentage.toLocaleString('vi-VN') %>" oninput="handlePercentageInput(this)" required />
                             </div>
-                          <% } else if (raw.name === 'Mủ ké') { %>
-                            <div class="itemList">
-                              <div class="row my-3">
-                                <label class="form-label fw-bold">Mủ Ké</label>
-                                <div class="col">
-                                  <label for="muKeQuantity<%= index %>" class="form-label">Số lượng</label>
-                                  <input
-                                    type="text"
-                                    class="form-control"
-                                    id="muKeQuantity<%= index %>"
-                                    name="muKeQuantity"
-                                    value="<%= raw.quantity.toLocaleString('vi-VN') %>"
-                                    required
-                                    oninput="handleQuantityInput(this)"
-                                  />
-                                </div>
-                              </div>
+                          </div>
+                        </div>
+                        <% } else if (raw.name === 'Mủ tạp') { %>
+                        <div class="itemList">
+                          <div class="row my-3">
+                            <label class="form-label fw-bold">Mủ tạp</label>
+                            <div class="col">
+                              <label for="muTapQuantity<%= index %>" class="form-label">Số lượng</label>
+                              <input type="text" class="form-control" id="muTapQuantity<%= index %>" name="muTapQuantity" value="<%= raw.quantity.toLocaleString('vi-VN') %>" required oninput="handleQuantityInput(this)" />
                             </div>
-                          <% } else if (raw.name === 'Mủ đông') { %>
-                            <div class="itemList">
-                              <div class="row my-3">
-                                <label class="form-label fw-bold">Mủ Đông</label>
-                                <div class="col">
-                                  <label for="muDongQuantity<%= index %>" class="form-label">Số lượng</label>
-                                  <input
-                                    type="text"
-                                    class="form-control"
-                                    id="muDongQuantity<%= index %>"
-                                    name="muDongQuantity"
-                                    value="<%= raw.quantity.toLocaleString('vi-VN') %>"
-                                    required
-                                    oninput="handleQuantityInput(this)"
-                                  />
-                                </div>
-                              </div>
+                          </div>
+                        </div>
+                        <% } else if (raw.name === 'Mủ ké') { %>
+                        <div class="itemList">
+                          <div class="row my-3">
+                            <label class="form-label fw-bold">Mủ Ké</label>
+                            <div class="col">
+                              <label for="muKeQuantity<%= index %>" class="form-label">Số lượng</label>
+                              <input type="text" class="form-control" id="muKeQuantity<%= index %>" name="muKeQuantity" value="<%= raw.quantity.toLocaleString('vi-VN') %>" required oninput="handleQuantityInput(this)" />
                             </div>
-                          <% } %>
+                          </div>
+                        </div>
+                        <% } else if (raw.name === 'Mủ đông') { %>
+                        <div class="itemList">
+                          <div class="row my-3">
+                            <label class="form-label fw-bold">Mủ Đông</label>
+                            <div class="col">
+                              <label for="muDongQuantity<%= index %>" class="form-label">Số lượng</label>
+                              <input type="text" class="form-control" id="muDongQuantity<%= index %>" name="muDongQuantity" value="<%= raw.quantity.toLocaleString('vi-VN') %>" required oninput="handleQuantityInput(this)" />
+                            </div>
+                          </div>
+                        </div>
+                        <% } %>
                         <% }) %>
                       </div>
                       <div class="itemList">
                         <div class="row my-3">
                           <label class="form-label fw-bold">Ghi chú</label>
                           <div class="col-12">
-                            <textarea
-                              class="form-control"
-                              name="note"
-                              rows="3"
-                            ><%= item.note %></textarea>
+                            <textarea class="form-control" name="note" rows="3"><%= item.note %></textarea>
                           </div>
                         </div>
                       </div>
@@ -237,13 +165,7 @@
               </div>
             </div>
             <!-- Delete confirming modal  -->
-            <div
-              class="modal fade"
-              id="deleteModalToggle<%= item._id %>"
-              aria-hidden="true"
-              aria-labelledby="exampleModalToggleLabel"
-              tabindex="-1"
-            >
+            <div class="modal fade" id="deleteModalToggle<%= item._id %>" aria-hidden="true" aria-labelledby="exampleModalToggleLabel" tabindex="-1">
               <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                   <div class="modal-header">
@@ -252,17 +174,9 @@
                       item.date.toLocaleDateString("vi-VN") %> của <%=
                       item.supplier?.name %>
                     </h1>
-                    <button
-                      type="button"
-                      class="btn-close"
-                      data-bs-dismiss="modal"
-                      aria-label="Close"
-                    ></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
-                  <form
-                    action="/nhap-du-lieu/nguyen-lieu/deleteData/<%= item._id %>"
-                    method="post"
-                  >
+                  <form action="/nhap-du-lieu/<%= item._id %>?_method=DELETE" method="post">
                     <div class="modal-body">
                       Bạn có muốn xóa thông tin của
                       <strong><%= item.supplier?.name %></strong>
@@ -274,11 +188,7 @@
                         Xác nhận
                       </button>
                       <% } else { %>
-                      <div
-                        class="tooltip-wrapper"
-                        data-tippy-content="Bạn không có quyền thao tác"
-                        tabindex="0"
-                      >
+                      <div class="tooltip-wrapper" data-tippy-content="Bạn không có quyền thao tác" tabindex="0">
                         <button type="button" class="btn btn-danger" disabled>
                           Xác nhận
                         </button>
@@ -308,24 +218,10 @@
       <div class="card-header bg-transparent">
         <!-- Link to accordion -->
         <div class="d-flex d-flex flex-wrap gap-2">
-          <button
-            class="btn btn-light"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#inputData"
-            aria-expanded="true"
-            aria-controls="inputData"
-          >
+          <button class="btn btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#inputData" aria-expanded="true" aria-controls="inputData">
             Nhập dữ liệu
           </button>
-          <button
-            class="btn btn-light"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#suppliers"
-            aria-expanded="false"
-            aria-controls="suppliers"
-          >
+          <button class="btn btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#suppliers" aria-expanded="false" aria-controls="suppliers">
             Nhà vườn
           </button>
         </div>
@@ -334,182 +230,103 @@
 
       <div class="accordion" id="areaAccordion">
         <!-- Input data -->
-        <div
-          id="inputData"
-          class="collapse show"
-          aria-labelledby="updateAreaHeading"
-          data-bs-parent="#areaAccordion"
-        >
-        <div class="card-body">
-          <form
-          action="/nhap-du-lieu/nguyen-lieu/addData/<%= area._id %>"
-          method="post"
-        >
-            <%- include('../partials/notificationMessage.ejs') %>
+        <form action="/nhap-du-lieu/<%= area._id %>?_method=POST" method="post">
+          <div id="inputData" class="collapse show" aria-labelledby="updateAreaHeading" data-bs-parent="#areaAccordion">
+            <div class="card-body">
+              <%- include('../partials/notificationMessage.ejs') %>
 
-            <div>
-              <label for="supplier" class="form-label fw-bold">Nhà vườn</label>
-              <select
-                type="text"
-                class="form-control slim-select"
-                id="supplier"
-                name="supplier"
-                required
-              >
-                <% area.suppliers.sort((a, b) => a.name.localeCompare(b.name)).forEach(supplier => { %>
-                <option value="<%= supplier.supplierSlug %>"><%= supplier.name %> (<%= supplier.code %>)</option>
-                <% }) %>
-              </select>
-            </div>
-
-            <div
-              class="tooltip-wrapper mt-1 d-none d-md-inline-flex"
-              data-tippy-content="Tạo nhà vườn mới"
-              tabindex="0"
-            >
-              <i
-                class="ri-add-circle-line fs-5"
-                data-bs-toggle="modal"
-                data-bs-target="#addNewSupplier"
-                style="cursor: pointer"
-              ></i>
-            </div>
-
-            <div class="itemLists my-3">
-              <div class="itemList">
-                <div class="row my-3">
-                  <label class="form-label fw-bold">Mủ nước</label>
-                  <input type="text" name="name" value="Mủ nước" hidden />
-                  <div class="col col-md-6">
-                    <label class="form-label">Số lượng</label>
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="quantity"
-                      name="quantity"
-                      required
-                      oninput="handleQuantityInput(this)"
-                    />
-                  </div>
-                  <div class="col col-md-6">
-                    <label for="percentage" class="form-label">Hàm lượng</label>
-                    <input
-                      type="text"
-                      class="form-control"
-                      name="percentage"
-                      required
-                      oninput="handlePercentageInput(this)"
-                    />
-                  </div>
-                </div>
+              <div>
+                <label for="supplier" class="form-label fw-bold">Nhà vườn</label>
+                <select type="text" class="form-control slim-select" id="supplier" name="supplier" required>
+                  <% area.suppliers.sort((a, b) => a.name.localeCompare(b.name)).forEach(supplier => { %>
+                  <option value="<%= supplier.supplierSlug %>"><%= supplier.name %> (<%= supplier.code %>)</option>
+                  <% }) %>
+                </select>
               </div>
 
-              <div class="itemList">
-                <div class="row my-3">
-                  <label class="form-label fw-bold">Mủ tạp</label>
-                  <input type="text" name="name" value="Mủ tạp" hidden  />
-                  <div class="col-12">
-                    <label  class="form-label">Số lượng</label>
-                    <input
-                      type="text"
-                      class="form-control"
-                      name="quantity"
-                      required
-                      oninput="handleQuantityInput(this)"
-                    />
+              <div class="tooltip-wrapper mt-1 d-none d-md-inline-flex" data-tippy-content="Tạo nhà vườn mới" tabindex="0">
+                <i class="ri-add-circle-line fs-5" data-bs-toggle="modal" data-bs-target="#addNewSupplier" style="cursor: pointer"></i>
+              </div>
+
+              <div class="itemLists my-3">
+                <div class="itemList">
+                  <div class="row my-3">
+                    <label class="form-label fw-bold">Mủ nước</label>
+                    <input type="text" name="name" value="Mủ nước" hidden />
+                    <div class="col col-md-6">
+                      <label class="form-label">Số lượng</label>
+                      <input type="text" class="form-control" id="quantity" name="quantity" required oninput="handleQuantityInput(this)" />
+                    </div>
+                    <div class="col col-md-6">
+                      <label for="percentage" class="form-label">Hàm lượng</label>
+                      <input type="text" class="form-control" name="percentage" required oninput="handlePercentageInput(this)" />
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div class="itemList">
-                <div class="row my-3">
-                  <label class="form-label fw-bold">Mủ ké</label>
-                  <div class="col-12">
-                      <label class="form-label"
-                        >Số lượng</label
-                      >
+
+                <div class="itemList">
+                  <div class="row my-3">
+                    <label class="form-label fw-bold">Mủ tạp</label>
+                    <input type="text" name="name" value="Mủ tạp" hidden />
+                    <div class="col-12">
+                      <label class="form-label">Số lượng</label>
+                      <input type="text" class="form-control" name="quantity" required oninput="handleQuantityInput(this)" />
+                    </div>
+                  </div>
+                </div>
+                <div class="itemList">
+                  <div class="row my-3">
+                    <label class="form-label fw-bold">Mủ ké</label>
+                    <div class="col-12">
+                      <label class="form-label">Số lượng</label>
                       <input type="text" name="name" value="Mủ ké" hidden />
 
-                      <input
-                        type="text"
-                        class="form-control"
-                        name="quantity"
-                        required
-                        oninput="handleQuantityInput(this)"
-                      />
+                      <input type="text" class="form-control" name="quantity" required oninput="handleQuantityInput(this)" />
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div class="itemList">
-                <div class="row my-3">
-                  <label class="form-label fw-bold">Mủ đông</label>
-                  <div class="col-12">
-                      <label class="form-label"
-                        >Số lượng</label
-                      >
+                <div class="itemList">
+                  <div class="row my-3">
+                    <label class="form-label fw-bold">Mủ đông</label>
+                    <div class="col-12">
+                      <label class="form-label">Số lượng</label>
                       <input type="text" name="name" value="Mủ đông" hidden />
 
-                      <input
-                        type="text"
-                        class="form-control"
-                        name="quantity"
-                        required
-                        oninput="handleQuantityInput(this)"
-                      />
+                      <input type="text" class="form-control" name="quantity" required oninput="handleQuantityInput(this)" />
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div class="itemList">
-                <div class="row my-3">
-                  <label class="form-label fw-bold">Ghi chú</label>
-                  <div class="col-12">
-                      <textarea
-                        type="text"
-                        class="form-control"
-                        name="note"
-                      ></textarea>
+                <div class="itemList">
+                  <div class="row my-3">
+                    <label class="form-label fw-bold">Ghi chú</label>
+                    <div class="col-12">
+                      <textarea type="text" class="form-control" name="note"></textarea>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div class="card-footer bg-transparent">
-            <!-- Buttons -->
-            <% if(limitReached){ %>
-            <div
-              class="tooltip-wrapper"
-              data-tippy-content="Đã đạt giới hạn nhập dữ liệu ngày"
-              tabindex="0"
-            >
-              <button type="submit" class="btn btn-primary" disabled>Tạo</button>
-            </div>
-            <% } else { %>
-            <button type="submit" class="btn btn-primary">Tạo</button>
-            <% } %>
+            <div class="card-footer bg-transparent">
+              <!-- Buttons -->
+              <% if(limitReached){ %>
+              <div class="tooltip-wrapper" data-tippy-content="Đã đạt giới hạn nhập dữ liệu ngày" tabindex="0">
+                <button type="submit" class="btn btn-primary" disabled>Tạo</button>
+              </div>
+              <% } else { %>
+              <button type="submit" class="btn btn-primary">Tạo</button>
+              <% } %>
 
-            <button type="reset" class="btn text-dark">Làm mới</button>
+              <button type="reset" class="btn text-dark">Làm mới</button>
+            </div>
           </div>
         </form>
-        </div>
         <!-- Suppliers -->
-        <div
-          id="suppliers"
-          class="collapse p-3"
-          aria-labelledby="suppliersHeading"
-          data-bs-parent="#areaAccordion"
-        >
+        <div id="suppliers" class="collapse p-3" aria-labelledby="suppliersHeading" data-bs-parent="#areaAccordion">
           <!-- Search for a supplier  -->
-          <input
-            type="text"
-            class="form-control mb-3"
-            id="supplierSearch"
-            placeholder="Tìm kiếm nhà vườn"
-            oninput="debounce(() => filterSuppliers('supplierSearch', 'supplierList', 'li' ,'supplier-name'), 200)()"
-          />
+          <input type="text" class="form-control mb-3" id="supplierSearch" placeholder="Tìm kiếm nhà vườn" oninput="debounce(() => filterSuppliers('supplierSearch', 'supplierList', 'li' ,'supplier-name'), 200)()" />
           <ol class="list-group list-group-numbered my-2" id="supplierList">
             <% area.suppliers.forEach((supplier, index) =>{ %>
-            <li
-              class="list-group-item d-flex justify-content-between align-items-start"
-            >
+            <li class="list-group-item d-flex justify-content-between align-items-start">
               <div class="supplier-name ms-2 me-auto">
                 <div class="fw-bold"><%= supplier.name %> <%= supplier.manager ? '(Quản lý)' : '' %></div>
                 <%= supplier.code %>
@@ -518,221 +335,88 @@
             <% }) %>
           </ol>
         </div>
-      </div>   
+      </div>
     </div>
   </div>
 </div>
 
 
 <!-- Modal for adding new supplier -->
-<form action="/du-lieu-hang-ngay/addSupplier/<%= area._id %>" method="post">
-<div
-  class="modal fade"
-  id="addNewSupplier"
-  aria-labelledby="staticBackdropLabel"
-  tabindex="-1"
-  aria-hidden="true"
->
-  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="staticBackdropLabel">Tạo nhà vườn mới</h1>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
-      </div>
+<form action="/du-lieu-hang-ngay/addSupplier/<%= area._id %>?_method=POST" method="post">
+  <div class="modal fade" id="addNewSupplier" aria-labelledby="staticBackdropLabel" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="staticBackdropLabel">Tạo nhà vườn mới</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
 
-      <div class="modal-body">
+        <div class="modal-body">
           <div class="row">
             <div class="col col-md-6">
               <label for="supplierName" class="form-label fw-bold">Tên</label>
-              <input
-                type="text"
-                class="form-control"
-                id="supplierName"
-                name="supplierName"
-                maxlength="30"
-                required
-              />
+              <input type="text" class="form-control" id="supplierName" name="supplierName" maxlength="30" required />
             </div>
             <div class="col col-md-6">
               <label for="code" class="form-label fw-bold">Mã</label>
-              <input
-                type="text"
-                class="form-control"
-                id="code"
-                name="code"
-                maxlength="20"
-                required
-              />
+              <input type="text" class="form-control" id="code" name="code" maxlength="20" required />
             </div>
           </div>
           <div class="mt-3">
             <label for="phone" class="form-label fw-bold">Số điện thoại</label>
-            <input
-              type="text"
-              class="form-control"
-              id="phone"
-              name="phone"
-              maxlength="10"
-              oninput="this.value = this.value.replace(/\D/g, '');"
-              required
-            />
+            <input type="text" class="form-control" id="phone" name="phone" maxlength="10" oninput="this.value = this.value.replace(/\D/g, '');" required />
           </div>
           <div class="row">
             <div class="col-7 mt-3">
-              <label for="identification" class="form-label fw-bold"
-                >Căn cước công dân</label
-              >
-              <input
-                type="text"
-                class="form-control"
-                id="identification"
-                name="identification"
-                maxlength="12"
-                required
-              />
+              <label for="identification" class="form-label fw-bold">Căn cước công dân</label>
+              <input type="text" class="form-control" id="identification" name="identification" maxlength="12" required />
             </div>
             <div class="col-5 mt-3">
               <label for="issueDate" class="form-label fw-bold">Ngày cấp</label>
-              <input
-                type="text"
-                class="form-control"
-                id="issueDate"
-                name="issueDate"
-                oninput="this.value = this.value.replace(/\D/g, '').replace(/(\d{2})(?=\d)/g, '$1/');"
-                maxlength="8"
-                required
-              />
+              <input type="text" class="form-control" id="issueDate" name="issueDate" oninput="this.value = this.value.replace(/\D/g, '').replace(/(\d{2})(?=\d)/g, '$1/');" maxlength="8" required />
             </div>
           </div>
           <div class="mt-3">
             <label for="address" class="form-label fw-bold">Địa chỉ</label>
-            <input
-              type="text"
-              class="form-control"
-              id="address"
-              name="address"
-              maxlength="70"
-              required
-            />
+            <input type="text" class="form-control" id="address" name="address" maxlength="70" required />
           </div>
           <% if(area.areaDimension > 0 && area.areaPrice > 0){ %>
           <div class="mt-3">
-            <label
-              for="purchasedAreaDimension"
-              class="form-label fw-bold"
-              >Diện tích mua (mẫu)</label
-            >
-            <input
-              type="number"
-              class="form-control"
-              id="purchasedAreaDimension"
-              name="purchasedAreaDimension"
-              step="0.1"
-              min="0"
-            />
+            <label for="purchasedAreaDimension" class="form-label fw-bold">Diện tích mua (mẫu)</label>
+            <input type="number" class="form-control" id="purchasedAreaDimension" name="purchasedAreaDimension" step="0.1" min="0" />
           </div>
           <div class="mt-3">
-            <label
-              for="purchasedAreaPrice"
-              class="form-label fw-bold"
-              >Giá mua (VNĐ/mẫu)</label
-            >
-            <input
-              type="text"
-              class="form-control"
-              id="purchasedAreaPrice"
-              name="purchasedAreaPrice"
-              oninput="handleQuantityInput(this)"
-            />
+            <label for="purchasedAreaPrice" class="form-label fw-bold">Giá mua (VNĐ/mẫu)</label>
+            <input type="text" class="form-control" id="purchasedAreaPrice" name="purchasedAreaPrice" oninput="handleQuantityInput(this)" />
           </div>
           <div class="mt-3">
-            <label for="areaDeposit" class="form-label fw-bold"
-              >Tiền đặt cọc</label
-            >
-            <input
-              type="text"
-              class="form-control"
-              id="areaDeposit"
-              name="areaDeposit"
-              min="0"
-              oninput="handleQuantityInput(this)"
-            />
+            <label for="areaDeposit" class="form-label fw-bold">Tiền đặt cọc</label>
+            <input type="text" class="form-control" id="areaDeposit" name="areaDeposit" min="0" oninput="handleQuantityInput(this)" />
           </div>
           <div class="mt-3">
             <label class="form-label fw-bold">Thời hạn mua</label>
             <div class="row">
               <div class="col-6">
-                <label for="areaDurationStart" class="form-label"
-                  >Ngày bắt đầu</label
-                >
-                <input
-                  type="date"
-                  class="form-control"
-                  id="areaDurationStart"
-                  name="areaDuration[start]"
-                  onfocus="this.min = document.getElementById('contractStart').value; this.max = document.getElementById('contractEnd').value;"
-                />
+                <label for="areaDurationStart" class="form-label">Ngày bắt đầu</label>
+                <input type="date" class="form-control" id="areaDurationStart" name="areaDuration[start]" onfocus="this.min = document.getElementById('contractStart').value; this.max = document.getElementById('contractEnd').value;" />
               </div>
               <div class="col-6">
-                <label for="areaDurationEnd" class="form-label"
-                  >Ngày kết thúc</label
-                >
-                <input
-                  type="date"
-                  class="form-control"
-                  id="areaDurationEnd"
-                  name="areaDuration[end]"
-                  onfocus="this.min = document.getElementById('areaDurationStart').value; this.max = document.getElementById('contractEnd').value;"
-                />
+                <label for="areaDurationEnd" class="form-label">Ngày kết thúc</label>
+                <input type="date" class="form-control" id="areaDurationEnd" name="areaDuration[end]" onfocus="this.min = document.getElementById('areaDurationStart').value; this.max = document.getElementById('contractEnd').value;" />
               </div>
             </div>
           </div>
           <div class="mt-3">
-            <label
-              for="moneyRetainedPercentage"
-              class="form-label fw-bold"
-              >% Tiền giữ lại</label
-            >
-            <input
-              type="text"
-              class="form-control"
-              id="moneyRetainedPercentage"
-              name="moneyRetainedPercentage"
-              oninput="handlePercentageInput(this)"
-            />
+            <label for="moneyRetainedPercentage" class="form-label fw-bold">% Tiền giữ lại</label>
+            <input type="text" class="form-control" id="moneyRetainedPercentage" name="moneyRetainedPercentage" oninput="handlePercentageInput(this)" />
           </div>
           <div class="mt-3">
-            <label
-              for="ratioRubberSplit"
-              class="form-label fw-bold"
-              >% nhận mủ mặc định</label
-            >
-            <input
-              type="text"
-              class="form-control"
-              id="ratioRubberSplit"
-              name="ratioRubberSplit"
-              value="100"
-              oninput="handlePercentageInput(this)"
-            />
+            <label for="ratioRubberSplit" class="form-label fw-bold">% nhận mủ mặc định</label>
+            <input type="text" class="form-control" id="ratioRubberSplit" name="ratioRubberSplit" value="100" oninput="handlePercentageInput(this)" />
           </div>
           <div class="mt-3">
-            <label for="ratioSumSplit" class="form-label fw-bold"
-              >% nhận tổng mặc định</label
-            >
-            <input
-              type="text"
-              class="form-control"
-              id="ratioSumSplit"
-              name="ratioSumSplit"
-              value="100"
-              oninput="handlePercentageInput(this)"
-            />
+            <label for="ratioSumSplit" class="form-label fw-bold">% nhận tổng mặc định</label>
+            <input type="text" class="form-control" id="ratioSumSplit" name="ratioSumSplit" value="100" oninput="handlePercentageInput(this)" />
           </div>
           <% } %>
         </div>
@@ -745,23 +429,59 @@
     </div>
   </div>
 </form>
-  
+
 <script>
-   const columns = [
-    { data: 'no', orderable: false },
-    { data: 'date', visible: false },
-    { data: 'supplier', orderable: false },
-    { data: 'code', orderable: false },
-    { data: 'muNuocQuantity', orderable: false,  },
-    { data: 'muNuocPercentage', orderable: false,  },
-    { data: 'muNuocQuantityTotal', orderable: false,  },
-    { data: 'muTapQuantity', orderable: false, },
-    { data: 'muKeQuantity', orderable: false,},
-    { data: 'muDongQuantity', orderable: false,  },
-    { data: 'note', orderable: false, width: '2rem'  },
-    { data: 'id', orderable: false },
+  const columns = [{
+      data: 'no',
+      orderable: false
+    },
+    {
+      data: 'date',
+      visible: false
+    },
+    {
+      data: 'supplier',
+      orderable: false
+    },
+    {
+      data: 'code',
+      orderable: false
+    },
+    {
+      data: 'muNuocQuantity',
+      orderable: false,
+    },
+    {
+      data: 'muNuocPercentage',
+      orderable: false,
+    },
+    {
+      data: 'muNuocQuantityTotal',
+      orderable: false,
+    },
+    {
+      data: 'muTapQuantity',
+      orderable: false,
+    },
+    {
+      data: 'muKeQuantity',
+      orderable: false,
+    },
+    {
+      data: 'muDongQuantity',
+      orderable: false,
+    },
+    {
+      data: 'note',
+      orderable: false,
+      width: '2rem'
+    },
+    {
+      data: 'id',
+      orderable: false
+    },
   ];
-  
+
   initializeDataTable(
     '#table',
     `/nhap-du-lieu/nguyen-lieu/getSupplierData/<%= area.slug %>`,

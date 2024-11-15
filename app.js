@@ -12,10 +12,6 @@ const methodOverride = require('method-override');
 
 var app = express();
 
-
-// Override with the X-HTTP-Method-Override header in the request
-app.use(methodOverride('_method'));
-
 // LiveReload Setup
 if (process.env.NODE_ENV !== 'production') {
   var livereload = require('livereload');
@@ -31,6 +27,9 @@ if (process.env.NODE_ENV !== 'production') {
 
   app.use(connectLiveReload());
 }
+
+// Override with the X-HTTP-Method-Override header in the request
+app.use(methodOverride('_method'));
 
 // Setup Session
 const SessionMongoDB = require('./sessionMongoDB');

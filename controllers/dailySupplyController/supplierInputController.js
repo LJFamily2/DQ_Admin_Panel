@@ -112,7 +112,7 @@ async function addData(req, res) {
         res,
         404,
         "fail",
-        "Không tìm thấy DailySupply!",
+        "Không tìm thấy vườn!",
         req.headers.referer
       );
     }

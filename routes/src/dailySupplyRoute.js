@@ -20,48 +20,25 @@ router.get(
   dailySupplyController.supplierInputController.renderInputDataPage
 );
 router.post(
-  "/nguyen-lieu/addData/:id",
-  authMiddlewares.ensureRoles(["Admin", "Hàm lượng", "Quản lý"]),
-  dailySupplyController.supplierInputController.addData
-);
-router.post(
   "/nguyen-lieu/getSupplierData/:slug",
   authMiddlewares.ensureRoles(["Admin", "Hàm lượng", "Quản lý"]),
   dailySupplyController.getSupplierDataController.getSupplierData
 );
 router.post(
-  "/nguyen-lieu/updateData/:id",
+  "/:id",
+  authMiddlewares.ensureRoles(["Admin", "Hàm lượng", "Quản lý"]),
+  dailySupplyController.supplierInputController.addData
+);
+router.put(
+  "/:id",
   authMiddlewares.ensureRoles(["Admin", "Hàm lượng", "Văn phòng", "Quản lý"]),
   checkDateAccess,
   dailySupplyController.supplierInputController.updateSupplierData
 );
-router.post(
-  "/nguyen-lieu/deleteData/:id",
+router.delete(
+  "/:id",
   authMiddlewares.ensureRoles(["Admin", "Văn phòng", "Quản lý"]),
-  checkDateAccess,
   dailySupplyController.supplierInputController.deleteSupplierData
-);
-
-// Admin side
-router.get(
-  "/",
-  authMiddlewares.ensureRoles(["Admin", "Văn phòng", "Quản lý"]),
-  dailySupplyController.supplierAreaController.renderPage
-);
-router.post(
-  "/addArea",
-  authMiddlewares.ensureRoles(["Admin", "Văn phòng", "Quản lý"]),
-  dailySupplyController.supplierAreaController.addArea
-);
-router.post(
-  "/deleteArea/:id",
-  authMiddlewares.ensureRoles(["Admin", "Văn phòng", "Quản lý"]),
-  dailySupplyController.supplierAreaController.deleteArea
-);
-router.post(
-  "/getData",
-  authMiddlewares.ensureRoles(["Admin", "Văn phòng", "Quản lý"]),
-  dailySupplyController.getSupplierDataController.getData
 );
 
 // Admin side for detail page
@@ -70,8 +47,8 @@ router.get(
   authMiddlewares.ensureRoles(["Admin", "Văn phòng", "Quản lý"]),
   dailySupplyController.supplierController.renderDetailPage
 );
-router.post(
-  "/update/:id",
+router.put(
+  "/:id",
   authMiddlewares.ensureRoles(["Admin", "Văn phòng", "Quản lý"]),
   dailySupplyController.supplierController.updateArea
 );
@@ -80,12 +57,12 @@ router.post(
   authMiddlewares.ensureRoles(["Admin", "Văn phòng", "Hàm lượng", "Quản lý"]),
   dailySupplyController.supplierController.addSupplier
 );
-router.post(
+router.delete(
   "/deleteSupplier/:id",
   authMiddlewares.ensureRoles(["Admin", "Văn phòng", "Quản lý"]),
   dailySupplyController.supplierController.deleteSupplier
 );
-router.post(
+router.put(
   "/updateSupplier/:id",
   authMiddlewares.ensureRoles(["Admin", "Văn phòng", "Quản lý"]),
   dailySupplyController.supplierController.editSupplier
@@ -100,7 +77,7 @@ router.post(
   authMiddlewares.ensureRoles(["Admin", "Quản lý"]),
   dailySupplyController.supplierController.rejectDeletionRequest
 );
-router.post(
+router.delete(
   "/:slug/removeAllDeletionRequests",
   authMiddlewares.ensureRoles(["Admin", "Quản lý"]),
   dailySupplyController.supplierController.deleteAllRequests
@@ -117,7 +94,7 @@ router.post(
   authMiddlewares.ensureRoles(["Admin", "Văn phòng", "Quản lý"]),
   dailySupplyController.getSupplierDataController.getSupplierExportData
 );
-router.post(
+router.put(
   "/:slug/updatePrice/:supplierSlug?",
   authMiddlewares.ensureRoles(["Admin", "Văn phòng", "Quản lý"]),
   checkDateAccess,
