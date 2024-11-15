@@ -533,7 +533,7 @@
       width: "1%",
       render: function (data, type, row) {
         return `
-                <div class="d-flex fs-5 <%= user.role === 'Admin' || user.role === 'Quản lý' ? 'justify-content-center' : 'justify-content-evenly' %>">
+                <div class="d-flex fs-5 <%= user.role === 'Admin' || user.role === 'Quản lý' ? 'justify-content-center' : 'justify-content-between' %>">
                   <a href="/du-lieu-hang-ngay/${row.link.slug}" class="text-decoration-none text-dark">
                     <i class="ri-edit-box-line" style="cursor: pointer;"></i>
                   </a>
