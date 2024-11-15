@@ -326,6 +326,7 @@
                     method="post"
                   >
                     <div class="modal-body">
+                      <input type="hidden" name="date" value="<%= eachData.date%>">
                       <% if( user.role === 'Admin' || user.role === 'Quản lý'){%>
 
                       Bạn có muốn xóa dữ liệu của
