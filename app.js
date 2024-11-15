@@ -8,8 +8,13 @@ var path = require('path');
 const session = require('express-session');
 const passport = require('passport');
 const flash = require('connect-flash');
+const methodOverride = require('method-override');
 
 var app = express();
+
+
+// Override with the X-HTTP-Method-Override header in the request
+app.use(methodOverride('_method'));
 
 // LiveReload Setup
 if (process.env.NODE_ENV !== 'production') {
