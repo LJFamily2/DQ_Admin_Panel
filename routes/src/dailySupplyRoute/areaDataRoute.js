@@ -4,7 +4,7 @@ const dailySupplyController = require("../../../controllers/dailySupplyControlle
 const authMiddlewares = require("../../../middlewares/authMiddlewares");
 const checkDateAccess = require("../../../middlewares/dateRangeAccessSetting");
 
-// Admin side
+// Main page
 router.get(
   "/",
   authMiddlewares.ensureRoles(["Admin", "Văn phòng", "Quản lý"]),
@@ -26,7 +26,7 @@ router.delete(
   dailySupplyController.supplierAreaController.deleteArea
 );
 
-// Admin side for detail page
+// Detail page
 router.get(
   "/:slug",
   authMiddlewares.ensureRoles(["Admin", "Văn phòng", "Quản lý"]),
@@ -43,12 +43,12 @@ router.post(
   dailySupplyController.supplierController.addSupplier
 );
 router.delete(
-  "/deleteSupplier/:id",
+  "/:id",
   authMiddlewares.ensureRoles(["Admin", "Văn phòng", "Quản lý"]),
   dailySupplyController.supplierController.deleteSupplier
 );
 router.put(
-  "/updateSupplier/:id",
+  "/:id",
   authMiddlewares.ensureRoles(["Admin", "Văn phòng", "Quản lý"]),
   dailySupplyController.supplierController.editSupplier
 );

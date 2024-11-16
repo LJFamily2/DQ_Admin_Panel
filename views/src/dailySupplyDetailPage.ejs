@@ -156,7 +156,7 @@
                   </div>
 
                   <form
-                    action="/nhap-du-lieu/nguyen-lieu/updateData/<%= eachData._id %>"
+                    action="/nhap-du-lieu/nguyen-lieu/updateData/<%= eachData._id %>?_method=PUT"
                     method="post"
                   >
                     <div class="modal-body">
@@ -452,7 +452,7 @@
               data-bs-parent="#areaAccordion"
             >
               <h4>Chỉnh sửa</h4>
-              <form action="/du-lieu-hang-ngay/update/<%= area._id %>" method="post" onchange="this.querySelector('button[type=submit]').style.display = 'block';">
+              <form action="/du-lieu-hang-ngay/update/<%= area._id %>?_method=PUT" method="post" onchange="this.querySelector('button[type=submit]').style.display = 'block';">
                 <div>
                   <label for="areaName" class="form-label">Khu vực</label>
                   <input
@@ -596,7 +596,7 @@
                   </li>
 
                   <!-- Edit supplier modal -->
-                  <form action="/du-lieu-hang-ngay/updateSupplier/<%= supplier._id %>" method="post">
+                  <form action="/du-lieu-hang-ngay/<%= supplier._id %>?_method=PUT" method="post">
                     <!-- Additional fields -->
                     <input type="text" name="slug" value="<%= area.slug %>" hidden>
                     <div
@@ -834,7 +834,7 @@
                   </form>
 
                   <!-- Delete supplier modal -->
-                  <form action="/du-lieu-hang-ngay/deleteSupplier/<%= supplier._id %>" method="post">
+                  <form action="/du-lieu-hang-ngay/<%= supplier._id %>" method="post">
 
                     <div
                       class="modal fade"
@@ -879,7 +879,7 @@
 
                   <% }) %>
                 </ol>
-                <form action="/du-lieu-hang-ngay/addSupplier/<%= area._id %>" method="post" id="dynamicForm" onchange="this.querySelector('button[type=submit]').style.display = 'block';">
+                <form action="/du-lieu-hang-ngay/addSupplier/<%= area._id %>?_method=POST" method="post" id="dynamicForm" onchange="this.querySelector('button[type=submit]').style.display = 'block';">
                   <div class="additionalField"></div>
                   <button type="submit" class="btn btn-primary" style="display: none;">Lưu</button>
                 </form>
@@ -893,7 +893,7 @@
             data-bs-parent="#areaAccordion"
             >
               <h4>Cài đặt</h4>
-              <form action="/du-lieu-hang-ngay/update/<%= area._id %>" method="post" onchange="this.querySelector('button[type=submit]').style.display = 'block';">
+              <form action="/du-lieu-hang-ngay/update/<%= area._id %>?_method=PUT" method="post" onchange="this.querySelector('button[type=submit]').style.display = 'block';">
                 <div class="mb-3">
                   <label for="limitData" class="form-label">Giới hạn dữ liệu/ngày</label>
                   <input

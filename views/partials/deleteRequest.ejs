@@ -78,7 +78,7 @@
                 <button type="button" class="btn" data-bs-target="#ActionHistoryDeletion<%= request._id %>" data-bs-toggle="modal">
                   <i class="bi bi-check-square-fill text-success tooltip-wrapper" data-tippy-content="Chấp nhận xóa" style="cursor: pointer"></i>
                 </button>
-                <form action="/du-lieu-hang-ngay/rejectDeletionRequest/<%= request._id %>" method="post">
+                <form action="/du-lieu-hang-ngay/rejectDeletionRequest/<%= request._id %>?_method=POST" method="post">
                   <button type="submit" class="btn">
                     <i class="bi bi-x-square-fill text-danger tooltip-wrapper" data-tippy-content="Từ chối xóa" style="cursor: pointer"></i>
                   </button>
@@ -205,7 +205,7 @@
         <h1 class="modal-title fs-5" id="deleteAllLabel">Xác nhận xóa</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <form action="/du-lieu-hang-ngay/<%= slug %>/removeAllDeletionRequests" method="post">
+      <form action="/du-lieu-hang-ngay/<%= slug %>/removeAllDeletionRequests?_method=DELETE" method="post">
         <div class="modal-body">
           Bạn có chắc chắn muốn xóa tất cả dữ liệu không? Hành động này không
           thể hoàn tác.
