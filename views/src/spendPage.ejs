@@ -67,7 +67,7 @@
                   </div>
 
                   <form
-                    action="/quan-ly-chi-tieu/update/<%= spend._id %>"
+                    action="/quan-ly-chi-tieu/<%= spend._id %>?_method=PUT"
                     method="post"
                   >
                     <div class="modal-body">
@@ -199,7 +199,7 @@
                     ></button>
                   </div>
                   <form
-                    action="/quan-ly-chi-tieu/delete/<%= spend._id %>"
+                    action="/quan-ly-chi-tieu/<%= spend._id %>?_method=DELETE"
                     method="post"
                   >
                     <div class="modal-body">
@@ -236,7 +236,7 @@
       <div class="card-header bg-transparent">
         <h4 class="m-0">Tạo chi tiêu</h4>
       </div>
-      <form action="/quan-ly-chi-tieu/addData" method="post">
+      <form action="/quan-ly-chi-tieu" method="post">
         <div class="card-body">
           <%- include('../partials/notificationMessage.ejs') %>
           <div>
@@ -308,7 +308,7 @@
         ></button>
       </div>
 
-      <form action="/quan-ly-chi-tieu/deleteAll" method="post">
+      <form action="/quan-ly-chi-tieu/deleteAll?_method=DELETE" method="post">
         <div class="modal-body">
           Bạn có muốn xóa <strong class="fs-3">tất cả</strong> thông tin ? Hành
           động này không thể hoàn tác.

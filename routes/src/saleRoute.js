@@ -13,7 +13,7 @@ router.get(
   saleController.renderPage
 );
 router.post(
-  "/createData",
+  "/",
   authMiddlewares.ensureRoles(["Admin", "Quản lý"]),
   saleController.createData
 );
@@ -22,17 +22,17 @@ router.post(
   authMiddlewares.ensureRoles(["Admin", "Quản lý"]),
   saleController.getDatas
 );
-router.post(
-  "/update/:id",
+router.put(
+  "/:id",
   authMiddlewares.ensureRoles(["Admin", "Quản lý"]),
   saleController.updateData
 );
-router.post(
+router.delete(
   "/delete/:id",
   authMiddlewares.ensureRoles(["Admin", "Quản lý"]),
   saleController.deleteData
 );
-router.post(
+router.delete(
   "/deleteAll",
   authMiddlewares.ensureRoles(["Admin", "Quản lý"]),
   saleController.deleteAll

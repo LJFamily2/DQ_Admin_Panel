@@ -13,7 +13,7 @@ router.get(
   rawMaterialController.renderPage
 );
 router.post(
-  "/createData",
+  "/",
   authMiddlewares.ensureRoles(["Admin", "Quản lý"]),
   rawMaterialController.createData
 );
@@ -22,17 +22,17 @@ router.post(
   authMiddlewares.ensureRoles(["Admin", "Quản lý"]),
   rawMaterialController.getDatas
 );
-router.post(
-  "/update/:id",
+router.put(
+  "/:id",
   authMiddlewares.ensureRoles(["Admin", "Quản lý"]),
   rawMaterialController.updateData
 );
-router.post(
-  "/delete/:id",
+router.delete(
+  "/:id",
   authMiddlewares.ensureRoles(["Admin", "Quản lý"]),
   rawMaterialController.deleteData
 );
-router.post(
+router.delete(
   "/deleteAll",
   authMiddlewares.ensureRoles(["Admin", "Quản lý"]),
   rawMaterialController.deleteAll

@@ -202,7 +202,7 @@
                     ></button>
                   </div>
                   <form
-                    action="/quan-ly-hop-dong/delete/<%= sale._id %>"
+                    action="/quan-ly-hop-dong/<%= sale._id %>?_method=DELETE"
                     method="post"
                   >
                     <div class="modal-body">
@@ -235,7 +235,7 @@
       <div class="card-header bg-transparent">
         <h4 class="m-0">Tạo hợp đồng</h4>
       </div>
-      <form action="/quan-ly-hop-dong/createData" method="post">
+      <form action="/quan-ly-hop-dong" method="post">
         <div class="card-body">
           <%- include('../partials/notificationMessage.ejs') %>
           <div>
@@ -381,7 +381,7 @@
         ></button>
       </div>
 
-      <form action="/quan-ly-hop-dong/deleteAll" method="post">
+      <form action="/quan-ly-hop-dong/deleteAll?_method=DELETE" method="post">
         <div class="modal-body">
           Bạn có muốn xóa <strong class="fs-3">tất cả</strong> thông tin ? Hành
           động này không thể hoàn tác.
