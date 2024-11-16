@@ -1,44 +1,29 @@
 const express = require("express");
 const router = express.Router();
-const dailySupplyController = require("../../controllers/dailySupplyController");
-const authMiddlewares = require("../../middlewares/authMiddlewares");
-const checkDateAccess = require("../../middlewares/dateRangeAccessSetting");
+const dailySupplyController = require("../../../controllers/dailySupplyController");
+const authMiddlewares = require("../../../middlewares/authMiddlewares");
+const checkDateAccess = require("../../../middlewares/dateRangeAccessSetting");
 
-// Apply ensureLoggedIn middleware to all routes
-router.use(authMiddlewares.ensureLoggedIn);
-router.use(authMiddlewares.ensureWorkingHours);
-
-// User side for input data
+// Admin side
 router.get(
-  "/nguyen-lieu",
-  authMiddlewares.ensureRoles(["Admin", "Hàm lượng", "Quản lý"]),
-  dailySupplyController.supplierInputController.renderInputDataDashboardPage
-);
-router.get(
-  "/nguyen-lieu/:slug",
-  authMiddlewares.ensureRoles(["Admin", "Hàm lượng", "Quản lý"]),
-  dailySupplyController.supplierInputController.renderInputDataPage
+  "/",
+  authMiddlewares.ensureRoles(["Admin", "Văn phòng", "Quản lý"]),
+  dailySupplyController.supplierAreaController.renderPage
 );
 router.post(
-  "/nguyen-lieu/getSupplierData/:slug",
-  authMiddlewares.ensureRoles(["Admin", "Hàm lượng", "Quản lý"]),
-  dailySupplyController.getSupplierDataController.getSupplierData
+  "/getData",
+  authMiddlewares.ensureRoles(["Admin", "Văn phòng", "Quản lý"]),
+  dailySupplyController.getSupplierDataController.getData
 );
 router.post(
-  "/:id",
-  authMiddlewares.ensureRoles(["Admin", "Hàm lượng", "Quản lý"]),
-  dailySupplyController.supplierInputController.addData
-);
-router.put(
-  "/:id",
-  authMiddlewares.ensureRoles(["Admin", "Hàm lượng", "Văn phòng", "Quản lý"]),
-  checkDateAccess,
-  dailySupplyController.supplierInputController.updateSupplierData
+  "/",
+  authMiddlewares.ensureRoles(["Admin", "Văn phòng", "Quản lý"]),
+  dailySupplyController.supplierAreaController.addArea
 );
 router.delete(
-  "/:id",
+  "/deleteArea/:id",
   authMiddlewares.ensureRoles(["Admin", "Văn phòng", "Quản lý"]),
-  dailySupplyController.supplierInputController.deleteSupplierData
+  dailySupplyController.supplierAreaController.deleteArea
 );
 
 // Admin side for detail page
@@ -110,8 +95,7 @@ router.get(
 router.post(
   "/:slug/getSupplierExportData/:supplierSlug",
   authMiddlewares.ensureRoles(["Admin", "Văn phòng", "Quản lý"]),
-  dailySupplyController.getSupplierDataController
-    .getIndividualSupplierExportData
+  dailySupplyController.getSupplierDataController.getIndividualSupplierExportData
 );
 
 module.exports = router;

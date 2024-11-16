@@ -61,8 +61,7 @@
                     </h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
-                  <form action="/du-lieu-hang-ngay/deleteArea/<%= area._id %>" method="post">
-                    <input type="hidden" name="_method" value="DELETE">
+                  <form action="/du-lieu-hang-ngay/deleteArea/<%= area._id %>?_method=DELETE" method="post">
                     <div class="modal-body">
                       Bạn có muốn xóa khu vực
                       <strong><%= area.name %></strong> ? Hành động này không
@@ -88,8 +87,7 @@
       <div class="card-header bg-transparent">
         <h4 class="m-0">Tạo khu vực</h4>
       </div>
-      <form action="/du-lieu-hang-ngay/addArea" method="post">
-        <input type="hidden" name="_method" value="POST">
+      <form action="/du-lieu-hang-ngay/?_method=POST" method="post">
         <div class="card-body">
           <%- include('../partials/notificationMessage.ejs') %>
           <div>

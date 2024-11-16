@@ -27,8 +27,8 @@ const routes = [
     {path: "/quan-ly-du-lieu", route: rawMaterialRoute},
     {path: "/quan-ly-hop-dong", route: saleRoute},
     {path: "/quan-ly-chi-tieu", route: spendRoute},
-    {path: "/du-lieu-hang-ngay", route: dailySupplyRoute},
-    {path: "/nhap-du-lieu", route: dailySupplyRoute},
+    {path: "/du-lieu-hang-ngay", route: dailySupplyRoute.areaDataRoute},
+    {path: "/nhap-du-lieu", route: dailySupplyRoute.inputDataRoute},
     {path: "/du-lieu", route: actionHistory},
     {path: "/date-access-range", route: dateAccessRange},
 
