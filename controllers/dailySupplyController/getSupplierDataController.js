@@ -381,6 +381,7 @@ async function getSupplierExportData(req, res, isArea) {
             acc[name] = {
               quantity: 0,
               ratioSplit: 0,
+              count: 0,
               price: 0,
               total: 0,
               afterSplit: 0,
@@ -389,6 +390,7 @@ async function getSupplierExportData(req, res, isArea) {
           }
           acc[name].quantity += quantity;
           acc[name].ratioSplit += ratioSplit;
+          acc[name].count += 1; 
           acc[name].rawMaterial.push(raw);
   
           if (name === 'Mủ nước') {
@@ -451,25 +453,25 @@ async function getSupplierExportData(req, res, isArea) {
         retainedAmount: formatNumber(retainedAmount > 0 ? retainedAmount : 0),
         // Mu nuoc
         muQuyKhoQuantity: formatNumber(muQuyKhoData.quantity || 0),
-        muQuyKhoSplit: formatNumber(muQuyKhoData.ratioSplit || 0),
+        muQuyKhoSplit: formatNumber(muQuyKhoData.count > 0 ? muQuyKhoData.ratioSplit / muQuyKhoData.count : 0),
         muQuyKhoQuantityAfterSplit: formatNumber(muQuyKhoData.afterSplit || 0),
         muQuyKhoDonGia: formatNumber(muQuyKhoData.price || 0),
         muQuyKhoTotal: formatNumber(muQuyKhoData.total || 0),
         // Mu tap
         muTapQuantity: formatNumber(muTapData.quantity || 0),
-        muTapSplit: formatNumber(muTapData.ratioSplit || 0),
+        muTapSplit: formatNumber(muTapData.count > 0 ? muTapData.ratioSplit / muTapData.count : 0),
         muTapAfterSplit: formatNumber(muTapData.afterSplit || 0),
         muTapDonGia: formatNumber(muTapData.price || 0),
         muTapTotal: formatNumber(muTapData.total || 0),
         // Mu ke
         muKeQuantity: formatNumber(muKeData.quantity || 0),
-        muKeSplit: formatNumber(muKeData.ratioSplit || 0),
+        muKeSplit: formatNumber(muKeData.count > 0 ? muKeData.ratioSplit / muKeData.count : 0),
         muKeAfterSplit: formatNumber(muKeData.afterSplit || 0),
         muKeDonGia: formatNumber(muKeData.price || 0),
         muKeTotal: formatNumber(muKeData.total || 0),
         // Mu dong
         muDongQuantity: formatNumber(muDongData.quantity || 0),
-        muDongSplit: formatNumber(muDongData.ratioSplit || 0),
+        muDongSplit: formatNumber(muDongData.count > 0 ? muDongData.ratioSplit / muDongData.count : 0),
         muDongAfterSplit: formatNumber(muDongData.afterSplit || 0),
         muDongDonGia: formatNumber(muDongData.price || 0),
         muDongTotal: formatNumber(muDongData.total || 0),
