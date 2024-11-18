@@ -48,7 +48,7 @@ router.delete(
   dailySupplyController.supplierController.deleteSupplier
 );
 router.put(
-  "/:id",
+  "/supplier/:id",
   authMiddlewares.ensureRoles(["Admin", "Văn phòng", "Quản lý"]),
   dailySupplyController.supplierController.editSupplier
 );

@@ -16,22 +16,25 @@
     .hide {
       display: none;
     }
+
     .rotate {
       transform: rotate(180deg);
       transition: transform 0.3s ease-in-out;
     }
+
     .btn-light[aria-expanded="true"] {
-    font-weight: bold;
-    color: #ffffff;
-    background: #007bff !important;
-    } 
+      font-weight: bold;
+      color: #ffffff;
+      background: #007bff !important;
+    }
+
     /* Hide the spinners in input type number for Chrome, Safari, Edge, and Opera */
     input[type="number"]::-webkit-outer-spin-button,
     input[type="number"]::-webkit-inner-spin-button {
       -webkit-appearance: none;
       margin: 0;
     }
-  
+
     /* Hide the spinners in input type number for Firefox */
     input[type="number"] {
       -moz-appearance: textfield;
@@ -52,7 +55,7 @@
 
 <div class="row m-0 m-md-2 g-3 mb-4">
   <div class="col-12 col-md-9 mt-2">
-    <button class="btn btn-secondary mb-3 p-0" >
+    <button class="btn btn-secondary mb-3 p-0">
       <a href="/du-lieu-hang-ngay/<%= area.slug %>/xuat-file" style="display: block; text-decoration: none; color: white; padding: 0.375rem 0.75rem;">
         Xuất file
       </a>
@@ -77,12 +80,12 @@
                     <p><strong>Quản lý:</strong> <%= managerSupplier ? managerSupplier.name : 'Chưa có quản lý' %></p>
                   </div>
                   <div class="col-md-6">
-                    <p><strong>Thời hạn hợp đồng:</strong> 
+                    <p><strong>Thời hạn hợp đồng:</strong>
                       <% if (area.contractDuration && area.contractDuration.start && area.contractDuration.end) { %>
-                        <%= new Date(area.contractDuration.start).toLocaleDateString('vi-VN') %> - <%= new Date(area.contractDuration.end).toLocaleDateString('vi-VN') %>
-                        (<%= Math.ceil((new Date(area.contractDuration.end) - new Date(area.contractDuration.start)) / (1000 * 60 * 60 * 24)) %> ngày)
+                      <%= new Date(area.contractDuration.start).toLocaleDateString('vi-VN') %> - <%= new Date(area.contractDuration.end).toLocaleDateString('vi-VN') %>
+                      (<%= Math.ceil((new Date(area.contractDuration.end) - new Date(area.contractDuration.start)) / (1000 * 60 * 60 * 24)) %> ngày)
                       <% } else { %>
-                        Không có thông tin
+                      Không có thông tin
                       <% } %>
                     </p>
                     <p><strong>Diện tích khu vực:</strong> <%= area.areaDimension ? area.areaDimension.toLocaleString('vi-VN') + ' mẫu' : 'Chưa có thông tin' %></p>
@@ -131,160 +134,84 @@
           <tbody>
             <% area.data.forEach( (eachData,index) => { %>
             <!-- Modal for updating -->
-            <div
-              class="modal fade"
-              id="staticBackdrop<%= eachData._id %>"
-              data-bs-backdrop="static"
-              data-bs-keyboard="false"
-              tabindex="-1"
-              aria-hidden="true"
-            >
-              <div
-                class="modal-dialog modal-dialog-centered modal-dialog-scrollable"
-              >
+            <div class="modal fade" id="staticBackdrop<%= eachData._id %>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                 <div class="modal-content">
                   <div class="modal-header">
-                    <h1 class="modal-title fs-5" >
+                    <h1 class="modal-title fs-5">
                       Cập nhật thông tin <%= eachData.supplier?.name%>
                     </h1>
-                    <button
-                      type="button"
-                      class="btn-close"
-                      data-bs-dismiss="modal"
-                      aria-label="Close"
-                    ></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
 
-                  <form
-                    action="/nhap-du-lieu/nguyen-lieu/updateData/<%= eachData._id %>?_method=PUT"
-                    method="post"
-                  >
+                  <form action="/nhap-du-lieu/<%= eachData._id %>?_method=PUT" method="post">
                     <div class="modal-body">
                       <%- include('../partials/notificationMessage.ejs') %>
 
                       <div>
-                        <label for="date" class="form-label fw-bold"
-                          >Ngày nhập</label
-                        >
-                        <input
-                          type="date"
-                          class="form-control"
-                          id="date"
-                          name="date"
-                          value="<%= eachData.date.toISOString().slice(0,10) %>"
-                          required
-                        />
+                        <label for="date" class="form-label fw-bold">Ngày nhập</label>
+                        <input type="date" class="form-control" id="date" name="date" value="<%= eachData.date.toISOString().slice(0,10) %>" required />
                       </div>
 
                       <div class="my-3">
-                        <label for="supplier" class="form-label fw-bold"
-                          >Nhà vườn</label
-                        >
-                        <input
-                          type="text"
-                          class="form-control"
-                          id="supplier"
-                          name="supplier"
-                          placeholder="Văn A"
-                          value="<%= eachData.supplier?.name %>"
-                          disabled
-                          required
-                        />
+                        <label for="supplier" class="form-label fw-bold">Nhà vườn</label>
+                        <input type="text" class="form-control" id="supplier" name="supplier" placeholder="Văn A" value="<%= eachData.supplier?.name %>" disabled required />
                       </div>
 
                       <div class="itemLists my-3">
                         <% eachData.rawMaterial.forEach((raw, rawIndex) => { %>
-                          <% if (raw.name === 'Mủ nước') { %>
-                            <div class="itemList">
-                              <div class="row my-3">
-                                <label class="form-label fw-bold">Mủ nước</label>
-                                <div class="col col-md-6">
-                                  <label for="muNuocQuantity<%= index %>" class="form-label">Số lượng</label>
-                                  <input
-                                    type="text"
-                                    class="form-control"
-                                    id="muNuocQuantity<%= index %>"
-                                    name="muNuocQuantity"
-                                    value="<%= raw.quantity.toLocaleString('vi-VN')%>"
-                                    required
-                                  />
-                                </div>
-                                <div class="col col-md-6">
-                                  <label for="muNuocPercentage<%= index %>" class="form-label">Hàm lượng</label>
-                                  <input
-                                    type="text"
-                                    class="form-control"
-                                    id="muNuocPercentage<%= index %>"
-                                    name="muNuocPercentage"
-                                    value="<%= raw.percentage.toLocaleString('vi-VN') %>"
-                                    required
-                                  />
-                                </div>
-                              </div>
+                        <% if (raw.name === 'Mủ nước') { %>
+                        <div class="itemList">
+                          <div class="row my-3">
+                            <label class="form-label fw-bold">Mủ nước</label>
+                            <div class="col col-md-6">
+                              <label for="muNuocQuantity<%= index %>" class="form-label">Số lượng</label>
+                              <input type="text" class="form-control" id="muNuocQuantity<%= index %>" name="muNuocQuantity" value="<%= raw.quantity.toLocaleString('vi-VN')%>" required />
                             </div>
-                          <% } else if (raw.name === 'Mủ tạp') { %>
-                            <div class="itemList">
-                              <div class="row my-3">
-                                <label class="form-label fw-bold">Mủ tạp</label>
-                                <div class="col-12">
-                                  <label for="muTapQuantity<%= index %>" class="form-label">Số lượng</label>
-                                  <input
-                                    type="text"
-                                    class="form-control"
-                                    id="muTapQuantity<%= index %>"
-                                    name="muTapQuantity"
-                                    value="<%= raw.quantity.toLocaleString('vi-VN') %>"
-                                    required
-                                  />
-                                </div>
-                              </div>
+                            <div class="col col-md-6">
+                              <label for="muNuocPercentage<%= index %>" class="form-label">Hàm lượng</label>
+                              <input type="text" class="form-control" id="muNuocPercentage<%= index %>" name="muNuocPercentage" value="<%= raw.percentage.toLocaleString('vi-VN') %>" required />
                             </div>
-                            <% } else if (raw.name === 'Mủ ké') { %>
-                              <div class="itemList">
-                                <div class="row my-3">
-                                  <label class="form-label fw-bold">Mủ Ké</label>
-                                  <div class="col-12">
-                                    <label for="muKeQuantity<%= index %>" class="form-label">Số lượng</label>
-                                    <input
-                                      type="text"
-                                      class="form-control"
-                                      id="muKeQuantity<%= index %>"
-                                      name="muKeQuantity"
-                                      value="<%= raw.quantity.toLocaleString('vi-VN') %>"
-                                      required
-                                    />
-                                  </div>
-                                </div>
-                              </div>
-                            <% } else if (raw.name === 'Mủ đông') { %>
-                              <div class="itemList">
-                                <div class="row my-3">
-                                  <label class="form-label fw-bold">Mủ Đông</label>
-                                  <div class="col-12">
-                                    <label for="muDongQuantity<%= index %>" class="form-label">Số lượng</label>
-                                    <input
-                                      type="text"
-                                      class="form-control"
-                                      id="muDongQuantity<%= index %>"
-                                      name="muDongQuantity"
-                                      value="<%= raw.quantity.toLocaleString('vi-VN') %>"
-                                      required
-                                    />
-                                  </div>
-                                </div>
-                              </div>
-                            <% } %>
-                          <% }) %>
+                          </div>
+                        </div>
+                        <% } else if (raw.name === 'Mủ tạp') { %>
+                        <div class="itemList">
+                          <div class="row my-3">
+                            <label class="form-label fw-bold">Mủ tạp</label>
+                            <div class="col-12">
+                              <label for="muTapQuantity<%= index %>" class="form-label">Số lượng</label>
+                              <input type="text" class="form-control" id="muTapQuantity<%= index %>" name="muTapQuantity" value="<%= raw.quantity.toLocaleString('vi-VN') %>" required />
+                            </div>
+                          </div>
+                        </div>
+                        <% } else if (raw.name === 'Mủ ké') { %>
+                        <div class="itemList">
+                          <div class="row my-3">
+                            <label class="form-label fw-bold">Mủ Ké</label>
+                            <div class="col-12">
+                              <label for="muKeQuantity<%= index %>" class="form-label">Số lượng</label>
+                              <input type="text" class="form-control" id="muKeQuantity<%= index %>" name="muKeQuantity" value="<%= raw.quantity.toLocaleString('vi-VN') %>" required />
+                            </div>
+                          </div>
+                        </div>
+                        <% } else if (raw.name === 'Mủ đông') { %>
+                        <div class="itemList">
+                          <div class="row my-3">
+                            <label class="form-label fw-bold">Mủ Đông</label>
+                            <div class="col-12">
+                              <label for="muDongQuantity<%= index %>" class="form-label">Số lượng</label>
+                              <input type="text" class="form-control" id="muDongQuantity<%= index %>" name="muDongQuantity" value="<%= raw.quantity.toLocaleString('vi-VN') %>" required />
+                            </div>
+                          </div>
+                        </div>
+                        <% } %>
+                        <% }) %>
                       </div>
                       <div class="itemList">
                         <div class="row my-3">
                           <label class="form-label fw-bold">Ghi chú</label>
                           <div class="col-12">
-                              <textarea
-                                class="form-control"
-                                name="note"
-                                rows="3"
-                              ><%= eachData.note %></textarea>
+                            <textarea class="form-control" name="note" rows="3"><%= eachData.note %></textarea>
                           </div>
                         </div>
                       </div>
@@ -301,30 +228,16 @@
               </div>
             </div>
             <!-- Delete confirming modal  -->
-            <div
-              class="modal fade"
-              id="deleteModalToggle<%= eachData._id %>"
-              aria-hidden="true"
-              aria-labelledby="exampleModalToggleLabel"
-              tabindex="-1"
-            >
+            <div class="modal fade" id="deleteModalToggle<%= eachData._id %>" aria-hidden="true" aria-labelledby="exampleModalToggleLabel" tabindex="-1">
               <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                   <div class="modal-header">
                     <h1 class="modal-title fs-5" id="exampleModalToggleLabel">
                       <%= user.role === 'Admin' || user.role === 'Quản lý' ? 'Xóa dữ liệu ' :"Gửi yêu cầu xóa dữ liệu" %> của <%= eachData.supplier?.name %>
                     </h1>
-                    <button
-                      type="button"
-                      class="btn-close"
-                      data-bs-dismiss="modal"
-                      aria-label="Close"
-                    ></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
-                  <form
-                    action="/nhap-du-lieu/nguyen-lieu/deleteData/<%= eachData._id %>"
-                    method="post"
-                  >
+                  <form action="/nhap-du-lieu/nguyen-lieu/deleteData/<%= eachData._id %>" method="post">
                     <div class="modal-body">
                       <input type="hidden" name="date" value="<%= eachData.date%>">
                       <% if( user.role === 'Admin' || user.role === 'Quản lý'){%>
@@ -333,24 +246,24 @@
                       <strong><%= eachData.supplier?.name %> (<%= eachData.date.toLocaleDateString('vi-VN') %>)</strong> ? Hành động này
                       không thể hoàn tác.
                       <% } else { %>
-                        Bạn có muốn xóa dữ liệu của
-                        <strong><%= eachData.supplier?.name %> (<%= eachData.date.toLocaleDateString('vi-VN') %>)</strong>?
-                        <br>
-                        <br>
-                        <strong>Lý do:</strong>
-                        <ul>
-                          <li class="form-check">
-                            <input class="form-check-input" name="reason" value="Dữ liệu dư" type="radio" id="reason1">
-                            <label class="form-check-label" for="reason1">Dữ liệu dư</label>
-                          </li>
-                          <li class="form-check">
-                            <input class="form-check-input" name="reason" value="Khác" type="radio" id="reason2">
-                            <label class="form-check-label" for="reason2">Khác</label>
-                          </li>
-                          
-                        </ul>
-                        <% } %>
-                      </div>
+                      Bạn có muốn xóa dữ liệu của
+                      <strong><%= eachData.supplier?.name %> (<%= eachData.date.toLocaleDateString('vi-VN') %>)</strong>?
+                      <br>
+                      <br>
+                      <strong>Lý do:</strong>
+                      <ul>
+                        <li class="form-check">
+                          <input class="form-check-input" name="reason" value="Dữ liệu dư" type="radio" id="reason1">
+                          <label class="form-check-label" for="reason1">Dữ liệu dư</label>
+                        </li>
+                        <li class="form-check">
+                          <input class="form-check-input" name="reason" value="Khác" type="radio" id="reason2">
+                          <label class="form-check-label" for="reason2">Khác</label>
+                        </li>
+
+                      </ul>
+                      <% } %>
+                    </div>
                     <div class="modal-footer">
                       <button type="submit" class="btn btn-danger">
                         Xác nhận
@@ -380,536 +293,256 @@
     <div class="card" style="box-shadow: 0 1px 2px">
       <div class="card-header bg-transparent">
         <div class="d-flex d-flex flex-wrap gap-2">
-          <button
-            class="btn btn-light"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#suppliers"
-            aria-expanded="true"
-            aria-controls="suppliers"
-          >
+          <button class="btn btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#suppliers" aria-expanded="true" aria-controls="suppliers">
             Nhà vườn
           </button>
-          <button
-            class="btn btn-light"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#updateArea"
-            aria-expanded="false"
-            aria-controls="updateArea"
-          >
+          <button class="btn btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#updateArea" aria-expanded="false" aria-controls="updateArea">
             Chỉnh sửa
           </button>
-          <button
-            class="btn btn-light"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#setting"
-            aria-expanded="false"
-            aria-controls="setting"
-          >
+          <button class="btn btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#setting" aria-expanded="false" aria-controls="setting">
             Cài đặt
           </button>
         </div>
       </div>
-        <div class="card-body">
-          <%- include('../partials/notificationMessage.ejs') %>
-          <div class="accordion" id="areaAccordion">
-            <!-- Supplier details -->
-            <div
-              id="suppliers"
-              class="collapse show"
-              aria-labelledby="suppliersHeading"
-              data-bs-parent="#areaAccordion"
-            >
-              <h4>Nhà vườn</h4>
-              <!-- Search for a supplier  -->
-              <input
-                type="text"
-                class="form-control mb-3"
-                id="supplierSearch"
-                placeholder="Tìm kiếm nhà vườn"
-                oninput="debounce(() => filterSuppliers('supplierSearch', 'supplierList', 'li' ,'supplier-name'), 200)()"
-              />
-              <ol class="list-group list-group-numbered my-2" id="supplierList">
-                <% area.suppliers.sort((a, b) => a.name.localeCompare(b.name)).forEach((supplier, index) =>{ %>
-                <li
-                  class="list-group-item d-flex justify-content-between align-items-start"
-                >
-                  <div class="supplier-name ms-2 me-auto">
-                    <div class="fw-bold"><%= supplier.name %> <%= supplier.manager ? '(Quản lý)' : '' %></div>
-                    <%= supplier.code %>
-                  </div>
-                </li>
-                <% }) %>
-              </ol>
-            </div>
-            <!-- Update Area -->
-            <div
-              id="updateArea"
-              class="collapse"
-              aria-labelledby="updateAreaHeading"
-              data-bs-parent="#areaAccordion"
-            >
-              <h4>Chỉnh sửa</h4>
-              <form action="/du-lieu-hang-ngay/update/<%= area._id %>?_method=PUT" method="post" onchange="this.querySelector('button[type=submit]').style.display = 'block';">
-                <div>
-                  <label for="areaName" class="form-label">Khu vực</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="areaName"
-                    name="areaName"
-                    value="<%= area.name %>"
-                    required
-                  />
+      <div class="card-body">
+        <%- include('../partials/notificationMessage.ejs') %>
+        <div class="accordion" id="areaAccordion">
+          <!-- Supplier details -->
+          <div id="suppliers" class="collapse show" aria-labelledby="suppliersHeading" data-bs-parent="#areaAccordion">
+            <h4>Nhà vườn</h4>
+            <!-- Search for a supplier  -->
+            <input type="text" class="form-control mb-3" id="supplierSearch" placeholder="Tìm kiếm nhà vườn" oninput="debounce(() => filterSuppliers('supplierSearch', 'supplierList', 'li' ,'supplier-name'), 200)()" />
+            <ol class="list-group list-group-numbered my-2" id="supplierList">
+              <% area.suppliers.sort((a, b) => a.name.localeCompare(b.name)).forEach((supplier, index) =>{ %>
+              <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="supplier-name ms-2 me-auto">
+                  <div class="fw-bold"><%= supplier.name %> <%= supplier.manager ? '(Quản lý)' : '' %></div>
+                  <%= supplier.code %>
                 </div>
-                <div class="my-3">
-                  <label for="accountID" class="form-label"
-                    >Nướng hàm lượng</label
-                  >
-                  <select
-                    class="form-control slim-select"
-                    id="accountID"
-                    name="accountID"
-                    onchange="this.closest('form').querySelector('button[type=submit]').style.display = this.value ? 'block' : 'none';"
-                  >
-                    <% if (!area.accountID) { %>
-                      <option disabled selected>Chọn tài khoản</option>
-                    <% } %>
-                    <% hamLuongAccounts.forEach(account => { %>
-                      <option value="<%= account._id %>" <%= account._id.equals(area.accountID._id) ? 'selected' : '' %>>
-                        <%= account.username %>
-                      </option>
-                    <% }) %>
-                  </select>
-                </div>
-                <div class="my-3">
-                  <label for="address" class="form-label fw-bold">Địa chỉ</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="address"
-                    name="address"
-                    required
-                    maxlength="150"
-                    value="<%= area.address %>"
-                  />
-                </div>
-                <div class="my-3">
-                  <label class="form-label fw-bold">Thời hạn hợp đồng</label>
-                  <div class="row">
-                    <div class="col-6">
-                      <label for="contractStart" class="form-label"
-                        >Ngày bắt đầu</label
-                      >
-                      <input
-                        type="date"
-                        class="form-control"
-                        id="contractStart"
-                        name="contractDuration[start]"
-                        value="<%= area.contractDuration.start?  area.contractDuration.start.toISOString().split('T')[0] : '' %>"
-                      />
-                    </div>
-                    <div class="col-6">
-                      <label for="contractEnd" class="form-label"
-                        >Ngày kết thúc</label
-                      >
-                      <input
-                        type="date"
-                        class="form-control"
-                        id="contractEnd"
-                        name="contractDuration[end]"
-                        value="<%=area.contractDuration.end ?  area.contractDuration.end.toISOString().split('T')[0] : '' %>"
-                      />
-                    </div>
-                  </div>
-                  <small class="text-muted"
-                    >Để trống nếu không có ngày hợp đồng</small
-                  >
-                </div>
-                <div class="my-3">
-                  <label for="areaDimension" class="form-label fw-bold"
-                    >Diện tích khu vực (mẫu)</label
-                  >
-                  <input
-                    type="number"
-                    class="form-control"
-                    id="areaDimension"
-                    name="areaDimension"
-                    required
-                    step="0.1"
-                    min="0"
-                    value="<%= area.areaDimension %>"
-                  />
-                  <small class="text-muted">Chỉ áp dụng cho khu vực hợp đồng</small>
-                </div>
-                <div class="my-3">
-                  <label for="areaPrice" class="form-label fw-bold"
-                    >Giá khu vực</label
-                  >
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="areaPrice"
-                    name="areaPrice"
-                    min="0"
-                    value="<%= area.areaPrice.toLocaleString('vi-VN') %>"
-                    oninput="handleQuantityInput(this)"
-                  />
-                  <small class="text-muted"
-                    >Để trống nếu không khu vực không mua bán</small
-                  >
-                </div>
-                <button type="submit" class="btn btn-primary" style="display: none;">Lưu</button>
-              </form>
-
-              <!-- Suppliers -->
-                <h5 class="my-2">Nhà vườn</h5>
-                <!-- Search for a supplier  -->
-                <input
-                  type="text"
-                  class="form-control mb-3"
-                  id="supplierSearchDetail"
-                  placeholder="Tìm kiếm nhà vườn"
-                  oninput="debounce(() => filterSuppliers('supplierSearchDetail', 'supplierListDetail', 'li' ,'supplier-name-detail'), 200)()"
-                />
-                <ol class="list-group list-group-numbered my-2" id="supplierListDetail">
-                  <% area.suppliers.forEach((supplier, index) =>{ %>
-                  <li
-                    class="list-group-item d-flex justify-content-between align-items-center"
-                  >
-                    <div class="supplier-name-detail ms-2 me-auto">
-                      <div class="fw-bold"><%= supplier.name %></div>
-                      <%= supplier.code %>
-                    </div>
-                    <div class="d-flex">
-                    <span class="mx-2">
-                      <i class="ri-edit-box-line fs-5" data-bs-toggle="modal"
-                      data-bs-target="#editSupplier<%= supplier._id %>" style="cursor: pointer;"></i>
-                    </span>
-                    <span class="mx-2">
-                      <i class="ri-delete-bin-line fs-5" data-bs-toggle="modal"
-                      data-bs-target="#deleteSupplier<%= supplier._id %>" style="cursor: pointer;"></i>
-                    </span>
-                  </div>
-                  </li>
-
-                  <!-- Edit supplier modal -->
-                  <form action="/du-lieu-hang-ngay/<%= supplier._id %>?_method=PUT" method="post">
-                    <!-- Additional fields -->
-                    <input type="text" name="slug" value="<%= area.slug %>" hidden>
-                    <div
-                      class="modal fade"
-                      id="editSupplier<%= supplier._id %>"
-                      aria-hidden="true"
-                      aria-labelledby="staticBackdropLabel"
-                      tabindex="-1"
-                    >
-                      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-                        <div class="modal-content">
-                          <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="staticBackdropLabel">
-                              Chỉnh sửa nhà vườn <%= supplier.name %>
-                            </h1>
-                            <button
-                              type="button"
-                              class="btn-close"
-                              data-bs-dismiss="modal"
-                              aria-label="Close"
-                            ></button>
-                          </div>
-                            <div class="modal-body">
-                            <div class="row">
-                              <div class="col col-md-6">
-                                <label for="name" class="form-label fw-bold"
-                                  >Tên</label
-                                >
-                                <input
-                                  type="text"
-                                  class="form-control"
-                                  id="name"
-                                  name="name"
-                                  maxlength="30"
-                                  value="<%= supplier.name %>"
-                                  required
-                                />
-                              </div>
-                              <div class="col col-md-6">
-                                <label for="code" class="form-label fw-bold">Mã</label>
-                                <input
-                                  type="text"
-                                  class="form-control"
-                                  id="code"
-                                  name="code"
-                                  maxlength="20"
-                                  value="<%= supplier.code %>"
-                                  required
-                                />
-                              </div>
-                            </div>
-                            <div class="mt-3">
-                              <label for="manager" class="form-label fw-bold">Vai trò</label>
-                              <select class="form-select" id="manager" name="manager" required>
-                                <option value="false" <%= supplier.manager === false ? 'selected' : '' %>>Nhà vườn</option>
-                                <option value="true" <%= supplier.manager === true ? 'selected' : '' %>>Quản lý</option>
-                              </select>
-                            </div>
-                            <div class="mt-3">
-                              <label for="phone" class="form-label fw-bold"
-                                >Số điện thoại</label
-                              >
-                              <input
-                                type="text"
-                                class="form-control"
-                                id="phone"
-                                name="phone"
-                                maxlength="10"
-                                oninput="this.value = this.value.replace(/\D/g, '');"
-                                value="<%= supplier.phone %>"
-                                required
-                                />
-                            </div>
-                            <div class="row">
-                              <div class="col-7 mt-3">
-                                <label for="identification" class="form-label fw-bold"
-                                  >Căn cước công dân</label
-                                >
-                                <input
-                                  type="text"
-                                  class="form-control"
-                                  id="identification"
-                                  name="identification"
-                                  maxlength="12"
-                                  value="<%= supplier.identification %>"
-                                  required
-                                />
-                              </div>
-                              <div class="col-5 mt-3">
-                                <label for="issueDate" class="form-label fw-bold"
-                                  >Ngày cấp</label
-                                >
-                                <input
-                                  type="text"
-                                  class="form-control"
-                                  id="issueDate"
-                                  name="issueDate"
-                                  oninput="this.value = this.value.replace(/\D/g, '').replace(/(\d{2})(?=\d)/g, '$1/');"
-                                  maxlength="8"
-                                  value="<%= supplier.issueDate %>"
-                                  required
-                                />
-                              </div>
-                            </div>
-                            <div class="mt-3">
-                              <label  class="form-label fw-bold"
-                                >Địa chỉ</label
-                              >
-                              <input
-                                type="text"
-                                class="form-control"
-                                name="supplierAddress"
-                                value="<%= supplier.supplierAddress %>"
-                                maxlength="70"
-                              />
-                            </div>
-                            <div class="mt-3">
-                              <label for="purchasedAreaDimension" class="form-label fw-bold"
-                                >Diện tích mua (mẫu)</label
-                              >
-                              <input
-                                type="number"
-                                class="form-control"
-                                id="purchasedAreaDimension"
-                                name="purchasedAreaDimension"
-                                step="0.1"
-                                min="0"
-                                value="<%= supplier.purchasedAreaDimension %>"
-                              />
-                            </div>
-                            <div class="mt-3">
-                              <label for="purchasedAreaPrice" class="form-label fw-bold"
-                                >Giá mua (VNĐ/mẫu)</label
-                              >
-                              <input
-                                type="text"
-                                class="form-control"
-                                id="purchasedAreaPrice"
-                                name="purchasedAreaPrice"
-                                min="0"
-                                oninput="handleQuantityInput(this)"
-                                value="<%= supplier.purchasedAreaPrice.toLocaleString('vi-VN') %>"
-                              />
-                            </div>
-                            <div class="mt-3">
-                              <label for="areaDeposit" class="form-label fw-bold"
-                                >Tiền đặt cọc</label
-                              >
-                              <input
-                                type="text"
-                                class="form-control"
-                                id="areaDeposit"
-                                name="areaDeposit"
-                                min="0"
-                                oninput="handleQuantityInput(this)"
-                                value="<%= supplier.areaDeposit.toLocaleString('vi-VN') %>"
-                              />
-                            </div>
-                            <div class="mt-3">
-                              <label class="form-label fw-bold">Thời hạn mua</label>
-                              <div class="row">
-                                <div class="col-6">
-                                  <label for="areaDurationStart" class="form-label"
-                                    >Ngày bắt đầu</label
-                                  >
-                                  <input
-                                    type="date"
-                                    class="form-control"
-                                    id="areaDurationStart"
-                                    name="areaDuration[start]"
-                                    value="<%= supplier.areaDuration && supplier.areaDuration.start ? supplier.areaDuration.start.toISOString().split('T')[0] : '' %>"
-                                  />
-                                </div>
-                                <div class="col-6">
-                                  <label for="areaDurationEnd" class="form-label"
-                                    >Ngày kết thúc</label
-                                  >
-                                  <input
-                                    type="date"
-                                    class="form-control"
-                                    id="areaDurationEnd"
-                                    name="areaDuration[end]"
-                                    value="<%=  supplier.areaDuration && supplier.areaDuration.end ? supplier.areaDuration.end.toISOString().split('T')[0] : '' %>"
-                                  />
-                                </div>
-                              </div>
-                            </div>
-                            <div class="mt-3">
-                              <label
-                                for="advancePayment"
-                                class="form-label fw-bold"
-                                >Tiền ứng</label
-                              >
-                              <input
-                                type="text"
-                                class="form-control"
-                                id="advancePayment"
-                                name="advancePayment"
-                                value="<%= supplier.advancePayment.toLocaleString('vi-VN') %>"
-                                oninput="handleQuantityInput(this)"
-                              />
-                            </div>
-                            <div class="mt-3">
-                              <label for="ratioRubberSplit" class="form-label fw-bold">Ăn chia mủ</label>
-                              <input
-                                type="text"
-                                class="form-control"
-                                id="ratioRubberSplit"
-                                name="ratioRubberSplit"
-                                value="<%= supplier.ratioRubberSplit.toLocaleString('vi-VN') %>"
-                                oninput="handlePercentageInput(this)"
-                              />
-                            </div>
-                            <div class="mt-3">
-                              <label for="ratioSumSplit" class="form-label fw-bold"
-                                >Ăn chia tổng</label
-                              >
-                              <input
-                                type="text"
-                                class="form-control"
-                                id="ratioSumSplit"
-                                name="ratioSumSplit"
-                                value="<%= supplier.ratioSumSplit.toLocaleString('vi-VN') %>"
-                                min="1"
-                              />
-                            </div>
-
-                            </div>
-                            <div class="modal-footer">
-                              <button type="submit" class="btn btn-primary">Lưu mới</button>
-                            </div>
-                        </div>
-                      </div>
-                    </div>
-                  </form>
-
-                  <!-- Delete supplier modal -->
-                  <form action="/du-lieu-hang-ngay/<%= supplier._id %>" method="post">
-
-                    <div
-                      class="modal fade"
-                      id="deleteSupplier<%= supplier._id %>"
-                      aria-hidden="true"
-                      aria-labelledby="title"
-                      tabindex="-1"
-                    >
-                      <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                          <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="title">
-                              Xóa nhà vườn
-                            </h1>
-                            <button
-                              type="button"
-                              class="btn-close"
-                              data-bs-dismiss="modal"
-                              aria-label="Close"
-                            ></button>
-                          </div>
-                          <form
-                            action="/quan-ly-nha-vuon/delete/<%= supplier._id %>"
-                            method="post"
-                          >
-                            <div class="modal-body
-                            ">
-                              Bạn có muốn xóa nhà vườn
-                              <strong><%= supplier.name %></strong> ? Hành động này
-                              không thể hoàn tác.
-                            </div>
-                            <div class="modal-footer
-                            ">
-                              <button type="submit" class="btn btn-danger
-                              ">Xác nhận</button>
-                            </div>
-                          </form>
-                        </div>
-                      </div>
-                    </div>
-                  </form>
-
-                  <% }) %>
-                </ol>
-                <form action="/du-lieu-hang-ngay/addSupplier/<%= area._id %>?_method=POST" method="post" id="dynamicForm" onchange="this.querySelector('button[type=submit]').style.display = 'block';">
-                  <div class="additionalField"></div>
-                  <button type="submit" class="btn btn-primary" style="display: none;">Lưu</button>
-                </form>
-              <i class="ri-add-circle-line fs-5" onclick="addFields('.additionalField')" style="cursor: pointer;"></i>
-            </div>
-            <!-- Setting -->
-            <div
-            id="setting"
-            class="collapse"
-            aria-labelledby="suppliersHeading"
-            data-bs-parent="#areaAccordion"
-            >
-              <h4>Cài đặt</h4>
-              <form action="/du-lieu-hang-ngay/update/<%= area._id %>?_method=PUT" method="post" onchange="this.querySelector('button[type=submit]').style.display = 'block';">
-                <div class="mb-3">
-                  <label for="limitData" class="form-label">Giới hạn dữ liệu/ngày</label>
-                  <input
-                    type="number"
-                    class="form-control"
-                    id="limitData"
-                    name="limitData"
-                    required
-                    value="<%= area.limitData ?  area.limitData : '' %>"
-                  />
-                </div>
-                <button type="submit" class="btn btn-primary
-                ">Lưu</button>
-              </form>
-            </div>
+              </li>
+              <% }) %>
+            </ol>
           </div>
+          <!-- Update Area -->
+          <div id="updateArea" class="collapse" aria-labelledby="updateAreaHeading" data-bs-parent="#areaAccordion">
+            <h4>Chỉnh sửa</h4>
+            <form action="/du-lieu-hang-ngay/update/<%= area._id %>?_method=PUT" method="post" onchange="this.querySelector('button[type=submit]').style.display = 'block';">
+              <div>
+                <label for="areaName" class="form-label">Khu vực</label>
+                <input type="text" class="form-control" id="areaName" name="areaName" value="<%= area.name %>" required />
+              </div>
+              <div class="my-3">
+                <label for="accountID" class="form-label">Nướng hàm lượng</label>
+                <select class="form-control slim-select" id="accountID" name="accountID" onchange="this.closest('form').querySelector('button[type=submit]').style.display = this.value ? 'block' : 'none';">
+                  <% if (!area.accountID) { %>
+                  <option disabled selected>Chọn tài khoản</option>
+                  <% } %>
+                  <% hamLuongAccounts.forEach(account => { %>
+                  <option value="<%= account._id %>" <%= account._id.equals(area.accountID._id) ? 'selected' : '' %>>
+                    <%= account.username %>
+                  </option>
+                  <% }) %>
+                </select>
+              </div>
+              <div class="my-3">
+                <label for="address" class="form-label fw-bold">Địa chỉ</label>
+                <input type="text" class="form-control" id="address" name="address" required maxlength="150" value="<%= area.address %>" />
+              </div>
+              <div class="my-3">
+                <label class="form-label fw-bold">Thời hạn hợp đồng</label>
+                <div class="row">
+                  <div class="col-6">
+                    <label for="contractStart" class="form-label">Ngày bắt đầu</label>
+                    <input type="date" class="form-control" id="contractStart" name="contractDuration[start]" value="<%= area.contractDuration.start?  area.contractDuration.start.toISOString().split('T')[0] : '' %>" />
+                  </div>
+                  <div class="col-6">
+                    <label for="contractEnd" class="form-label">Ngày kết thúc</label>
+                    <input type="date" class="form-control" id="contractEnd" name="contractDuration[end]" value="<%=area.contractDuration.end ?  area.contractDuration.end.toISOString().split('T')[0] : '' %>" />
+                  </div>
+                </div>
+                <small class="text-muted">Để trống nếu không có ngày hợp đồng</small>
+              </div>
+              <div class="my-3">
+                <label for="areaDimension" class="form-label fw-bold">Diện tích khu vực (mẫu)</label>
+                <input type="number" class="form-control" id="areaDimension" name="areaDimension" required step="0.1" min="0" value="<%= area.areaDimension %>" />
+                <small class="text-muted">Chỉ áp dụng cho khu vực hợp đồng</small>
+              </div>
+              <div class="my-3">
+                <label for="areaPrice" class="form-label fw-bold">Giá khu vực</label>
+                <input type="text" class="form-control" id="areaPrice" name="areaPrice" min="0" value="<%= area.areaPrice.toLocaleString('vi-VN') %>" oninput="handleQuantityInput(this)" />
+                <small class="text-muted">Để trống nếu không khu vực không mua bán</small>
+              </div>
+              <button type="submit" class="btn btn-primary" style="display: none;">Lưu</button>
+            </form>
+
+            <!-- Suppliers -->
+            <h5 class="my-2">Nhà vườn</h5>
+            <!-- Search for a supplier  -->
+            <input type="text" class="form-control mb-3" id="supplierSearchDetail" placeholder="Tìm kiếm nhà vườn" oninput="debounce(() => filterSuppliers('supplierSearchDetail', 'supplierListDetail', 'li' ,'supplier-name-detail'), 200)()" />
+            <ol class="list-group list-group-numbered my-2" id="supplierListDetail">
+              <% area.suppliers.forEach((supplier, index) =>{ %>
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div class="supplier-name-detail ms-2 me-auto">
+                  <div class="fw-bold"><%= supplier.name %></div>
+                  <%= supplier.code %>
+                </div>
+                <div class="d-flex">
+                  <span class="mx-2">
+                    <i class="ri-edit-box-line fs-5" data-bs-toggle="modal" data-bs-target="#editSupplier<%= supplier._id %>" style="cursor: pointer;"></i>
+                  </span>
+                  <span class="mx-2">
+                    <i class="ri-delete-bin-line fs-5" data-bs-toggle="modal" data-bs-target="#deleteSupplier<%= supplier._id %>" style="cursor: pointer;"></i>
+                  </span>
+                </div>
+              </li>
+
+              <!-- Edit supplier modal -->
+              <form action="/du-lieu-hang-ngay/supplier/<%= supplier._id %>?_method=PUT" method="post">
+                <!-- Additional fields -->
+                <input type="text" name="slug" value="<%= area.slug %>" hidden>
+                <div class="modal fade" id="editSupplier<%= supplier._id %>" aria-hidden="true" aria-labelledby="staticBackdropLabel" tabindex="-1">
+                  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">
+                          Chỉnh sửa nhà vườn <%= supplier.name %>
+                        </h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        <div class="row">
+                          <div class="col col-md-6">
+                            <label for="name" class="form-label fw-bold">Tên</label>
+                            <input type="text" class="form-control" id="name" name="name" maxlength="30" value="<%= supplier.name %>" required />
+                          </div>
+                          <div class="col col-md-6">
+                            <label for="code" class="form-label fw-bold">Mã</label>
+                            <input type="text" class="form-control" id="code" name="code" maxlength="20" value="<%= supplier.code %>" required />
+                          </div>
+                        </div>
+                        <div class="mt-3">
+                          <label for="manager" class="form-label fw-bold">Vai trò</label>
+                          <select class="form-select" id="manager" name="manager" required>
+                            <option value="false" <%= supplier.manager === false ? 'selected' : '' %>>Nhà vườn</option>
+                            <option value="true" <%= supplier.manager === true ? 'selected' : '' %>>Quản lý</option>
+                          </select>
+                        </div>
+                        <div class="mt-3">
+                          <label for="phone" class="form-label fw-bold">Số điện thoại</label>
+                          <input type="text" class="form-control" id="phone" name="phone" maxlength="10" oninput="this.value = this.value.replace(/\D/g, '');" value="<%= supplier.phone %>" required />
+                        </div>
+                        <div class="row">
+                          <div class="col-7 mt-3">
+                            <label for="identification" class="form-label fw-bold">Căn cước công dân</label>
+                            <input type="text" class="form-control" id="identification" name="identification" maxlength="12" value="<%= supplier.identification %>" required />
+                          </div>
+                          <div class="col-5 mt-3">
+                            <label for="issueDate" class="form-label fw-bold">Ngày cấp</label>
+                            <input type="text" class="form-control" id="issueDate" name="issueDate" oninput="this.value = this.value.replace(/\D/g, '').replace(/(\d{2})(?=\d)/g, '$1/');" maxlength="8" value="<%= supplier.issueDate %>" required />
+                          </div>
+                        </div>
+                        <div class="mt-3">
+                          <label class="form-label fw-bold">Địa chỉ</label>
+                          <input type="text" class="form-control" name="supplierAddress" value="<%= supplier.supplierAddress %>" maxlength="70" />
+                        </div>
+                        <div class="mt-3">
+                          <label for="purchasedAreaDimension" class="form-label fw-bold">Diện tích mua (mẫu)</label>
+                          <input type="number" class="form-control" id="purchasedAreaDimension" name="purchasedAreaDimension" step="0.1" min="0" value="<%= supplier.purchasedAreaDimension %>" />
+                        </div>
+                        <div class="mt-3">
+                          <label for="purchasedAreaPrice" class="form-label fw-bold">Giá mua (VNĐ/mẫu)</label>
+                          <input type="text" class="form-control" id="purchasedAreaPrice" name="purchasedAreaPrice" min="0" oninput="handleQuantityInput(this)" value="<%= supplier.purchasedAreaPrice.toLocaleString('vi-VN') %>" />
+                        </div>
+                        <div class="mt-3">
+                          <label for="areaDeposit" class="form-label fw-bold">Tiền đặt cọc</label>
+                          <input type="text" class="form-control" id="areaDeposit" name="areaDeposit" min="0" oninput="handleQuantityInput(this)" value="<%= supplier.areaDeposit.toLocaleString('vi-VN') %>" />
+                        </div>
+                        <div class="mt-3">
+                          <label class="form-label fw-bold">Thời hạn mua</label>
+                          <div class="row">
+                            <div class="col-6">
+                              <label for="areaDurationStart" class="form-label">Ngày bắt đầu</label>
+                              <input type="date" class="form-control" id="areaDurationStart" name="areaDuration[start]" value="<%= supplier.areaDuration && supplier.areaDuration.start ? supplier.areaDuration.start.toISOString().split('T')[0] : '' %>" />
+                            </div>
+                            <div class="col-6">
+                              <label for="areaDurationEnd" class="form-label">Ngày kết thúc</label>
+                              <input type="date" class="form-control" id="areaDurationEnd" name="areaDuration[end]" value="<%=  supplier.areaDuration && supplier.areaDuration.end ? supplier.areaDuration.end.toISOString().split('T')[0] : '' %>" />
+                            </div>
+                          </div>
+                        </div>
+                        <div class="mt-3">
+                          <label for="advancePayment" class="form-label fw-bold">Tiền ứng</label>
+                          <input type="text" class="form-control" id="advancePayment" name="advancePayment" value="<%= supplier.advancePayment.toLocaleString('vi-VN') %>" oninput="handleQuantityInput(this)" />
+                        </div>
+                        <div class="mt-3">
+                          <label for="ratioRubberSplit" class="form-label fw-bold">Ăn chia mủ</label>
+                          <input type="text" class="form-control" id="ratioRubberSplit" name="ratioRubberSplit" value="<%= supplier.ratioRubberSplit.toLocaleString('vi-VN') %>" oninput="handlePercentageInput(this)" />
+                        </div>
+                        <div class="mt-3">
+                          <label for="ratioSumSplit" class="form-label fw-bold">Ăn chia tổng</label>
+                          <input type="text" class="form-control" id="ratioSumSplit" name="ratioSumSplit" value="<%= supplier.ratioSumSplit.toLocaleString('vi-VN') %>" min="1" />
+                        </div>
+
+                      </div>
+                      <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Lưu mới</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </form>
+
+              <!-- Delete supplier modal -->
+              <form action="/du-lieu-hang-ngay/<%= supplier._id %>" method="post">
+
+                <div class="modal fade" id="deleteSupplier<%= supplier._id %>" aria-hidden="true" aria-labelledby="title" tabindex="-1">
+                  <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="title">
+                          Xóa nhà vườn
+                        </h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <form action="/quan-ly-nha-vuon/delete/<%= supplier._id %>" method="post">
+                        <div class="modal-body
+                            ">
+                          Bạn có muốn xóa nhà vườn
+                          <strong><%= supplier.name %></strong> ? Hành động này
+                          không thể hoàn tác.
+                        </div>
+                        <div class="modal-footer
+                            ">
+                          <button type="submit" class="btn btn-danger
+                              ">Xác nhận</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </form>
+
+              <% }) %>
+            </ol>
+            <form action="/du-lieu-hang-ngay/addSupplier/<%= area._id %>?_method=POST" method="post" id="dynamicForm" onchange="this.querySelector('button[type=submit]').style.display = 'block';">
+              <div class="additionalField"></div>
+              <button type="submit" class="btn btn-primary" style="display: none;">Lưu</button>
+            </form>
+            <i class="ri-add-circle-line fs-5" onclick="addFields('.additionalField')" style="cursor: pointer;"></i>
+          </div>
+          <!-- Setting -->
+          <div id="setting" class="collapse" aria-labelledby="suppliersHeading" data-bs-parent="#areaAccordion">
+            <h4>Cài đặt</h4>
+            <form action="/du-lieu-hang-ngay/update/<%= area._id %>?_method=PUT" method="post" onchange="this.querySelector('button[type=submit]').style.display = 'block';">
+              <div class="mb-3">
+                <label for="limitData" class="form-label">Giới hạn dữ liệu/ngày</label>
+                <input type="number" class="form-control" id="limitData" name="limitData" required value="<%= area.limitData ?  area.limitData : '' %>" />
+              </div>
+              <button type="submit" class="btn btn-primary
+                ">Lưu</button>
+            </form>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -918,20 +551,56 @@
 
 
 <script>
-
-   const columns = [
-   { data: 'no', visible: false, orderable: false },
-    { data: 'date', visible: false },
-    { data: 'supplier', orderable: false },
-    { data: 'code', orderable: false },
-    { data: 'muNuocQuantity', orderable: false },
-    { data: 'muNuocPercentage', orderable: false },
-    { data: 'muNuocQuantityTotal', orderable: false },
-    { data: 'muTapQuantity', orderable: false },
-    { data: 'muKeQuantity', orderable: false },
-    { data: 'muDongQuantity', orderable: false },
-    { data: 'note', orderable: false, width: '2rem'  },
-    { data: 'id', orderable: false },
+  const columns = [{
+      data: 'no',
+      visible: false,
+      orderable: false
+    },
+    {
+      data: 'date',
+      visible: false
+    },
+    {
+      data: 'supplier',
+      orderable: false
+    },
+    {
+      data: 'code',
+      orderable: false
+    },
+    {
+      data: 'muNuocQuantity',
+      orderable: false
+    },
+    {
+      data: 'muNuocPercentage',
+      orderable: false
+    },
+    {
+      data: 'muNuocQuantityTotal',
+      orderable: false
+    },
+    {
+      data: 'muTapQuantity',
+      orderable: false
+    },
+    {
+      data: 'muKeQuantity',
+      orderable: false
+    },
+    {
+      data: 'muDongQuantity',
+      orderable: false
+    },
+    {
+      data: 'note',
+      orderable: false,
+      width: '2rem'
+    },
+    {
+      data: 'id',
+      orderable: false
+    },
   ];
 
   initializeDataTable(
@@ -957,12 +626,12 @@
     false,
     true,
   );
-  
-    function addFields(container) {
-      const additionalContainer = document.querySelector(container);
-      const newFields = document.createElement('div');
-      newFields.className = 'supplierInfor my-3';
-      newFields.innerHTML = `
+
+  function addFields(container) {
+    const additionalContainer = document.querySelector(container);
+    const newFields = document.createElement('div');
+    newFields.className = 'supplierInfor my-3';
+    newFields.innerHTML = `
         <div class="supplier">
           <div class="row mt-3">
             <div class="row m-0 p-0">
@@ -1138,20 +807,20 @@
           </div>
         </div>
       `;
-  
-      additionalContainer.appendChild(newFields);
-      toggleFields(); 
-    }
-  
-    // Use EJS variables for initial values
-    const initialAreaPrice = parseFloat('<%= area.areaPrice %>');
-    const initialAreaDimension = parseFloat('<%= area.areaDimension %>');
 
-    // Initialize toggle fields with initial values
-    toggleFields(initialAreaDimension, initialAreaPrice);
-    initializeToggleFields('areaDimension', 'areaPrice');
+    additionalContainer.appendChild(newFields);
+    toggleFields();
+  }
 
-    function checkAdditionalFields() {
+  // Use EJS variables for initial values
+  const initialAreaPrice = parseFloat('<%= area.areaPrice %>');
+  const initialAreaDimension = parseFloat('<%= area.areaDimension %>');
+
+  // Initialize toggle fields with initial values
+  toggleFields(initialAreaDimension, initialAreaPrice);
+  initializeToggleFields('areaDimension', 'areaPrice');
+
+  function checkAdditionalFields() {
     const suppliers = document.querySelectorAll('.additionalField .supplier');
     const submitButton = document.querySelector('#dynamicForm button[type="submit"]');
     if (suppliers.length === 0) {
@@ -1159,5 +828,52 @@
     } else {
       submitButton.style.display = 'block';
     }
+  }
+
+  function calculateAverageRatioSplit(rawMaterials) {
+    const materialData = rawMaterials.reduce((acc, rawMaterialArray) => {
+      rawMaterialArray.forEach(raw => {
+        const {
+          name,
+          quantity = 0,
+          ratioSplit = 100,
+          price = 0,
+          percentage = 0
+        } = raw;
+        if (!acc[name]) {
+          acc[name] = {
+            quantity: 0,
+            ratioSplit: 0,
+            price: 0,
+            total: 0,
+            afterSplit: 0,
+            rawMaterial: [],
+            count: 0,
+          };
+        }
+        acc[name].quantity += quantity;
+        acc[name].rawMaterial.push(raw);
+        acc[name].count += 1;
+
+        if (name === 'Mủ nước') {
+          acc[name].afterSplit += (quantity * percentage / 100 * ratioSplit / 100);
+          acc[name].total += (((quantity * (percentage / 100)) * (ratioSplit)) / 100) * price;
+        } else {
+          acc[name].afterSplit += (quantity * (ratioSplit) / 100);
+          acc[name].total += ((quantity * (ratioSplit)) / 100) * price;
+        }
+
+        if (price) {
+          acc[name].price += price;
+        }
+      });
+      return acc;
+    }, {});
+
+    Object.keys(materialData).forEach(key => {
+      materialData[key].ratioSplit = materialData[key].ratioSplit / materialData[key].count;
+    });
+
+    return materialData;
   }
 </script>
