@@ -78,8 +78,8 @@
   </div>
 
   <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      const isMobile = window.innerWidth <= 768; // Adjust the width threshold as needed
+    window.addEventListener("load", function() {
+      const isMobile = window.innerWidth <= 768; 
   
       if (!isMobile) {
         const links = document.querySelectorAll("a");
