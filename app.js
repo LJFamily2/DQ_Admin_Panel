@@ -2,20 +2,28 @@ if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
 }
 
-var express = require('express');
+const express = require('express');
 const expressLayouts = require('express-ejs-layouts');
-var path = require('path');
+const path = require('path');
 const session = require('express-session');
 const passport = require('passport');
 const flash = require('connect-flash');
 const methodOverride = require('method-override');
+const rateLimit = require('express-rate-limit');
 
-var app = express();
+const app = express();
+
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5000, // limit each IP to 500 requests per windowMs
+});
+app.use(limiter);
 
 // LiveReload Setup
 if (process.env.NODE_ENV !== 'production') {
-  var livereload = require('livereload');
-  var connectLiveReload = require('connect-livereload');
+  const livereload = require('livereload');
+  const connectLiveReload = require('connect-livereload');
   const liveReloadServer = livereload.createServer();
   liveReloadServer.watch(path.join(__dirname, 'public'));
 
@@ -38,11 +46,17 @@ app.use(
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: 'auto' },
+    cookie: {
+      secure: process.env.NODE_ENV === 'production',
+      httpOnly: true,
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+    },
     name: 'dpixport',
     store: SessionMongoDB,
+    rolling: true,
   }),
 );
+
 const initializePassport = require('./middlewares/passportConfig');
 initializePassport(passport);
 app.use(passport.initialize());
@@ -62,7 +76,7 @@ app.use(expressLayouts);
 app.use(flash());
 
 // Static Files
-app.set('views', __dirname + '/views');
+app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Setup Database
@@ -78,9 +92,9 @@ routes.forEach(routeConfig => {
   app.use(routeConfig.path, routeConfig.route);
 });
 
-// Default path when route doesn't existed
+// Default path when route doesn't exist
 app.use((req, res) => {
-  res.render('partials/404', { layout: false });
+  res.status(404).render('partials/404', { layout: false });
 });
 
 app.listen(process.env.PORT || 4000, () => {
