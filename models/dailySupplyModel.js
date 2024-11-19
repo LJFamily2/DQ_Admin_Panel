@@ -20,7 +20,7 @@ const rawMaterialSchema = new mongoose.Schema({
   name: { type: String },
   percentage: { type: Number },
   quantity: { type: Number },
-  ratioSplit: { type: Number, default: 100 },
+  ratioSplit: { type: Number },
   price: { type: Number },
 });
 

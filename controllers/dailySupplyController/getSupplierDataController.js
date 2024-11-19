@@ -376,7 +376,7 @@ async function getSupplierExportData(req, res, isArea) {
     const calculateMaterialData = rawMaterials => {
       return rawMaterials.reduce((acc, rawMaterialArray) => {
         rawMaterialArray.forEach(raw => {
-          const { name, quantity = 0, ratioSplit = 0, price = 0, percentage = 0 } = raw;
+          const { name, quantity = 0, ratioSplit = 100, price = 0, percentage = 0 } = raw;
           if (!acc[name]) {
             acc[name] = {
               quantity: 0,

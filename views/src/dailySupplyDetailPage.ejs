@@ -237,7 +237,7 @@
                     </h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
-                  <form action="/nhap-du-lieu/<%= eachData._id %>?_method=DELETE" method="post">
+                  <form action="/nhap-du-lieu/nguyen-lieu/deleteData/<%= eachData._id %>" method="post">
                     <div class="modal-body">
                       <input type="hidden" name="date" value="<%= eachData.date%>">
                       <% if( user.role === 'Admin' || user.role === 'Quản lý'){%>
