@@ -10,8 +10,12 @@ const passport = require('passport');
 const flash = require('connect-flash');
 const methodOverride = require('method-override');
 const rateLimit = require('express-rate-limit');
+const compression = require('compression');
 
 const app = express();
+
+// Reduce the size of data being transferred over the network
+app.use(compression());
 
 // Rate limiting
 const limiter = rateLimit({
@@ -77,7 +81,9 @@ app.use(flash());
 
 // Static Files
 app.set('views', path.join(__dirname, 'views'));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public'), {
+  maxAge: '1d'
+}));
 
 // Setup Database
 const mongoose = require('mongoose');

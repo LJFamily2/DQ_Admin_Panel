@@ -33,6 +33,8 @@ async function renderPage(req, res) {
     let totalData = await ProductTotalModel.find();
     const total = formatTotalData(totalData);
     let spends = await SpendModel.find();
+
+    res.set('Cache-Control', 'public, max-age=300'); // Cache for 5 minutes
     res.render('src/spendPage', {
       layout: './layouts/defaultLayout',
       title: 'Quản lý chi tiêu',

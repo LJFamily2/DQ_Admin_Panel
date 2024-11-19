@@ -34,7 +34,7 @@ async function renderInputDataDashboardPage(req, res) {
         .populate("data.supplier");
       areas = area ? [area] : [];
     }
-
+    res.set("Cache-Control", "public, max-age=300"); // Cache for 5 minutes
     res.render("src/dailySupplyInputDashboardPage", {
       layout: "./layouts/defaultLayout",
       title: `Nguyên liệu hằng ngày`,
@@ -82,7 +82,7 @@ async function renderInputDataPage(req, res) {
       todayEntriesCount.length > 0
         ? todayEntriesCount[0].count >= area.limitData
         : false;
-
+    res.set("Cache-Control", "public, max-age=300"); // Cache for 5 minutes
     res.render("src/dailySupplyInputPage", {
       layout: "./layouts/defaultLayout",
       title: `Nguyên liệu hằng ngày ${area.name}`,

@@ -54,7 +54,8 @@ async function renderPage(req, res) {
     const supplierSpecificData = area.data.filter(
       (item) => item.supplier._id.toString() === supplierData._id.toString(),
     );
-
+    
+    res.set('Cache-Control', 'public, max-age=300'); // Cache for 5 minutes
     res.render('src/dailySupplyIndividualExportPage', {
       layout: './layouts/defaultLayout',
       title: `Xuất dữ liệu mủ của ${supplierData.name}`,

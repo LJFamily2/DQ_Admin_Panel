@@ -7,7 +7,9 @@
     "start": "node app.js"
   },
   "dependencies": {
+    "apicache": "^1.6.3",
     "bcryptjs": "^2.4.3",
+    "compression": "^1.7.5",
     "connect-ensure-login": "^0.1.1",
     "connect-flash": "^0.1.1",
     "connect-mongodb-session": "^5.0.0",

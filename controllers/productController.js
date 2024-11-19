@@ -1,9 +1,9 @@
-const ProductModel = require('../models/productModel');
-const handleResponse = require('./utils/handleResponse');
-const trimStringFields = require('./utils/trimStringFields');
-const ProductTotalModel = require('../models/productTotalModel');
-const formatTotalData = require('./utils/formatTotalData');
-const convertToDecimal = require('./utils/convertToDecimal');
+const ProductModel = require("../models/productModel");
+const handleResponse = require("./utils/handleResponse");
+const trimStringFields = require("./utils/trimStringFields");
+const ProductTotalModel = require("../models/productTotalModel");
+const formatTotalData = require("./utils/formatTotalData");
+const convertToDecimal = require("./utils/convertToDecimal");
 
 module.exports = {
   createProduct,
@@ -37,9 +37,11 @@ async function renderPage(req, res) {
     const total = formatTotalData(totalData);
 
     const products = await ProductModel.find({});
-    res.render('src/productPage', {
-      layout: './layouts/defaultLayout',
-      title: 'Dữ liệu chạy lò',
+
+    res.set("Cache-Control", "public, max-age=300"); // Cache for 5 minutes
+    res.render("src/productPage", {
+      layout: "./layouts/defaultLayout",
+      title: "Dữ liệu chạy lò",
       products,
       user: req.user,
       total,
@@ -48,7 +50,7 @@ async function renderPage(req, res) {
       messages: req.flash(),
     });
   } catch {
-    res.status(500).render('partials/500', { layout: false });
+    res.status(500).render("partials/500", { layout: false });
   }
 }
 
@@ -87,9 +89,9 @@ async function createProduct(req, res) {
         req,
         res,
         404,
-        'fail',
-        'Đã có dữ liệu ngày này. Hãy chọn ngày khác!',
-        req.headers.referer,
+        "fail",
+        "Đã có dữ liệu ngày này. Hãy chọn ngày khác!",
+        req.headers.referer
       );
     }
 
@@ -116,12 +118,12 @@ async function createProduct(req, res) {
       req,
       res,
       201,
-      'success',
-      'Thêm hàng hóa thành công',
-      req.headers.referer,
+      "success",
+      "Thêm hàng hóa thành công",
+      req.headers.referer
     );
   } catch (err) {
-    res.status(500).render('partials/500', { layout: false });
+    res.status(500).render("partials/500", { layout: false });
   }
 }
 
@@ -136,9 +138,9 @@ async function updateProduct(req, res) {
         req,
         res,
         404,
-        'fail',
-        'Đã có dữ liệu ngày này. Hãy chọn ngày khác!',
-        req.headers.referer,
+        "fail",
+        "Đã có dữ liệu ngày này. Hãy chọn ngày khác!",
+        req.headers.referer
       );
     }
 
@@ -156,7 +158,7 @@ async function updateProduct(req, res) {
 
     const oldData = await ProductModel.findById(id);
     if (!oldData) {
-      return res.status(404).send('Product not found');
+      return res.status(404).send("Product not found");
     }
 
     await ProductModel.findByIdAndUpdate(id, updateFields, { new: true });
@@ -174,13 +176,13 @@ async function updateProduct(req, res) {
       req,
       res,
       200,
-      'success',
-      'Cập nhật hàng hóa thành công',
-      req.headers.referer,
+      "success",
+      "Cập nhật hàng hóa thành công",
+      req.headers.referer
     );
   } catch (error) {
     console.log(error);
-    res.status(500).render('partials/500', { layout: false });
+    res.status(500).render("partials/500", { layout: false });
   }
 }
 
@@ -193,9 +195,9 @@ async function deleteProduct(req, res) {
         req,
         res,
         404,
-        'fail',
-        'Không tìm thấy hàng hóa trong cơ sở dữ liệu',
-        req.headers.referer,
+        "fail",
+        "Không tìm thấy hàng hóa trong cơ sở dữ liệu",
+        req.headers.referer
       );
     }
 
@@ -206,9 +208,9 @@ async function deleteProduct(req, res) {
         req,
         res,
         404,
-        'fail',
-        'Xóa hàng hóa thất bại',
-        req.headers.referer,
+        "fail",
+        "Xóa hàng hóa thất bại",
+        req.headers.referer
       );
     }
 
@@ -223,12 +225,12 @@ async function deleteProduct(req, res) {
       req,
       res,
       200,
-      'success',
-      'Xóa hàng hóa thành công',
-      req.headers.referer,
+      "success",
+      "Xóa hàng hóa thành công",
+      req.headers.referer
     );
   } catch {
-    res.status(500).render('partials/500', { layout: false });
+    res.status(500).render("partials/500", { layout: false });
   }
 }
 
@@ -245,13 +247,13 @@ async function getProducts(req, res) {
       endDate,
     } = req.body;
 
-    const searchValue = search?.value || '';
+    const searchValue = search?.value || "";
     const sortColumn = columns?.[order?.[0]?.column]?.data;
-    const sortDirection = order?.[0]?.dir === 'asc' ? 1 : -1;
+    const sortDirection = order?.[0]?.dir === "asc" ? 1 : -1;
 
     const searchQuery = searchValue
       ? {
-          $or: [{ notes: { $regex: searchValue, $options: 'i' } }],
+          $or: [{ notes: { $regex: searchValue, $options: "i" } }],
         }
       : {};
 
@@ -270,7 +272,7 @@ async function getProducts(req, res) {
     }
 
     // Determine if the sort column is 'date'
-    const isSortingByDate = sortColumn === 'date';
+    const isSortingByDate = sortColumn === "date";
 
     const sortObject = isSortingByDate
       ? { [sortColumn]: sortDirection }
@@ -285,16 +287,16 @@ async function getProducts(req, res) {
 
     const data = products.map((product, index) => ({
       no: parseInt(start, 10) + index + 1,
-      date: product.date.toLocaleDateString('vi-VN'),
+      date: product.date.toLocaleDateString("vi-VN"),
       dryRubberUsed: {
         value: (
           (product.dryRubberUsed * product.dryPercentage) /
           100
-        ).toLocaleString('vi-VN'),
+        ).toLocaleString("vi-VN"),
         id: product._id,
       },
-      quantity: product.quantity.toLocaleString('vi-VN') || 0,
-      notes: product.notes || '',
+      quantity: product.quantity.toLocaleString("vi-VN") || 0,
+      notes: product.notes || "",
       id: product._id,
     }));
 
@@ -305,7 +307,7 @@ async function getProducts(req, res) {
       data,
     });
   } catch {
-    res.status(500).render('partials/500', { layout: false });
+    res.status(500).render("partials/500", { layout: false });
   }
 }
 
@@ -319,12 +321,12 @@ async function deleteAll(req, res) {
             totalDryQuantity: {
               $sum: {
                 $multiply: [
-                  '$dryRubberUsed',
-                  { $divide: ['$dryPercentage', 100] },
+                  "$dryRubberUsed",
+                  { $divide: ["$dryPercentage", 100] },
                 ],
               },
             },
-            totalProduct: { $sum: '$quantity' },
+            totalProduct: { $sum: "$quantity" },
           },
         },
       ]);
@@ -339,7 +341,7 @@ async function deleteAll(req, res) {
       },
       {
         new: true,
-      },
+      }
     );
 
     await ProductModel.deleteMany({});
@@ -347,11 +349,11 @@ async function deleteAll(req, res) {
       req,
       res,
       200,
-      'success',
-      'Xóa tất cả hàng hóa thành công !',
-      req.headers.referer,
+      "success",
+      "Xóa tất cả hàng hóa thành công !",
+      req.headers.referer
     );
   } catch (err) {
-    res.status(500).render('partials/500', { layout: false });
+    res.status(500).render("partials/500", { layout: false });
   }
 }

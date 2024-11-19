@@ -100,6 +100,8 @@ async function renderPage(req, res) {
 
     let totalData = await ProductTotalModel.find({});
     const total = formatTotalData(totalData);
+
+    res.set('Cache-Control', 'public, max-age=300'); // Cache for 5 minutes
     res.render('src/salePage', {
       layout: './layouts/defaultLayout',
       sales,
@@ -458,6 +460,8 @@ async function renderDetailPage(req, res) {
         '/quan-ly-hop-dong',
       );
     }
+
+    res.set('Cache-Control', 'public, max-age=300'); // Cache for 5 minutes
     res.render('src/saleDetailPage', {
       layout: './layouts/defaultLayout',
       sale,

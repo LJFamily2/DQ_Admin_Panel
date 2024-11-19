@@ -1,8 +1,8 @@
-const UserModel = require('../models/accountModel');
-const bcrypt = require('bcryptjs');
-const handleResponse = require('./utils/handleResponse');
-const trimStringFields = require('./utils/trimStringFields');
-const { DailySupply } = require('../models/dailySupplyModel');
+const UserModel = require("../models/accountModel");
+const bcrypt = require("bcryptjs");
+const handleResponse = require("./utils/handleResponse");
+const trimStringFields = require("./utils/trimStringFields");
+const { DailySupply } = require("../models/dailySupplyModel");
 
 module.exports = {
   initialSetupPage,
@@ -24,12 +24,12 @@ async function isDatabaseEmpty() {
 async function initialSetupPage(req, res) {
   try {
     if (await isDatabaseEmpty()) {
-      res.render('src/signUpPage', { layout: false, messages: req.flash() });
+      res.render("src/signUpPage", { layout: false, messages: req.flash() });
     } else {
-      res.status(404).redirect('/dang-nhap');
+      res.status(404).redirect("/dang-nhap");
     }
   } catch (error) {
-    res.status(404).render('partials/404', { layout: false });
+    res.status(404).render("partials/404", { layout: false });
   }
 }
 
@@ -38,25 +38,27 @@ async function initialSetupCreateAccount(req, res) {
     if (await isDatabaseEmpty()) {
       await createUser(req, res);
     } else {
-      res.status(404).redirect('/dang-nhap');
+      res.status(404).redirect("/dang-nhap");
     }
   } catch (error) {
-    res.status(500).render('partials/500', { layout: false });
+    res.status(500).render("partials/500", { layout: false });
   }
 }
 
 async function renderPage(req, res) {
   try {
     const users = await UserModel.find();
-    res.render('src/accountPage', {
-      layout: './layouts/defaultLayout',
+
+    res.set("Cache-Control", "public, max-age=300"); // Cache for 5 minutes
+    res.render("src/accountPage", {
+      layout: "./layouts/defaultLayout",
       users,
       user: req.user,
       messages: req.flash(),
-      title: 'Quản lý tài khoản',
+      title: "Quản lý tài khoản",
     });
   } catch {
-    res.status(500).render('partials/500', { layout: false });
+    res.status(500).render("partials/500", { layout: false });
   }
 }
 
@@ -71,9 +73,9 @@ async function createUser(req, res) {
         req,
         res,
         404,
-        'fail',
-        'Tên tài khoản đã tồn tại. Hãy tạo với tên khác!',
-        req.headers.referer,
+        "fail",
+        "Tên tài khoản đã tồn tại. Hãy tạo với tên khác!",
+        req.headers.referer
       );
     }
 
@@ -88,9 +90,9 @@ async function createUser(req, res) {
         req,
         res,
         404,
-        'fail',
-        'Tạo tài khoản thất bại',
-        req.headers.referer,
+        "fail",
+        "Tạo tài khoản thất bại",
+        req.headers.referer
       );
     }
 
@@ -98,24 +100,24 @@ async function createUser(req, res) {
       req,
       res,
       201,
-      'success',
-      'Tạo tài khoản thành công',
-      req.user ? req.headers.referer : '/dang-nhap',
+      "success",
+      "Tạo tài khoản thành công",
+      req.user ? req.headers.referer : "/dang-nhap"
     );
   } catch {
-    res.status(500).render('partials/500', { layout: false });
+    res.status(500).render("partials/500", { layout: false });
   }
 }
 
 async function getUsers(req, res) {
   try {
     const { draw, start = 0, length = 10, search, order, columns } = req.body;
-    const searchValue = search?.value || '';
+    const searchValue = search?.value || "";
     const sortColumn = columns?.[order?.[0]?.column]?.data;
-    const sortDirection = order?.[0]?.dir === 'asc' ? 1 : -1;
+    const sortDirection = order?.[0]?.dir === "asc" ? 1 : -1;
 
     const searchQuery = {
-      username: { $regex: searchValue, $options: 'i' },
+      username: { $regex: searchValue, $options: "i" },
     };
 
     const totalRecords = await UserModel.countDocuments();
@@ -128,7 +130,7 @@ async function getUsers(req, res) {
     const data = users.map((user, index) => ({
       no: parseInt(start, 10) + index + 1,
       username: user.username,
-      password: '**********',
+      password: "**********",
       role: user.role,
       id: user._id,
     }));
@@ -140,22 +142,22 @@ async function getUsers(req, res) {
       data,
     });
   } catch {
-    res.status(500).render('partials/500', { layout: false });
+    res.status(500).render("partials/500", { layout: false });
   }
 }
 
 async function updateUser(req, res) {
   req.body = trimStringFields(req.body);
-  const userID = req.params.id; 
-  console.log(req.body)
+  const userID = req.params.id;
+  console.log(req.body);
   if (!userID) {
     return handleResponse(
       req,
       res,
       404,
-      'fail',
-      'Không thấy tài khoản',
-      req.headers.referer,
+      "fail",
+      "Không thấy tài khoản",
+      req.headers.referer
     );
   }
 
@@ -170,9 +172,9 @@ async function updateUser(req, res) {
         req,
         res,
         404,
-        'fail',
-        'Mật khẩu cũ không đúng',
-        req.headers.referer,
+        "fail",
+        "Mật khẩu cũ không đúng",
+        req.headers.referer
       );
     }
 
@@ -196,9 +198,9 @@ async function updateUser(req, res) {
         req,
         res,
         404,
-        'fail',
-        'Cập nhập tài khoản thất bại',
-        req.headers.referer,
+        "fail",
+        "Cập nhập tài khoản thất bại",
+        req.headers.referer
       );
     }
 
@@ -206,13 +208,13 @@ async function updateUser(req, res) {
     if (passwordChanged && req.user._id.toString() === userID) {
       req.session.regenerate(function (err) {
         if (err) {
-          return res.status(500).render('partials/500', { layout: false });
+          return res.status(500).render("partials/500", { layout: false });
         }
 
         // Save the session after modifications
         req.session.save(function (saveErr) {
           if (saveErr) {
-            return res.status(500).render('partials/500', { layout: false });
+            return res.status(500).render("partials/500", { layout: false });
           }
 
           // Send success response after session is saved
@@ -220,9 +222,9 @@ async function updateUser(req, res) {
             req,
             res,
             200,
-            'success',
-            'Cập nhập tài khoản thành công',
-            req.headers.referer,
+            "success",
+            "Cập nhập tài khoản thành công",
+            req.headers.referer
           );
         });
       });
@@ -232,14 +234,14 @@ async function updateUser(req, res) {
         req,
         res,
         200,
-        'success',
-        'Cập nhập tài khoản thành công',
-        req.headers.referer,
+        "success",
+        "Cập nhập tài khoản thành công",
+        req.headers.referer
       );
     }
   } catch (error) {
-    console.error('Error updating user:', error);
-    res.status(500).render('partials/500', { layout: false });
+    console.error("Error updating user:", error);
+    res.status(500).render("partials/500", { layout: false });
   }
 }
 
@@ -251,19 +253,19 @@ async function deleteUser(req, res) {
         req,
         res,
         404,
-        'fail',
-        'Không thấy tài khoản',
-        req.headers.referer,
+        "fail",
+        "Không thấy tài khoản",
+        req.headers.referer
       );
     }
-    if (user.role === 'Admin') {
+    if (user.role === "Admin") {
       return handleResponse(
         req,
         res,
         404,
-        'fail',
-        'Không thể xóa tài khoản quản trị',
-        req.headers.referer,
+        "fail",
+        "Không thể xóa tài khoản quản trị",
+        req.headers.referer
       );
     }
 
@@ -272,40 +274,40 @@ async function deleteUser(req, res) {
     // Remove the accountID from the DailySupply collection
     await DailySupply.updateMany(
       { accountID: req.params.id },
-      { $unset: { accountID: '' } },
+      { $unset: { accountID: "" } }
     );
 
     return handleResponse(
       req,
       res,
       200,
-      'success',
-      'Xóa tài khoản thành công',
-      req.headers.referer,
+      "success",
+      "Xóa tài khoản thành công",
+      req.headers.referer
     );
   } catch {
-    res.status(500).render('partials/500', { layout: false });
+    res.status(500).render("partials/500", { layout: false });
   }
 }
 
 async function deleteAllUsers(req, res) {
   try {
     // Find all users with role not equal to 'Admin'
-    const usersToDelete = await UserModel.find({ role: { $ne: 'Admin' } });
+    const usersToDelete = await UserModel.find({ role: { $ne: "Admin" } });
 
     if (usersToDelete.length === 0) {
       return handleResponse(
         req,
         res,
         404,
-        'fail',
-        'Không có tài khoản nào để xóa',
-        req.headers.referer,
+        "fail",
+        "Không có tài khoản nào để xóa",
+        req.headers.referer
       );
     }
 
     // Extract user IDs
-    const userIds = usersToDelete.map(user => user._id);
+    const userIds = usersToDelete.map((user) => user._id);
 
     // Delete all users with role not equal to 'Admin'
     await UserModel.deleteMany({ _id: { $in: userIds } });
@@ -320,13 +322,13 @@ async function deleteAllUsers(req, res) {
       req,
       res,
       200,
-      'success',
-      'Xóa tất cả tài khoản nhân viên thành công',
-      req.headers.referer,
+      "success",
+      "Xóa tất cả tài khoản nhân viên thành công",
+      req.headers.referer
     );
   } catch (error) {
     console.error(error);
-    res.status(500).render('partials/500', { layout: false });
+    res.status(500).render("partials/500", { layout: false });
   }
 }
 
@@ -338,13 +340,13 @@ function logOut(req, res, next) {
     }
 
     // Clear specific cookies if needed
-    res.clearCookie('dpixport', {
-      path: '/',
-      domain: 'http://localhost:1000/',
+    res.clearCookie("dpixport", {
+      path: "/",
+      domain: "http://localhost:1000/",
       secure: true,
     });
 
     // Redirect to the login page or wherever appropriate
-    res.redirect('/dang-nhap');
+    res.redirect("/dang-nhap");
   });
 }

@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const productController = require("../../controllers/productController");
 const authMiddlewares = require("../../middlewares/authMiddlewares");
+const apicache = require("apicache");
+const cache = apicache.middleware;
 
 // Apply ensureLoggedIn middleware to all routes
 router.use(authMiddlewares.ensureLoggedIn);
@@ -9,6 +11,7 @@ router.use(authMiddlewares.ensureWorkingHours);
 
 router.get(
   "/",
+  cache("5 minutes"),
   authMiddlewares.ensureRoles(["Admin", "Quản lý"]),
   productController.renderPage
 );

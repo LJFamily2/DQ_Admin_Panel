@@ -1,9 +1,9 @@
-const trimStringFields = require('./utils/trimStringFields');
-const handleResponse = require('./utils/handleResponse');
-const RawMaterialModel = require('../models/rawMaterialModel');
-const ProductTotalModel = require('../models/productTotalModel');
-const convertToDecimal = require('./utils/convertToDecimal');
-const formatTotalData = require('./utils/formatTotalData');
+const trimStringFields = require("./utils/trimStringFields");
+const handleResponse = require("./utils/handleResponse");
+const RawMaterialModel = require("../models/rawMaterialModel");
+const ProductTotalModel = require("../models/productTotalModel");
+const convertToDecimal = require("./utils/convertToDecimal");
+const formatTotalData = require("./utils/formatTotalData");
 
 module.exports = {
   renderPage,
@@ -21,18 +21,20 @@ async function renderPage(req, res) {
     const total = formatTotalData(totalData);
 
     const datas = await RawMaterialModel.find({});
-    res.render('src/rawMaterialPage', {
-      layout: './layouts/defaultLayout',
+
+    res.set("Cache-Control", "public, max-age=300"); // Cache for 5 minutes
+    res.render("src/rawMaterialPage", {
+      layout: "./layouts/defaultLayout",
       datas,
       total,
       startDate,
       endDate,
       user: req.user,
       messages: req.flash(),
-      title: 'Nguyên liệu',
+      title: "Nguyên liệu",
     });
   } catch {
-    return res.status(500).render('partials/500', { layout: false });
+    return res.status(500).render("partials/500", { layout: false });
   }
 }
 
@@ -40,7 +42,7 @@ function calculateTotalDryRubber(product) {
   return (product.dryQuantity * product.dryPercentage) / 100;
 }
 async function updateProductTotal(data, operation) {
-  const multiplier = operation === 'add' ? 1 : -1;
+  const multiplier = operation === "add" ? 1 : -1;
   const totalDryRubber = calculateTotalDryRubber(data.products) * multiplier;
   const mixedQuantityRounded = data.products.mixedQuantity * multiplier;
   const keQuantity =
@@ -70,9 +72,9 @@ async function createData(req, res) {
         req,
         res,
         404,
-        'fail',
-        'Đã có dữ liệu ngày này. Hãy chọn ngày khác!',
-        req.headers.referer,
+        "fail",
+        "Đã có dữ liệu ngày này. Hãy chọn ngày khác!",
+        req.headers.referer
       );
     }
 
@@ -92,24 +94,24 @@ async function createData(req, res) {
         req,
         res,
         404,
-        'fail',
-        'Tạo dữ liệu thất bại',
-        req.headers.referer,
+        "fail",
+        "Tạo dữ liệu thất bại",
+        req.headers.referer
       );
     }
 
     calculateTotalDryRubber(products);
 
-    const total = await updateProductTotal({ products }, 'add');
+    const total = await updateProductTotal({ products }, "add");
 
     if (!total) {
       return handleResponse(
         req,
         res,
         404,
-        'fail',
-        'Tạo dữ liệu thất bại',
-        req.headers.referer,
+        "fail",
+        "Tạo dữ liệu thất bại",
+        req.headers.referer
       );
     }
 
@@ -117,13 +119,13 @@ async function createData(req, res) {
       req,
       res,
       200,
-      'success',
-      'Tạo dữ liệu thành công',
-      req.headers.referer,
+      "success",
+      "Tạo dữ liệu thành công",
+      req.headers.referer
     );
   } catch (err) {
     console.log(err);
-    return res.status(500).render('partials/500', { layout: false });
+    return res.status(500).render("partials/500", { layout: false });
   }
 }
 
@@ -140,10 +142,10 @@ async function getDatas(req, res) {
       endDate,
     } = req.body;
 
-    const searchValue = search?.value?.toLowerCase() || '';
+    const searchValue = search?.value?.toLowerCase() || "";
     const sortColumnIndex = order?.[0]?.column;
     let sortColumn = columns?.[sortColumnIndex]?.data;
-    let sortDirection = order?.[0]?.dir === 'asc' ? 1 : -1;
+    let sortDirection = order?.[0]?.dir === "asc" ? 1 : -1;
 
     const filter = {};
 
@@ -160,7 +162,7 @@ async function getDatas(req, res) {
     }
 
     // Determine if the sort column is 'date'
-    const isSortingByDate = sortColumn === 'date';
+    const isSortingByDate = sortColumn === "date";
 
     const sortObject = isSortingByDate
       ? { [sortColumn]: sortDirection }
@@ -170,31 +172,31 @@ async function getDatas(req, res) {
     let data = await RawMaterialModel.find(filter).sort(sortObject);
 
     if (searchValue) {
-      const searchColumns = ['dryQuantity', 'dryPercentage', 'mixedQuantity'];
-      data = data.filter(item => {
+      const searchColumns = ["dryQuantity", "dryPercentage", "mixedQuantity"];
+      data = data.filter((item) => {
         const itemDate = new Date(item.date);
         const formattedDate = `${itemDate
           .getDate()
           .toString()
-          .padStart(2, '0')}/${(itemDate.getMonth() + 1)
+          .padStart(2, "0")}/${(itemDate.getMonth() + 1)
           .toString()
-          .padStart(2, '0')}/${itemDate.getFullYear()}`;
+          .padStart(2, "0")}/${itemDate.getFullYear()}`;
         return (
           formattedDate.includes(searchValue) ||
           (item.notes && item.notes.toLowerCase().includes(searchValue)) ||
-          columns.some(column => {
+          columns.some((column) => {
             let columnValue;
             if (searchColumns.includes(column.data)) {
               columnValue = item.products[column.data]
                 ?.toString()
                 .toLowerCase();
-            } else if (column.data === 'dryTotal') {
+            } else if (column.data === "dryTotal") {
               const dryQuantity = parseFloat(item.products?.dryQuantity || 0);
               const dryPercentage = parseFloat(
-                item.products?.dryPercentage || 0,
+                item.products?.dryPercentage || 0
               );
               const dryTotal = (dryQuantity * dryPercentage) / 100 || 0;
-              columnValue = dryTotal.toString().replace('.', ',').toLowerCase();
+              columnValue = dryTotal.toString().replace(".", ",").toLowerCase();
             } else {
               columnValue = item[column.data]?.toString().toLowerCase();
             }
@@ -206,11 +208,11 @@ async function getDatas(req, res) {
 
     data.sort((a, b) => {
       const valueA =
-        (sortColumn === 'date' ? new Date(a.date) : a.products[sortColumn]) ||
-        '';
+        (sortColumn === "date" ? new Date(a.date) : a.products[sortColumn]) ||
+        "";
       const valueB =
-        (sortColumn === 'date' ? new Date(b.date) : b.products[sortColumn]) ||
-        '';
+        (sortColumn === "date" ? new Date(b.date) : b.products[sortColumn]) ||
+        "";
       return valueA < valueB
         ? -sortDirection
         : valueA > valueB
@@ -224,21 +226,21 @@ async function getDatas(req, res) {
       .slice(start, start + length)
       .map((item, index) => ({
         no: parseInt(start, 10) + index + 1,
-        date: new Date(item.date).toLocaleDateString('vi-VN'),
-        dryQuantity: item.products.dryQuantity.toLocaleString('vi-VN'),
-        dryPercentage: item.products.dryPercentage.toLocaleString('vi-VN'),
+        date: new Date(item.date).toLocaleDateString("vi-VN"),
+        dryQuantity: item.products.dryQuantity.toLocaleString("vi-VN"),
+        dryPercentage: item.products.dryPercentage.toLocaleString("vi-VN"),
         dryTotal: (
           (item.products.dryQuantity * item.products.dryPercentage) /
           100
-        ).toLocaleString('vi-VN'),
-        mixedQuantity: item.products.mixedQuantity.toLocaleString('vi-VN'),
-        keQuantity: item.products.keQuantity.toLocaleString('vi-VN'),
-        kePercentage: item.products.dryPercentage.toLocaleString('vi-VN'),
+        ).toLocaleString("vi-VN"),
+        mixedQuantity: item.products.mixedQuantity.toLocaleString("vi-VN"),
+        keQuantity: item.products.keQuantity.toLocaleString("vi-VN"),
+        kePercentage: item.products.dryPercentage.toLocaleString("vi-VN"),
         keTotal: (
           (item.products.keQuantity * item.products.dryPercentage) /
           100
-        ).toLocaleString('vi-VN'),
-        notes: item.notes || '',
+        ).toLocaleString("vi-VN"),
+        notes: item.notes || "",
         id: item._id,
       }));
 
@@ -249,7 +251,7 @@ async function getDatas(req, res) {
       data: formattedData,
     });
   } catch {
-    res.status(500).render('partials/500', { layout: false });
+    res.status(500).render("partials/500", { layout: false });
   }
 }
 
@@ -263,9 +265,9 @@ async function updateData(req, res) {
         req,
         res,
         404,
-        'fail',
-        'Đã có dữ liệu ngày này. Hãy chọn ngày khác !',
-        req.headers.referer,
+        "fail",
+        "Đã có dữ liệu ngày này. Hãy chọn ngày khác !",
+        req.headers.referer
       );
     }
 
@@ -291,7 +293,7 @@ async function updateData(req, res) {
     const newData = await RawMaterialModel.findByIdAndUpdate(
       id,
       { $set: updateFields },
-      { new: true },
+      { new: true }
     );
 
     if (!newData) {
@@ -299,9 +301,9 @@ async function updateData(req, res) {
         req,
         res,
         404,
-        'fail',
-        'Cập nhật thông tin thất bại',
-        req.headers.referer,
+        "fail",
+        "Cập nhật thông tin thất bại",
+        req.headers.referer
       );
     }
 
@@ -347,9 +349,9 @@ async function updateData(req, res) {
         req,
         res,
         404,
-        'fail',
-        'Cập nhật thông tin thất bại',
-        req.headers.referer,
+        "fail",
+        "Cập nhật thông tin thất bại",
+        req.headers.referer
       );
     }
 
@@ -357,12 +359,12 @@ async function updateData(req, res) {
       req,
       res,
       200,
-      'success',
-      'Cập nhật thông tin thành công',
-      req.headers.referer,
+      "success",
+      "Cập nhật thông tin thành công",
+      req.headers.referer
     );
   } catch {
-    res.status(500).render('partials/500', { layout: false });
+    res.status(500).render("partials/500", { layout: false });
   }
 }
 
@@ -378,9 +380,9 @@ async function deleteData(req, res) {
         req,
         res,
         404,
-        'fail',
-        'Xóa dữ liệu thất bại',
-        req.headers.referer,
+        "fail",
+        "Xóa dữ liệu thất bại",
+        req.headers.referer
       );
     }
 
@@ -388,18 +390,18 @@ async function deleteData(req, res) {
     calculateTotalDryRubber(data.products);
 
     // Update the ProductTotal document efficiently
-    await updateProductTotal({ products: data.products }, 'subtract');
+    await updateProductTotal({ products: data.products }, "subtract");
 
     handleResponse(
       req,
       res,
       200,
-      'success',
-      'Xóa dữ liệu thành công',
-      req.headers.referer,
+      "success",
+      "Xóa dữ liệu thành công",
+      req.headers.referer
     );
   } catch {
-    res.status(500).render('partials/500', { layout: false });
+    res.status(500).render("partials/500", { layout: false });
   }
 }
 
@@ -420,8 +422,8 @@ async function deleteAll(req, res) {
               $divide: [
                 {
                   $multiply: [
-                    '$products.dryQuantity',
-                    '$products.dryPercentage',
+                    "$products.dryQuantity",
+                    "$products.dryPercentage",
                   ],
                 },
                 100,
@@ -433,15 +435,15 @@ async function deleteAll(req, res) {
               $divide: [
                 {
                   $multiply: [
-                    '$products.keQuantity',
-                    '$products.dryPercentage',
+                    "$products.keQuantity",
+                    "$products.dryPercentage",
                   ],
                 },
                 100,
               ],
             },
           },
-          totalMixedQuantity: { $sum: '$products.mixedQuantity' },
+          totalMixedQuantity: { $sum: "$products.mixedQuantity" },
         },
       },
     ]);
@@ -454,7 +456,7 @@ async function deleteAll(req, res) {
           mixedQuantity: -(totalMixedQuantity + totalKeQuantity),
         },
       },
-      { new: true },
+      { new: true }
     );
 
     await RawMaterialModel.deleteMany({});
@@ -463,11 +465,11 @@ async function deleteAll(req, res) {
       req,
       res,
       200,
-      'success',
-      'Xóa tất cả dữ liệu thành công !',
-      req.headers.referer,
+      "success",
+      "Xóa tất cả dữ liệu thành công !",
+      req.headers.referer
     );
   } catch (err) {
-    res.status(500).render('partials/500', { layout: false });
+    res.status(500).render("partials/500", { layout: false });
   }
 }
