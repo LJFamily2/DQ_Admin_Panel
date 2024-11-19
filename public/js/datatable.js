@@ -212,7 +212,7 @@ function initializeDataTable(
           ...column,
           render: function (data, type, row) {
             return `
-            <div class="d-flex justify-content-between fs-5">
+            <div class="d-flex justify-content-evenly fs-5">
               <i
                   class="ri-edit-box-line"
                   data-bs-toggle="modal"
