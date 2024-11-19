@@ -2,32 +2,20 @@ if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
 }
 
-const express = require('express');
+var express = require('express');
 const expressLayouts = require('express-ejs-layouts');
-const path = require('path');
+var path = require('path');
 const session = require('express-session');
 const passport = require('passport');
 const flash = require('connect-flash');
 const methodOverride = require('method-override');
-const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
 
-const app = express();
-
-// Security middleware
-app.use(helmet());
-
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
-});
-app.use(limiter);
+var app = express();
 
 // LiveReload Setup
 if (process.env.NODE_ENV !== 'production') {
-  const livereload = require('livereload');
-  const connectLiveReload = require('connect-livereload');
+  var livereload = require('livereload');
+  var connectLiveReload = require('connect-livereload');
   const liveReloadServer = livereload.createServer();
   liveReloadServer.watch(path.join(__dirname, 'public'));
 
@@ -50,17 +38,11 @@ app.use(
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
-    cookie: {
-      secure: process.env.NODE_ENV === 'production',
-      httpOnly: true,
-      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-    },
+    cookie: { secure: 'auto' },
     name: 'dpixport',
     store: SessionMongoDB,
-    rolling: true,
   }),
 );
-
 const initializePassport = require('./middlewares/passportConfig');
 initializePassport(passport);
 app.use(passport.initialize());
@@ -80,7 +62,7 @@ app.use(expressLayouts);
 app.use(flash());
 
 // Static Files
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', __dirname + '/views');
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Setup Database
@@ -96,9 +78,9 @@ routes.forEach(routeConfig => {
   app.use(routeConfig.path, routeConfig.route);
 });
 
-// Default path when route doesn't exist
+// Default path when route doesn't existed
 app.use((req, res) => {
-  res.status(404).render('partials/404', { layout: false });
+  res.render('partials/404', { layout: false });
 });
 
 app.listen(process.env.PORT || 4000, () => {
