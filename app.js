@@ -18,6 +18,9 @@ const app = express();
 app.use(compression());
 
 // Rate limiting
+  // Trust the first proxy
+app.set('trust proxy', 1);
+
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 5000, // limit each IP to 500 requests per windowMs
