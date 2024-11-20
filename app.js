@@ -106,6 +106,12 @@ app.use((req, res) => {
   res.status(404).render("partials/404", { layout: false });
 });
 
+// Update automatically
+const { updateDateRangeAutomatically } = require('./controllers/dateRangeAccessController');
+
+  // Call the function once at startup to set the initial date range
+updateDateRangeAutomatically();
+
 app.listen(process.env.PORT || 4000, () => {
   console.log(`Server is running on port localhost:1000`);
 });

@@ -1,5 +1,6 @@
 const handleResponse = require('../controllers/utils/handleResponse');
 const dateRangeAccess = require('../models/dateRangeAccessModel');
+const cron = require('node-cron');
 
 async function setDateRange(req, res) {
   try {
@@ -12,7 +13,7 @@ async function setDateRange(req, res) {
       startDate = today;
     }
     if (!endDate) {
-      endDate = today.setUTCDate(23, 59, 59, 999);
+      endDate = today.setUTCHours(23, 59, 59, 999);
     }
 
     const updateDateRange = await dateRangeAccess.findOneAndUpdate(
@@ -48,6 +49,27 @@ async function setDateRange(req, res) {
   }
 }
 
+async function updateDateRangeAutomatically() {
+  const today = new Date();
+  today.setUTCHours(0, 0, 0, 0);
+  const startDate = today;
+  const endDate = new Date(today);
+  endDate.setUTCHours(23, 59, 59, 999);
+
+  await dateRangeAccess.findOneAndUpdate(
+    {},
+    {
+      startDate,
+      endDate,
+    },
+    { upsert: true, new: true },
+  );
+}
+
+// Schedule the job to run at the end of every day
+cron.schedule('59 59 23 * * *', updateDateRangeAutomatically);
+
 module.exports = {
   setDateRange,
+  updateDateRangeAutomatically,
 };
