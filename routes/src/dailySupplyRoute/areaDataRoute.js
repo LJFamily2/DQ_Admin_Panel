@@ -6,6 +6,10 @@ const checkDateAccess = require("../../../middlewares/dateRangeAccessSetting");
 const apicache = require("apicache");
 const cache = apicache.middleware;
 
+// Apply ensureLoggedIn middleware to all routes
+router.use(authMiddlewares.ensureLoggedIn);
+router.use(authMiddlewares.ensureWorkingHours);
+
 // Main page
 router.get(
   "/",

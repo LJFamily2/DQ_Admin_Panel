@@ -3,7 +3,17 @@ const dateRangeAccess = require('../models/dateRangeAccessModel');
 
 async function setDateRange(req, res) {
   try {
-    const { startDate, endDate } = req.body;
+    let { startDate, endDate } = req.body;
+
+    const today = new Date();
+    today.setUTCHours(0, 0, 0, 0);
+
+    if (!startDate) {
+      startDate = today;
+    }
+    if (!endDate) {
+      endDate = today.setUTCDate(23, 59, 59, 999);
+    }
 
     const updateDateRange = await dateRangeAccess.findOneAndUpdate(
       {},
