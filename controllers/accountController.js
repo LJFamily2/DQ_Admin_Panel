@@ -342,7 +342,7 @@ function logOut(req, res, next) {
     // Clear specific cookies if needed
     res.clearCookie("dpixport", {
       path: "/",
-      domain: "http://localhost:1000/",
+      domain: process.env.NODE_ENV === "production" ? "dqinventory.com" : "localhost:1000",
       secure: true,
     });
 

@@ -56,6 +56,7 @@ app.use(
     cookie: {
       secure: process.env.NODE_ENV === "production",
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+      httpOnly: true,
     },
     name: "dpixport",
     store: SessionMongoDB,
