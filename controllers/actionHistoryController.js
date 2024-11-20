@@ -70,7 +70,8 @@ async function renderPage(req, res) {
       _id: id,
       username,
     }));
-
+    
+    res.set('Cache-Control', 'public, max-age=300'); // Cache for 5 minutes
     res.render('src/actionHistoryPage', {
       layout: './layouts/defaultLayout',
       title: 'Lịch sử hoạt động',

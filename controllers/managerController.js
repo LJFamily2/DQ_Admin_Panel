@@ -1,8 +1,8 @@
 const ManagerModel = require("../models/managerModel");
 const handleResponse = require("./utils/handleResponse");
-const deleteImageFile = require("./utils/deleteImageFile")
+const deleteImageFile = require("./utils/deleteImageFile");
 const PlantationModel = require("../models/plantationModel");
-const trimStringFields = require('./utils/trimStringFields')
+const trimStringFields = require("./utils/trimStringFields");
 
 module.exports = {
   createManager,
@@ -13,11 +13,12 @@ module.exports = {
   renderPage,
 };
 
-
 async function renderPage(req, res) {
   try {
     const plantations = await PlantationModel.find({});
     const managers = await ManagerModel.find({}).populate("plantations").exec();
+
+    res.set("Cache-Control", "public, max-age=300"); // Cache for 5 minutes
     res.render("src/managerPage", {
       layout: "./layouts/defaultLayout",
       managers,
@@ -26,12 +27,12 @@ async function renderPage(req, res) {
       title: "Người quản lý",
     });
   } catch {
-    res.status(500).render('partials/500', {layout: false});
+    res.status(500).render("partials/500", { layout: false });
   }
 }
 
 async function createManager(req, res) {
-  req.body = trimStringFields(req.body)
+  req.body = trimStringFields(req.body);
   try {
     const frontIdentification = req.files["frontIdentification"]
       ? req.files["frontIdentification"][0].filename
@@ -66,13 +67,13 @@ async function createManager(req, res) {
         "/quan-ly-nguoi-quan-ly"
       );
     }
-  } catch  {
-    res.status(500).render('partials/500', {layout: false});
+  } catch {
+    res.status(500).render("partials/500", { layout: false });
   }
 }
 
 async function updateManager(req, res) {
-  req.body = trimStringFields(req.body)
+  req.body = trimStringFields(req.body);
 
   try {
     const { id } = req.params;
@@ -152,8 +153,8 @@ async function deleteManager(req, res) {
       "Xóa người quản lý thành công",
       "/quan-ly-nguoi-quan-ly"
     );
-  } catch  {
-    res.status(500).render('partials/500', {layout: false});
+  } catch {
+    res.status(500).render("partials/500", { layout: false });
   }
 }
 
@@ -180,8 +181,8 @@ async function deleteAllManagers(req, res) {
       "Đã xóa tất cả người quản lý",
       "/quan-ly-nguoi-quan-ly"
     );
-  } catch  {
-    res.status(500).render('partials/500', {layout: false});
+  } catch {
+    res.status(500).render("partials/500", { layout: false });
   }
 }
 
@@ -224,7 +225,7 @@ async function getManagers(req, res) {
       name: manager.name,
       phone: manager.phone ? manager.phone : "",
       address: manager.address ? manager.address : "",
-      plantations: manager.plantations.map(p => p.name).join(', ') || "",
+      plantations: manager.plantations.map((p) => p.name).join(", ") || "",
       frontIdentification: manager.frontIdentification,
       backIdentification: manager.backIdentification,
       id: manager._id,
@@ -236,8 +237,7 @@ async function getManagers(req, res) {
       recordsFiltered: filteredRecords,
       data,
     });
-  } catch  {
-    res.status(500).render('partials/500', {layout: false});
+  } catch {
+    res.status(500).render("partials/500", { layout: false });
   }
 }
-

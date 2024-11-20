@@ -338,6 +338,8 @@ async function renderPage(req, res) {
       .exec();
     const areas = await AreaModel.find({});
     const managers = await ManagerModel.find({});
+
+    res.set('Cache-Control', 'public, max-age=300'); // Cache for 5 minutes
     res.render('src/plantationPage', {
       layout: './layouts/defaultLayout',
       title: 'Quản lý vườn',
@@ -372,6 +374,8 @@ async function renderDetailPage(req, res) {
       );
       return res.status(404);
     }
+
+    res.set('Cache-Control', 'public, max-age=300'); // Cache for 5 minutes
     res.render('src/plantationDetailPage', {
       layout: './layouts/defaultLayout',
       title: `Chi tiết vườn ${plantation.name}`,

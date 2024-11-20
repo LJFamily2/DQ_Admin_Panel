@@ -3,6 +3,7 @@ const handleResponse = require("./utils/handleResponse");
 const trimStringFields = require("./utils/trimStringFields");
 
 function renderLogin(req, res) {
+  res.set('Cache-Control', 'public, max-age=300'); // Cache for 5 minutes
   res.render("src/signInPage", { layout: false, messages: req.flash() });
 }
 

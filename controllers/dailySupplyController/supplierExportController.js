@@ -24,7 +24,8 @@ async function renderPage(req, res) {
     const area = await DailySupply.findOne({ slug: req.params.slug }).populate(
       'suppliers',
     );
-
+    
+    res.set('Cache-Control', 'public, max-age=300'); // Cache for 5 minutes
     res.render('src/dailySupplyExportPage', {
       layout: './layouts/defaultLayout',
       title: `Xuất dữ liệu mủ của ${area.name}`,

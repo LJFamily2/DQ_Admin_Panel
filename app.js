@@ -2,37 +2,40 @@ if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
 
-var express = require("express");
+const express = require("express");
 const expressLayouts = require("express-ejs-layouts");
-var path = require("path");
+const path = require("path");
 const session = require("express-session");
 const passport = require("passport");
 const flash = require("connect-flash");
 const methodOverride = require("method-override");
-const compression = require("compression");
 const rateLimit = require("express-rate-limit");
-const apicache = require("apicache");
-var app = express();
+const compression = require("compression");
+
+const app = express();
 
 // Reduce the size of data being transferred over the network
 app.use(compression());
 
 // Rate limiting
 // Trust the first proxy
-app.set("trust proxy", 1);
+app.set('trust proxy', 1);
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 5000, // limit each IP to 500 requests per windowMs
 });
 app.use(limiter);
+
+// Reduce the size of data being transferred over the network
+app.use(compression());
+
 // LiveReload Setup
 if (process.env.NODE_ENV !== "production") {
   var livereload = require("livereload");
   var connectLiveReload = require("connect-livereload");
   const liveReloadServer = livereload.createServer();
   liveReloadServer.watch(path.join(__dirname, "public"));
-
   liveReloadServer.server.once("connection", () => {
     setTimeout(() => {
       liveReloadServer.refresh("/");
@@ -97,9 +100,10 @@ routes.forEach((routeConfig) => {
   app.use(routeConfig.path, routeConfig.route);
 });
 
-// Default path when route doesn't existed
+// Default path when route doesn't exist
 app.use((req, res) => {
   res.render("partials/404", { layout: false });
+  res.status(404).render("partials/404", { layout: false });
 });
 
 app.listen(process.env.PORT || 4000, () => {

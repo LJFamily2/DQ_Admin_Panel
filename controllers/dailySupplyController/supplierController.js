@@ -88,7 +88,7 @@ async function renderDetailPage(req, res) {
         };
       }),
     );
-
+    res.set('Cache-Control', 'public, max-age=300'); // Cache for 5 minutes
     res.render('src/dailySupplyDetailPage', {
       layout: './layouts/defaultLayout',
       title: `Dữ liệu mủ của ${area.name}`,

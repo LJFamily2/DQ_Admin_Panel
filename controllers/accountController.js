@@ -48,8 +48,8 @@ async function initialSetupCreateAccount(req, res) {
 async function renderPage(req, res) {
   try {
     const users = await UserModel.find();
-    res.render("src/accountPage", {
-      layout: "./layouts/defaultLayout",
+    res.render('src/accountPage', {
+      layout: './layouts/defaultLayout',
       users,
       user: req.user,
       messages: req.flash(),
@@ -338,12 +338,12 @@ function logOut(req, res, next) {
     }
 
     // Clear specific cookies if needed
-    res.clearCookie("dpixport", {
-      path: "/",
+    res.clearCookie('dpixport', {
+      path: '/',
       secure: true,
     });
 
     // Redirect to the login page or wherever appropriate
-    res.redirect("/dang-nhap");
+    res.redirect('/dang-nhap');
   });
 }

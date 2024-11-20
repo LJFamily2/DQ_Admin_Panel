@@ -3,15 +3,19 @@ const router = express.Router();
 const dailySupplyController = require("../../../controllers/dailySupplyController");
 const authMiddlewares = require("../../../middlewares/authMiddlewares");
 const checkDateAccess = require("../../../middlewares/dateRangeAccessSetting");
+const apicache = require("apicache");
+const cache = apicache.middleware;
 
 // User side for input data
 router.get(
   "/nguyen-lieu",
+  cache("5 minutes"),
   authMiddlewares.ensureRoles(["Admin", "Hàm lượng", "Quản lý"]),
   dailySupplyController.supplierInputController.renderInputDataDashboardPage
 );
 router.get(
   "/nguyen-lieu/:slug",
+  cache("5 minutes"),
   authMiddlewares.ensureRoles(["Admin", "Hàm lượng", "Quản lý"]),
   dailySupplyController.supplierInputController.renderInputDataPage
 );

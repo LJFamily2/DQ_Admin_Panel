@@ -3,10 +3,13 @@ const router = express.Router();
 const dailySupplyController = require("../../../controllers/dailySupplyController");
 const authMiddlewares = require("../../../middlewares/authMiddlewares");
 const checkDateAccess = require("../../../middlewares/dateRangeAccessSetting");
+const apicache = require("apicache");
+const cache = apicache.middleware;
 
 // Main page
 router.get(
   "/",
+  cache("5 minutes"),
   authMiddlewares.ensureRoles(["Admin", "Văn phòng", "Quản lý"]),
   dailySupplyController.supplierAreaController.renderPage
 );
@@ -29,6 +32,7 @@ router.delete(
 // Detail page
 router.get(
   "/:slug",
+  cache("5 minutes"),
   authMiddlewares.ensureRoles(["Admin", "Văn phòng", "Quản lý"]),
   dailySupplyController.supplierController.renderDetailPage
 );
@@ -71,6 +75,7 @@ router.delete(
 // Admin side for export
 router.get(
   "/:slug/xuat-file",
+  cache("5 minutes"),
   authMiddlewares.ensureRoles(["Admin", "Văn phòng", "Quản lý"]),
   dailySupplyController.supplierExportController.renderPage
 );
@@ -89,13 +94,15 @@ router.put(
 // Admin side for exporting individual
 router.get(
   "/:slug/xuat-file/:supplierSlug",
+  cache("5 minutes"),
   authMiddlewares.ensureRoles(["Admin", "Văn phòng", "Quản lý"]),
   dailySupplyController.supplierIndividualExportController.renderPage
 );
 router.post(
   "/:slug/getSupplierExportData/:supplierSlug",
   authMiddlewares.ensureRoles(["Admin", "Văn phòng", "Quản lý"]),
-  dailySupplyController.getSupplierDataController.getIndividualSupplierExportData
+  dailySupplyController.getSupplierDataController
+    .getIndividualSupplierExportData
 );
 
 module.exports = router;

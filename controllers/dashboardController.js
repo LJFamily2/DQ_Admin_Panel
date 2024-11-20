@@ -1,10 +1,10 @@
-const RawMaterialModel = require('../models/rawMaterialModel');
-const ProductModel = require('../models/productModel');
-const SpendModel = require('../models/spendModel');
-const SaleModel = require('../models/saleModel');
-const ProductTotalModel = require('../models/productTotalModel');
+const RawMaterialModel = require("../models/rawMaterialModel");
+const ProductModel = require("../models/productModel");
+const SpendModel = require("../models/spendModel");
+const SaleModel = require("../models/saleModel");
+const ProductTotalModel = require("../models/productTotalModel");
 
-const formatTotalData = require('./utils/formatTotalData');
+const formatTotalData = require("./utils/formatTotalData");
 
 module.exports = {
   renderPage,
@@ -17,14 +17,16 @@ async function renderPage(req, res) {
   try {
     let totalData = await ProductTotalModel.find();
     const total = formatTotalData(totalData);
-    res.render('src/dashboard', {
-      layout: './layouts/defaultLayout',
-      title: 'Tổng dữ liệu',
+
+    res.set("Cache-Control", "public, max-age=300"); // Cache for 5 minutes
+    res.render("src/dashboard", {
+      layout: "./layouts/defaultLayout",
+      title: "Tổng dữ liệu",
       total,
       user: req.user,
     });
   } catch (err) {
-    res.status(500).render('partials/500', { layout: false });
+    res.status(500).render("partials/500", { layout: false });
   }
 }
 
@@ -35,18 +37,18 @@ async function getRawMaterial(req, res) {
     const rawMaterialData = await RawMaterialModel.aggregate([
       {
         $project: {
-          month: { $month: '$date' },
-          year: { $year: '$date' },
+          month: { $month: "$date" },
+          year: { $year: "$date" },
           dryRubber: {
             $divide: [
               {
-                $multiply: ['$products.dryQuantity', '$products.dryPercentage'],
+                $multiply: ["$products.dryQuantity", "$products.dryPercentage"],
               },
               100,
             ],
           },
-          keQuantity: '$products.keQuantity',
-          mixedQuantity: '$products.mixedQuantity',
+          keQuantity: "$products.keQuantity",
+          mixedQuantity: "$products.mixedQuantity",
         },
       },
       {
@@ -54,18 +56,18 @@ async function getRawMaterial(req, res) {
       },
       {
         $group: {
-          _id: { month: '$month', year: '$year' },
-          totalDryRubber: { $sum: '$dryRubber' },
-          totalKeQuantity: { $sum: '$keQuantity' },
-          totalMixedQuantity: { $sum: '$mixedQuantity' },
+          _id: { month: "$month", year: "$year" },
+          totalDryRubber: { $sum: "$dryRubber" },
+          totalKeQuantity: { $sum: "$keQuantity" },
+          totalMixedQuantity: { $sum: "$mixedQuantity" },
         },
       },
       {
-        $sort: { '_id.year': 1, '_id.month': 1 },
+        $sort: { "_id.year": 1, "_id.month": 1 },
       },
     ]);
 
-    const result = rawMaterialData.map(item => ({
+    const result = rawMaterialData.map((item) => ({
       year: item._id.year,
       month: item._id.month,
       totalDryRubber: item.totalDryRubber,
@@ -75,7 +77,7 @@ async function getRawMaterial(req, res) {
 
     res.json(result);
   } catch (err) {
-    res.status(500).send('Internal Server Error');
+    res.status(500).send("Internal Server Error");
   }
 }
 
@@ -84,12 +86,12 @@ async function getProductData(req, res) {
     const productData = await ProductModel.aggregate([
       {
         $project: {
-          month: { $month: '$date' },
-          year: { $year: '$date' },
+          month: { $month: "$date" },
+          year: { $year: "$date" },
           dryRubber: {
-            $divide: [{ $multiply: ['$dryRubberUsed', '$dryPercentage'] }, 100],
+            $divide: [{ $multiply: ["$dryRubberUsed", "$dryPercentage"] }, 100],
           },
-          quantity: '$quantity',
+          quantity: "$quantity",
         },
       },
       {
@@ -97,17 +99,17 @@ async function getProductData(req, res) {
       },
       {
         $group: {
-          _id: { month: '$month', year: '$year' },
-          totalDryRubber: { $sum: '$dryRubber' },
-          totalQuantity: { $sum: '$quantity' },
+          _id: { month: "$month", year: "$year" },
+          totalDryRubber: { $sum: "$dryRubber" },
+          totalQuantity: { $sum: "$quantity" },
         },
       },
       {
-        $sort: { '_id.year': 1, '_id.month': 1 },
+        $sort: { "_id.year": 1, "_id.month": 1 },
       },
     ]);
 
-    const result = productData.map(item => ({
+    const result = productData.map((item) => ({
       year: item._id.year,
       month: item._id.month,
       totalDryRubber: item.totalDryRubber,
@@ -117,7 +119,7 @@ async function getProductData(req, res) {
     res.json(result);
   } catch (err) {
     console.error(err);
-    res.status(500).send('Internal Server Error');
+    res.status(500).send("Internal Server Error");
   }
 }
 
@@ -127,9 +129,9 @@ async function getRevenueAndSpending(req, res) {
     const spendData = await SpendModel.aggregate([
       {
         $project: {
-          month: { $month: '$date' },
-          year: { $year: '$date' },
-          total: { $multiply: ['$quantity', '$price'] },
+          month: { $month: "$date" },
+          year: { $year: "$date" },
+          total: { $multiply: ["$quantity", "$price"] },
         },
       },
       {
@@ -137,42 +139,42 @@ async function getRevenueAndSpending(req, res) {
       },
       {
         $group: {
-          _id: { month: '$month', year: '$year' },
-          totalSpending: { $sum: '$total' },
+          _id: { month: "$month", year: "$year" },
+          totalSpending: { $sum: "$total" },
         },
       },
       {
-        $sort: { '_id.year': 1, '_id.month': 1 },
+        $sort: { "_id.year": 1, "_id.month": 1 },
       },
     ]);
 
     // Aggregate sales data
     const saleData = await SaleModel.aggregate([
-      { $unwind: '$products' },
+      { $unwind: "$products" },
       {
         $project: {
-          month: { $month: '$products.date' },
-          year: { $year: '$products.date' },
+          month: { $month: "$products.date" },
+          year: { $year: "$products.date" },
           total: {
             $cond: {
-              if: { $eq: ['$products.name', 'dryRubber'] },
+              if: { $eq: ["$products.name", "dryRubber"] },
               then: {
                 $multiply: [
                   {
                     $divide: [
                       {
                         $multiply: [
-                          '$products.quantity',
-                          '$products.percentage',
+                          "$products.quantity",
+                          "$products.percentage",
                         ],
                       },
                       100,
                     ],
                   },
-                  '$products.price',
+                  "$products.price",
                 ],
               },
-              else: { $multiply: ['$products.quantity', '$products.price'] },
+              else: { $multiply: ["$products.quantity", "$products.price"] },
             },
           },
         },
@@ -182,19 +184,19 @@ async function getRevenueAndSpending(req, res) {
       },
       {
         $group: {
-          _id: { month: '$month', year: '$year' },
-          totalRevenue: { $sum: '$total' },
+          _id: { month: "$month", year: "$year" },
+          totalRevenue: { $sum: "$total" },
         },
       },
       {
-        $sort: { '_id.year': 1, '_id.month': 1 },
+        $sort: { "_id.year": 1, "_id.month": 1 },
       },
     ]);
 
     // Combine the results
     const combinedData = {};
 
-    spendData.forEach(item => {
+    spendData.forEach((item) => {
       const key = `${item._id.year}-${item._id.month}`;
       if (!combinedData[key]) {
         combinedData[key] = { totalSpending: 0, totalRevenue: 0 };
@@ -202,7 +204,7 @@ async function getRevenueAndSpending(req, res) {
       combinedData[key].totalSpending = item.totalSpending;
     });
 
-    saleData.forEach(item => {
+    saleData.forEach((item) => {
       const key = `${item._id.year}-${item._id.month}`;
       if (!combinedData[key]) {
         combinedData[key] = { totalSpending: 0, totalRevenue: 0 };
@@ -211,8 +213,8 @@ async function getRevenueAndSpending(req, res) {
     });
 
     // Convert combinedData to an array
-    const result = Object.keys(combinedData).map(key => {
-      const [year, month] = key.split('-');
+    const result = Object.keys(combinedData).map((key) => {
+      const [year, month] = key.split("-");
       return {
         year: parseInt(year),
         month: parseInt(month),
@@ -224,6 +226,6 @@ async function getRevenueAndSpending(req, res) {
     res.json(result);
   } catch (err) {
     console.error(err);
-    res.status(500).send('Internal Server Error');
+    res.status(500).send("Internal Server Error");
   }
 }

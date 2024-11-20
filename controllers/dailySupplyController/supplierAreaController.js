@@ -29,7 +29,7 @@ async function renderPage(req, res) {
           .map(id => id.toString())
           .includes(account._id.toString()),
     );
-
+    res.set('Cache-Control', 'public, max-age=300'); // Cache for 5 minutes
     res.render('src/dailySupplyPage', {
       layout: './layouts/defaultLayout',
       title: 'Dữ liệu mủ hằng ngày',

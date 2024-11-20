@@ -1,7 +1,7 @@
 const AreaModel = require("../models/areaModel");
 const handleResponse = require("./utils/handleResponse");
 const PlantationModel = require("../models/plantationModel");
-const trimStringFields = require('./utils/trimStringFields')
+const trimStringFields = require("./utils/trimStringFields");
 
 module.exports = {
   createArea,
@@ -18,6 +18,8 @@ async function renderPage(req, res) {
   try {
     const plantations = await PlantationModel.find({});
     const areas = await AreaModel.find({}).populate("plantations").exec();
+
+    res.set("Cache-Control", "public, max-age=300"); // Cache for 5 minutes
     res.render("src/areaPage", {
       layout: "./layouts/defaultLayout",
       title: "Quản lý khu vực",
@@ -26,7 +28,7 @@ async function renderPage(req, res) {
       messages: req.flash(),
     });
   } catch (err) {
-    res.status(500).render('partials/500', {layout: false});
+    res.status(500).render("partials/500", { layout: false });
   }
 }
 
@@ -48,7 +50,9 @@ async function createArea(req, res) {
     }
 
     // Ensure plantation is an array
-    let plantationArray = Array.isArray(req.body.plantation) ? req.body.plantation : [req.body.plantation];
+    let plantationArray = Array.isArray(req.body.plantation)
+      ? req.body.plantation
+      : [req.body.plantation];
 
     // Remove empty or whitespace-only strings
     plantationArray = plantationArray.filter((p) => p && p.trim() !== "");
@@ -86,7 +90,6 @@ async function createArea(req, res) {
       );
     }
 
-
     return handleResponse(
       req,
       res,
@@ -95,8 +98,8 @@ async function createArea(req, res) {
       "Thêm khu vực thành công",
       "/quan-ly-khu-vuc"
     );
-  } catch  {
-    return res.status(500).render('partials/500', {layout: false});
+  } catch {
+    return res.status(500).render("partials/500", { layout: false });
   }
 }
 
@@ -112,14 +115,18 @@ PlantationModel.findOneOrCreate = async function findOneOrCreate(condition) {
 
 async function updateArea(req, res) {
   try {
-    req.body = trimStringFields(req.body)
+    req.body = trimStringFields(req.body);
 
     const updateFields = {
-      name:req.body.name,
+      name: req.body.name,
     };
-    const updatedArea = await AreaModel.findByIdAndUpdate(req.body.area, updateFields, {
-      new: true,
-    });
+    const updatedArea = await AreaModel.findByIdAndUpdate(
+      req.body.area,
+      updateFields,
+      {
+        new: true,
+      }
+    );
 
     if (!updatedArea) {
       return handleResponse(
@@ -140,8 +147,8 @@ async function updateArea(req, res) {
       "Cập nhật khu vực thành công",
       "/quan-ly-khu-vuc"
     );
-  } catch  {
-    res.status(500).render('partials/500', {layout: false});
+  } catch {
+    res.status(500).render("partials/500", { layout: false });
   }
 }
 
@@ -187,14 +194,14 @@ async function removePlantationFromArea(req, res) {
     }
   } catch (err) {
     console.error(err);
-    return res.status(500).render('partials/500', {layout: false});
+    return res.status(500).render("partials/500", { layout: false });
   }
 }
 
 async function deleteAreas(req, res) {
   try {
     let { areaID } = req.body;
-    areaID = [].concat(areaID); 
+    areaID = [].concat(areaID);
 
     if (!areaID) {
       return handleResponse(
@@ -207,9 +214,11 @@ async function deleteAreas(req, res) {
       );
     }
 
-    const deleteResults = await Promise.all(areaID.map(areaId => AreaModel.findByIdAndDelete(areaId)));
+    const deleteResults = await Promise.all(
+      areaID.map((areaId) => AreaModel.findByIdAndDelete(areaId))
+    );
 
-    if (deleteResults.some(result => result == null)) {
+    if (deleteResults.some((result) => result == null)) {
       return handleResponse(
         req,
         res,
@@ -228,8 +237,8 @@ async function deleteAreas(req, res) {
       "Xóa khu vực thành công",
       "/quan-ly-khu-vuc"
     );
-  } catch  {
-    res.status(500).render('partials/500', {layout: false});
+  } catch {
+    res.status(500).render("partials/500", { layout: false });
   }
 }
 
@@ -245,7 +254,7 @@ async function deleteAllAreas(req, res) {
       "/quan-ly-khu-vuc"
     );
   } catch {
-    res.status(500).render('partials/500', {layout: false});
+    res.status(500).render("partials/500", { layout: false });
   }
 }
 
@@ -300,5 +309,3 @@ async function getAreas(req, res) {
     res.status(500).json({ error: error.message });
   }
 }
-
-
