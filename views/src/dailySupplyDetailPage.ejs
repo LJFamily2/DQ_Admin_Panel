@@ -146,8 +146,6 @@
 
                   <form action="/nhap-du-lieu/<%= eachData._id %>?_method=PUT" method="post">
                     <div class="modal-body">
-                      <%- include('../partials/notificationMessage.ejs') %>
-
                       <div>
                         <label for="date" class="form-label fw-bold">Ngày nhập</label>
                         <input type="date" class="form-control" id="date" name="date" value="<%= eachData.date.toISOString().slice(0,10) %>" required />
@@ -237,7 +235,7 @@
                     </h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
-                  <form action="/nhap-du-lieu/nguyen-lieu/deleteData/<%= eachData._id %>" method="post">
+                  <form action="/nhap-du-lieu/<%= eachData._id %>?_method=DELETE" method="post">
                     <div class="modal-body">
                       <input type="hidden" name="date" value="<%= eachData.date%>">
                       <% if( user.role === 'Admin' || user.role === 'Quản lý'){%>
@@ -309,7 +307,7 @@
         <div class="accordion" id="areaAccordion">
           <!-- Supplier details -->
           <div id="suppliers" class="collapse show" aria-labelledby="suppliersHeading" data-bs-parent="#areaAccordion">
-            <h4>Nhà vườn</h4>
+            <h4 class="fw-bold">Nhà vườn</h4>
             <!-- Search for a supplier  -->
             <input type="text" class="form-control mb-3" id="supplierSearch" placeholder="Tìm kiếm nhà vườn" oninput="debounce(() => filterSuppliers('supplierSearch', 'supplierList', 'li' ,'supplier-name'), 200)()" />
             <ol class="list-group list-group-numbered my-2" id="supplierList">
@@ -325,14 +323,14 @@
           </div>
           <!-- Update Area -->
           <div id="updateArea" class="collapse" aria-labelledby="updateAreaHeading" data-bs-parent="#areaAccordion">
-            <h4>Chỉnh sửa</h4>
-            <form action="/du-lieu-hang-ngay/update/<%= area._id %>?_method=PUT" method="post" onchange="this.querySelector('button[type=submit]').style.display = 'block';">
+            <h4 class="fw-bold">Chỉnh sửa</h4>
+            <form action="/du-lieu-hang-ngay/<%= area._id %>?_method=PUT" method="post" onchange="this.querySelector('button[type=submit]').style.display = 'block';">
               <div>
-                <label for="areaName" class="form-label">Khu vực</label>
+                <label for="areaName" class="form-label fw-bold">Khu vực</label>
                 <input type="text" class="form-control" id="areaName" name="areaName" value="<%= area.name %>" required />
               </div>
               <div class="my-3">
-                <label for="accountID" class="form-label">Nướng hàm lượng</label>
+                <label for="accountID" class="form-label fw-bold">Nướng hàm lượng</label>
                 <select class="form-control slim-select" id="accountID" name="accountID" onchange="this.closest('form').querySelector('button[type=submit]').style.display = this.value ? 'block' : 'none';">
                   <% if (!area.accountID) { %>
                   <option disabled selected>Chọn tài khoản</option>
@@ -376,14 +374,14 @@
             </form>
 
             <!-- Suppliers -->
-            <h5 class="my-2">Nhà vườn</h5>
+            <h4 class="my-2 fw-bold">Nhà vườn</h4>
             <!-- Search for a supplier  -->
             <input type="text" class="form-control mb-3" id="supplierSearchDetail" placeholder="Tìm kiếm nhà vườn" oninput="debounce(() => filterSuppliers('supplierSearchDetail', 'supplierListDetail', 'li' ,'supplier-name-detail'), 200)()" />
             <ol class="list-group list-group-numbered my-2" id="supplierListDetail">
               <% area.suppliers.forEach((supplier, index) =>{ %>
               <li class="list-group-item d-flex justify-content-between align-items-center">
                 <div class="supplier-name-detail ms-2 me-auto">
-                  <div class="fw-bold"><%= supplier.name %></div>
+                  <div class="fw-bold"><%= supplier.name %> <%= supplier.manager ? '(Quản lý)' : '' %></div>
                   <%= supplier.code %>
                 </div>
                 <div class="d-flex">
@@ -533,7 +531,7 @@
           <!-- Setting -->
           <div id="setting" class="collapse" aria-labelledby="suppliersHeading" data-bs-parent="#areaAccordion">
             <h4>Cài đặt</h4>
-            <form action="/du-lieu-hang-ngay/update/<%= area._id %>?_method=PUT" method="post" onchange="this.querySelector('button[type=submit]').style.display = 'block';">
+            <form action="/du-lieu-hang-ngay/<%= area._id %>?_method=PUT" method="post" onchange="this.querySelector('button[type=submit]').style.display = 'block';">
               <div class="mb-3">
                 <label for="limitData" class="form-label">Giới hạn dữ liệu/ngày</label>
                 <input type="number" class="form-control" id="limitData" name="limitData" required value="<%= area.limitData ?  area.limitData : '' %>" />

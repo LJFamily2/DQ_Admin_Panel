@@ -5,6 +5,7 @@ const {
   DailySupply,
 } = require("../../models/dailySupplyModel");
 const ActionHistory = require("../../models/actionHistoryModel");
+const DateRangeAccessSetting = require("../../models/dateRangeAccessModel");
 
 const handleResponse = require("../utils/handleResponse");
 const convertToDecimal = require("../utils/convertToDecimal");
@@ -290,6 +291,25 @@ async function updateSupplierData(req, res) {
     const dataBeforeUpdate = JSON.parse(
       JSON.stringify(dailySupply.data[dataIndex])
     );
+
+    // Check if the new date is within the range of DateRangeAccessSetting
+    const dateRangeSetting = await DateRangeAccessSetting.findOne();
+    if (dateRangeSetting) {
+      const newDate = new Date(date).setUTCHours(0, 0, 0, 0);
+      const startDate = new Date(dateRangeSetting.startDate).setUTCHours(0, 0, 0, 0);
+      const endDate = new Date(dateRangeSetting.endDate).setUTCHours(23, 59, 59, 999);
+
+      if (newDate < startDate || newDate > endDate) {
+        return handleResponse(
+          req,
+          res,
+          403,
+          "fail",
+          "Ngày cập nhật nằm ngoài phạm vi cho phép!",
+          req.headers.referer
+        );
+      }
+    }
 
     const updatedRawMaterial = dailySupply.data[dataIndex].rawMaterial.map(
       (item) => {

@@ -188,7 +188,7 @@ async function updateArea(req, res) {
       200,
       'success',
       'Cập nhật khu vực thành công',
-      `/nhap-du-lieu/${newData.slug}`,
+      `/du-lieu-hang-ngay/${newData.slug}`,
     );
   } catch (error) {
     console.error('Error updating area:', error);
