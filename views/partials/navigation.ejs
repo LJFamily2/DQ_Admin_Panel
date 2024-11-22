@@ -21,13 +21,13 @@
     </a>
   </div>
   <ul class="nav nav-pills flex-column mb-auto">
-    <% if(user.role === "Admin" || user.role === "Quản lý"){ %>
     <li class="nav-item">
       <a href="/tong" class="nav-link link-dark d-flex justify-content-between">
         Tổng
         <i class="ri-line-chart-line"></i>
       </a>
     </li>
+    <% if(user.role === "Admin" || user.role === "Quản lý"){ %>
     <!-- <li class="nav-item">
       <a href="/truy-van" class="nav-link link-dark d-flex justify-content-between">
         Truy Vấn
@@ -36,7 +36,7 @@
     </li> -->
     <li class="nav-item">
       <a href="/quan-ly-du-lieu" class="nav-link link-dark d-flex justify-content-between">
-        Nguyên liệu tổng
+        Dữ liệu tổng
         <i class="ri-database-line"></i>
       </a>
     </li>
@@ -89,7 +89,7 @@
     <% if(user.role === "Admin" || user.role === "Văn phòng" || user.role === "Quản lý"){ %>
     <li class="nav-item">
       <a href="/du-lieu-hang-ngay" class="nav-link link-dark d-flex justify-content-between">
-        Dữ liệu nguyên liệu
+        Dữ liệu ngày
         <i class="ri-numbers-line"></i>
       </a>
       <ul class="nav flex-column ms-3">
@@ -104,7 +104,7 @@
     <% if(user.role === "Admin" || user.role === "Hàm lượng" || user.role === "Quản lý"){ %>
     <li class="nav-item">
       <a href="/nhap-du-lieu/nguyen-lieu" class="nav-link link-dark d-flex justify-content-between">
-        Nhập nguyên liệu
+        Thêm nguyên liệu
         <i class="ri-edit-line"></i>
       </a>
     </li>
@@ -143,12 +143,12 @@
       const navItems = [
         { roles: ["Admin", "Quản lý"], href: "/tong", icon: "ri-line-chart-line", text: "Tổng" },
         { roles: ["Admin", "Quản lý"], href: "/truy-van", icon: "ri-search-line", text: "Truy vấn" },
-        { roles: ["Admin", "Quản lý"], href: "/quan-ly-du-lieu", icon: "ri-database-line", text: "Dữ liệu" },
+        { roles: ["Admin", "Quản lý"], href: "/quan-ly-du-lieu", icon: "ri-database-line", text: "Dữ liệu tổng" },
         { roles: ["Admin", "Quản lý"], href: "/quan-ly-hang-hoa", icon: "ri-instance-line", text: "Hàng hóa" },
         { roles: ["Admin", "Quản lý"], href: "/quan-ly-hop-dong", icon: "ri-contract-line", text: "Hợp đồng" },
         { roles: ["Admin", "Quản lý"], href: "/quan-ly-chi-tieu", icon: "ri-bill-line", text: "Chi tiêu" },
-        { roles: ["Admin", "Văn phòng"], href: "/du-lieu-hang-ngay", icon: "ri-numbers-line", text: "Dữ liệu nguyên liệu" },
-        { roles: ["Admin", "Hàm lượng"], href: "/nhap-du-lieu/nguyen-lieu", icon: "ri-edit-line", text: "Nhập dữ liệu" },
+        { roles: ["Admin", "Văn phòng"], href: "/du-lieu-hang-ngay", icon: "ri-numbers-line", text: "Dữ liệu ngày" },
+        { roles: ["Admin", "Hàm lượng"], href: "/nhap-du-lieu/nguyen-lieu", icon: "ri-edit-line", text: "Thêm dữ liệu" },
 
         { roles: ["Admin"], href: "/quan-ly-tai-khoan", icon: "ri-group-line", text: "Tài khoản" }
       ];
