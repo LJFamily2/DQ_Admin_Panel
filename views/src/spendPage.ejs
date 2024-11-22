@@ -55,23 +55,23 @@
 
                       <div class="my-3">
                         <label for="product" class="form-label fw-bold">Hàng hóa</label>
-                        <input type="text" class="form-control" id="product" name="product" placeholder="Dầu" required value="<%= spend.product %>" <%= spend.product === 'lương' ? 'disabled' : '' %> />
+                        <input type="text" class="form-control" id="product" name="product" required value="<%= spend.product %>" <%= spend.product === 'lương' ? 'disabled' : '' %> />
                       </div>
 
                       <% if(spend.product === 'lương'){ %>
                       <div class="my-3">
                         <label for="price" class="form-label fw-bold">Đơn giá</label>
-                        <input type="text" class="form-control" id="price" name="price" placeholder="20.000" oninput="handleQuantityInput(this)" inputmode="numeric" value="<%= spend.price.toLocaleString('vi-VN') %>" />
+                        <input type="text" class="form-control" id="price" name="price" oninput="handleQuantityInput(this)" inputmode="numeric" value="<%= spend.price.toLocaleString('vi-VN') %>" />
                       </div>
                       <% } else { %>
                       <div class="my-3">
                         <label for="quantity" class="form-label fw-bold">Số lượng</label>
-                        <input type="text" class="form-control" id="quantity" name="quantity" placeholder="1.500" oninput="handleQuantityInput(this)" inputmode="numeric" value="<%= spend.quantity.toLocaleString('vi-VN') %>" />
+                        <input type="text" class="form-control" id="quantity" name="quantity" oninput="handleQuantityInput(this)" inputmode="numeric" value="<%= spend.quantity.toLocaleString('vi-VN') %>" />
                       </div>
 
                       <div class="my-3">
                         <label for="price" class="form-label fw-bold">Đơn giá</label>
-                        <input type="text" class="form-control" id="price" name="price" placeholder="20.000" oninput="handleQuantityInput(this)" inputmode="numeric" value="<%= spend.price.toLocaleString('vi-VN') %>" />
+                        <input type="text" class="form-control" id="price" name="price" oninput="handleQuantityInput(this)" inputmode="numeric" value="<%= spend.price.toLocaleString('vi-VN') %>" />
                       </div>
 
                       <% } %>

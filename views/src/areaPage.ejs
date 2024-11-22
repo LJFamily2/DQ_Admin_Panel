@@ -117,7 +117,6 @@
               class="form-control"
               id="name"
               name="name"
-              placeholder="Nhập tên khu vực"
               required
             />
           </div>
@@ -130,7 +129,6 @@
                 class="form-control"
                 name="plantation"
                 list="plantations"
-                placeholder="Chọn hoặc tạo vườn"
               />
               <datalist id="plantations">
                 <% plantations.forEach(plantation => { %>
@@ -174,7 +172,6 @@
               class="form-control"
               id="updateName"
               name="name"
-              placeholder="Nhập tên khu vực"
               oninput="toggleButtons(true, '#updateArea button')"
               disabled
             />

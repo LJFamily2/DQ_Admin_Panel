@@ -91,11 +91,11 @@
                             <label class="form-label fw-bold">Mủ nước</label>
                             <div class="col col-md-6">
                               <label for="dryQuantity<%= index + 1 %>" class="form-label">Số lượng</label>
-                              <input type="text" class="form-control" id="dryQuantity<%= index + 1 %>" name="dryQuantity" placeholder="1.234,34" oninput="handleQuantityInput(this)" inputmode="numeric" onchange="newInput(this)" value="<%= data.products.dryQuantity.toLocaleString('vi-VN')  %>" />
+                              <input type="text" class="form-control" id="dryQuantity<%= index + 1 %>" name="dryQuantity" oninput="handleQuantityInput(this)" inputmode="numeric" onchange="newInput(this)" value="<%= data.products.dryQuantity.toLocaleString('vi-VN')  %>" />
                             </div>
                             <div class="col col-md-6">
                               <label for="dryPercentage<%= index + 1 %>" class="form-label">Hàm lượng</label>
-                              <input type="text" class="form-control" id="dryPercentage<%= index + 1 %>" name="dryPercentage" placeholder="23,04" oninput="handlePercentageInput(this)" inputmode="numeric" onchange="newInput(this)" value="<%= data.products.dryPercentage.toLocaleString('vi-VN')   %>" />
+                              <input type="text" class="form-control" id="dryPercentage<%= index + 1 %>" name="dryPercentage" oninput="handlePercentageInput(this)" inputmode="numeric" onchange="newInput(this)" value="<%= data.products.dryPercentage.toLocaleString('vi-VN')   %>" />
                             </div>
                           </div>
                         </div>
@@ -107,7 +107,7 @@
                             <label class="form-label fw-bold">Mủ tạp</label>
                             <div class="col-12">
                               <label for="mixedQuantity<%= index + 1 %>" class="form-label">Số lượng</label>
-                              <input type="text" class="form-control" id="mixedQuantity<%= index + 1 %>" name="mixedQuantity" placeholder="1.234,34" min="0" oninput="handleQuantityInput(this)" inputmode="numeric" onchange="newInput(this)" value="<%= data.products.mixedQuantity.toLocaleString('vi-VN')   %>" />
+                              <input type="text" class="form-control" id="mixedQuantity<%= index + 1 %>" name="mixedQuantity" min="0" oninput="handleQuantityInput(this)" inputmode="numeric" onchange="newInput(this)" value="<%= data.products.mixedQuantity.toLocaleString('vi-VN')   %>" />
                             </div>
                           </div>
                           <hr />
@@ -118,7 +118,7 @@
                             <input type="text" class="form-control" hidden />
                             <div class="col">
                               <label for="keQuantity<%= index + 1 %>" class="form-label">Số lượng</label>
-                              <input type="text" class="form-control" id="keQuantity<%= index + 1 %>" name="keQuantity" placeholder="1.234,34" oninput="handleQuantityInput(this)" inputmode="numeric" value="<%= data.products.keQuantity.toLocaleString('vi-VN')   %>" />
+                              <input type="text" class="form-control" id="keQuantity<%= index + 1 %>" name="keQuantity" oninput="handleQuantityInput(this)" inputmode="numeric" value="<%= data.products.keQuantity.toLocaleString('vi-VN')   %>" />
                             </div>
                           </div>
                         </div>
@@ -206,11 +206,11 @@
                 <label class="form-label fw-bold">Mủ nước</label>
                 <div class="col col-md-6">
                   <label for="dryQuantity" class="form-label">Số lượng</label>
-                  <input type="text" class="form-control" id="dryQuantity" name="dryQuantity" placeholder="1.234,34" oninput="handleQuantityInput(this)" inputmode="numeric" />
+                  <input type="text" class="form-control" id="dryQuantity" name="dryQuantity" oninput="handleQuantityInput(this)" inputmode="numeric" />
                 </div>
                 <div class="col col-md-6">
                   <label for="dryPercentage" class="form-label">Hàm lượng</label>
-                  <input type="text" class="form-control" id="dryPercentage" name="dryPercentage" placeholder="23.043" oninput="handlePercentageInput(this)" inputmode="numeric" />
+                  <input type="text" class="form-control" id="dryPercentage" name="dryPercentage"  oninput="handlePercentageInput(this)" inputmode="numeric" />
                 </div>
               </div>
             </div>
@@ -222,7 +222,7 @@
                 <label class="form-label fw-bold">Mủ tạp</label>
                 <div class="col-12">
                   <label for="mixedQuantity" class="form-label">Số lượng</label>
-                  <input type="text" class="form-control" id="mixedQuantity" name="mixedQuantity" placeholder="1.234,34" min="0" oninput="handleQuantityInput(this)" inputmode="numeric" />
+                  <input type="text" class="form-control" id="mixedQuantity" name="mixedQuantity" min="0" oninput="handleQuantityInput(this)" inputmode="numeric" />
                 </div>
               </div>
             </div>
@@ -233,7 +233,7 @@
                 <label class="form-label fw-bold">Mủ Ké</label>
                 <div class="col">
                   <label for="keQuantity" class="form-label">Số lượng</label>
-                  <input type="text" class="form-control" id="keQuantity" name="keQuantity" placeholder="1.234,34" oninput="handleQuantityInput(this)" inputmode="numeric" />
+                  <input type="text" class="form-control" id="keQuantity" name="keQuantity" oninput="handleQuantityInput(this)" inputmode="numeric" />
                 </div>
               </div>
             </div>

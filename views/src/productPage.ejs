@@ -51,7 +51,7 @@
                     <div class="modal-body">
                       <div>
                         <label for="date" class="form-label fw-bold">Ngày chạy lò</label>
-                        <input type="date" class="form-control" id="date" name="date" placeholder="Nhập tên" value="<%= product.date.toISOString().slice(0,10)  %>" required />
+                        <input type="date" class="form-control" id="date" name="date" value="<%= product.date.toISOString().slice(0,10)  %>" required />
                       </div>
 
                       <div class="my-3">
@@ -59,18 +59,18 @@
                           <label for="dryRubberUsed" class="form-label fw-bold">Nguyên liệu</label>
                           <div class="col-6">
                             <label for="dryRubberUsed" class="form-label ">Số lượng</label>
-                            <input type="text" class="form-control" id="dryRubberUsed" name="dryRubberUsed" placeholder="1,234.5" oninput="handleQuantityInput(this)" inputmode="numeric" value="<%= product.dryRubberUsed.toLocaleString('vi-VN') %>" />
+                            <input type="text" class="form-control" id="dryRubberUsed" name="dryRubberUsed" oninput="handleQuantityInput(this)" inputmode="numeric" value="<%= product.dryRubberUsed.toLocaleString('vi-VN') %>" />
                           </div>
                           <div class="col-6">
                             <label for="dryPercentage" class="form-label ">Hàm lượng</label>
-                            <input type="text" class="form-control" id="dryPercentage" name="dryPercentage" placeholder="23,04" oninput="handlePercentageInput(this)" inputmode="numeric" value="<%= product.dryPercentage.toLocaleString('vi-VN') %>" />
+                            <input type="text" class="form-control" id="dryPercentage" name="dryPercentage" oninput="handlePercentageInput(this)" inputmode="numeric" value="<%= product.dryPercentage.toLocaleString('vi-VN') %>" />
                           </div>
                         </div>
                       </div>
 
                       <div class="my-3">
                         <label for="quantity" class="form-label fw-bold">Thành phẩm</label>
-                        <input type="text" class="form-control" id="quantity" name="quantity" placeholder="1,234.5" oninput="handleQuantityInput(this)" inputmode="numeric" value="<%= product.quantity.toLocaleString('vi-VN') %>" />
+                        <input type="text" class="form-control" id="quantity" name="quantity" oninput="handleQuantityInput(this)" inputmode="numeric" value="<%= product.quantity.toLocaleString('vi-VN') %>" />
                       </div>
 
                       <div class="my-3">
@@ -176,18 +176,18 @@
               <label for="dryRubberUsed" class="form-label fw-bold">Nguyên liệu</label>
               <div class="col-6">
                 <label for="dryRubberUsed" class="form-label">Số lượng</label>
-                <input type="text" class="form-control" id="dryRubberUsed" name="dryRubberUsed" placeholder="1,234.5" oninput="handleQuantityInput(this)" inputmode="numeric" />
+                <input type="text" class="form-control" id="dryRubberUsed" name="dryRubberUsed" oninput="handleQuantityInput(this)" inputmode="numeric" />
               </div>
               <div class="col-6">
                 <label for="dryPercentage" class="form-label">Hàm lượng</label>
-                <input type="text" class="form-control" id="dryPercentage" name="dryPercentage" placeholder="23,04" oninput="handlePercentageInput(this)" inputmode="numeric" />
+                <input type="text" class="form-control" id="dryPercentage" name="dryPercentage" oninput="handlePercentageInput(this)" inputmode="numeric" />
               </div>
             </div>
           </div>
 
           <div class="my-3">
             <label for="quantity" class="form-label fw-bold">Thành phẩm</label>
-            <input type="text" class="form-control" id="quantity" name="quantity" placeholder="1,234.5" oninput="handleQuantityInput(this)" inputmode="numeric" />
+            <input type="text" class="form-control" id="quantity" name="quantity" oninput="handleQuantityInput(this)" inputmode="numeric" />
           </div>
 
           <div class="my-3">

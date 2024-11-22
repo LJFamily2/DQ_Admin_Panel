@@ -5,103 +5,52 @@
   <script src="/js/slim-select.js" defer></script>
 </head>
 
-<button
-  type="button"
-  class="btn btn-danger mx-2 mx-md-4 my-3"
-  data-bs-toggle="modal"
-  data-bs-target="#deleteAll-admin-user"
-  style="width: max-content"
->
+<button type="button" class="btn btn-danger mx-2 mx-md-4 my-3" data-bs-toggle="modal" data-bs-target="#deleteAll-admin-user" style="width: max-content">
   Xóa tất cả người quản lý
 </button>
 <div class="row m-0 px-2">
-  <div class="col-12 col-md-9 p-0 px-md-3" >
+  <div class="col-12 col-md-9 p-0 px-md-3">
     <div class="col rounded-2 p-2 overflow-auto " style="box-shadow: 0 0 10px; max-height: 80dvh;">
-      <table class="table table-striped table-bordered" id="managers_table" >
+      <table class="table table-striped table-bordered" id="managers_table">
         <thead>
           <tr>
             <% ['STT', 'Tên', 'Số điện thoại', 'Địa chỉ', 'Vườn quản lý', 'CCCD mặt trước', 'CCCD mặt sau', 'Chỉnh sửa'].forEach((header, index) => { %>
-              <th><%= header %></th>
+            <th><%= header %></th>
             <% }) %>
-            </tr>
+          </tr>
         </thead>
         <tbody>
           <% managers.forEach( (manager,index) => { %>
           <!-- Modal for updating -->
-          <div
-            class="modal fade"
-            id="staticBackdrop<%= index + 1%>"
-            data-bs-backdrop="static"
-            data-bs-keyboard="false"
-            tabindex="-1"
-            aria-labelledby="staticBackdropLabel"
-            aria-hidden="true"
-          >
-            <div
-              class="modal-dialog modal-dialog-centered modal-dialog-scrollable"
-            >
+          <div class="modal fade" id="staticBackdrop<%= index + 1%>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
               <div class="modal-content">
                 <div class="modal-header">
                   <h1 class="modal-title fs-5" id="staticBackdropLabel">
                     Cập nhật thông tin cho <%= manager.name %>
                   </h1>
-                  <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal"
-                    aria-label="Close"
-                  ></button>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
-                <form
-                  action="/quan-ly-nguoi-quan-ly/update/<%= manager._id %>"
-                  method="post"
-                  enctype="multipart/form-data"
-                >
+                <form action="/quan-ly-nguoi-quan-ly/update/<%= manager._id %>" method="post" enctype="multipart/form-data">
                   <div class="modal-body">
                     <div class="my-3">
                       <label for="name" class="form-label">Tên</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        id="name"
-                        name="name"
-                        placeholder="Nhập tên"
-                        value="<%= manager.name %>"
-                      />
+                      <input type="text" class="form-control" id="name" name="name" value="<%= manager.name %>" />
                     </div>
 
                     <div class="my-3">
-                      <label for="phone" class="form-label"
-                        >Số điện thoại</label
-                      >
-                      <input
-                        type="text"
-                        class="form-control"
-                        id="phone"
-                        name="phone"
-                        placeholder="Nhập số điện thoại"
-                        maxlength="12"
-                        value="<%= manager.phone %>"
-                      />
+                      <label for="phone" class="form-label">Số điện thoại</label>
+                      <input type="text" class="form-control" id="phone" name="phone" placeholder="Nhập số điện thoại" maxlength="12" value="<%= manager.phone %>" />
                     </div>
 
                     <div class="my-3">
                       <label for="address" class="form-label">Địa chỉ</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        id="address"
-                        name="address"
-                        placeholder="Nhập địa chỉ"
-                        value="<%= manager.address %>"
-                      />
+                      <input type="text" class="form-control" id="address" name="address" placeholder="Nhập địa chỉ" value="<%= manager.address %>" />
                     </div>
 
                     <div class="my-3">
-                      <label for="plantation" class="form-label"
-                        >Vườn quản lý</label
-                      >
+                      <label for="plantation" class="form-label">Vườn quản lý</label>
                       <select class="form-control slim-select" id="plantation">
                         <% plantations.forEach((plantation, index) =>{ %>
                         <option value="<%= plantation.id %>">
@@ -112,64 +61,23 @@
                     </div>
 
                     <div class="my-3">
-                      <label
-                        for="frontIdentification<%= index + 1 %>"
-                        class="form-label"
-                        >CCCD mặt trước</label
-                      >
-                      <input
-                        type="file"
-                        class="form-control"
-                        id="frontIdentification<%= index + 1 %>"
-                        name="newFrontIdentification"
-                        onchange="previewImage(event, 'updatePreviewCCCDMT<%= index + 1 %>')"
-                      />
-                      <div
-                        class="image-preview d-flex align-items-center"
-                        style="max-width: 100%; height: auto; overflow: hidden"
-                      >
-                        <img
-                          src="/images/<%= manager.frontIdentification %>"
-                          alt="CCCDMT"
-                          style="max-width: 49%"
-                        />
+                      <label for="frontIdentification<%= index + 1 %>" class="form-label">CCCD mặt trước</label>
+                      <input type="file" class="form-control" id="frontIdentification<%= index + 1 %>" name="newFrontIdentification" onchange="previewImage(event, 'updatePreviewCCCDMT<%= index + 1 %>')" />
+                      <div class="image-preview d-flex align-items-center" style="max-width: 100%; height: auto; overflow: hidden">
+                        <img src="/images/<%= manager.frontIdentification %>" alt="CCCDMT" style="max-width: 49%" />
                         <i class="ri-arrow-right-double-fill"></i>
-                        <img
-                          id="updatePreviewCCCDMT<%= index + 1 %>"
-                          alt="CCCDMT"
-                          style="max-width: 49%; display: none"
-                        />
+                        <img id="updatePreviewCCCDMT<%= index + 1 %>" alt="CCCDMT" style="max-width: 49%; display: none" />
                       </div>
                     </div>
 
                     <div class="my-3">
-                      <label
-                        for="backIdentification<%= index + 1 %>"
-                        class="form-label"
-                        >CCCD mặt sau
+                      <label for="backIdentification<%= index + 1 %>" class="form-label">CCCD mặt sau
                       </label>
-                      <input
-                        type="file"
-                        class="form-control"
-                        id="backIdentification<%= index + 1 %>"
-                        name="newBackIdentification"
-                        onchange="previewImage(event, 'updatePreviewCCCDMS<%= index + 1 %>')"
-                      />
-                      <div
-                        class="image-preview d-flex align-items-center"
-                        style="max-width: 100%; height: auto; overflow: hidden"
-                      >
-                        <img
-                          src="/images/<%= manager.backIdentification %>"
-                          alt="CCCDMT"
-                          style="max-width: 49%"
-                        />
+                      <input type="file" class="form-control" id="backIdentification<%= index + 1 %>" name="newBackIdentification" onchange="previewImage(event, 'updatePreviewCCCDMS<%= index + 1 %>')" />
+                      <div class="image-preview d-flex align-items-center" style="max-width: 100%; height: auto; overflow: hidden">
+                        <img src="/images/<%= manager.backIdentification %>" alt="CCCDMT" style="max-width: 49%" />
                         <i class="ri-arrow-right-double-fill"></i>
-                        <img
-                          id="updatePreviewCCCDMS<%= index + 1 %>"
-                          alt="CCCDMS"
-                          style="max-width: 49%; display: none"
-                        />
+                        <img id="updatePreviewCCCDMS<%= index + 1 %>" alt="CCCDMS" style="max-width: 49%; display: none" />
                       </div>
                     </div>
                   </div>
@@ -184,30 +92,16 @@
           </div>
 
           <!-- Delete confirming modal  -->
-          <div
-            class="modal fade"
-            id="deleteModalToggle<%= index + 1 %>"
-            aria-hidden="true"
-            aria-labelledby="exampleModalToggleLabel"
-            tabindex="-1"
-          >
+          <div class="modal fade" id="deleteModalToggle<%= index + 1 %>" aria-hidden="true" aria-labelledby="exampleModalToggleLabel" tabindex="-1">
             <div class="modal-dialog modal-dialog-centered">
               <div class="modal-content">
                 <div class="modal-header">
                   <h1 class="modal-title fs-5" id="exampleModalToggleLabel">
                     Xóa <%= manager.name %>
                   </h1>
-                  <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal"
-                    aria-label="Close"
-                  ></button>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form
-                  action="/quan-ly-nguoi-quan-ly/delete/<%=  manager._id %>"
-                  method="post"
-                >
+                <form action="/quan-ly-nguoi-quan-ly/delete/<%=  manager._id %>" method="post">
                   <div class="modal-body">
                     Bạn có muốn xóa
                     <strong><%= manager.name %></strong> ? Hành động này không
@@ -227,63 +121,33 @@
       </table>
     </div>
   </div>
-  <div
-    class="col-12 col-md-3 rounded-2 my-5 m-md-0 py-3 "
-    style="
+  <div class="col-12 col-md-3 rounded-2 my-5 m-md-0 py-3 " style="
       box-shadow: 0 0 10px;
       background: var(--background_color);
       max-height: 80dvh;
       overflow-y: auto;
-    "
-  >
+    ">
     <%- include('../partials/notificationMessage.ejs') %>
     <h4>Thêm người quản lý</h4>
-    <form
-      action="/quan-ly-nguoi-quan-ly/addManger"
-      method="post"
-      enctype="multipart/form-data"
-    >
+    <form action="/quan-ly-nguoi-quan-ly/addManger" method="post" enctype="multipart/form-data">
       <div class="my-3">
         <label for="name" class="form-label">Tên</label>
-        <input
-          type="text"
-          class="form-control"
-          id="name"
-          name="name"
-          placeholder="Nhập tên"
-        />
+        <input type="text" class="form-control" id="name" name="name" />
       </div>
 
       <div class="my-3">
         <label for="phone" class="form-label">Số điện thoại</label>
-        <input
-          type="text"
-          class="form-control"
-          id="phone"
-          name="phone"
-          placeholder="Nhập số điện thoại"
-          maxlength="12"
-        />
+        <input type="text" class="form-control" id="phone" name="phone" placeholder="Nhập số điện thoại" maxlength="12" />
       </div>
 
       <div class="my-3">
         <label for="address" class="form-label">Địa chỉ</label>
-        <input
-          type="text"
-          class="form-control"
-          id="address"
-          name="address"
-          placeholder="Nhập địa chỉ"
-        />
+        <input type="text" class="form-control" id="address" name="address" placeholder="Nhập địa chỉ" />
       </div>
 
       <div class="my-3">
         <label for="addPlantation" class="form-label">Vườn quản lý</label>
-        <select
-          class="form-control slim-select"
-          id="addPlantation"
-          name="plantation"
-        >
+        <select class="form-control slim-select" id="addPlantation" name="plantation">
           <option value="" disabled selected>Chọn vườn</option>
           <% plantations.forEach((plantation, index) =>{ %>
           <option value="<%= plantation.id %>"><%= plantation.name %></option>
@@ -292,46 +156,18 @@
       </div>
 
       <div class="my-3">
-        <label for="frontIdentification" class="form-label"
-          >CCCD mặt trước</label
-        >
-        <input
-          type="file"
-          class="form-control"
-          id="frontIdentification"
-          name="frontIdentification"
-          onchange="previewImage(event, 'previewCCCDMT')"
-        />
-        <div
-          class="image-preview"
-          style="max-width: 100%; height: auto; overflow: hidden"
-        >
-          <img
-            id="previewCCCDMT"
-            alt="CCCDMT"
-            style="max-width: 100%; display: none"
-          />
+        <label for="frontIdentification" class="form-label">CCCD mặt trước</label>
+        <input type="file" class="form-control" id="frontIdentification" name="frontIdentification" onchange="previewImage(event, 'previewCCCDMT')" />
+        <div class="image-preview" style="max-width: 100%; height: auto; overflow: hidden">
+          <img id="previewCCCDMT" alt="CCCDMT" style="max-width: 100%; display: none" />
         </div>
       </div>
 
       <div class="my-3">
         <label for="backIdentification" class="form-label">CCCD mặt sau </label>
-        <input
-          type="file"
-          class="form-control"
-          id="backIdentification"
-          name="backIdentification"
-          onchange="previewImage(event, 'previewCCCDMS')"
-        />
-        <div
-          class="image-preview"
-          style="max-width: 100%; height: auto; overflow: hidden"
-        >
-          <img
-            id="previewCCCDMS"
-            alt="CCCDMS"
-            style="max-width: 100%; display: none"
-          />
+        <input type="file" class="form-control" id="backIdentification" name="backIdentification" onchange="previewImage(event, 'previewCCCDMS')" />
+        <div class="image-preview" style="max-width: 100%; height: auto; overflow: hidden">
+          <img id="previewCCCDMS" alt="CCCDMS" style="max-width: 100%; display: none" />
         </div>
       </div>
 
@@ -343,25 +179,12 @@
 </div>
 
 <!-- Modal for deleting all managers -->
-<div
-  class="modal fade"
-  id="deleteAll-admin-user"
-  data-bs-backdrop="static"
-  data-bs-keyboard="false"
-  tabindex="-1"
-  aria-labelledby="deleteUsers"
-  aria-hidden="true"
->
+<div class="modal fade" id="deleteAll-admin-user" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteUsers" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="deleteUsers">Xóa tất cả tài khoản</h1>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
       <form action="/quan-ly-nguoi-quan-ly/deleteAll" method="post">
@@ -377,16 +200,32 @@
   </div>
 </div>
 <script>
-  const managerColumns = [
-    { data: "no", orderable: false, width: "5%" },
-    { data: "name", width:"20%" },
-    { data: "phone", width:"15%" },
-    { data: "address", width:"10%" },
-    { data: "plantations", width:"10%" },
-    {
-      data: "frontIdentification", width:"15%",
+  const managerColumns = [{
+      data: "no",
       orderable: false,
-      render: function (data, type, row) {
+      width: "5%"
+    },
+    {
+      data: "name",
+      width: "20%"
+    },
+    {
+      data: "phone",
+      width: "15%"
+    },
+    {
+      data: "address",
+      width: "10%"
+    },
+    {
+      data: "plantations",
+      width: "10%"
+    },
+    {
+      data: "frontIdentification",
+      width: "15%",
+      orderable: false,
+      render: function(data, type, row) {
         if (data) {
           return `<img src="/images/${data}" alt="Front Identification" style="max-height: 100px;" />`;
         } else {
@@ -395,9 +234,10 @@
       },
     },
     {
-      data: "backIdentification" , width:"15%",
+      data: "backIdentification",
+      width: "15%",
       orderable: false,
-      render: function (data, type, row) {
+      render: function(data, type, row) {
         if (data) {
           return `<img src="/images/${data}" alt="Back Identification" style="max-height: 100px;" />`;
         } else {
@@ -405,7 +245,11 @@
         }
       },
     },
-    { data: "id" , width:"10%", orderable: false },
+    {
+      data: "id",
+      width: "10%",
+      orderable: false
+    },
   ];
 
   initializeDataTable(

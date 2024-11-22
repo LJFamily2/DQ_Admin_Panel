@@ -42,7 +42,7 @@
 
           <div class="my-3">
             <label for="code" class="form-label fw-bold">Mã hợp đồng</label>
-            <input type="text" class="form-control" id="code" name="code" placeholder="NPUE-3984" required value="<%= sale.code %>" />
+            <input type="text" class="form-control" id="code" name="code" required value="<%= sale.code %>" />
           </div>
 
 
@@ -91,15 +91,15 @@
                 <div class="row additionalFields my-3 m-0 p-0">
                   <div class="col col-md-3">
                     <label for="quantity" class="form-label fw-bold">Số lượng</label>
-                    <input type="text" class="form-control" id="quantity" name="quantity" placeholder="1.234,34" oninput="handleQuantityInput(this)" inputmode="numeric" value="<%= product.quantity.toLocaleString('vi-VN') %>" />
+                    <input type="text" class="form-control" id="quantity" name="quantity" oninput="handleQuantityInput(this)" inputmode="numeric" value="<%= product.quantity.toLocaleString('vi-VN') %>" />
                   </div>
                   <div class="col col-md-3">
                     <label for="percentage" class="form-label fw-bold">Hàm lượng</label>
-                    <input type="text" class="form-control" id="percentage" name="percentage" placeholder="23,45" oninput="handlePercentageInput(this)" inputmode="numeric" value="<%= product.percentage.toLocaleString('vi-VN') %>" />
+                    <input type="text" class="form-control" id="percentage" name="percentage" oninput="handlePercentageInput(this)" inputmode="numeric" value="<%= product.percentage.toLocaleString('vi-VN') %>" />
                   </div>
                   <div class="col col-md-6">
                     <label for="price" class="form-label fw-bold">Đơn giá</label>
-                    <input type="text" class="form-control" id="price" name="price" placeholder="20.000" oninput="handleQuantityInput(this)" inputmode="numeric" value="<%= product.price.toLocaleString('vi-VN') %>" />
+                    <input type="text" class="form-control" id="price" name="price" oninput="handleQuantityInput(this)" inputmode="numeric" value="<%= product.price.toLocaleString('vi-VN') %>" />
                   </div>
                   <div class="col col-md-6 mt-3 ">
                     <label class="form-label fw-bold">Tổng quy khô</label>
@@ -114,11 +114,11 @@
                 <div class="row normalFields my-3 m-0 p-0">
                   <div class="col col-md-6">
                     <label class="form-label fw-bold">Số lượng</label>
-                    <input type="text" class="form-control" name="quantity" placeholder="1.234,34" oninput="handleQuantityInput(this)" inputmode="numeric" value="<%= product.quantity.toLocaleString('vi-VN') %>" />
+                    <input type="text" class="form-control" name="quantity" oninput="handleQuantityInput(this)" inputmode="numeric" value="<%= product.quantity.toLocaleString('vi-VN') %>" />
                   </div>
                   <div class="col col-md-6">
                     <label class="form-label fw-bold">Đơn giá</label>
-                    <input type="text" class="form-control" name="price" placeholder="20.000" oninput="handleQuantityInput(this)" inputmode="numeric" value="<%= product.price.toLocaleString('vi-VN') %>" />
+                    <input type="text" class="form-control" name="price" oninput="handleQuantityInput(this)" inputmode="numeric" value="<%= product.price.toLocaleString('vi-VN') %>" />
                   </div>
                   <div class="col col-md-6 mt-3">
                     <label class="form-label fw-bold">Tổng</label>

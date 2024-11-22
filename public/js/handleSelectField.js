@@ -35,7 +35,7 @@ function getDryRubberFields(detailPage) {
           class="form-control"
           id="quantity"
           name="quantity"
-          placeholder="1.234,34"
+          
           oninput="handleQuantityInput(this)" inputmode="numeric"
         />
       </div>
@@ -46,7 +46,7 @@ function getDryRubberFields(detailPage) {
           class="form-control"
           id="percentage"
           name="percentage"
-          placeholder="23,45"
+          
           oninput="handlePercentageInput(this)" inputmode="numeric"
         />
       </div>
@@ -57,7 +57,7 @@ function getDryRubberFields(detailPage) {
           class="form-control"
           id="price"
           name="price"
-          placeholder="20.000"
+          
           oninput="handlePriceInput(this)"
         />
       </div>
@@ -73,7 +73,7 @@ function getDryRubberFields(detailPage) {
           class="form-control"
           id="quantity"
           name="quantity"
-          placeholder="1.234,34"
+          
           oninput="handleQuantityInput(this)" inputmode="numeric"
         />
       </div>
@@ -84,7 +84,7 @@ function getDryRubberFields(detailPage) {
           class="form-control"
           id="percentage"
           name="percentage"
-          placeholder="23,45"
+          
           oninput="handlePercentageInput(this)" inputmode="numeric"
         />
       </div>
@@ -96,7 +96,7 @@ function getDryRubberFields(detailPage) {
             class="form-control"
             id="price"
             name="price"
-            placeholder="20.000"
+            
             oninput="handlePriceInput(this)"
           />
         </div>
@@ -115,7 +115,7 @@ function getNormalFields() {
           type="text"
           class="form-control"
           name="quantity"
-          placeholder="1.234,34"
+          
           oninput="handleQuantityInput(this)" inputmode="numeric"
         />
       </div>
@@ -125,7 +125,7 @@ function getNormalFields() {
           type="text"
           class="form-control"
           name="price"
-          placeholder="20.000"
+          
           oninput="handlePriceInput(this)"
         />
       </div>
