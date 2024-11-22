@@ -5,6 +5,13 @@
     .nav-link:hover {
       background-color: rgba(0, 0, 0, 0.3);
     }
+    #mobileNav {
+      transition: transform 0.3s ease-in-out;
+    }
+
+    #mobileNav.hide {
+      transform: translateY(100%);
+    }
   </style>
 </head>
 <nav class="min-vh-100 d-none d-md-flex flex-column flex-shrink-0 p-3" style="width: 230px; background: white;">
@@ -128,7 +135,9 @@
   </div>
 </nav>
 
-<nav class="d-md-none navbar fixed-bottom nav-pills" style="background: white; overflow-x: auto; overflow-y: hidden; white-space: nowrap;">
+
+<!-- navigatoin for mobile -->
+<nav id="mobileNav" class="d-md-none navbar fixed-bottom nav-pills" style="background: white; overflow-x: auto; overflow-y: hidden;">
   <div class="d-flex flex-nowrap justify-content-start">
     <% 
       const navItems = [
@@ -147,7 +156,7 @@
       navItems.forEach(item => {
         if (item.roles.includes(user.role)) {
     %>
-    <a class="nav-link link-dark p-1" href="<%= item.href %>" style="text-align: center; font-size: 0.9rem; display: inline-block; margin: 5px;">
+    <a class="nav-link link-dark d-flex align-items-center justify-content-center flex-column" href="<%= item.href %>" style="width: 5rem ; text-align: center; font-size: 0.8rem; margin: 5px; ">
       <i class="<%= item.icon %>" style="font-size: 1.4rem; display: block"></i><%= item.text %>
     </a>
     <% 
@@ -156,3 +165,22 @@
     %>
   </div>
 </nav>
+
+<script>
+  let lastScrollTop = 0;
+  const mobileNav = document.getElementById('mobileNav');
+
+  window.addEventListener('scroll', function() {
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+    if (scrollTop > lastScrollTop) {
+      // Scrolling down
+      mobileNav.classList.add('hide');
+    } else {
+      // Scrolling up
+      mobileNav.classList.remove('hide');
+    }
+
+    lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // For Mobile or negative scrolling
+  }, false);
+</script>
