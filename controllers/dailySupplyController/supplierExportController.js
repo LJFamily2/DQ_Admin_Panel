@@ -44,6 +44,7 @@ async function renderPage(req, res) {
 
 async function updatePricesAndRatios(req, res) {
   req.body = trimStringFields(req.body);
+  console.log(req.body);
   try {
     const {
       startDate,

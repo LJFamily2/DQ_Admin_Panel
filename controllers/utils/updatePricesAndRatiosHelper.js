@@ -14,7 +14,6 @@ function updatePricesAndRatios(
   };
 
   return data.map(entry => {
-    console.log(entry);
     const entryDate = new Date(entry.date);
     if (
       entryDate >= start &&
@@ -23,8 +22,8 @@ function updatePricesAndRatios(
     ) {
       entry.rawMaterial = entry.rawMaterial.map(material => {
         const priceKey = priceMap[material.name];
-        if (priceKey) {
-          material.price = prices[priceKey] || material.price;
+        if (priceKey && prices.hasOwnProperty(priceKey)) {
+          material.price = prices[priceKey];
         }
 
         // Update the ratio split for each material
