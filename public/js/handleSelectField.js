@@ -1,27 +1,32 @@
 function handleProductChange(selectElement, productListContainer, detailPage) {
-  const additionalFieldsContainer = productListContainer.querySelector('.additionalFields');
-  const normalFieldsContainer = productListContainer.querySelector('.normalFields');
+  const additionalFieldsContainer =
+    productListContainer.querySelector(".additionalFields");
+  const normalFieldsContainer =
+    productListContainer.querySelector(".normalFields");
 
-  const isDryRubber = selectElement.value === 'dryRubber';
+  const isDryRubber = selectElement.value === "dryRubber";
 
-  additionalFieldsContainer.style.display = isDryRubber ?  'block': 'none';
-  normalFieldsContainer.style.display = isDryRubber ?  'none': 'block';
+  additionalFieldsContainer.style.display = isDryRubber ? "block" : "none";
+  normalFieldsContainer.style.display = isDryRubber ? "none" : "block";
 
-  additionalFieldsContainer.innerHTML = isDryRubber ?  getDryRubberFields(detailPage): '';
-  normalFieldsContainer.innerHTML = isDryRubber ? '' : getNormalFields();
+  additionalFieldsContainer.innerHTML = isDryRubber
+    ? getDryRubberFields(detailPage)
+    : "";
+  normalFieldsContainer.innerHTML = isDryRubber ? "" : getNormalFields();
 
   // Disable or enable input fields
-  additionalFieldsContainer.querySelectorAll('input').forEach(input => {
+  additionalFieldsContainer.querySelectorAll("input").forEach((input) => {
     input.disabled = !isDryRubber;
   });
 
-  normalFieldsContainer.querySelectorAll('input').forEach(input => {
+  normalFieldsContainer.querySelectorAll("input").forEach((input) => {
     input.disabled = isDryRubber;
   });
 }
 
 function getDryRubberFields(detailPage) {
-  return detailPage ?  `
+  return detailPage
+    ? `
     <div class="row m-0 p-0">
       <div class="col col-md-3">
         <label for="quantity" class="form-label fw-bold">Số lượng</label>
@@ -31,7 +36,7 @@ function getDryRubberFields(detailPage) {
           id="quantity"
           name="quantity"
           placeholder="1.234,34"
-          oninput="handleQuantityInput(this)"
+          oninput="handleQuantityInput(this)" inputmode="numeric"
         />
       </div>
       <div class="col col-md-3">
@@ -42,7 +47,7 @@ function getDryRubberFields(detailPage) {
           id="percentage"
           name="percentage"
           placeholder="23,45"
-          oninput="handlePercentageInput(this)"
+          oninput="handlePercentageInput(this)" inputmode="numeric"
         />
       </div>
       <div class="col col-md-6 ">
@@ -58,8 +63,8 @@ function getDryRubberFields(detailPage) {
       </div>
     </div>
 
-  `:
   `
+    : `
   <div class="row m-0 p-0">
       <div class="col col-md-6">
         <label for="quantity" class="form-label fw-bold">Số lượng</label>
@@ -69,7 +74,7 @@ function getDryRubberFields(detailPage) {
           id="quantity"
           name="quantity"
           placeholder="1.234,34"
-          oninput="handleQuantityInput(this)"
+          oninput="handleQuantityInput(this)" inputmode="numeric"
         />
       </div>
       <div class="col col-md-6">
@@ -80,7 +85,7 @@ function getDryRubberFields(detailPage) {
           id="percentage"
           name="percentage"
           placeholder="23,45"
-          oninput="handlePercentageInput(this)"
+          oninput="handlePercentageInput(this)" inputmode="numeric"
         />
       </div>
       <div class="row m-0 my-2 p-0">
@@ -111,7 +116,7 @@ function getNormalFields() {
           class="form-control"
           name="quantity"
           placeholder="1.234,34"
-          oninput="handleQuantityInput(this)"
+          oninput="handleQuantityInput(this)" inputmode="numeric"
         />
       </div>
       <div class="col col-md-6">

@@ -10,6 +10,7 @@
     .updateButton {
       transition: all 200ms linear;
     }
+
     .rotate {
       transform: rotate(180deg);
       transition: all 200ms linear;
@@ -18,13 +19,7 @@
 </head>
 
 <%- include('../partials/totalValue') %> <% if(user.role === 'Admin'){ %>
-<button
-  type="button"
-  class="btn btn-danger mx-2 mx-md-3 mt-2"
-  data-bs-toggle="modal"
-  data-bs-target="#deleteAll"
-  style="width: max-content"
->
+<button type="button" class="btn btn-danger mx-2 mx-md-3 mt-2" data-bs-toggle="modal" data-bs-target="#deleteAll" style="width: max-content">
   Xóa tất cả thông tin
 </button>
 <% } %>
@@ -56,27 +51,14 @@
             <% sales.forEach( (sale,index) => { %>
 
             <!-- Products modal -->
-            <div
-              class="modal fade"
-              id="productList<%= sale._id %>"
-              aria-hidden="true"
-              aria-labelledby="productList"
-              tabindex="-1"
-            >
-              <div
-                class="modal-dialog modal-dialog-centered modal-dialog-scrollable"
-              >
+            <div class="modal fade" id="productList<%= sale._id %>" aria-hidden="true" aria-labelledby="productList" tabindex="-1">
+              <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                 <div class="modal-content">
                   <div class="modal-header">
                     <h1 class="modal-title fs-5" id="productList">
                       Hàng hóa của hợp đồng <%= sale.code %>
                     </h1>
-                    <button
-                      type="button"
-                      class="btn-close"
-                      data-bs-dismiss="modal"
-                      aria-label="Close"
-                    ></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
                   <div class="modal-body">
                     <div class="productLists">
@@ -85,87 +67,43 @@
                         <div class="row my-3">
                           <div class="row m-0 p-0">
                             <div class="col-6">
-                              <label
-                                for="name"
-                                class="form-label fw-bold w-100 d-flex justify-content-between"
-                              >
+                              <label for="name" class="form-label fw-bold w-100 d-flex justify-content-between">
                                 <%= index + 1 %>. Hàng hóa
                               </label>
-                              <input
-                                type="text"
-                                class="form-control"
-                                value="<%= product.name === 'product' ? 'Thành phẩm' : product.name === 'mixedQuantity' ? 'Mủ tạp' : 'Quy khô' %>"
-                                disabled
-                              />
+                              <input type="text" class="form-control" value="<%= product.name === 'product' ? 'Thành phẩm' : product.name === 'mixedQuantity' ? 'Mủ tạp' : 'Quy khô' %>" disabled />
                             </div>
                             <div class="col-6">
-                              <label
-                                class="form-label fw-bold w-100 d-flex justify-content-between"
-                                >Ngày nhập
+                              <label class="form-label fw-bold w-100 d-flex justify-content-between">Ngày nhập
                               </label>
-                              <input
-                                type="date"
-                                class="form-control"
-                                name="inputDate"
-                                required
-                                disabled
-                                value="<%= sale.date.toISOString().slice(0,10) %>"
-                              />
+                              <input type="date" class="form-control" name="inputDate" required disabled value="<%= sale.date.toISOString().slice(0,10) %>" />
                             </div>
                           </div>
                           <div class="row my-3 m-0 p-0">
                             <% if(product.name === "dryRubber"){ %>
                             <div class="col col-md-3">
                               <label class="form-label fw-bold">Số lượng</label>
-                              <input
-                                type="text"
-                                class="form-control"
-                                value="<%= product.quantity.toLocaleString('vi-VN') %>"
-                                disabled
-                              />
+                              <input type="text" class="form-control" value="<%= product.quantity.toLocaleString('vi-VN') %>" disabled />
                             </div>
                             <div class="col col-md-3">
-                              <label class="form-label fw-bold"
-                                >Hàm lượng</label
-                              >
-                              <input
-                                type="text"
-                                class="form-control"
-                                value="<%= product.percentage %>"
-                                disabled
-                              />
+                              <label class="form-label fw-bold">Hàm lượng</label>
+                              <input type="text" class="form-control" value="<%= product.percentage %>" disabled />
                             </div>
                             <% }else{ %>
                             <div class="col col-md-6">
                               <label class="form-label fw-bold">Số lượng</label>
-                              <input
-                                type="text"
-                                class="form-control"
-                                value="<%= product.quantity.toLocaleString('vi-VN') %>"
-                                disabled
-                              />
+                              <input type="text" class="form-control" value="<%= product.quantity.toLocaleString('vi-VN') %>" disabled />
                             </div>
                             <% } %>
                             <div class="col col-md-6">
                               <label class="form-label fw-bold">Đơn giá</label>
-                              <input
-                                type="text"
-                                class="form-control"
-                                value="<%= product.price.toLocaleString('vi-VN') %>"
-                                disabled
-                              />
+                              <input type="text" class="form-control" value="<%= product.price.toLocaleString('vi-VN') %>" disabled />
                             </div>
                           </div>
                           <% if(product.name === 'dryRubber'){ %>
                           <div class="row m-0 p-0">
                             <div class="col col-md-6">
                               <label class="form-label fw-bold">Tổng</label>
-                              <input
-                                type="text"
-                                class="form-control"
-                                value="<%= ((product.quantity * product.percentage) / 100).toLocaleString('vi-VN') %>"
-                                disabled
-                              />
+                              <input type="text" class="form-control" value="<%= ((product.quantity * product.percentage) / 100).toLocaleString('vi-VN') %>" disabled />
                             </div>
                           </div>
                           <% } %>
@@ -181,30 +119,16 @@
             </div>
 
             <!-- Delete confirming modal  -->
-            <div
-              class="modal fade"
-              id="deleteModalToggle<%= sale._id %>"
-              aria-hidden="true"
-              aria-labelledby="exampleModalToggleLabel"
-              tabindex="-1"
-            >
+            <div class="modal fade" id="deleteModalToggle<%= sale._id %>" aria-hidden="true" aria-labelledby="exampleModalToggleLabel" tabindex="-1">
               <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                   <div class="modal-header">
                     <h1 class="modal-title fs-5" id="exampleModalToggleLabel">
                       Xóa hợp đồng <%= sale.code %> ngày <%= sale.date.toLocaleDateString() %>
                     </h1>
-                    <button
-                      type="button"
-                      class="btn-close"
-                      data-bs-dismiss="modal"
-                      aria-label="Close"
-                    ></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
-                  <form
-                    action="/quan-ly-hop-dong/<%= sale._id %>?_method=DELETE"
-                    method="post"
-                  >
+                  <form action="/quan-ly-hop-dong/<%= sale._id %>?_method=DELETE" method="post">
                     <div class="modal-body">
                       Bạn có muốn xóa hợp đồng mã
                       <strong><%= sale.code %></strong> ngày <strong><%= sale.date.toLocaleDateString() %></strong> ? Hành động này không
@@ -240,26 +164,12 @@
           <%- include('../partials/notificationMessage.ejs') %>
           <div>
             <label for="date" class="form-label fw-bold">Ngày nhập</label>
-            <input
-              type="date"
-              class="form-control"
-              id="date"
-              name="date"
-              required
-              autofocus
-            />
+            <input type="date" class="form-control" id="date" name="date" required autofocus />
           </div>
 
           <div class="my-3">
             <label for="code" class="form-label fw-bold">Mã hợp đồng</label>
-            <input
-              type="text"
-              class="form-control"
-              id="code"
-              name="code"
-              placeholder="NPUE-3984"
-              required
-            />
+            <input type="text" class="form-control" id="code" name="code" placeholder="NPUE-3984" required />
           </div>
 
           <div class="productLists mt-3">
@@ -268,25 +178,13 @@
               <div class="row mt-3">
                 <div class="row m-0 p-0">
                   <div class="col">
-                    <label
-                      for="name"
-                      class="form-label fw-bold w-100 d-flex justify-content-between"
-                    >
+                    <label for="name" class="form-label fw-bold w-100 d-flex justify-content-between">
                       1. Hàng hóa
                       <span>
-                        <i
-                          class="ri-close-line"
-                          style="cursor: pointer"
-                          onclick="removeProduct(this,'.productList')"
-                        ></i>
+                        <i class="ri-close-line" style="cursor: pointer" onclick="removeProduct(this,'.productList')"></i>
                       </span>
                     </label>
-                    <select
-                      class="form-control"
-                      name="name"
-                      id="name"
-                      onchange="handleProductChange(this, this.closest('.productList'), false)"
-                    >
+                    <select class="form-control" name="name" id="name" onchange="handleProductChange(this, this.closest('.productList'), false)">
                       <option value="product" selected>Thành phẩm</option>
                       <option value="mixedQuantity">Mủ tạp</option>
                       <option value="dryRubber">Quy khô</option>
@@ -295,58 +193,28 @@
                 </div>
                 <div class="row normalFields my-3 m-0 p-0">
                   <div class="col col-md-6">
-                    <label for="quantity" class="form-label fw-bold"
-                      >Số lượng</label
-                    >
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="quantity"
-                      name="quantity"
-                      oninput="handleQuantityInput(this)"
-                    />
+                    <label for="quantity" class="form-label fw-bold">Số lượng</label>
+                    <input type="text" class="form-control" id="quantity" name="quantity" oninput="handleQuantityInput(this)" inputmode="numeric" />
                   </div>
                   <div class="col col-md-6">
-                    <label for="price" class="form-label fw-bold"
-                      >Đơn giá</label
-                    >
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="price"
-                      name="price"
-                      oninput="handleQuantityInput(this)"
-                    />
+                    <label for="price" class="form-label fw-bold">Đơn giá</label>
+                    <input type="text" class="form-control" id="price" name="price" oninput="handleQuantityInput(this)" inputmode="numeric" />
                   </div>
                 </div>
-                <div
-                  class="additionalFields my-3 m-0 p-0"
-                  style="display: none"
-                ></div>
+                <div class="additionalFields my-3 m-0 p-0" style="display: none"></div>
               </div>
             </div>
           </div>
 
           <div class="btnController">
-            <button
-              type="button"
-              onclick="addInputField('form .productLists', '.productList', false, 'Hàng hóa')"
-              style="background: transparent; border: none"
-              title="Thêm hàng hóa"
-            >
+            <button type="button" onclick="addInputField('form .productLists', '.productList', false, 'Hàng hóa')" style="background: transparent; border: none" title="Thêm hàng hóa">
               <i class="ri-add-circle-line fs-5"></i>
             </button>
           </div>
 
           <div class="my-3">
             <label for="notes" class="form-label fw-bold">Ghi chú</label>
-            <textarea
-              type="text"
-              class="form-control"
-              rows="3"
-              id="notes"
-              name="notes"
-            ></textarea>
+            <textarea type="text" class="form-control" rows="3" id="notes" name="notes"></textarea>
           </div>
         </div>
         <div class="card-footer bg-transparent">
@@ -360,25 +228,12 @@
 </div>
 
 <!-- Modal for deleting all -->
-<div
-  class="modal fade"
-  id="deleteAll"
-  data-bs-backdrop="static"
-  data-bs-keyboard="false"
-  tabindex="-1"
-  aria-labelledby="deleteUsers"
-  aria-hidden="true"
->
+<div class="modal fade" id="deleteAll" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteUsers" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="deleteUsers">Xóa tất cả hợp đồng</h1>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
       <form action="/quan-ly-hop-dong/deleteAll?_method=DELETE" method="post">
@@ -395,36 +250,56 @@
 </div>
 
 <script>
-  let columns = [
-    { data: 'no', orderable: false, width: '1%', visible: false },
-    { data: 'date', searchable: true, width: '10%' },
-    { data: 'code', orderable: false, width: '15%' },
+  let columns = [{
+      data: 'no',
+      orderable: false,
+      width: '1%',
+      visible: false
+    },
+    {
+      data: 'date',
+      searchable: true,
+      width: '10%'
+    },
+    {
+      data: 'code',
+      orderable: false,
+      width: '15%'
+    },
     {
       data: 'products',
       orderable: false,
       width: '12%',
-      render: function (data, row, type) {
+      render: function(data, row, type) {
         return `
           <a class="link-opacity-50-hover" data-bs-toggle="modal" data-bs-target="#productList${data}" style="cursor: pointer">Xem</a>
         `;
       },
     },
-    { data: 'notes', orderable: false, width: '15%' },
-    { data: 'total', orderable: false, width: '20%' },
+    {
+      data: 'notes',
+      orderable: false,
+      width: '15%'
+    },
+    {
+      data: 'total',
+      orderable: false,
+      width: '20%'
+    },
     {
       data: 'status',
       width: '15%',
-      render: function (data) {
-        return data === 'active'
-          ? `  <div class="row">
+      render: function(data) {
+        return data === 'active' ?
+          `  <div class="row">
           <div class="col text-center "  >
             <div class="badge bg-success" style= "pointer-event: none">
               Đang mở
             </div>
           </div>
         </div>
-      </div>`
-          : `  <div class="row">
+      </div>` :
+          `  <div class="row">
           <div class="col text-center "  >
             <div class="badge bg-danger" style= "pointer-event: none">
               Đã đóng
@@ -438,7 +313,7 @@
       data: 'slug',
       width: '13%',
       orderable: false,
-      render: function (data, type, row) {
+      render: function(data, type, row) {
         return `<div class="d-flex justify-content-between fs-5">
           <a href="/quan-ly-hop-dong/hop-dong/${data.slug}" class="text-decoration-none text-dark">
             <i class="ri-edit-box-line" style="cursor: pointer;"></i>

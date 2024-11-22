@@ -7,13 +7,7 @@
 </head>
 
 <%- include('../partials/totalValue') %> <% if(user.role === 'Admin'){ %>
-<button
-  type="button"
-  class="btn btn-danger mx-2 mx-md-3 mt-2"
-  data-bs-toggle="modal"
-  data-bs-target="#deleteAll"
-  style="width: max-content"
->
+<button type="button" class="btn btn-danger mx-2 mx-md-3 mt-2" data-bs-toggle="modal" data-bs-target="#deleteAll" style="width: max-content">
   Xóa tất cả thông tin
 </button>
 <% } %>
@@ -41,128 +35,51 @@
           <tbody>
             <% spends.forEach( (spend,index) => { %>
             <!-- Modal for updating -->
-            <div
-              class="modal fade"
-              id="staticBackdrop<%= spend._id %>"
-              data-bs-backdrop="static"
-              data-bs-keyboard="false"
-              tabindex="-1"
-              aria-labelledby="staticBackdropLabel"
-              aria-hidden="true"
-            >
-              <div
-                class="modal-dialog modal-dialog-centered modal-dialog-scrollable"
-              >
+            <div class="modal fade" id="staticBackdrop<%= spend._id %>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                 <div class="modal-content">
                   <div class="modal-header">
                     <h1 class="modal-title fs-5" id="staticBackdropLabel">
                       Cập nhật <%= spend.product %> ngày <%= spend.date.toLocaleDateString() %>
                     </h1>
-                    <button
-                      type="button"
-                      class="btn-close"
-                      data-bs-dismiss="modal"
-                      aria-label="Close"
-                    ></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
 
-                  <form
-                    action="/quan-ly-chi-tieu/<%= spend._id %>?_method=PUT"
-                    method="post"
-                  >
+                  <form action="/quan-ly-chi-tieu/<%= spend._id %>?_method=PUT" method="post">
                     <div class="modal-body">
                       <div>
-                        <label for="date" class="form-label fw-bold"
-                          >Ngày
+                        <label for="date" class="form-label fw-bold">Ngày
                         </label>
-                        <input
-                          type="date"
-                          class="form-control"
-                          id="date"
-                          name="date"
-                          required
-                          autofocus
-                          value="<%= spend.date.toISOString().slice(0,10)  %>"
-                        />
+                        <input type="date" class="form-control" id="date" name="date" required autofocus value="<%= spend.date.toISOString().slice(0,10)  %>" />
                       </div>
 
                       <div class="my-3">
-                        <label for="product" class="form-label fw-bold"
-                          >Hàng hóa</label
-                        >
-                        <input
-                          type="text"
-                          class="form-control"
-                          id="product"
-                          name="product"
-                          placeholder="Dầu"
-                          required
-                          value="<%= spend.product %>"
-                          <%= spend.product === 'lương' ? 'disabled' : '' %>
-                        />
+                        <label for="product" class="form-label fw-bold">Hàng hóa</label>
+                        <input type="text" class="form-control" id="product" name="product" placeholder="Dầu" required value="<%= spend.product %>" <%= spend.product === 'lương' ? 'disabled' : '' %> />
                       </div>
 
                       <% if(spend.product === 'lương'){ %>
                       <div class="my-3">
-                        <label for="price" class="form-label fw-bold"
-                          >Đơn giá</label
-                        >
-                        <input
-                          type="text"
-                          class="form-control"
-                          id="price"
-                          name="price"
-                          placeholder="20.000"
-                          oninput="handleQuantityInput(this)"
-                          value="<%= spend.price.toLocaleString('vi-VN') %>"
-                        />
+                        <label for="price" class="form-label fw-bold">Đơn giá</label>
+                        <input type="text" class="form-control" id="price" name="price" placeholder="20.000" oninput="handleQuantityInput(this)" inputmode="numeric" value="<%= spend.price.toLocaleString('vi-VN') %>" />
                       </div>
                       <% } else { %>
                       <div class="my-3">
-                        <label for="quantity" class="form-label fw-bold"
-                          >Số lượng</label
-                        >
-                        <input
-                          type="text"
-                          class="form-control"
-                          id="quantity"
-                          name="quantity"
-                          placeholder="1.500"
-                          oninput="handleQuantityInput(this)"
-                          value="<%= spend.quantity.toLocaleString('vi-VN') %>"
-                        />
+                        <label for="quantity" class="form-label fw-bold">Số lượng</label>
+                        <input type="text" class="form-control" id="quantity" name="quantity" placeholder="1.500" oninput="handleQuantityInput(this)" inputmode="numeric" value="<%= spend.quantity.toLocaleString('vi-VN') %>" />
                       </div>
 
                       <div class="my-3">
-                        <label for="price" class="form-label fw-bold"
-                          >Đơn giá</label
-                        >
-                        <input
-                          type="text"
-                          class="form-control"
-                          id="price"
-                          name="price"
-                          placeholder="20.000"
-                          oninput="handleQuantityInput(this)"
-                          value="<%= spend.price.toLocaleString('vi-VN') %>"
-                        />
+                        <label for="price" class="form-label fw-bold">Đơn giá</label>
+                        <input type="text" class="form-control" id="price" name="price" placeholder="20.000" oninput="handleQuantityInput(this)" inputmode="numeric" value="<%= spend.price.toLocaleString('vi-VN') %>" />
                       </div>
 
                       <% } %>
 
                       <div class="my-3">
-                        <label for="notes" class="form-label fw-bold"
-                          >Ghi chú</label
-                        >
-                        <textarea
-                          type="text"
-                          class="form-control"
-                          rows="2"
-                          id="notes"
-                          name="notes"
-                        >
-<%= spend.notes %></textarea
-                        >
+                        <label for="notes" class="form-label fw-bold">Ghi chú</label>
+                        <textarea type="text" class="form-control" rows="2" id="notes" name="notes">
+<%= spend.notes %></textarea>
                       </div>
                     </div>
                     <div class="modal-footer">
@@ -178,35 +95,20 @@
             </div>
 
             <!-- Delete confirming modal  -->
-            <div
-              class="modal fade"
-              id="deleteModalToggle<%= spend._id %>"
-              aria-hidden="true"
-              tabindex="-1"
-            >
+            <div class="modal fade" id="deleteModalToggle<%= spend._id %>" aria-hidden="true" tabindex="-1">
               <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                   <div class="modal-header">
-                    <h1 class="modal-title fs-5" >
+                    <h1 class="modal-title fs-5">
                       Xóa <%= spend.product %> ngày <%=
                       spend.date.toLocaleDateString("vi-VN") %>
                     </h1>
-                    <button
-                      type="button"
-                      class="btn-close"
-                      data-bs-dismiss="modal"
-                      aria-label="Close"
-                    ></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
-                  <form
-                    action="/quan-ly-chi-tieu/<%= spend._id %>?_method=DELETE"
-                    method="post"
-                  >
+                  <form action="/quan-ly-chi-tieu/<%= spend._id %>?_method=DELETE" method="post">
                     <div class="modal-body">
                       Bạn có muốn xóa <strong><%= spend.product %></strong> ngày
-                      <strong
-                        ><%= spend.date.toLocaleDateString("vi-VN") %></strong
-                      >
+                      <strong><%= spend.date.toLocaleDateString("vi-VN") %></strong>
                       ? Hành động này không thể hoàn tác.
                     </div>
                     <div class="modal-footer">
@@ -241,23 +143,12 @@
           <%- include('../partials/notificationMessage.ejs') %>
           <div>
             <label for="date" class="form-label fw-bold">Ngày </label>
-            <input
-              type="date"
-              class="form-control"
-              id="date"
-              name="date"
-              required
-              autofocus
-            />
+            <input type="date" class="form-control" id="date" name="date" required autofocus />
           </div>
 
           <div class="my-3">
             <label class="form-label fw-bold">Loại chi tiêu</label>
-            <select
-              class="form-control"
-              onchange="displayOption(this)"
-              style="cursor: pointer"
-            >
+            <select class="form-control" onchange="displayOption(this)" style="cursor: pointer">
               <option disabled selected>Chọn loại chi tiêu</option>
               <option value="Hàng hóa">Hàng hóa</option>
               <option value="Lương">Lương</option>
@@ -268,13 +159,7 @@
 
           <div class="my-3">
             <label for="notes" class="form-label fw-bold">Ghi chú</label>
-            <textarea
-              type="text"
-              class="form-control"
-              rows="2"
-              id="notes"
-              name="notes"
-            ></textarea>
+            <textarea type="text" class="form-control" rows="2" id="notes" name="notes"></textarea>
           </div>
         </div>
         <div class="card-footer bg-transparent">
@@ -287,25 +172,12 @@
   </div>
 </div>
 <!-- Modal for deleting all -->
-<div
-  class="modal fade"
-  id="deleteAll"
-  data-bs-backdrop="static"
-  data-bs-keyboard="false"
-  tabindex="-1"
-  aria-labelledby="deleteUsers"
-  aria-hidden="true"
->
+<div class="modal fade" id="deleteAll" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteUsers" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="deleteUsers">Xóa tất cả chi tiêu</h1>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
       <form action="/quan-ly-chi-tieu/deleteAll?_method=DELETE" method="post">
@@ -322,15 +194,38 @@
 </div>
 
 <script>
-  const columns = [
-    { data: 'no', visible: false, orderable: false },
-    { data: 'date' },
-    { data: 'product', orderable: false },
-    { data: 'quantity', orderable: false },
-    { data: 'price', orderable: false },
-    { data: 'total', orderable: false },
-    { data: 'notes', orderable: false },
-    { data: 'id', orderable: false },
+  const columns = [{
+      data: 'no',
+      visible: false,
+      orderable: false
+    },
+    {
+      data: 'date'
+    },
+    {
+      data: 'product',
+      orderable: false
+    },
+    {
+      data: 'quantity',
+      orderable: false
+    },
+    {
+      data: 'price',
+      orderable: false
+    },
+    {
+      data: 'total',
+      orderable: false
+    },
+    {
+      data: 'notes',
+      orderable: false
+    },
+    {
+      data: 'id',
+      orderable: false
+    },
   ];
 
   initializeDataTable(
@@ -377,7 +272,7 @@
           class="form-control"
           id="quantity"
           name="quantity"
-          oninput="handleQuantityInput(this)"
+          oninput="handleQuantityInput(this)" inputmode="numeric"
         />
       </div>
   
@@ -388,7 +283,7 @@
             class="form-control"
             id="price"
             name="price"
-            oninput="handleQuantityInput(this)"
+            oninput="handleQuantityInput(this)" inputmode="numeric"
           />
         </div>
       `;
@@ -406,7 +301,7 @@
             class="form-control"
             id="price"
             name="price"
-            oninput="handleQuantityInput(this)"
+            oninput="handleQuantityInput(this)" inputmode="numeric"
           />
         </div>
       `;

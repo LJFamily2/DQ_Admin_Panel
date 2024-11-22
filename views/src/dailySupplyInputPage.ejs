@@ -104,11 +104,11 @@
                             <label class="form-label fw-bold">Mủ nước</label>
                             <div class="col col-md-6">
                               <label for="muNuocQuantity<%= index %>" class="form-label">Số lượng</label>
-                              <input type="text" class="form-control" id="muNuocQuantity<%= index %>" name="muNuocQuantity" value="<%= raw.quantity.toLocaleString('vi-VN') %>" required oninput="handleQuantityInput(this)" />
+                              <input type="text" class="form-control" id="muNuocQuantity<%= index %>" name="muNuocQuantity" value="<%= raw.quantity.toLocaleString('vi-VN') %>" required oninput="handleQuantityInput(this)" inputmode="numeric" />
                             </div>
                             <div class="col col-md-6">
                               <label for="muNuocPercentage<%= index %>" class="form-label">Hàm lượng</label>
-                              <input type="text" class="form-control" id="muNuocPercentage<%= index %>" name="muNuocPercentage" value="<%= raw.percentage.toLocaleString('vi-VN') %>" oninput="handlePercentageInput(this)" required />
+                              <input type="text" class="form-control" id="muNuocPercentage<%= index %>" name="muNuocPercentage" value="<%= raw.percentage.toLocaleString('vi-VN') %>" oninput="handlePercentageInput(this)" inputmode="numeric" required />
                             </div>
                           </div>
                         </div>
@@ -118,7 +118,7 @@
                             <label class="form-label fw-bold">Mủ tạp</label>
                             <div class="col">
                               <label for="muTapQuantity<%= index %>" class="form-label">Số lượng</label>
-                              <input type="text" class="form-control" id="muTapQuantity<%= index %>" name="muTapQuantity" value="<%= raw.quantity.toLocaleString('vi-VN') %>" required oninput="handleQuantityInput(this)" />
+                              <input type="text" class="form-control" id="muTapQuantity<%= index %>" name="muTapQuantity" value="<%= raw.quantity.toLocaleString('vi-VN') %>" required oninput="handleQuantityInput(this)" inputmode="numeric" />
                             </div>
                           </div>
                         </div>
@@ -128,7 +128,7 @@
                             <label class="form-label fw-bold">Mủ Ké</label>
                             <div class="col">
                               <label for="muKeQuantity<%= index %>" class="form-label">Số lượng</label>
-                              <input type="text" class="form-control" id="muKeQuantity<%= index %>" name="muKeQuantity" value="<%= raw.quantity.toLocaleString('vi-VN') %>" required oninput="handleQuantityInput(this)" />
+                              <input type="text" class="form-control" id="muKeQuantity<%= index %>" name="muKeQuantity" value="<%= raw.quantity.toLocaleString('vi-VN') %>" required oninput="handleQuantityInput(this)" inputmode="numeric" />
                             </div>
                           </div>
                         </div>
@@ -138,7 +138,7 @@
                             <label class="form-label fw-bold">Mủ Đông</label>
                             <div class="col">
                               <label for="muDongQuantity<%= index %>" class="form-label">Số lượng</label>
-                              <input type="text" class="form-control" id="muDongQuantity<%= index %>" name="muDongQuantity" value="<%= raw.quantity.toLocaleString('vi-VN') %>" required oninput="handleQuantityInput(this)" />
+                              <input type="text" class="form-control" id="muDongQuantity<%= index %>" name="muDongQuantity" value="<%= raw.quantity.toLocaleString('vi-VN') %>" required oninput="handleQuantityInput(this)" inputmode="numeric" />
                             </div>
                           </div>
                         </div>
@@ -254,11 +254,11 @@
                     <input type="text" name="name" value="Mủ nước" hidden />
                     <div class="col col-md-6">
                       <label class="form-label">Số lượng</label>
-                      <input type="text" class="form-control" id="quantity" name="quantity" required oninput="handleQuantityInput(this)" />
+                      <input type="text" class="form-control" id="quantity" name="quantity" required oninput="handleQuantityInput(this)" inputmode="numeric" />
                     </div>
                     <div class="col col-md-6">
                       <label for="percentage" class="form-label">Hàm lượng</label>
-                      <input type="text" class="form-control" name="percentage" required oninput="handlePercentageInput(this)" />
+                      <input type="text" class="form-control" name="percentage" required oninput="handlePercentageInput(this)" inputmode="numeric" />
                     </div>
                   </div>
                 </div>
@@ -269,7 +269,7 @@
                     <input type="text" name="name" value="Mủ tạp" hidden />
                     <div class="col-12">
                       <label class="form-label">Số lượng</label>
-                      <input type="text" class="form-control" name="quantity" required oninput="handleQuantityInput(this)" />
+                      <input type="text" class="form-control" name="quantity" required oninput="handleQuantityInput(this)" inputmode="numeric" />
                     </div>
                   </div>
                 </div>
@@ -280,7 +280,7 @@
                       <label class="form-label">Số lượng</label>
                       <input type="text" name="name" value="Mủ ké" hidden />
 
-                      <input type="text" class="form-control" name="quantity" required oninput="handleQuantityInput(this)" />
+                      <input type="text" class="form-control" name="quantity" required oninput="handleQuantityInput(this)" inputmode="numeric" />
                     </div>
                   </div>
                 </div>
@@ -291,7 +291,7 @@
                       <label class="form-label">Số lượng</label>
                       <input type="text" name="name" value="Mủ đông" hidden />
 
-                      <input type="text" class="form-control" name="quantity" required oninput="handleQuantityInput(this)" />
+                      <input type="text" class="form-control" name="quantity" required oninput="handleQuantityInput(this)" inputmode="numeric" />
                     </div>
                   </div>
                 </div>
@@ -386,11 +386,11 @@
           </div>
           <div class="mt-3">
             <label for="purchasedAreaPrice" class="form-label fw-bold">Giá mua (VNĐ/mẫu)</label>
-            <input type="text" class="form-control" id="purchasedAreaPrice" name="purchasedAreaPrice" oninput="handleQuantityInput(this)" />
+            <input type="text" class="form-control" id="purchasedAreaPrice" name="purchasedAreaPrice" oninput="handleQuantityInput(this)" inputmode="numeric" />
           </div>
           <div class="mt-3">
             <label for="areaDeposit" class="form-label fw-bold">Tiền đặt cọc</label>
-            <input type="text" class="form-control" id="areaDeposit" name="areaDeposit" min="0" oninput="handleQuantityInput(this)" />
+            <input type="text" class="form-control" id="areaDeposit" name="areaDeposit" min="0" oninput="handleQuantityInput(this)" inputmode="numeric" />
           </div>
           <div class="mt-3">
             <label class="form-label fw-bold">Thời hạn mua</label>
@@ -407,15 +407,15 @@
           </div>
           <div class="mt-3">
             <label for="moneyRetainedPercentage" class="form-label fw-bold">% Tiền giữ lại</label>
-            <input type="text" class="form-control" id="moneyRetainedPercentage" name="moneyRetainedPercentage" oninput="handlePercentageInput(this)" />
+            <input type="text" class="form-control" id="moneyRetainedPercentage" name="moneyRetainedPercentage" oninput="handlePercentageInput(this)" inputmode="numeric" />
           </div>
           <div class="mt-3">
             <label for="ratioRubberSplit" class="form-label fw-bold">% nhận mủ mặc định</label>
-            <input type="text" class="form-control" id="ratioRubberSplit" name="ratioRubberSplit" value="100" oninput="handlePercentageInput(this)" />
+            <input type="text" class="form-control" id="ratioRubberSplit" name="ratioRubberSplit" value="100" oninput="handlePercentageInput(this)" inputmode="numeric" />
           </div>
           <div class="mt-3">
             <label for="ratioSumSplit" class="form-label fw-bold">% nhận tổng mặc định</label>
-            <input type="text" class="form-control" id="ratioSumSplit" name="ratioSumSplit" value="100" oninput="handlePercentageInput(this)" />
+            <input type="text" class="form-control" id="ratioSumSplit" name="ratioSumSplit" value="100" oninput="handlePercentageInput(this)" inputmode="numeric" />
           </div>
           <% } %>
         </div>
