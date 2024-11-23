@@ -155,7 +155,7 @@
                     </h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
-                  <form action="/du-lieu/nhat-ky-hoat-dong/deleteData/<%= activity._id %>" method="post">
+                  <form action="/du-lieu/nhat-ky-hoat-dong/<%= activity._id %>?_method=DELETE" method="post">
                     <div class="modal-body">
                       <p><strong>Hành động: </strong> <%= activity.details %></p>
                       Bạn có muốn xóa nhật ký dữ liệu của <strong><%= activity.userId.username %></strong>? Hành động này không thể hoàn tác.
