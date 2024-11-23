@@ -1,7 +1,7 @@
-const RawMaterialModel = require('../models/rawMaterialModel');
-const ProductTotalModel = require('../models/productTotalModel');
-const formatTotalData = require('./utils/formatTotalData');
-const convertToDecimal = require('./utils/convertToDecimal');
+const RawMaterialModel = require("../models/rawMaterialModel");
+const ProductTotalModel = require("../models/productTotalModel");
+const formatTotalData = require("./utils/formatTotalData");
+const convertToDecimal = require("./utils/convertToDecimal");
 
 module.exports = {
   renderPage,
@@ -15,17 +15,16 @@ async function renderPage(req, res) {
     let totalData = await ProductTotalModel.find();
     const total = formatTotalData(totalData);
 
-    res.set('Cache-Control', 'public, max-age=300'); // Cache for 5 minutes
-    res.render('src/queryPage', {
-      layout: './layouts/defaultLayout',
+    res.render("src/queryPage", {
+      layout: "./layouts/defaultLayout",
       total,
       user: req.user,
       startDate,
       endDate,
-      title: 'Truy vấn',
+      title: "Truy vấn",
     });
   } catch {
-    res.status(500).render('partials/500', { layout: false });
+    res.status(500).render("partials/500", { layout: false });
   }
 }
 
@@ -42,9 +41,9 @@ async function getDataTotal(req, res) {
       mixedPrice,
     } = req.body;
 
-    const searchValue = search?.value || '';
-    const sortColumn = columns?.[order?.[0]?.column]?.data || 'name';
-    const sortDirection = order?.[0]?.dir === 'asc' ? 1 : -1;
+    const searchValue = search?.value || "";
+    const sortColumn = columns?.[order?.[0]?.column]?.data || "name";
+    const sortDirection = order?.[0]?.dir === "asc" ? 1 : -1;
 
     const filter = {};
 
@@ -61,7 +60,7 @@ async function getDataTotal(req, res) {
     filter.date = { $gte: startDate, $lte: endDate };
 
     if (searchValue) {
-      filter.$or = [{ notes: new RegExp(searchValue, 'i') }];
+      filter.$or = [{ notes: new RegExp(searchValue, "i") }];
     }
 
     const totalRecords = await RawMaterialModel.countDocuments(filter);
@@ -96,18 +95,18 @@ async function getDataTotal(req, res) {
 
       return {
         no: index + 1,
-        date: plantation.date.toLocaleDateString('vi-VN'),
-        dryQuantity: dryQuantityTotal.toLocaleString('vi-VN'),
+        date: plantation.date.toLocaleDateString("vi-VN"),
+        dryQuantity: dryQuantityTotal.toLocaleString("vi-VN"),
         dryPrice: dryPrice,
-        dryTotal: dryTotalValue.toLocaleString('vi-VN'),
-        mixedQuantity: mixedQuantityTotal.toLocaleString('vi-VN'),
+        dryTotal: dryTotalValue.toLocaleString("vi-VN"),
+        mixedQuantity: mixedQuantityTotal.toLocaleString("vi-VN"),
         mixedPrice: mixedPrice,
-        mixedTotal: mixedTotalValue.toLocaleString('vi-VN'),
-        keQuantity: keQuantityTotal.toLocaleString('vi-VN'),
-        kePrice: kePriceValue.toLocaleString('vi-VN'),
-        keTotal: keTotalValue.toLocaleString('vi-VN'),
-        notes: plantation.notes || '',
-        totalMoney: totalMoneyValue.toLocaleString('vi-VN'),
+        mixedTotal: mixedTotalValue.toLocaleString("vi-VN"),
+        keQuantity: keQuantityTotal.toLocaleString("vi-VN"),
+        kePrice: kePriceValue.toLocaleString("vi-VN"),
+        keTotal: keTotalValue.toLocaleString("vi-VN"),
+        notes: plantation.notes || "",
+        totalMoney: totalMoneyValue.toLocaleString("vi-VN"),
       };
     });
 
@@ -118,6 +117,6 @@ async function getDataTotal(req, res) {
       data,
     });
   } catch (err) {
-    res.status(500).render('partials/500', { layout: false });
+    res.status(500).render("partials/500", { layout: false });
   }
 }

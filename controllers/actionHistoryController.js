@@ -1,11 +1,11 @@
-const ActionHistory = require('../models/actionHistoryModel');
+const ActionHistory = require("../models/actionHistoryModel");
 
-const handleResponse = require('../controllers/utils/handleResponse');
+const handleResponse = require("../controllers/utils/handleResponse");
 
 module.exports = {
   renderPage,
   deleteData,
-  deleteAllData
+  deleteAllData,
 };
 async function renderPage(req, res) {
   try {
@@ -29,9 +29,9 @@ async function renderPage(req, res) {
     if (selectedUser) query.userId = selectedUser;
 
     const actionTypes = [];
-    if (createAction) actionTypes.push('create');
-    if (updateAction) actionTypes.push('update');
-    if (deleteAction) actionTypes.push('delete');
+    if (createAction) actionTypes.push("create");
+    if (updateAction) actionTypes.push("update");
+    if (deleteAction) actionTypes.push("delete");
     if (actionTypes.length > 0) query.actionType = { $in: actionTypes };
 
     const pageNumber = parseInt(page, 10);
@@ -44,8 +44,8 @@ async function renderPage(req, res) {
         .skip(skip)
         .limit(pageSize)
         .populate({
-          path: 'userId',
-          select: ['username', 'role'],
+          path: "userId",
+          select: ["username", "role"],
         }),
       ActionHistory.countDocuments(query),
     ]);
@@ -53,14 +53,14 @@ async function renderPage(req, res) {
     const totalPages = Math.ceil(totalActivities / pageSize);
 
     const groupedActivities = activities.reduce((acc, activity) => {
-      const date = new Date(activity.timestamp).toLocaleDateString('vi-VN');
+      const date = new Date(activity.timestamp).toLocaleDateString("vi-VN");
       if (!acc[date]) acc[date] = [];
       acc[date].push(activity);
       return acc;
     }, {});
 
     const usersMap = new Map();
-    activities.forEach(activity => {
+    activities.forEach((activity) => {
       const user = activity.userId;
       if (user && !usersMap.has(user._id.toString())) {
         usersMap.set(user._id.toString(), user.username);
@@ -70,11 +70,10 @@ async function renderPage(req, res) {
       _id: id,
       username,
     }));
-    
-    res.set('Cache-Control', 'public, max-age=300'); // Cache for 5 minutes
-    res.render('src/actionHistoryPage', {
-      layout: './layouts/defaultLayout',
-      title: 'Lịch sử hoạt động',
+
+    res.render("src/actionHistoryPage", {
+      layout: "./layouts/defaultLayout",
+      title: "Lịch sử hoạt động",
       groupedActivities,
       user: req.user,
       users,
@@ -90,7 +89,7 @@ async function renderPage(req, res) {
     });
   } catch (err) {
     console.log(err);
-    res.status(500).render('partials/500', { layout: false });
+    res.status(500).render("partials/500", { layout: false });
   }
 }
 
@@ -105,9 +104,9 @@ async function deleteData(req, res) {
         req,
         res,
         404,
-        'fail',
-        'Xóa dữ liệu thất bại',
-        req.headers.referer,
+        "fail",
+        "Xóa dữ liệu thất bại",
+        req.headers.referer
       );
     }
 
@@ -115,13 +114,13 @@ async function deleteData(req, res) {
       req,
       res,
       200,
-      'success',
-      'Xóa dữ liệu thành công',
-      req.headers.referer,
+      "success",
+      "Xóa dữ liệu thành công",
+      req.headers.referer
     );
   } catch (error) {
     console.log(error);
-    return res.status(500).render('partials/500', { layout: false });
+    return res.status(500).render("partials/500", { layout: false });
   }
 }
 
@@ -134,9 +133,9 @@ async function deleteAllData(req, res) {
         req,
         res,
         404,
-        'fail',
-        'Xóa tất cả dữ liệu thất bại',
-        req.headers.referer,
+        "fail",
+        "Xóa tất cả dữ liệu thất bại",
+        req.headers.referer
       );
     }
 
@@ -144,13 +143,12 @@ async function deleteAllData(req, res) {
       req,
       res,
       200,
-      'success',
-      'Xóa dữ tất cả liệu thành công',
-      req.headers.referer,
+      "success",
+      "Xóa dữ tất cả liệu thành công",
+      req.headers.referer
     );
-    
   } catch (error) {
     console.log(error);
-    return res.status(500).render('partials/500', { layout: false });
+    return res.status(500).render("partials/500", { layout: false });
   }
 }

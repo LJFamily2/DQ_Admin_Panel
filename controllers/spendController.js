@@ -1,9 +1,9 @@
-const SpendModel = require('../models/spendModel');
-const ProductTotalModel = require('../models/productTotalModel');
-const formatTotalData = require('./utils/formatTotalData');
-const trimStringFields = require('./utils/trimStringFields');
-const handleResponse = require('./utils/handleResponse');
-const convertToDecimal = require('./utils/convertToDecimal');
+const SpendModel = require("../models/spendModel");
+const ProductTotalModel = require("../models/productTotalModel");
+const formatTotalData = require("./utils/formatTotalData");
+const trimStringFields = require("./utils/trimStringFields");
+const handleResponse = require("./utils/handleResponse");
+const convertToDecimal = require("./utils/convertToDecimal");
 
 module.exports = {
   renderPage,
@@ -34,10 +34,9 @@ async function renderPage(req, res) {
     const total = formatTotalData(totalData);
     let spends = await SpendModel.find();
 
-    res.set('Cache-Control', 'public, max-age=300'); // Cache for 5 minutes
-    res.render('src/spendPage', {
-      layout: './layouts/defaultLayout',
-      title: 'Quản lý chi tiêu',
+    res.render("src/spendPage", {
+      layout: "./layouts/defaultLayout",
+      title: "Quản lý chi tiêu",
       spends,
       total,
       startDate,
@@ -46,7 +45,7 @@ async function renderPage(req, res) {
       messages: req.flash(),
     });
   } catch (err) {
-    res.status(500).render('partials/500', { layout: false });
+    res.status(500).render("partials/500", { layout: false });
   }
 }
 
@@ -69,9 +68,9 @@ async function createData(req, res) {
         req,
         res,
         400,
-        'fail',
-        'Tạo chi tiêu thất bại !',
-        req.headers.referer,
+        "fail",
+        "Tạo chi tiêu thất bại !",
+        req.headers.referer
       );
     }
 
@@ -79,12 +78,12 @@ async function createData(req, res) {
       req,
       res,
       201,
-      'success',
-      'Tạo chi tiêu thành công !',
-      req.headers.referer,
+      "success",
+      "Tạo chi tiêu thành công !",
+      req.headers.referer
     );
   } catch (err) {
-    res.status(500).render('partials/500', { layout: false });
+    res.status(500).render("partials/500", { layout: false });
   }
 }
 
@@ -101,15 +100,15 @@ async function getData(req, res) {
       endDate,
     } = req.body;
 
-    const searchValue = search?.value || '';
+    const searchValue = search?.value || "";
     const sortColumn = columns?.[order?.[0]?.column]?.data;
-    const sortDirection = order?.[0]?.dir === 'asc' ? 1 : -1;
+    const sortDirection = order?.[0]?.dir === "asc" ? 1 : -1;
 
     const searchQuery = searchValue
       ? {
           $or: [
-            { product: { $regex: searchValue, $options: 'i' } },
-            { notes: { $regex: searchValue, $options: 'i' } },
+            { product: { $regex: searchValue, $options: "i" } },
+            { notes: { $regex: searchValue, $options: "i" } },
           ],
         }
       : {};
@@ -129,7 +128,7 @@ async function getData(req, res) {
     }
 
     // Determine if the sort column is 'date'
-    const isSortingByDate = sortColumn === 'date';
+    const isSortingByDate = sortColumn === "date";
 
     const sortObject = isSortingByDate
       ? { [sortColumn]: sortDirection }
@@ -144,18 +143,18 @@ async function getData(req, res) {
 
     const data = products.map((product, index) => ({
       no: parseInt(start, 10) + index + 1,
-      date: product.date.toLocaleDateString('vi-VN'),
-      product: product.product.toLocaleString('vi-VN') || '',
+      date: product.date.toLocaleDateString("vi-VN"),
+      product: product.product.toLocaleString("vi-VN") || "",
       quantity:
-        product.product === 'lương'
+        product.product === "lương"
           ? 0
-          : product.quantity.toLocaleString('vi-VN') || 0,
+          : product.quantity.toLocaleString("vi-VN") || 0,
       price:
-        product.product === 'lương'
+        product.product === "lương"
           ? 0
-          : product.price.toLocaleString('vi-VN') || 0,
-      total: (product.price * product.quantity).toLocaleString('vi-VN') || 0,
-      notes: product.notes || '',
+          : product.price.toLocaleString("vi-VN") || 0,
+      total: (product.price * product.quantity).toLocaleString("vi-VN") || 0,
+      notes: product.notes || "",
       id: product._id,
     }));
 
@@ -167,7 +166,7 @@ async function getData(req, res) {
     });
   } catch (err) {
     console.log(err);
-    res.status(500).render('partials/500', { layout: false });
+    res.status(500).render("partials/500", { layout: false });
   }
 }
 
@@ -180,14 +179,14 @@ async function updateData(req, res) {
         req,
         res,
         404,
-        'fail',
-        'Không tìm thấy sản phẩm !',
-        req.headers.referer,
+        "fail",
+        "Không tìm thấy sản phẩm !",
+        req.headers.referer
       );
     }
 
     if (req.body.date && req.body.product) {
-      const regexProduct = new RegExp(req.body.product, 'i');
+      const regexProduct = new RegExp(req.body.product, "i");
       const checkExistedProduct = await SpendModel.findOne({
         _id: { $ne: id },
         date: req.body.date,
@@ -199,9 +198,9 @@ async function updateData(req, res) {
           req,
           res,
           400,
-          'fail',
-          'Sản phẩm đã bị trùng lập vào cùng ngày!',
-          req.headers.referer,
+          "fail",
+          "Sản phẩm đã bị trùng lập vào cùng ngày!",
+          req.headers.referer
         );
       }
     }
@@ -234,12 +233,12 @@ async function updateData(req, res) {
       req,
       res,
       200,
-      'success',
-      'Cập nhật thông tin chi tiêu thành công!',
-      req.headers.referer,
+      "success",
+      "Cập nhật thông tin chi tiêu thành công!",
+      req.headers.referer
     );
   } catch (err) {
-    res.status(500).render('partials/500', { layout: false });
+    res.status(500).render("partials/500", { layout: false });
   }
 }
 
@@ -252,9 +251,9 @@ async function deleteData(req, res) {
         req,
         res,
         404,
-        'fail',
-        'Không tìm thấy sản phẩm !',
-        req.headers.referer,
+        "fail",
+        "Không tìm thấy sản phẩm !",
+        req.headers.referer
       );
     }
 
@@ -264,12 +263,12 @@ async function deleteData(req, res) {
       req,
       res,
       200,
-      'success',
-      'Xóa thông tin chi tiêu thành công!',
-      req.headers.referer,
+      "success",
+      "Xóa thông tin chi tiêu thành công!",
+      req.headers.referer
     );
   } catch (err) {
-    res.status(500).render('partials/500', { layout: false });
+    res.status(500).render("partials/500", { layout: false });
   }
 }
 
@@ -285,18 +284,18 @@ async function deleteAll(req, res) {
       {
         $set: { spend: 0 },
         $inc: { profit: currentSpend },
-      },
+      }
     );
 
     return handleResponse(
       req,
       res,
       200,
-      'success',
-      'Xóa tất cả thông tin chi tiêu thành công!',
-      req.headers.referer,
+      "success",
+      "Xóa tất cả thông tin chi tiêu thành công!",
+      req.headers.referer
     );
   } catch (err) {
-    res.status(500).render('partials/500', { layout: false });
+    res.status(500).render("partials/500", { layout: false });
   }
 }

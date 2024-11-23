@@ -1,12 +1,17 @@
-const AccountModel = require('../../models/accountModel');
-const { Debt, MoneyRetained, Supplier, DailySupply } = require('../../models/dailySupplyModel');
-const ActionHistory = require('../../models/actionHistoryModel');
-const DateRangeAccess = require('../../models/dateRangeAccessModel');
+const AccountModel = require("../../models/accountModel");
+const {
+  Debt,
+  MoneyRetained,
+  Supplier,
+  DailySupply,
+} = require("../../models/dailySupplyModel");
+const ActionHistory = require("../../models/actionHistoryModel");
+const DateRangeAccess = require("../../models/dateRangeAccessModel");
 
-const trimStringFields = require('../utils/trimStringFields');
-const handleResponse = require('../utils/handleResponse');
-const createSuppliers = require('./helper/createSuppliers');
-const convertToDecimal = require('../utils/convertToDecimal');
+const trimStringFields = require("../utils/trimStringFields");
+const handleResponse = require("../utils/handleResponse");
+const createSuppliers = require("./helper/createSuppliers");
+const convertToDecimal = require("../utils/convertToDecimal");
 
 module.exports = {
   renderPage,
@@ -14,25 +19,25 @@ module.exports = {
   deleteArea,
 };
 
-const ensureArray = input => (Array.isArray(input) ? input : [input]);
+const ensureArray = (input) => (Array.isArray(input) ? input : [input]);
 
 async function renderPage(req, res) {
   try {
-    const areas = await DailySupply.find({}).populate('accountID');
+    const areas = await DailySupply.find({}).populate("accountID");
     const dateRangeAccess = await DateRangeAccess.findOne();
 
-    const hamLuongAccounts = await AccountModel.find({ role: 'Hàm lượng' });
-    const assignedAccounts = await DailySupply.distinct('accountID');
+    const hamLuongAccounts = await AccountModel.find({ role: "Hàm lượng" });
+    const assignedAccounts = await DailySupply.distinct("accountID");
     const unassignedHamLuongAccounts = hamLuongAccounts.filter(
-      account =>
+      (account) =>
         !assignedAccounts
-          .map(id => id.toString())
-          .includes(account._id.toString()),
+          .map((id) => id.toString())
+          .includes(account._id.toString())
     );
-    res.set('Cache-Control', 'public, max-age=300'); // Cache for 5 minutes
-    res.render('src/dailySupplyPage', {
-      layout: './layouts/defaultLayout',
-      title: 'Dữ liệu mủ hằng ngày',
+
+    res.render("src/dailySupplyPage", {
+      layout: "./layouts/defaultLayout",
+      title: "Dữ liệu mủ hằng ngày",
       unassignedHamLuongAccounts,
       areas,
       dateRangeAccess,
@@ -41,13 +46,13 @@ async function renderPage(req, res) {
     });
   } catch (err) {
     console.log(err);
-    res.status(500).render('partials/500', { layout: false });
+    res.status(500).render("partials/500", { layout: false });
   }
 }
 
 async function addArea(req, res) {
   req.body = trimStringFields(req.body);
-  console.log(req.body)
+  console.log(req.body);
   try {
     const existingArea = await DailySupply.findOne({ name: req.body.areaName });
     if (existingArea) {
@@ -55,20 +60,20 @@ async function addArea(req, res) {
         req,
         res,
         404,
-        'fail',
-        'Khu vực đã tồn tại!',
-        req.headers.referer,
+        "fail",
+        "Khu vực đã tồn tại!",
+        req.headers.referer
       );
     }
 
     const areaDimension = parseFloat(req.body.areaDimension) || 0;
     const purchasedAreaDimensions = ensureArray(
-      req.body.purchasedAreaDimension,
-    ).map(dim => parseFloat(dim) || 0);
+      req.body.purchasedAreaDimension
+    ).map((dim) => parseFloat(dim) || 0);
 
     const totalPurchasedAreaDimension = purchasedAreaDimensions.reduce(
       (sum, dim) => sum + dim,
-      0,
+      0
     );
 
     if (totalPurchasedAreaDimension > areaDimension) {
@@ -76,9 +81,9 @@ async function addArea(req, res) {
         req,
         res,
         400,
-        'fail',
-        'Tổng diện tích mua vượt quá diện tích khu vực!',
-        req.headers.referer,
+        "fail",
+        "Tổng diện tích mua vượt quá diện tích khu vực!",
+        req.headers.referer
       );
     }
 
@@ -105,14 +110,14 @@ async function addArea(req, res) {
         req,
         res,
         404,
-        'fail',
-        'Tạo khu vực thất bại!',
-        req.headers.referer,
+        "fail",
+        "Tạo khu vực thất bại!",
+        req.headers.referer
       );
     }
 
     if (createdSuppliers.length > 0) {
-      const suppliersId = createdSuppliers.map(supplier => supplier._id);
+      const suppliersId = createdSuppliers.map((supplier) => supplier._id);
       newArea.suppliers = suppliersId;
       const addSupplier = await newArea.save();
       if (!addSupplier) {
@@ -120,16 +125,16 @@ async function addArea(req, res) {
           req,
           res,
           404,
-          'fail',
-          'Thêm nhà vườn vào khu vực thất bại!',
-          req.headers.referer,
+          "fail",
+          "Thêm nhà vườn vào khu vực thất bại!",
+          req.headers.referer
         );
       }
     }
 
     // Adding new action history with only relevant fields
     const actionHistory = await ActionHistory.create({
-      actionType: 'create',
+      actionType: "create",
       userId: req.user._id,
       details: `Tạo khu vực mới ${newArea.name}`,
       newValues: newArea,
@@ -140,9 +145,9 @@ async function addArea(req, res) {
         req,
         res,
         404,
-        'fail',
-        'Ghi lại lịch sử hành động thất bại!',
-        req.headers.referer,
+        "fail",
+        "Ghi lại lịch sử hành động thất bại!",
+        req.headers.referer
       );
     }
 
@@ -150,13 +155,13 @@ async function addArea(req, res) {
       req,
       res,
       201,
-      'success',
-      'Tạo khu vực thành công',
-      req.headers.referer,
+      "success",
+      "Tạo khu vực thành công",
+      req.headers.referer
     );
   } catch (error) {
     console.log(error);
-    res.status(500).render('partials/500', { layout: false });
+    res.status(500).render("partials/500", { layout: false });
   }
 }
 
@@ -168,15 +173,15 @@ async function deleteArea(req, res) {
         req,
         res,
         404,
-        'fail',
-        'Xóa khu vực thất bại!',
-        req.headers.referer,
+        "fail",
+        "Xóa khu vực thất bại!",
+        req.headers.referer
       );
     }
 
     const supplierIds = [
       ...area.suppliers,
-      ...area.data.map(d => d.supplier),
+      ...area.data.map((d) => d.supplier),
     ];
 
     // Initialize arrays for debt and money retained IDs
@@ -185,25 +190,32 @@ async function deleteArea(req, res) {
 
     // Check if areaPrice and areaDimension are greater than 0
     if (area.areaPrice > 0 && area.areaDimension > 0) {
-      debtIds = area.data.map(d => d.debt?._id).filter(Boolean);
-      moneyRetainedIds = area.data.map(d => d.moneyRetained?._id).filter(Boolean);
+      debtIds = area.data.map((d) => d.debt?._id).filter(Boolean);
+      moneyRetainedIds = area.data
+        .map((d) => d.moneyRetained?._id)
+        .filter(Boolean);
     }
 
     // Run deletion operations concurrently
-    const [deletedSuppliers, deletedDebts, deletedMoneyRetained] = await Promise.all([
-      Supplier.deleteMany({ _id: { $in: supplierIds } }),
-      debtIds.length > 0 ? Debt.deleteMany({ _id: { $in: debtIds } }) : Promise.resolve({ acknowledged: true, deletedCount: 0 }),
-      moneyRetainedIds.length > 0 ? MoneyRetained.deleteMany({ _id: { $in: moneyRetainedIds } }) : Promise.resolve({ acknowledged: true, deletedCount: 0 }),
-    ]);
+    const [deletedSuppliers, deletedDebts, deletedMoneyRetained] =
+      await Promise.all([
+        Supplier.deleteMany({ _id: { $in: supplierIds } }),
+        debtIds.length > 0
+          ? Debt.deleteMany({ _id: { $in: debtIds } })
+          : Promise.resolve({ acknowledged: true, deletedCount: 0 }),
+        moneyRetainedIds.length > 0
+          ? MoneyRetained.deleteMany({ _id: { $in: moneyRetainedIds } })
+          : Promise.resolve({ acknowledged: true, deletedCount: 0 }),
+      ]);
 
     if (!deletedSuppliers || !deletedDebts || !deletedMoneyRetained) {
       return handleResponse(
         req,
         res,
         404,
-        'fail',
-        'Xóa khu vực thất bại!',
-        req.headers.referer,
+        "fail",
+        "Xóa khu vực thất bại!",
+        req.headers.referer
       );
     }
 
@@ -214,15 +226,15 @@ async function deleteArea(req, res) {
         req,
         res,
         404,
-        'fail',
-        'Xóa khu vực thất bại!',
-        req.headers.referer,
+        "fail",
+        "Xóa khu vực thất bại!",
+        req.headers.referer
       );
     }
 
     // Adding new action history
     const actionHistory = await ActionHistory.create({
-      actionType: 'delete',
+      actionType: "delete",
       userId: req.user._id,
       details: `Xóa khu vực ${area.name}`,
       oldValues: area,
@@ -233,9 +245,9 @@ async function deleteArea(req, res) {
         req,
         res,
         404,
-        'fail',
-        'Ghi lại lịch sử hành động thất bại!',
-        req.headers.referer,
+        "fail",
+        "Ghi lại lịch sử hành động thất bại!",
+        req.headers.referer
       );
     }
 
@@ -243,12 +255,12 @@ async function deleteArea(req, res) {
       req,
       res,
       200,
-      'success',
-      'Xóa khu vực thành công',
-      req.headers.referer,
+      "success",
+      "Xóa khu vực thành công",
+      req.headers.referer
     );
   } catch (error) {
-    console.error('Error deleting area:', error);
-    res.status(500).render('partials/500', { layout: false });
+    console.error("Error deleting area:", error);
+    res.status(500).render("partials/500", { layout: false });
   }
 }

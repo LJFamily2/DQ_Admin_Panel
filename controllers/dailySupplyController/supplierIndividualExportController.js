@@ -1,5 +1,5 @@
-const { DailySupply } = require('../../models/dailySupplyModel');
-const DateRangeAccess = require('../../models/dateRangeAccessModel');
+const { DailySupply } = require("../../models/dailySupplyModel");
+const DateRangeAccess = require("../../models/dateRangeAccessModel");
 
 module.exports = {
   renderPage,
@@ -14,37 +14,37 @@ async function renderPage(req, res) {
     // Find the area and populate only the requested supplier
     const area = await DailySupply.findOne({ slug })
       .populate({
-        path: 'data',
+        path: "data",
         match: { slug: supplierSlug },
-        populate: [ 'debt' ,  'moneyRetained' ],
+        populate: ["debt", "moneyRetained"],
       })
       .populate({
-        path: 'suppliers',
+        path: "suppliers",
         match: { supplierSlug },
-        populate: ['moneyRetainedHistory', 'debtHistory'],
+        populate: ["moneyRetainedHistory", "debtHistory"],
       });
 
     if (!area) {
-      return res.status(404).render('partials/404', { layout: false });
+      return res.status(404).render("partials/404", { layout: false });
     }
 
     // Find the specific supplier based on the supplierSlug
     const supplierData = area.suppliers.find(
-      (s) => s.supplierSlug === supplierSlug,
+      (s) => s.supplierSlug === supplierSlug
     );
 
     if (!supplierData) {
-      return res.status(404).render('partials/404', { layout: false });
+      return res.status(404).render("partials/404", { layout: false });
     }
 
     // Manually calculate totalDebtPaidAmount and totalMoneyRetainedAmount
     const totalDebtPaidAmount = supplierData.debtHistory.reduce(
       (total, debt) => total + debt.debtPaidAmount,
-      0,
+      0
     );
     const totalMoneyRetainedAmount = supplierData.moneyRetainedHistory.reduce(
       (total, retained) => total + retained.retainedAmount,
-      0,
+      0
     );
 
     // Calculate remainingDebt
@@ -52,12 +52,11 @@ async function renderPage(req, res) {
 
     // Filter data for the specific supplier
     const supplierSpecificData = area.data.filter(
-      (item) => item.supplier._id.toString() === supplierData._id.toString(),
+      (item) => item.supplier._id.toString() === supplierData._id.toString()
     );
-    
-    res.set('Cache-Control', 'public, max-age=300'); // Cache for 5 minutes
-    res.render('src/dailySupplyIndividualExportPage', {
-      layout: './layouts/defaultLayout',
+
+    res.render("src/dailySupplyIndividualExportPage", {
+      layout: "./layouts/defaultLayout",
       title: `Xuất dữ liệu mủ của ${supplierData.name}`,
       supplierData,
       supplierSpecificData,
@@ -72,7 +71,7 @@ async function renderPage(req, res) {
       remainingDebt,
     });
   } catch (error) {
-    console.error('Error fetching supplier data:', error);
-    res.status(500).render('partials/500', { layout: false });
+    console.error("Error fetching supplier data:", error);
+    res.status(500).render("partials/500", { layout: false });
   }
 }

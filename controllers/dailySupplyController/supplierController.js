@@ -1,18 +1,18 @@
-const AccountModel = require('../../models/accountModel');
+const AccountModel = require("../../models/accountModel");
 const {
   Debt,
   MoneyRetained,
   Supplier,
   DailySupply,
-} = require('../../models/dailySupplyModel');
-const ActionHistory = require('../../models/actionHistoryModel');
-const DateRangeAccess = require('../../models/dateRangeAccessModel');
+} = require("../../models/dailySupplyModel");
+const ActionHistory = require("../../models/actionHistoryModel");
+const DateRangeAccess = require("../../models/dateRangeAccessModel");
 
-const slugify = require('slugify');
-const trimStringFields = require('../utils/trimStringFields');
-const handleResponse = require('../utils/handleResponse');
-const createSuppliers = require('./helper/createSuppliers');
-const convertToDecimal = require('../utils/convertToDecimal');
+const slugify = require("slugify");
+const trimStringFields = require("../utils/trimStringFields");
+const handleResponse = require("../utils/handleResponse");
+const createSuppliers = require("./helper/createSuppliers");
+const convertToDecimal = require("../utils/convertToDecimal");
 module.exports = {
   // DetailPage
   renderDetailPage,
@@ -25,24 +25,24 @@ module.exports = {
 async function getRawMaterialData(deletionRequestId) {
   try {
     const dailySupply = await DailySupply.findOne({
-      'deletionRequests.dataId': deletionRequestId,
+      "deletionRequests.dataId": deletionRequestId,
     }).populate({
-      path: 'data',
+      path: "data",
       populate: {
-        path: 'rawMaterial',
+        path: "rawMaterial",
       },
     });
 
     if (!dailySupply) {
-      throw new Error('DailySupply document not found');
+      throw new Error("DailySupply document not found");
     }
 
-    const dataEntry = dailySupply.data.find(entry =>
-      entry._id.equals(deletionRequestId),
+    const dataEntry = dailySupply.data.find((entry) =>
+      entry._id.equals(deletionRequestId)
     );
 
     if (!dataEntry) {
-      throw new Error('Data entry not found');
+      throw new Error("Data entry not found");
     }
 
     return {
@@ -60,35 +60,35 @@ async function renderDetailPage(req, res) {
     const { startDate, endDate } = req.query;
     const dateRangeAccess = await DateRangeAccess.findOne();
     const area = await DailySupply.findOne({ slug: req.params.slug })
-      .populate('accountID')
-      .populate('suppliers')
+      .populate("accountID")
+      .populate("suppliers")
       .populate({
-        path: 'deletionRequests.requestedBy',
-        select: ['username', 'role'],
+        path: "deletionRequests.requestedBy",
+        select: ["username", "role"],
       })
-      .populate('data.supplier');
+      .populate("data.supplier");
 
-    const hamLuongAccounts = await AccountModel.find({ role: 'Hàm lượng' });
+    const hamLuongAccounts = await AccountModel.find({ role: "Hàm lượng" });
 
     // Find the manager supplier
     const managerSupplier = area.suppliers.find(
-      supplier => supplier.manager === true,
+      (supplier) => supplier.manager === true
     );
 
     // Fetch rawMaterial data for each deletionRequest
     const deletionRequestsWithRawMaterial = await Promise.all(
-      area.deletionRequests.map(async request => {
+      area.deletionRequests.map(async (request) => {
         const { rawMaterial, note } = await getRawMaterialData(request.dataId);
         return {
           ...request.toObject(),
           rawMaterial,
           note,
         };
-      }),
+      })
     );
-    res.set('Cache-Control', 'public, max-age=300'); // Cache for 5 minutes
-    res.render('src/dailySupplyDetailPage', {
-      layout: './layouts/defaultLayout',
+
+    res.render("src/dailySupplyDetailPage", {
+      layout: "./layouts/defaultLayout",
       title: `Dữ liệu mủ của ${area.name}`,
       hamLuongAccounts,
       area: {
@@ -104,7 +104,7 @@ async function renderDetailPage(req, res) {
     });
   } catch (err) {
     console.log(err);
-    res.status(500).render('partials/500', { layout: false });
+    res.status(500).render("partials/500", { layout: false });
   }
 }
 
@@ -124,9 +124,9 @@ async function updateArea(req, res) {
         req,
         res,
         400,
-        'fail',
-        'Tài khoản đã được gán cho khu vực khác!',
-        req.headers.referer,
+        "fail",
+        "Tài khoản đã được gán cho khu vực khác!",
+        req.headers.referer
       );
     }
 
@@ -136,9 +136,9 @@ async function updateArea(req, res) {
         req,
         res,
         404,
-        'fail',
-        'Không tìm thấy khu vực!',
-        req.headers.referer,
+        "fail",
+        "Không tìm thấy khu vực!",
+        req.headers.referer
       );
     }
 
@@ -151,8 +151,8 @@ async function updateArea(req, res) {
 
     // Only update slug if areaName has changed and is a non-empty string
     if (
-      typeof areaName === 'string' &&
-      areaName.trim() !== '' &&
+      typeof areaName === "string" &&
+      areaName.trim() !== "" &&
       areaName !== currentArea.name
     ) {
       updateFields.slug = slugify(areaName, { lower: true, trim: true });
@@ -161,7 +161,7 @@ async function updateArea(req, res) {
     const [newData, actionHistory] = await Promise.all([
       DailySupply.findByIdAndUpdate(id, updateFields, { new: true }),
       ActionHistory.create({
-        actionType: 'update',
+        actionType: "update",
         userId: req.user._id,
         details: `Cập nhật khu vực ${areaName}`,
         oldValues: currentArea,
@@ -174,9 +174,9 @@ async function updateArea(req, res) {
         req,
         res,
         404,
-        'fail',
-        'Cập nhật khu vực thất bại!',
-        req.headers.referer,
+        "fail",
+        "Cập nhật khu vực thất bại!",
+        req.headers.referer
       );
     }
 
@@ -184,13 +184,13 @@ async function updateArea(req, res) {
       req,
       res,
       200,
-      'success',
-      'Cập nhật khu vực thành công',
-      `/du-lieu-hang-ngay/${newData.slug}`,
+      "success",
+      "Cập nhật khu vực thành công",
+      `/du-lieu-hang-ngay/${newData.slug}`
     );
   } catch (error) {
-    console.error('Error updating area:', error);
-    res.status(500).render('partials/500', { layout: false });
+    console.error("Error updating area:", error);
+    res.status(500).render("partials/500", { layout: false });
   }
 }
 
@@ -204,9 +204,9 @@ async function addSupplier(req, res) {
         req,
         res,
         404,
-        'fail',
-        'Không tìm thấy khu vực!',
-        req.headers.referer,
+        "fail",
+        "Không tìm thấy khu vực!",
+        req.headers.referer
       );
     }
 
@@ -223,35 +223,35 @@ async function addSupplier(req, res) {
         req,
         res,
         400,
-        'fail',
-        'Diện tích khả dụng không đủ!',
-        req.headers.referer,
+        "fail",
+        "Diện tích khả dụng không đủ!",
+        req.headers.referer
       );
     }
 
     // Check for existing suppliers concurrently
     const existingSuppliers = await Promise.all(
-      suppliers.map(supplier => Supplier.findOne({ code: supplier.code })),
+      suppliers.map((supplier) => Supplier.findOne({ code: supplier.code }))
     );
 
-    if (existingSuppliers.some(supplier => supplier)) {
+    if (existingSuppliers.some((supplier) => supplier)) {
       return handleResponse(
         req,
         res,
         400,
-        'fail',
-        'Trùng mã nhà vườn!',
-        req.headers.referer,
+        "fail",
+        "Trùng mã nhà vườn!",
+        req.headers.referer
       );
     }
 
     // Create new suppliers concurrently
     const newSuppliers = await Promise.all(
-      suppliers.map(supplier => Supplier.create(supplier)),
+      suppliers.map((supplier) => Supplier.create(supplier))
     );
 
     // Update the area with new supplier IDs
-    newSuppliers.forEach(supplier => area.suppliers.push(supplier._id));
+    newSuppliers.forEach((supplier) => area.suppliers.push(supplier._id));
 
     // Update remainingAreaDimension
     if (area.areaDimension > 0 && area.areaPrice > 0) {
@@ -264,15 +264,15 @@ async function addSupplier(req, res) {
         req,
         res,
         500,
-        'fail',
-        'Thêm nhà vườn mới thất bại!',
-        req.headers.referer,
+        "fail",
+        "Thêm nhà vườn mới thất bại!",
+        req.headers.referer
       );
     }
 
     // Adding new action history
     const actionHistory = await ActionHistory.create({
-      actionType: 'create',
+      actionType: "create",
       userId: req.user._id,
       details: `Thêm nhà vườn vào khu vực ${area.name}`,
       newValues: newSuppliers,
@@ -282,9 +282,9 @@ async function addSupplier(req, res) {
         req,
         res,
         500,
-        'fail',
-        'Thêm nhà vườn mới thất bại!',
-        req.headers.referer,
+        "fail",
+        "Thêm nhà vườn mới thất bại!",
+        req.headers.referer
       );
     }
 
@@ -292,13 +292,13 @@ async function addSupplier(req, res) {
       req,
       res,
       200,
-      'success',
-      'Thêm nhà vườn mới thành công',
-      req.headers.referer,
+      "success",
+      "Thêm nhà vườn mới thành công",
+      req.headers.referer
     );
   } catch (error) {
-    console.error('Error adding suppliers:', error);
-    res.status(500).render('partials/500', { layout: false });
+    console.error("Error adding suppliers:", error);
+    res.status(500).render("partials/500", { layout: false });
   }
 }
 
@@ -311,22 +311,22 @@ async function deleteSupplier(req, res) {
         req,
         res,
         404,
-        'fail',
-        'Xóa nhà vườn thất bại!',
-        req.headers.referer,
+        "fail",
+        "Xóa nhà vườn thất bại!",
+        req.headers.referer
       );
     }
 
     // Find all data entries associated with the supplier
     const dataEntries = await DailySupply.find({
-      'data.supplier': supplier._id,
+      "data.supplier": supplier._id,
     });
 
     // Collect all debt and moneyRetained IDs
     const debtIds = [];
     const moneyRetainedIds = [];
-    dataEntries.forEach(entry => {
-      entry.data.forEach(data => {
+    dataEntries.forEach((entry) => {
+      entry.data.forEach((data) => {
         if (data.supplier.equals(supplier._id)) {
           if (data.debt) debtIds.push(data.debt);
           if (data.moneyRetained) moneyRetainedIds.push(data.moneyRetained);
@@ -337,8 +337,8 @@ async function deleteSupplier(req, res) {
     // Delete all associated data, debt, and moneyRetained documents concurrently
     await Promise.all([
       DailySupply.updateMany(
-        { 'data.supplier': supplier._id },
-        { $pull: { data: { supplier: supplier._id } } },
+        { "data.supplier": supplier._id },
+        { $pull: { data: { supplier: supplier._id } } }
       ),
       Debt.deleteMany({ _id: { $in: debtIds } }),
       MoneyRetained.deleteMany({ _id: { $in: moneyRetainedIds } }),
@@ -354,9 +354,9 @@ async function deleteSupplier(req, res) {
           req,
           res,
           500,
-          'fail',
-          'Thêm lại diện tích khả dụng thất bại!',
-          req.headers.referer,
+          "fail",
+          "Thêm lại diện tích khả dụng thất bại!",
+          req.headers.referer
         );
       }
     }
@@ -368,15 +368,15 @@ async function deleteSupplier(req, res) {
         req,
         res,
         404,
-        'fail',
-        'Xóa nhà vườn thất bại!',
-        req.headers.referer,
+        "fail",
+        "Xóa nhà vườn thất bại!",
+        req.headers.referer
       );
     }
 
     // Adding new action history
     const actionHistory = await ActionHistory.create({
-      actionType: 'delete',
+      actionType: "delete",
       userId: req.user._id,
       details: `Xóa nhà vườn ${supplier.name} (${supplier.code})`,
       oldValues: deleteSupplier,
@@ -386,9 +386,9 @@ async function deleteSupplier(req, res) {
         req,
         res,
         500,
-        'fail',
-        'Ghi lại lịch sử hành động thất bại!',
-        req.headers.referer,
+        "fail",
+        "Ghi lại lịch sử hành động thất bại!",
+        req.headers.referer
       );
     }
 
@@ -396,13 +396,13 @@ async function deleteSupplier(req, res) {
       req,
       res,
       200,
-      'success',
-      'Xóa nhà vườn thành công!',
-      req.headers.referer,
+      "success",
+      "Xóa nhà vườn thành công!",
+      req.headers.referer
     );
   } catch (error) {
-    console.error('Error deleting supplier:', error);
-    res.status(500).render('partials/500', { layout: false });
+    console.error("Error deleting supplier:", error);
+    res.status(500).render("partials/500", { layout: false });
   }
 }
 
@@ -416,9 +416,9 @@ async function editSupplier(req, res) {
         req,
         res,
         404,
-        'fail',
-        'Nhà vườn không tồn tại!',
-        req.headers.referer,
+        "fail",
+        "Nhà vườn không tồn tại!",
+        req.headers.referer
       );
     }
 
@@ -426,7 +426,7 @@ async function editSupplier(req, res) {
     let newSlug = existingSupplier.supplierSlug;
     if (req.body.code && req.body.code !== existingSupplier.code) {
       newSlug = `${req.body.code}-${Math.floor(
-        100000 + Math.random() * 900000,
+        100000 + Math.random() * 900000
       )}`;
     }
 
@@ -454,9 +454,9 @@ async function editSupplier(req, res) {
         req,
         res,
         404,
-        'fail',
-        'Không tìm thấy khu vực!',
-        req.headers.referer,
+        "fail",
+        "Không tìm thấy khu vực!",
+        req.headers.referer
       );
     }
 
@@ -474,9 +474,9 @@ async function editSupplier(req, res) {
         req,
         res,
         400,
-        'fail',
-        'Không còn diện tích trống!',
-        req.headers.referer,
+        "fail",
+        "Không còn diện tích trống!",
+        req.headers.referer
       );
     }
 
@@ -489,20 +489,20 @@ async function editSupplier(req, res) {
           initialDebtAmount,
           supplierSlug: newSlug,
           moneyRetainedPercentage: convertToDecimal(
-            req.body.moneyRetainedPercentage,
+            req.body.moneyRetainedPercentage
           ),
-          advancePayment : convertToDecimal(req.body.advancePayment),
+          advancePayment: convertToDecimal(req.body.advancePayment),
           ratioRubberSplit: convertToDecimal(req.body.ratioRubberSplit),
           ratioSumSplit: convertToDecimal(req.body.ratioSumSplit),
           purchasedAreaPrice,
           areaDeposit,
         },
-        { new: true },
+        { new: true }
       ),
       DailySupply.findOneAndUpdate(
         { slug: req.body.slug },
         { remainingAreaDimension },
-        { new: true },
+        { new: true }
       ),
     ]);
 
@@ -511,15 +511,15 @@ async function editSupplier(req, res) {
         req,
         res,
         404,
-        'fail',
-        'Sửa thông tin nhà vườn thất bại!',
-        req.headers.referer,
+        "fail",
+        "Sửa thông tin nhà vườn thất bại!",
+        req.headers.referer
       );
     }
 
     // Adding new action history
     const actionHistory = await ActionHistory.create({
-      actionType: 'update',
+      actionType: "update",
       userId: req.user._id,
       details: `Cập nhật nhà vườn ${supplier.code}`,
       oldValues: existingSupplier,
@@ -530,9 +530,9 @@ async function editSupplier(req, res) {
         req,
         res,
         500,
-        'fail',
-        'Sửa thông tin nhà vườn thất bại!',
-        req.headers.referer,
+        "fail",
+        "Sửa thông tin nhà vườn thất bại!",
+        req.headers.referer
       );
     }
 
@@ -546,12 +546,12 @@ async function editSupplier(req, res) {
       req,
       res,
       200,
-      'success',
-      'Sửa thông tin nhà vườn thành công!',
-      redirectUrl,
+      "success",
+      "Sửa thông tin nhà vườn thành công!",
+      redirectUrl
     );
   } catch (error) {
-    console.error('Error editing supplier:', error);
-    res.status(500).render('partials/500', { layout: false });
+    console.error("Error editing supplier:", error);
+    res.status(500).render("partials/500", { layout: false });
   }
 }
