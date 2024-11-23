@@ -3,6 +3,7 @@ const router = express.Router();
 const dailySupplyController = require("../../../controllers/dailySupplyController");
 const authMiddlewares = require("../../../middlewares/authMiddlewares");
 const checkDateAccess = require("../../../middlewares/dateRangeAccessSetting");
+const conditionalRateLimiter = require("../../../middlewares/limitedDeletionRequest"); 
 
 // Apply ensureLoggedIn middleware to all routes
 router.use(authMiddlewares.ensureLoggedIn);
@@ -39,6 +40,7 @@ router.put(
 );
 router.delete(
   "/:id",
+  conditionalRateLimiter,
   authMiddlewares.ensureRoles(["Admin", "Văn phòng", "Quản lý"]),
   dailySupplyController.supplierInputController.deleteSupplierData
 );
