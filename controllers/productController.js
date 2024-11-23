@@ -38,7 +38,6 @@ async function renderPage(req, res) {
 
     const products = await ProductModel.find({});
 
-    res.set("Cache-Control", "public, max-age=300"); // Cache for 5 minutes
     res.render("src/productPage", {
       layout: "./layouts/defaultLayout",
       title: "Dữ liệu chạy lò",

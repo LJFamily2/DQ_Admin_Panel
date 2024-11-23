@@ -18,7 +18,6 @@ async function renderPage(req, res) {
     const plantations = await PlantationModel.find({});
     const managers = await ManagerModel.find({}).populate("plantations").exec();
 
-    res.set("Cache-Control", "public, max-age=300"); // Cache for 5 minutes
     res.render("src/managerPage", {
       layout: "./layouts/defaultLayout",
       managers,

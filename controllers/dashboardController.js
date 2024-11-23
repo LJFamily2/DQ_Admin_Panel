@@ -18,7 +18,6 @@ async function renderPage(req, res) {
     let totalData = await ProductTotalModel.find();
     const total = formatTotalData(totalData);
 
-    res.set("Cache-Control", "public, max-age=300"); // Cache for 5 minutes
     res.render("src/dashboard", {
       layout: "./layouts/defaultLayout",
       title: "Tổng dữ liệu",

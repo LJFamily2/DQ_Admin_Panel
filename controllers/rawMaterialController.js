@@ -22,7 +22,6 @@ async function renderPage(req, res) {
 
     const datas = await RawMaterialModel.find({});
 
-    res.set("Cache-Control", "public, max-age=300"); // Cache for 5 minutes
     res.render("src/rawMaterialPage", {
       layout: "./layouts/defaultLayout",
       datas,

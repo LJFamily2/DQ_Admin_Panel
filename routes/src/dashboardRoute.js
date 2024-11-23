@@ -11,7 +11,7 @@ router.use(authMiddlewares.ensureWorkingHours);
 router.get(
   "/",
 
-  authMiddlewares.ensureRoles(["Admin", "Quản lý"]),
+  authMiddlewares.ensureRoles(["Admin", "Quản lý", 'Văn phòng']),
   dashboardController.renderPage
 );
 router.get(

@@ -19,7 +19,6 @@ async function renderPage(req, res) {
     const plantations = await PlantationModel.find({});
     const areas = await AreaModel.find({}).populate("plantations").exec();
 
-    res.set("Cache-Control", "public, max-age=300"); // Cache for 5 minutes
     res.render("src/areaPage", {
       layout: "./layouts/defaultLayout",
       title: "Quản lý khu vực",
