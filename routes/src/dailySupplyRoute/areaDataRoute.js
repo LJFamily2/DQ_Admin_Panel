@@ -63,16 +63,6 @@ router.post(
   authMiddlewares.ensureRoles(["Admin", "Văn phòng"]),
   dailySupplyController.getSupplierDataController.getAreaSupplierData
 );
-router.post(
-  "/rejectDeletionRequest/:id",
-  authMiddlewares.ensureRoles(["Admin", "Quản lý"]),
-  dailySupplyController.supplierController.rejectDeletionRequest
-);
-router.delete(
-  "/:slug/removeAllDeletionRequests",
-  authMiddlewares.ensureRoles(["Admin", "Quản lý"]),
-  dailySupplyController.supplierController.deleteAllRequests
-);
 
 // Admin side for export
 router.get(

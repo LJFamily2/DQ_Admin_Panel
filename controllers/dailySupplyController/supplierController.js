@@ -20,8 +20,6 @@ module.exports = {
   addSupplier,
   deleteSupplier,
   editSupplier,
-  rejectDeletionRequest,
-  deleteAllRequests,
 };
 
 async function getRawMaterialData(deletionRequestId) {
@@ -554,104 +552,6 @@ async function editSupplier(req, res) {
     );
   } catch (error) {
     console.error('Error editing supplier:', error);
-    res.status(500).render('partials/500', { layout: false });
-  }
-}
-
-async function rejectDeletionRequest(req, res) {
-  try {
-    const { id: requestId } = req.params;
-
-    // Update the status of the deletion request to 'rejected'
-    const dailySupply = await DailySupply.findOneAndUpdate(
-      { 'deletionRequests._id': requestId },
-      { 'deletionRequests.$.status': 'rejected' },
-      { new: true },
-    );
-
-    if (!dailySupply) {
-      return handleResponse(
-        req,
-        res,
-        404,
-        'fail',
-        'Không tìm thấy yêu cầu xóa!',
-        req.headers.referer,
-      );
-    }
-
-    // Adding new action history
-    const actionHistory = await ActionHistory.create({
-      actionType: 'update',
-      userId: req.user._id,
-      details: `Từ chối yêu cầu xóa dữ liệu ${requestId}`,
-      oldValues: { status: 'pending' },
-      newValues: { status: 'rejected' },
-    });
-
-    if (!actionHistory) {
-      return handleResponse(
-        req,
-        res,
-        500,
-        'fail',
-        'Ghi lại lịch sử hành động thất bại!',
-        req.headers.referer,
-      );
-    }
-
-    return handleResponse(
-      req,
-      res,
-      200,
-      'success',
-      'Từ chối yêu cầu xóa thành công!',
-      req.headers.referer,
-    );
-  } catch (error) {
-    console.error('Error rejecting deletion request:', error);
-    res.status(500).render('partials/500', { layout: false });
-  }
-}
-
-async function deleteAllRequests(req, res) {
-  try {
-    const { slug } = req.params;
-
-    // Find the dailySupply document
-    const dailySupply = await DailySupply.findOne({ slug }).populate('deletionRequests.requestedBy');
-    if (!dailySupply) {
-      return handleResponse(req, res, 404, 'fail', 'Không tìm thấy khu vực!', req.headers.referer);
-    }
-
-    // Find the deletion requests
-    const deletionRequests = dailySupply.deletionRequests;
-    if (!deletionRequests.length) {
-      return handleResponse(req, res, 404, 'fail', 'Không có yêu cầu xóa!', req.headers.referer);
-    }
-
-    // Delete all deletion requests and create action history concurrently
-    dailySupply.deletionRequests = [];
-    const [updatedDailySupply, actionHistory] = await Promise.all([
-      dailySupply.save(),
-      ActionHistory.create({
-        actionType: 'delete',
-        userId: req.user._id,
-        details: `Xóa tất cả yêu cầu xóa dữ liệu của ${slug}`,
-        oldValues: deletionRequests,
-      }),
-    ]);
-
-    if (!updatedDailySupply) {
-      return handleResponse(req, res, 500, 'fail', 'Xóa yêu cầu xóa thất bại!', req.headers.referer);
-    }
-    if (!actionHistory) {
-      return handleResponse(req, res, 500, 'fail', 'Ghi lại lịch sử hành động thất bại!', req.headers.referer);
-    }
-
-    return handleResponse(req, res, 200, 'success', 'Xóa tất cả yêu cầu xóa thành công!', req.headers.referer);
-  } catch (error) {
-    console.error('Error deleting all requests:', error);
     res.status(500).render('partials/500', { layout: false });
   }
 }
