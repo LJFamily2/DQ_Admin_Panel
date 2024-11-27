@@ -81,8 +81,9 @@ async function createData(req, res) {
       dryQuantity: convertToDecimal(req.body.dryQuantity) || 0,
       dryPercentage: convertToDecimal(req.body.dryPercentage) || 0,
       keQuantity: convertToDecimal(req.body.keQuantity) || 0,
-      kePercentage: convertToDecimal(req.body.dryPercentage) || 0,
+      kePercentage: convertToDecimal(req.body.kePercentage) || 0,
       mixedQuantity: convertToDecimal(req.body.mixedQuantity) || 0,
+      
     };
     const newData = await RawMaterialModel.create({
       ...req.body,
@@ -168,7 +169,10 @@ async function getDatas(req, res) {
       : { date: -1 };
 
     const totalRecords = await RawMaterialModel.countDocuments(filter);
-    let data = await RawMaterialModel.find(filter).sort(sortObject);
+    let data = await RawMaterialModel.find(filter)
+      .sort(sortObject)
+      .skip(parseInt(start, 10))
+      .limit(parseInt(length, 10));
 
     if (searchValue) {
       const searchColumns = ["dryQuantity", "dryPercentage", "mixedQuantity"];
@@ -219,29 +223,27 @@ async function getDatas(req, res) {
         : 0;
     });
 
-    const filteredRecords = data.length;
+    const filteredRecords = await RawMaterialModel.countDocuments(filter);
 
-    const formattedData = data
-      .slice(start, start + length)
-      .map((item, index) => ({
-        no: parseInt(start, 10) + index + 1,
-        date: new Date(item.date).toLocaleDateString("vi-VN"),
-        dryQuantity: item.products.dryQuantity.toLocaleString("vi-VN"),
-        dryPercentage: item.products.dryPercentage.toLocaleString("vi-VN"),
-        dryTotal: (
-          (item.products.dryQuantity * item.products.dryPercentage) /
-          100
-        ).toLocaleString("vi-VN"),
-        mixedQuantity: item.products.mixedQuantity.toLocaleString("vi-VN"),
-        keQuantity: item.products.keQuantity.toLocaleString("vi-VN"),
-        kePercentage: item.products.dryPercentage.toLocaleString("vi-VN"),
-        keTotal: (
-          (item.products.keQuantity * item.products.dryPercentage) /
-          100
-        ).toLocaleString("vi-VN"),
-        notes: item.notes || "",
-        id: item._id,
-      }));
+    const formattedData = data.map((item, index) => ({
+      no: parseInt(start, 10) + index + 1,
+      date: new Date(item.date).toLocaleDateString("vi-VN"),
+      dryQuantity: item.products.dryQuantity.toLocaleString("vi-VN"),
+      dryPercentage: item.products.dryPercentage.toLocaleString("vi-VN"),
+      dryTotal: (
+        (item.products.dryQuantity * item.products.dryPercentage) /
+        100
+      ).toLocaleString("vi-VN"),
+      mixedQuantity: item.products.mixedQuantity.toLocaleString("vi-VN"),
+      keQuantity: item.products.keQuantity.toLocaleString("vi-VN"),
+      kePercentage: item.products.kePercentage.toLocaleString("vi-VN"),
+      keTotal: (
+        (item.products.keQuantity * item.products.kePercentage) /
+        100
+      ).toLocaleString("vi-VN"),
+      notes: item.notes || "",
+      id: item._id,
+    }));
 
     res.json({
       draw,

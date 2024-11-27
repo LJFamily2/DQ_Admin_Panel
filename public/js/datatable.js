@@ -126,7 +126,7 @@ function initializeDataTable(
   var isMobile = window.innerWidth < 1300;
   const tableOptions = {
     dom:
-      "<'row m-0 p-0 py-2'<'col-sm-12 col-md-6 d-flex align-items-center'B><'col-sm-12 col-md-6 d-flex justify-content-end'f>>" +
+      "<'row m-0 p-0 py-2'<'col-sm-12 col-md-6 d-flex align-items-center'lB><'col-sm-12 col-md-6 d-flex justify-content-end'f>>" +
       "<'row m-0 p-0'<'col-sm-12 p-0'tr>>" +
       "<'row m-0 p-0 py-2'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7 d-flex justify-content-end'p>>",
     buttons: exportsOption
@@ -168,6 +168,7 @@ function initializeDataTable(
     serverSide: true,
     processing: true,
     responsive: true,
+    lengthMenu: [10, 20, 50, 100],
     paging: !(queryPageFooter || dailySupplyFooter),
     scrollX: isMobile,
     pagingType: "first_last_numbers",

@@ -116,9 +116,13 @@
                           <div class="row my-3">
                             <label class="form-label fw-bold">Mủ Ké</label>
                             <input type="text" class="form-control" hidden />
-                            <div class="col">
-                              <label for="keQuantity<%= index + 1 %>" class="form-label">Số lượng</label>
-                              <input type="text" class="form-control" id="keQuantity<%= index + 1 %>" name="keQuantity" oninput="handleQuantityInput(this)" inputmode="numeric" value="<%= data.products.keQuantity.toLocaleString('vi-VN')   %>" />
+                            <div class="col col-md-6">
+                              <label for="dryQuantity<%= index + 1 %>" class="form-label">Số lượng</label>
+                              <input type="text" class="form-control" id="keQuantity<%= index + 1 %>" name="keQuantity" oninput="handleQuantityInput(this)" inputmode="numeric" onchange="newInput(this)" value="<%= data.products.keQuantity.toLocaleString('vi-VN')  %>" />
+                            </div>
+                            <div class="col col-md-6">
+                              <label for="kePercentage<%= index + 1 %>" class="form-label">Hàm lượng</label>
+                              <input type="text" class="form-control" id="kePercentage<%= index + 1 %>" name="kePercentage" oninput="handlePercentageInput(this)" inputmode="numeric" onchange="newInput(this)" value="<%= data.products.kePercentage.toLocaleString('vi-VN')   %>" />
                             </div>
                           </div>
                         </div>
@@ -190,7 +194,7 @@
       <div class="card-header bg-transparent">
         <h4 class="m-0">Tạo dữ liệu</h4>
       </div>
-      <form action="/quan-ly-du-lieu" method="post">
+      <form action="/quan-ly-du-lieu?_method=POST" method="post">
         <div class="card-body">
           <%- include('../partials/notificationMessage.ejs') %>
           <div>
@@ -210,7 +214,7 @@
                 </div>
                 <div class="col col-md-6">
                   <label for="dryPercentage" class="form-label">Hàm lượng</label>
-                  <input type="text" class="form-control" id="dryPercentage" name="dryPercentage"  oninput="handlePercentageInput(this)" inputmode="numeric" />
+                  <input type="text" class="form-control" id="dryPercentage" name="dryPercentage" oninput="handlePercentageInput(this)" inputmode="numeric" />
                 </div>
               </div>
             </div>
@@ -231,9 +235,13 @@
             <div class="productList">
               <div class="row my-3">
                 <label class="form-label fw-bold">Mủ Ké</label>
-                <div class="col">
+                <div class="col col-md-6">
                   <label for="keQuantity" class="form-label">Số lượng</label>
                   <input type="text" class="form-control" id="keQuantity" name="keQuantity" oninput="handleQuantityInput(this)" inputmode="numeric" />
+                </div>
+                <div class="col col-md-6">
+                  <label for="kePercentage" class="form-label">Hàm lượng</label>
+                  <input type="text" class="form-control" id="kePercentage" name="kePercentage" oninput="handlePercentageInput(this)" inputmode="numeric" />
                 </div>
               </div>
             </div>
