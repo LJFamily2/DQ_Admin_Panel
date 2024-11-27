@@ -53,12 +53,8 @@ function initializeDataTable(
           const num = parseNumber(val);
           return !isNaN(num) ? acc + num : acc;
         }, 0);
-      if (total !== 0) {
         const formatted = formatNumberForDisplay(total, locale);
         $(api.column(colIndex).footer()).html(`<strong>${formatted}</strong>`);
-      } else {
-        $(api.column(colIndex).footer()).html("");
-      }
     });
   };
 
@@ -81,7 +77,7 @@ function initializeDataTable(
   }
 
   if (productPageFooter) {
-    const columns = [3];
+    const columns = [2,3];
     footerCallbackOptions = {
       footerCallback: function () {
         setupFooterCallback(columns, this.api());

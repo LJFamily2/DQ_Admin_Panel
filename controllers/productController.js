@@ -279,21 +279,19 @@ async function getProducts(req, res) {
 
     const totalRecords = await ProductModel.countDocuments();
     const filteredRecords = await ProductModel.countDocuments(filter);
-    const products = await ProductModel.find(filter)
-      .sort(sortObject)
-      .skip(parseInt(start, 10))
-      .limit(parseInt(length, 10));
+    let dataQuery = ProductModel.find(filter).sort(sortObject);
+
+    // If length is -1, fetch all records
+    if (parseInt(length, 10) !== -1) {
+      dataQuery = dataQuery.skip(parseInt(start, 10)).limit(parseInt(length, 10));
+    }
+
+    const products = await dataQuery;
 
     const data = products.map((product, index) => ({
       no: parseInt(start, 10) + index + 1,
       date: product.date.toLocaleDateString("vi-VN"),
-      dryRubberUsed: {
-        value: (
-          (product.dryRubberUsed * product.dryPercentage) /
-          100
-        ).toLocaleString("vi-VN"),
-        id: product._id,
-      },
+      dryRubberUsed: (product.dryRubberUsed * product.dryPercentage / 100).toLocaleString("vi-VN"),
       quantity: product.quantity.toLocaleString("vi-VN") || 0,
       notes: product.notes || "",
       id: product._id,
