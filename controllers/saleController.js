@@ -263,10 +263,16 @@ async function getDatas(req, res) {
 
     const totalRecords = await SaleModel.countDocuments();
     const filteredRecords = await SaleModel.countDocuments(filter);
-    const sales = await SaleModel.find(filter)
-      .sort(sortObject)
-      .skip(parseInt(start, 10))
-      .limit(parseInt(length, 10));
+    let dataQuery = SaleModel.find(filter).sort(sortObject);
+
+    // If length is -1, fetch all records
+    if (parseInt(length, 10) !== -1) {
+      dataQuery = dataQuery
+        .skip(parseInt(start, 10))
+        .limit(parseInt(length, 10));
+    }
+
+    const sales = await dataQuery;
 
     const data = sales.map((sale, index) => {
       // Assuming each sale has a 'products' array
@@ -292,7 +298,7 @@ async function getDatas(req, res) {
       recordsFiltered: filteredRecords,
       data,
     });
-  } catch {
+  } catch (error) {
     res.status(500).render("partials/500", { layout: false });
   }
 }
