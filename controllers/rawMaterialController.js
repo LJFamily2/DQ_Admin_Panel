@@ -169,45 +169,14 @@ async function getDatas(req, res) {
       : { date: -1 };
 
     const totalRecords = await RawMaterialModel.countDocuments(filter);
-    let data = await RawMaterialModel.find(filter)
-      .sort(sortObject)
-      .skip(parseInt(start, 10))
-      .limit(parseInt(length, 10));
+    let dataQuery = RawMaterialModel.find(filter).sort(sortObject);
 
-    if (searchValue) {
-      const searchColumns = ["dryQuantity", "dryPercentage", "mixedQuantity"];
-      data = data.filter((item) => {
-        const itemDate = new Date(item.date);
-        const formattedDate = `${itemDate
-          .getDate()
-          .toString()
-          .padStart(2, "0")}/${(itemDate.getMonth() + 1)
-          .toString()
-          .padStart(2, "0")}/${itemDate.getFullYear()}`;
-        return (
-          formattedDate.includes(searchValue) ||
-          (item.notes && item.notes.toLowerCase().includes(searchValue)) ||
-          columns.some((column) => {
-            let columnValue;
-            if (searchColumns.includes(column.data)) {
-              columnValue = item.products[column.data]
-                ?.toString()
-                .toLowerCase();
-            } else if (column.data === "dryTotal") {
-              const dryQuantity = parseFloat(item.products?.dryQuantity || 0);
-              const dryPercentage = parseFloat(
-                item.products?.dryPercentage || 0
-              );
-              const dryTotal = (dryQuantity * dryPercentage) / 100 || 0;
-              columnValue = dryTotal.toString().replace(".", ",").toLowerCase();
-            } else {
-              columnValue = item[column.data]?.toString().toLowerCase();
-            }
-            return columnValue && columnValue.includes(searchValue);
-          })
-        );
-      });
+    // If length is -1, fetch all records
+    if (parseInt(length, 10) !== -1) {
+      dataQuery = dataQuery.skip(parseInt(start, 10)).limit(parseInt(length, 10));
     }
+
+    let data = await dataQuery;
 
     data.sort((a, b) => {
       const valueA =

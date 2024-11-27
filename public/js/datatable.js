@@ -55,9 +55,7 @@ function initializeDataTable(
         }, 0);
       if (total !== 0) {
         const formatted = formatNumberForDisplay(total, locale);
-        $(api.column(colIndex).footer()).html(
-          `<strong>${formatted}</strong>`
-        );
+        $(api.column(colIndex).footer()).html(`<strong>${formatted}</strong>`);
       } else {
         $(api.column(colIndex).footer()).html("");
       }
@@ -168,7 +166,7 @@ function initializeDataTable(
     serverSide: true,
     processing: true,
     responsive: true,
-    lengthMenu: [10, 20, 50, 100],
+    lengthMenu: [10, 20, { label: "Tất cả", value: -1 }],
     paging: !(queryPageFooter || dailySupplyFooter),
     scrollX: isMobile,
     pagingType: "first_last_numbers",
@@ -206,7 +204,6 @@ function initializeDataTable(
       infoEmpty: "Hiển thị 0 đến 0 của 0 bản ghi",
       infoFiltered: "(lọc từ _MAX_ bản ghi)",
     },
-    lengthMenu: [10, 20],
     columns: columns.map((column) => {
       if (column.data === "id") {
         return {
