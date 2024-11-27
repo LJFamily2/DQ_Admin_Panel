@@ -136,10 +136,16 @@ async function getData(req, res) {
 
     const totalRecords = await SpendModel.countDocuments();
     const filteredRecords = await SpendModel.countDocuments(filter);
-    const products = await SpendModel.find(filter)
-      .sort(sortObject)
-      .skip(parseInt(start, 10))
-      .limit(parseInt(length, 10));
+    let dataQuery = SpendModel.find(filter).sort(sortObject);
+
+    // If length is -1, fetch all records
+    if (parseInt(length, 10) !== -1) {
+      dataQuery = dataQuery
+        .skip(parseInt(start, 10))
+        .limit(parseInt(length, 10));
+    }
+
+    let products = await dataQuery;
 
     const data = products.map((product, index) => ({
       no: parseInt(start, 10) + index + 1,
