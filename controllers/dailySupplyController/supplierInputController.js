@@ -114,7 +114,7 @@ async function addData(req, res) {
         404,
         "fail",
         "Không tìm thấy vườn!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -131,7 +131,7 @@ async function addData(req, res) {
         400,
         "fail",
         "Đã đạt giới hạn dữ liệu hàng ngày!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -145,7 +145,7 @@ async function addData(req, res) {
         400,
         "fail",
         "Nhà vườn không tồn tại!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -199,7 +199,7 @@ async function addData(req, res) {
         404,
         "fail",
         "Thêm dữ liệu thất bại!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -217,7 +217,7 @@ async function addData(req, res) {
         404,
         "fail",
         "Thêm dữ liệu thất bại!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -227,7 +227,7 @@ async function addData(req, res) {
       200,
       "success",
       "Thêm dữ liệu thành công!",
-      req.headers.referer
+      req.body.currentUrl
     );
   } catch (error) {
     console.error("Error adding suppliers:", error);
@@ -270,7 +270,7 @@ async function updateSupplierData(req, res) {
         404,
         "fail",
         "Không tìm thấy dữ liệu!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -284,7 +284,7 @@ async function updateSupplierData(req, res) {
         404,
         "fail",
         "Không tìm thấy dữ liệu!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -316,7 +316,7 @@ async function updateSupplierData(req, res) {
           403,
           "fail",
           "Ngày cập nhật nằm ngoài phạm vi cho phép!",
-          req.headers.referer
+          req.body.currentUrl
         );
       }
     }
@@ -364,7 +364,7 @@ async function updateSupplierData(req, res) {
           400,
           "fail",
           "Nhà vườn không tồn tại!",
-          req.headers.referer
+          req.body.currentUrl
         );
       }
       dailySupply.data[dataIndex].supplier = supplierDoc._id;
@@ -422,7 +422,7 @@ async function updateSupplierData(req, res) {
         400,
         "fail",
         "Cập nhật dữ liệu thất bại!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -441,7 +441,7 @@ async function updateSupplierData(req, res) {
         400,
         "fail",
         "Cập nhật dữ liệu thất bại!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -451,7 +451,7 @@ async function updateSupplierData(req, res) {
       200,
       "success",
       "Cập nhật dữ liệu thành công!",
-      req.headers.referer
+      req.body.currentUrl
     );
   } catch (err) {
     console.error("Error updating supplier data:", err);
@@ -471,7 +471,7 @@ async function deleteSupplierData(req, res) {
         404,
         "fail",
         "Không tìm thấy dữ liệu!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -483,7 +483,7 @@ async function deleteSupplierData(req, res) {
         404,
         "fail",
         "Không tìm thấy dữ liệu con!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -501,7 +501,7 @@ async function deleteSupplierData(req, res) {
         404,
         "fail",
         "Xóa dữ liệu thất bại!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -544,7 +544,7 @@ async function deleteSupplierData(req, res) {
         404,
         "fail",
         "Xóa dữ liệu cho nhà vườn thất bại!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -559,7 +559,7 @@ async function deleteSupplierData(req, res) {
       200,
       "success",
       "Xóa dữ liệu thành công!",
-      req.headers.referer
+      req.body.currentUrl
     );
   } catch (err) {
     console.error("Error deleting supplier data:", err);

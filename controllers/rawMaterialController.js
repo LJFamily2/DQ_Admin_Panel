@@ -73,7 +73,7 @@ async function createData(req, res) {
         404,
         "fail",
         "Đã có dữ liệu ngày này. Hãy chọn ngày khác!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -83,7 +83,6 @@ async function createData(req, res) {
       keQuantity: convertToDecimal(req.body.keQuantity) || 0,
       kePercentage: convertToDecimal(req.body.kePercentage) || 0,
       mixedQuantity: convertToDecimal(req.body.mixedQuantity) || 0,
-      
     };
     const newData = await RawMaterialModel.create({
       ...req.body,
@@ -96,7 +95,7 @@ async function createData(req, res) {
         404,
         "fail",
         "Tạo dữ liệu thất bại",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -111,7 +110,7 @@ async function createData(req, res) {
         404,
         "fail",
         "Tạo dữ liệu thất bại",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -121,7 +120,7 @@ async function createData(req, res) {
       200,
       "success",
       "Tạo dữ liệu thành công",
-      req.headers.referer
+      req.body.currentUrl
     );
   } catch (err) {
     console.log(err);
@@ -173,7 +172,9 @@ async function getDatas(req, res) {
 
     // If length is -1, fetch all records
     if (parseInt(length, 10) !== -1) {
-      dataQuery = dataQuery.skip(parseInt(start, 10)).limit(parseInt(length, 10));
+      dataQuery = dataQuery
+        .skip(parseInt(start, 10))
+        .limit(parseInt(length, 10));
     }
 
     let data = await dataQuery;
@@ -237,7 +238,7 @@ async function updateData(req, res) {
         404,
         "fail",
         "Đã có dữ liệu ngày này. Hãy chọn ngày khác !",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -273,7 +274,7 @@ async function updateData(req, res) {
         404,
         "fail",
         "Cập nhật thông tin thất bại",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -321,7 +322,7 @@ async function updateData(req, res) {
         404,
         "fail",
         "Cập nhật thông tin thất bại",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -331,7 +332,7 @@ async function updateData(req, res) {
       200,
       "success",
       "Cập nhật thông tin thành công",
-      req.headers.referer
+      req.body.currentUrl
     );
   } catch {
     res.status(500).render("partials/500", { layout: false });
@@ -352,7 +353,7 @@ async function deleteData(req, res) {
         404,
         "fail",
         "Xóa dữ liệu thất bại",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -368,7 +369,7 @@ async function deleteData(req, res) {
       200,
       "success",
       "Xóa dữ liệu thành công",
-      req.headers.referer
+      req.body.currentUrl
     );
   } catch {
     res.status(500).render("partials/500", { layout: false });
@@ -437,7 +438,7 @@ async function deleteAll(req, res) {
       200,
       "success",
       "Xóa tất cả dữ liệu thành công !",
-      req.headers.referer
+      req.body.currentUrl
     );
   } catch (err) {
     res.status(500).render("partials/500", { layout: false });

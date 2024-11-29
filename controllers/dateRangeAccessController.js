@@ -1,6 +1,6 @@
-const handleResponse = require('../controllers/utils/handleResponse');
-const dateRangeAccess = require('../models/dateRangeAccessModel');
-const cron = require('node-cron');
+const handleResponse = require("../controllers/utils/handleResponse");
+const dateRangeAccess = require("../models/dateRangeAccessModel");
+const cron = require("node-cron");
 
 async function setDateRange(req, res) {
   try {
@@ -22,7 +22,7 @@ async function setDateRange(req, res) {
         startDate,
         endDate,
       },
-      { upsert: true, new: true },
+      { upsert: true, new: true }
     );
 
     if (!updateDateRange) {
@@ -30,22 +30,22 @@ async function setDateRange(req, res) {
         req,
         res,
         500,
-        'fail',
-        'Nâng cấp ngày truy cập thất bại',
-        req.headers.referer,
+        "fail",
+        "Nâng cấp ngày truy cập thất bại",
+        req.body.currentUrl
       );
     }
     return handleResponse(
       req,
       res,
       200,
-      'success',
-      'Nâng cấp ngày truy cập thành công',
-      req.headers.referer,
+      "success",
+      "Nâng cấp ngày truy cập thành công",
+      req.body.currentUrl
     );
   } catch (error) {
-    console.error('Error setting date range:', error);
-    res.status(500).render('partials/500', { layout: false });
+    console.error("Error setting date range:", error);
+    res.status(500).render("partials/500", { layout: false });
   }
 }
 
@@ -62,12 +62,12 @@ async function updateDateRangeAutomatically() {
       startDate,
       endDate,
     },
-    { upsert: true, new: true },
+    { upsert: true, new: true }
   );
 }
 
 // Schedule the job to run at the end of every day
-cron.schedule('59 59 23 * * *', updateDateRangeAutomatically);
+cron.schedule("59 59 23 * * *", updateDateRangeAutomatically);
 
 module.exports = {
   setDateRange,

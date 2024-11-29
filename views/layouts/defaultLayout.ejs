@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <!-- <meta name="referrer" content="no-referrer" /> -->
+  <meta name="referrer" content="no-referrer" />
   <title>Đăng Quang</title>
   <link rel="shortcut icon" href="/images/OIG3.HcFjYMBA3iNvsE-removebg-preview.png" type="image/x-icon" />
   <!-- js -->
@@ -36,10 +36,10 @@
       width: 100% !important;
       white-space: nowrap !important;
 
-    /*  row group */
-        & .dtrg-start th{
-          text-align: left !important;
-        }
+      /*  row group */
+      & .dtrg-start th {
+        text-align: left !important;
+      }
     }
 
     table td,
@@ -64,17 +64,32 @@
       /* Ensure the wrapper does not take full width */
     }
 
-      @media (max-width: 768px) {
-        .paddingMobile {
-          padding-bottom: 1rem;
-        }
+    @media (max-width: 768px) {
+      .paddingMobile {
+        padding-bottom: 1rem;
       }
-    </style>
-  </head>
-  <body style="display: flex; background: rgb(245, 245, 245)">
-    <%- include('../partials/navigation') %>
-    <div class="container-fluid paddingMobile">
-      <%- include('../partials/header') %> <%- body %>
-    </div>
-  </body>
+    }
+  </style>
+</head>
+
+<body style="display: flex; background: rgb(245, 245, 245)">
+  <%- include('../partials/navigation') %>
+  <div class="container-fluid paddingMobile">
+    <%- include('../partials/header') %> <%- body %>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const forms = document.querySelectorAll("form");
+      forms.forEach(form => {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "currentUrl";
+        input.value = window.location.href;
+        form.appendChild(input);
+      });
+    });
+  </script>
+</body>
+
 </html>

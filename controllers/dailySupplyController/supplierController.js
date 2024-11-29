@@ -126,7 +126,7 @@ async function updateArea(req, res) {
         400,
         "fail",
         "Tài khoản đã được gán cho khu vực khác!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -138,7 +138,7 @@ async function updateArea(req, res) {
         404,
         "fail",
         "Không tìm thấy khu vực!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -176,7 +176,7 @@ async function updateArea(req, res) {
         404,
         "fail",
         "Cập nhật khu vực thất bại!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -206,7 +206,7 @@ async function addSupplier(req, res) {
         404,
         "fail",
         "Không tìm thấy khu vực!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -225,7 +225,7 @@ async function addSupplier(req, res) {
         400,
         "fail",
         "Diện tích khả dụng không đủ!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -241,7 +241,7 @@ async function addSupplier(req, res) {
         400,
         "fail",
         "Trùng mã nhà vườn!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -266,7 +266,7 @@ async function addSupplier(req, res) {
         500,
         "fail",
         "Thêm nhà vườn mới thất bại!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -284,7 +284,7 @@ async function addSupplier(req, res) {
         500,
         "fail",
         "Thêm nhà vườn mới thất bại!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -294,7 +294,7 @@ async function addSupplier(req, res) {
       200,
       "success",
       "Thêm nhà vườn mới thành công",
-      req.headers.referer
+      req.body.currentUrl
     );
   } catch (error) {
     console.error("Error adding suppliers:", error);
@@ -313,7 +313,7 @@ async function deleteSupplier(req, res) {
         404,
         "fail",
         "Xóa nhà vườn thất bại!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -356,7 +356,7 @@ async function deleteSupplier(req, res) {
           500,
           "fail",
           "Thêm lại diện tích khả dụng thất bại!",
-          req.headers.referer
+          req.body.currentUrl
         );
       }
     }
@@ -370,7 +370,7 @@ async function deleteSupplier(req, res) {
         404,
         "fail",
         "Xóa nhà vườn thất bại!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -388,7 +388,7 @@ async function deleteSupplier(req, res) {
         500,
         "fail",
         "Ghi lại lịch sử hành động thất bại!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -398,7 +398,7 @@ async function deleteSupplier(req, res) {
       200,
       "success",
       "Xóa nhà vườn thành công!",
-      req.headers.referer
+      req.body.currentUrl
     );
   } catch (error) {
     console.error("Error deleting supplier:", error);
@@ -418,7 +418,7 @@ async function editSupplier(req, res) {
         404,
         "fail",
         "Nhà vườn không tồn tại!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -456,7 +456,7 @@ async function editSupplier(req, res) {
         404,
         "fail",
         "Không tìm thấy khu vực!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -476,7 +476,7 @@ async function editSupplier(req, res) {
         400,
         "fail",
         "Không còn diện tích trống!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -513,7 +513,7 @@ async function editSupplier(req, res) {
         404,
         "fail",
         "Sửa thông tin nhà vườn thất bại!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -532,15 +532,15 @@ async function editSupplier(req, res) {
         500,
         "fail",
         "Sửa thông tin nhà vườn thất bại!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
     // Determine the redirect URL based on whether the slug has changed
     const redirectUrl =
       newSlug !== existingSupplier.supplierSlug
-        ? req.headers.referer.replace(existingSupplier.supplierSlug, newSlug)
-        : req.headers.referer;
+        ? req.body.currentUrl.replace(existingSupplier.supplierSlug, newSlug)
+        : req.body.currentUrl;
 
     return handleResponse(
       req,

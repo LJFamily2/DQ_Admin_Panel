@@ -130,7 +130,7 @@ async function createData(req, res) {
         400,
         "fail",
         "Hợp đồng đã tồn tại",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -194,7 +194,7 @@ async function createData(req, res) {
         500,
         "fail",
         "Cập nhật dữ liệu tổng thất bại",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -206,7 +206,7 @@ async function createData(req, res) {
       newSale
         ? "Thêm hợp đồng bán mủ thành công"
         : "Thêm hợp đồng bán mủ thất bại",
-      req.headers.referer
+      req.body.currentUrl
     );
   } catch (err) {
     res.status(500).render("partials/500", { layout: false });
@@ -313,7 +313,7 @@ async function updateData(req, res) {
         400,
         "fail",
         "Không tìm thấy hàng hóa trong cơ sở dữ liệu",
-        req.headers.referer
+        req.body.currentUrl
       );
 
     const names = ensureArray(req.body.name);
@@ -364,7 +364,7 @@ async function updateData(req, res) {
         404,
         "fail",
         "Cập nhật dữ liệu tổng thất bại",
-        req.headers.referer
+        req.body.currentUrl
       );
 
     handleResponse(
@@ -373,7 +373,7 @@ async function updateData(req, res) {
       200,
       "success",
       "Cập nhật hợp đồng thành công!",
-      req.headers.referer
+      req.body.currentUrl
     );
   } catch (err) {
     res.status(500).render("partials/500", { layout: false });
@@ -390,7 +390,7 @@ async function deleteData(req, res) {
         400,
         "fail",
         "Không tìm thấy hàng hóa trong cơ sở dữ liệu",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -403,7 +403,7 @@ async function deleteData(req, res) {
         400,
         "fail",
         "Xóa hợp đồng thất bại!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -442,7 +442,7 @@ async function deleteData(req, res) {
       200,
       "success",
       "Xóa hợp đồng thành công!",
-      req.headers.referer
+      req.body.currentUrl
     );
   } catch (err) {
     res.status(500).render("partials/500", { layout: false });
@@ -532,7 +532,7 @@ async function deleteAll(req, res) {
       200,
       "success",
       "Xóa tất cả hợp đồng thành công!",
-      req.headers.referer
+      req.body.currentUrl
     );
   } catch (err) {
     res.status(500).render("partials/500", { layout: false });

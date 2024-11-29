@@ -128,7 +128,7 @@ async function updatePlantation(req, res) {
         404,
         "fail",
         "Không tìm thấy vườn!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -175,7 +175,7 @@ async function updatePlantation(req, res) {
         404,
         "fail",
         "Không tìm thấy vườn!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -196,7 +196,7 @@ async function updatePlantation(req, res) {
       200,
       "success",
       "Thay đổi thông tin thành công",
-      req.headers.referer
+      req.body.currentUrl
     );
   } catch {
     res.status(500).render("partials/500", { layout: false });
@@ -400,7 +400,7 @@ async function addData(req, res) {
         404,
         "fail",
         "Không thể tìm thấy vườn!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -444,7 +444,7 @@ async function addData(req, res) {
         404,
         "fail",
         "Thêm thông tin mới thất bại!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -455,7 +455,7 @@ async function addData(req, res) {
       201,
       "success",
       "Thêm thông tin mới thành công!",
-      req.headers.referer
+      req.body.currentUrl
     );
   } catch {
     res.status(500).render("partials/500", { layout: false });
@@ -494,7 +494,7 @@ async function getDatas(req, res) {
         404,
         "fail",
         "Không tìm thấy vườn!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -626,7 +626,7 @@ async function updateData(req, res) {
         404,
         "fail",
         "Không tìm thấy vườn!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
     const data = plantation.data.id(id);
@@ -637,7 +637,7 @@ async function updateData(req, res) {
         404,
         "fail",
         "Không tìm thấy thông tin!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -664,7 +664,7 @@ async function updateData(req, res) {
         404,
         "fail",
         "Cập nhật thông tin thất bại!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
     return handleResponse(
@@ -673,7 +673,7 @@ async function updateData(req, res) {
       200,
       "success",
       "Cập nhật thông tin thành công!",
-      req.headers.referer
+      req.body.currentUrl
     );
   } catch {
     res.status(500).render("partials/500", { layout: false });
@@ -695,7 +695,7 @@ async function deleteData(req, res) {
         404,
         "fail",
         "Không tìm thấy vườn!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
     return handleResponse(
@@ -704,7 +704,7 @@ async function deleteData(req, res) {
       200,
       "success",
       "Xóa thông tin thành công!",
-      req.headers.referer
+      req.body.currentUrl
     );
   } catch {
     res.status(500).render("partials/500", { layout: false });

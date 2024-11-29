@@ -7,7 +7,7 @@ function ensureRole(role) {
       return next();
     } else {
       req.flash("fail", "Không có quyền thao tác!");
-      return res.status(403).redirect(req.headers.referer);
+      return res.status(403).redirect(req.body.currentUrl);
     }
   };
 }
@@ -18,7 +18,7 @@ function ensureRoles(roles) {
       return next();
     } else {
       req.flash("fail", "Không có quyền thao tác!");
-      return res.status(403).redirect(req.headers.referer);
+      return res.status(403).redirect(req.body.currentUrl);
     }
   };
 }

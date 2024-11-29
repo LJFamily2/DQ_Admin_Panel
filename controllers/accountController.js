@@ -48,8 +48,8 @@ async function initialSetupCreateAccount(req, res) {
 async function renderPage(req, res) {
   try {
     const users = await UserModel.find();
-    res.render('src/accountPage', {
-      layout: './layouts/defaultLayout',
+    res.render("src/accountPage", {
+      layout: "./layouts/defaultLayout",
       users,
       user: req.user,
       messages: req.flash(),
@@ -73,7 +73,7 @@ async function createUser(req, res) {
         404,
         "fail",
         "Tên tài khoản đã tồn tại. Hãy tạo với tên khác!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -90,7 +90,7 @@ async function createUser(req, res) {
         404,
         "fail",
         "Tạo tài khoản thất bại",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -100,7 +100,7 @@ async function createUser(req, res) {
       201,
       "success",
       "Tạo tài khoản thành công",
-      req.user ? req.headers.referer : "/dang-nhap"
+      req.user ? req.body.currentUrl : "/dang-nhap"
     );
   } catch {
     res.status(500).render("partials/500", { layout: false });
@@ -155,7 +155,7 @@ async function updateUser(req, res) {
       404,
       "fail",
       "Không thấy tài khoản",
-      req.headers.referer
+      req.body.currentUrl
     );
   }
 
@@ -172,7 +172,7 @@ async function updateUser(req, res) {
         404,
         "fail",
         "Mật khẩu cũ không đúng",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -198,7 +198,7 @@ async function updateUser(req, res) {
         404,
         "fail",
         "Cập nhập tài khoản thất bại",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -222,7 +222,7 @@ async function updateUser(req, res) {
             200,
             "success",
             "Cập nhập tài khoản thành công",
-            req.headers.referer
+            req.body.currentUrl
           );
         });
       });
@@ -234,7 +234,7 @@ async function updateUser(req, res) {
         200,
         "success",
         "Cập nhập tài khoản thành công",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
   } catch (error) {
@@ -253,7 +253,7 @@ async function deleteUser(req, res) {
         404,
         "fail",
         "Không thấy tài khoản",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
     if (user.role === "Admin") {
@@ -263,7 +263,7 @@ async function deleteUser(req, res) {
         404,
         "fail",
         "Không thể xóa tài khoản quản trị",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -281,7 +281,7 @@ async function deleteUser(req, res) {
       200,
       "success",
       "Xóa tài khoản thành công",
-      req.headers.referer
+      req.body.currentUrl
     );
   } catch {
     res.status(500).render("partials/500", { layout: false });
@@ -300,7 +300,7 @@ async function deleteAllUsers(req, res) {
         404,
         "fail",
         "Không có tài khoản nào để xóa",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -322,7 +322,7 @@ async function deleteAllUsers(req, res) {
       200,
       "success",
       "Xóa tất cả tài khoản nhân viên thành công",
-      req.headers.referer
+      req.body.currentUrl
     );
   } catch (error) {
     console.error(error);
@@ -338,12 +338,12 @@ function logOut(req, res, next) {
     }
 
     // Clear specific cookies if needed
-    res.clearCookie('dpixport', {
-      path: '/',
+    res.clearCookie("dpixport", {
+      path: "/",
       secure: true,
     });
 
     // Redirect to the login page or wherever appropriate
-    res.redirect('/dang-nhap');
+    res.redirect("/dang-nhap");
   });
 }

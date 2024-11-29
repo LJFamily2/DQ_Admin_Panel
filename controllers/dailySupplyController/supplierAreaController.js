@@ -62,7 +62,7 @@ async function addArea(req, res) {
         404,
         "fail",
         "Khu vực đã tồn tại!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -83,7 +83,7 @@ async function addArea(req, res) {
         400,
         "fail",
         "Tổng diện tích mua vượt quá diện tích khu vực!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -112,7 +112,7 @@ async function addArea(req, res) {
         404,
         "fail",
         "Tạo khu vực thất bại!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -127,7 +127,7 @@ async function addArea(req, res) {
           404,
           "fail",
           "Thêm nhà vườn vào khu vực thất bại!",
-          req.headers.referer
+          req.body.currentUrl
         );
       }
     }
@@ -147,7 +147,7 @@ async function addArea(req, res) {
         404,
         "fail",
         "Ghi lại lịch sử hành động thất bại!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -157,7 +157,7 @@ async function addArea(req, res) {
       201,
       "success",
       "Tạo khu vực thành công",
-      req.headers.referer
+      req.body.currentUrl
     );
   } catch (error) {
     console.log(error);
@@ -175,7 +175,7 @@ async function deleteArea(req, res) {
         404,
         "fail",
         "Xóa khu vực thất bại!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -215,7 +215,7 @@ async function deleteArea(req, res) {
         404,
         "fail",
         "Xóa khu vực thất bại!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -228,7 +228,7 @@ async function deleteArea(req, res) {
         404,
         "fail",
         "Xóa khu vực thất bại!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -247,7 +247,7 @@ async function deleteArea(req, res) {
         404,
         "fail",
         "Ghi lại lịch sử hành động thất bại!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -257,7 +257,7 @@ async function deleteArea(req, res) {
       200,
       "success",
       "Xóa khu vực thành công",
-      req.headers.referer
+      req.body.currentUrl
     );
   } catch (error) {
     console.error("Error deleting area:", error);

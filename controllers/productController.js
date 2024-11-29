@@ -90,7 +90,7 @@ async function createProduct(req, res) {
         404,
         "fail",
         "Đã có dữ liệu ngày này. Hãy chọn ngày khác!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -119,7 +119,7 @@ async function createProduct(req, res) {
       201,
       "success",
       "Thêm hàng hóa thành công",
-      req.headers.referer
+      req.body.currentUrl
     );
   } catch (err) {
     res.status(500).render("partials/500", { layout: false });
@@ -139,7 +139,7 @@ async function updateProduct(req, res) {
         404,
         "fail",
         "Đã có dữ liệu ngày này. Hãy chọn ngày khác!",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -177,7 +177,7 @@ async function updateProduct(req, res) {
       200,
       "success",
       "Cập nhật hàng hóa thành công",
-      req.headers.referer
+      req.body.currentUrl
     );
   } catch (error) {
     console.log(error);
@@ -196,7 +196,7 @@ async function deleteProduct(req, res) {
         404,
         "fail",
         "Không tìm thấy hàng hóa trong cơ sở dữ liệu",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -209,7 +209,7 @@ async function deleteProduct(req, res) {
         404,
         "fail",
         "Xóa hàng hóa thất bại",
-        req.headers.referer
+        req.body.currentUrl
       );
     }
 
@@ -226,7 +226,7 @@ async function deleteProduct(req, res) {
       200,
       "success",
       "Xóa hàng hóa thành công",
-      req.headers.referer
+      req.body.currentUrl
     );
   } catch {
     res.status(500).render("partials/500", { layout: false });
@@ -283,7 +283,9 @@ async function getProducts(req, res) {
 
     // If length is -1, fetch all records
     if (parseInt(length, 10) !== -1) {
-      dataQuery = dataQuery.skip(parseInt(start, 10)).limit(parseInt(length, 10));
+      dataQuery = dataQuery
+        .skip(parseInt(start, 10))
+        .limit(parseInt(length, 10));
     }
 
     const products = await dataQuery;
@@ -291,7 +293,10 @@ async function getProducts(req, res) {
     const data = products.map((product, index) => ({
       no: parseInt(start, 10) + index + 1,
       date: product.date.toLocaleDateString("vi-VN"),
-      dryRubberUsed: (product.dryRubberUsed * product.dryPercentage / 100).toLocaleString("vi-VN"),
+      dryRubberUsed: (
+        (product.dryRubberUsed * product.dryPercentage) /
+        100
+      ).toLocaleString("vi-VN"),
       quantity: product.quantity.toLocaleString("vi-VN") || 0,
       notes: product.notes || "",
       id: product._id,
@@ -348,7 +353,7 @@ async function deleteAll(req, res) {
       200,
       "success",
       "Xóa tất cả hàng hóa thành công !",
-      req.headers.referer
+      req.body.currentUrl
     );
   } catch (err) {
     res.status(500).render("partials/500", { layout: false });
