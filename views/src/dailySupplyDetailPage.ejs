@@ -454,8 +454,8 @@
                   <option disabled selected>Chọn tài khoản</option>
                   <% } %>
                   <% hamLuongAccounts.forEach(account => { %>
-                  <option value="<%= account._id %>" <%= account._id.equals(area.accountID._id) ? 'selected' : '' %>>
-                    <%= account.username %>
+                  <option value="<%= account._id ? account._id : '' %>" <%= account._id && area.accountID && account._id.equals(area.accountID._id) ? 'selected' : '' %>>
+                    <%= account.username ? account.username : "" %>
                   </option>
                   <% }) %>
                 </select>
