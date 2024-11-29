@@ -23,10 +23,9 @@ function createColvisGroup(text, columns) {
       var visible = !columns.visible()[0];
       this.active(visible);
       columns.visible(visible);
-    },
-    init: function (dt, node, config) {
-      this.active(
-        Array.from(dt.columns(config.columns).visible()).every((v) => v)
+      // Remove the dt-button-active class from the selectAllColvisGroup button
+      $(dt.buttons(".selectAllColvisGroup").nodes()).removeClass(
+        "dt-button-active"
       );
     },
   };
@@ -190,11 +189,17 @@ function initializeExportDataTable(
             },
             customize: function (win) {
               const formatDateRange = () => {
-                const startDate = new Date($(startDateId).val()).toLocaleDateString("vi-VN");
-                const endDate = new Date($(endDateId).val()).toLocaleDateString("vi-VN");
-                return startDate && endDate ? `(${startDate} - ${endDate})` : "";
+                const startDate = new Date(
+                  $(startDateId).val()
+                ).toLocaleDateString("vi-VN");
+                const endDate = new Date($(endDateId).val()).toLocaleDateString(
+                  "vi-VN"
+                );
+                return startDate && endDate
+                  ? `(${startDate} - ${endDate})`
+                  : "";
               };
-            
+
               const setCommonStyles = () => {
                 $(win.document.body).find("th, td").css({
                   "font-size": "0.65rem",
@@ -205,7 +210,7 @@ function initializeExportDataTable(
                   padding: "5px",
                 });
               };
-            
+
               const addHeaderInfo = (dateRange, supplierName) => {
                 $(win.document.body)
                   .find("h1")
@@ -216,59 +221,135 @@ function initializeExportDataTable(
                   .find("h6")
                   .after(`<h6 style="text-align: left;">${supplierName}</h6>`);
               };
-            
-              const calculateTotalAmount = (table, areaDimension, areaPrice) => {
+
+              const calculateTotalAmount = (
+                table,
+                areaDimension,
+                areaPrice
+              ) => {
                 let totalAmount = 0;
-                if (parseNumber(areaDimension) > 0 && parseNumber(areaPrice) > 0) {
-                  const cellValue = $(table.column(24).footer()).text().replace(/\./g, "").replace(",", ".");
+                if (
+                  parseNumber(areaDimension) > 0 &&
+                  parseNumber(areaPrice) > 0
+                ) {
+                  const cellValue = $(table.column(24).footer())
+                    .text()
+                    .replace(/\./g, "")
+                    .replace(",", ".");
                   totalAmount = parseFloat(cellValue) || 0;
                 } else {
                   const footerRow = $(table.table().footer()).find("tr:last");
                   footerRow.find("th").each(function (index) {
                     if (index > 0 && index < 4) {
-                      const cellValue = $(this).text().replace(/\./g, "").replace(",", ".");
+                      const cellValue = $(this)
+                        .text()
+                        .replace(/\./g, "")
+                        .replace(",", ".");
                       totalAmount += parseFloat(cellValue) || 0;
                     }
                   });
                 }
                 return totalAmount;
               };
-            
-              const addFooterInfo = (win, totalAmount, addPrice, minusPrice, finalAmount, totalAfterRatio, debt, retainedAmount) => {
-                $(win.document.body).find("table").after(
-                  `<p style="text-align: left; margin-top: 20px;">Tổng số tiền: ${totalAmount.toLocaleString("vi-VN")}</p>`,
-                  addPrice > 0 ? `<p style="text-align: left; margin-top: 20px;">Cộng: ${addPrice.toLocaleString("vi-VN")}</p>` : "",
-                  minusPrice > 0 ? `<p style="text-align: left; margin-top: 20px;">Trừ: ${minusPrice.toLocaleString("vi-VN")}</p>` : "",
-                  (addPrice > 0 || minusPrice > 0) ? `<p style="text-align: left; margin-top: 20px;">Tổng sau cộng/trừ: ${finalAmount.toLocaleString("vi-VN")}</p>` : "",
-                  ratioSumSplit < 100 ? `<p style="text-align: left; margin-top: 20px;">Tỉ lệ phân chia tổng: ${ratioSumSplit}%</p>` : "",
-                  `<hr>
+
+              const addFooterInfo = (
+                win,
+                totalAmount,
+                addPrice,
+                minusPrice,
+                finalAmount,
+                totalAfterRatio,
+                debt,
+                retainedAmount
+              ) => {
+                $(win.document.body)
+                  .find("table")
+                  .after(
+                    `<p style="text-align: left; margin-top: 20px;">Tổng số tiền: ${totalAmount.toLocaleString(
+                      "vi-VN"
+                    )}</p>`,
+                    addPrice > 0
+                      ? `<p style="text-align: left; margin-top: 20px;">Cộng: ${addPrice.toLocaleString(
+                          "vi-VN"
+                        )}</p>`
+                      : "",
+                    minusPrice > 0
+                      ? `<p style="text-align: left; margin-top: 20px;">Trừ: ${minusPrice.toLocaleString(
+                          "vi-VN"
+                        )}</p>`
+                      : "",
+                    addPrice > 0 || minusPrice > 0
+                      ? `<p style="text-align: left; margin-top: 20px;">Tổng sau cộng/trừ: ${finalAmount.toLocaleString(
+                          "vi-VN"
+                        )}</p>`
+                      : "",
+                    ratioSumSplit < 100
+                      ? `<p style="text-align: left; margin-top: 20px;">Tỉ lệ phân chia tổng: ${ratioSumSplit}%</p>`
+                      : "",
+                    `<hr>
                   <div style="display: flex; justify-content: space-between; margin-top: 20px;">
-                    <p style="text-align: left; width: 50%;">Thực nhận: ${totalAfterRatio.toLocaleString("vi-VN")}</p>
+                    <p style="text-align: left; width: 50%;">Thực nhận: ${totalAfterRatio.toLocaleString(
+                      "vi-VN"
+                    )}</p>
                     <div style="display:flex; flex-direction: column; align-items: flex-end; width: 50%">
-                      ${debt > 0 ? `<p>Công nợ còn lại: ${formatNumberForDisplay(debt, "vi-VN")}</p>` : ""}
-                      ${retainedAmount > 0 ? `<p>Tổng tiền giữ lại: ${formatNumberForDisplay(retainedAmount, "vi-VN")}</p>` : ""}
+                      ${
+                        debt > 0
+                          ? `<p>Công nợ còn lại: ${formatNumberForDisplay(
+                              debt,
+                              "vi-VN"
+                            )}</p>`
+                          : ""
+                      }
+                      ${
+                        retainedAmount > 0
+                          ? `<p>Tổng tiền giữ lại: ${formatNumberForDisplay(
+                              retainedAmount,
+                              "vi-VN"
+                            )}</p>`
+                          : ""
+                      }
                     </div>
                   </div>`
-                );
+                  );
               };
-            
+
               const dateRange = formatDateRange();
               const table = $(tableId).DataTable();
-            
+
               if (exportPageFooter) {
                 addHeaderInfo(dateRange, `Khu vực: ${supplierName}`);
                 setCommonStyles();
               }
-            
+
               if (individualExportPage) {
-                const totalAmount = calculateTotalAmount(table, areaDimension, areaPrice);
-                const addPrice = parseFloat($(addPriceId).val().replace(/\./g, "").replace(",", ".")) || 0;
-                const minusPrice = parseFloat($(minusPriceId).val().replace(/\./g, "").replace(",", ".")) || 0;
+                const totalAmount = calculateTotalAmount(
+                  table,
+                  areaDimension,
+                  areaPrice
+                );
+                const addPrice =
+                  parseFloat(
+                    $(addPriceId).val().replace(/\./g, "").replace(",", ".")
+                  ) || 0;
+                const minusPrice =
+                  parseFloat(
+                    $(minusPriceId).val().replace(/\./g, "").replace(",", ".")
+                  ) || 0;
                 const finalAmount = totalAmount + addPrice - minusPrice;
-                const totalAfterRatio = finalAmount * (ratioSumSplit.replace(",", ".") / 100);
-            
+                const totalAfterRatio =
+                  finalAmount * (ratioSumSplit.replace(",", ".") / 100);
+
                 addHeaderInfo(dateRange, `Nhà vườn: ${supplierName}`);
-                addFooterInfo(win, totalAmount, addPrice, minusPrice, finalAmount, totalAfterRatio, debt, retainedAmount);
+                addFooterInfo(
+                  win,
+                  totalAmount,
+                  addPrice,
+                  minusPrice,
+                  finalAmount,
+                  totalAfterRatio,
+                  debt,
+                  retainedAmount
+                );
                 setCommonStyles();
               }
             },
@@ -326,20 +407,30 @@ function initializeExportDataTable(
                       extend: "colvisGroup",
                       text: "Chế độ in",
                       show: [2, 3, 4, 6],
-                      hide: [0, 13,5,7,9, 11],
+                      hide: [0, 13, 5, 7, 9, 11],
                     },
                   ]
                 : []),
               {
                 extend: "colvisGroup",
+                className: "selectAllColvisGroup",
                 text: "Hiển thị tất cả",
                 show: ":hidden",
+                action: function (e, dt, node, config) {
+                  const isActive = this.active();
+                  // Deactivate all colvisGroup buttons
+                  dt.buttons(".buttons-colvisGroup").active(false);
+                  // Toggle the active state of this button
+                  this.active(!isActive);
+                  // Show or hide columns based on the new active state
+                  dt.columns(config.columns).visible(!isActive);
+                },
               },
             ],
           },
         ]
       : [],
-    stateSave: true,
+    // stateSave: true,
     serverSide: true,
     processing: true,
     responsive: true,
