@@ -12,6 +12,7 @@
       font-weight: bold;
       font-size: 1.5rem;
     }
+
     .activity-time {
       font-size: 0.9rem;
       color: gray;
@@ -28,265 +29,232 @@
       font-family: monospace;
       white-space: pre-wrap;
     }
+
     .tooltip-wrapper {
-      display: inline-block; 
+      display: inline-block;
     }
   </style>
 </head>
 
-<body>
-  <div class="container-fluid">
-    <% if(user.role === 'Admin' || user.role === 'Quản lý'){ %>
-      <button
-        type="button"
-        class="btn btn-danger mb-3"
-        data-bs-toggle="modal"
-        data-bs-target="#deleteAll"
-        style="width: max-content"
-      >
-        Xóa tất cả 
-      </button>
-      <% } %>
-    <div class="row">
-      <div class="col-12 col-md-6">
-        <% Object.keys(groupedActivities).forEach((date) => { %>
-          <h6 class="mb-2"><%= date %></h6>
-          <% groupedActivities[date].forEach((activity) => { %>
-            <% let actionText; switch (activity.actionType) { case 'create':
+
+
+<% if(user.role === 'Admin' || user.role === 'Quản lý'){ %>
+<button type="button" class="btn btn-danger mb-3" data-bs-toggle="modal" data-bs-target="#deleteAll" style="width: max-content">
+  Xóa tất cả
+</button>
+<% } %>
+<div class="row">
+  <div class="col-12 col-md-6">
+    <% Object.keys(groupedActivities).forEach((date) => { %>
+    <h6 class="mb-2"><%= date %></h6>
+    <% groupedActivities[date].forEach((activity) => { %>
+    <% let actionText; switch (activity.actionType) { case 'create':
                 actionText = 'Tạo'; break; case 'delete': actionText = 'Xóa';
                 break; case 'update': actionText = 'Cập nhật'; break; default:
                 actionText = activity.actionType; } %>
-      
-            <div class="card mb-3">
-              <div class="card-header <%= activity.actionType === 'create' ? 'bg-success' : activity.actionType === 'delete' ? 'bg-danger' : activity.actionType === 'update' ? 'bg-primary' : '' %> d-flex">
-                <button
-                  type="button"
-                  class="btn-close ms-auto tooltip-wrapper"
-                  aria-label="Close"
-                  data-bs-toggle="modal"
-                  data-bs-target="#deleteModal<%= activity._id %>"
-                  data-tippy-content="Xóa nhật ký dữ liệu"
-                  tabindex="0"
-                ></button>
-              </div>
-              <div class="card-body">
-                <div class="activity-header">
-                  <%= actionText %> bởi: <%= activity.userId.username %>
-                  <span class="activity-time float-right"><%= new Date(activity.timestamp).toLocaleTimeString() %></span>
-                </div>
-                <p class="mb-1"><%= activity.details %></p>
-                <small class="text-muted">
-                  Các thay đổi:
-                  <button
-                    class="btn btn-link p-0"
-                    type="button"
-                    data-bs-toggle="modal"
-                    data-bs-target="#detailModal<%= activity._id %>"
-                  >
-                    Xem
-                  </button>
-                </small>
-              </div>
-            </div>
-      
-            <!-- Detail Modal -->
-            <div class="modal fade" id="detailModal<%= activity._id %>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-              <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <div>
-                      <h5 class="modal-title" id="exampleModalLabel"><%= activity.details %></h5>
-                      <p class="m-0">
-                        Người thao tác:
-                        <strong><%= activity.userId.username %></strong> (<%= activity.userId.role %>)
-                      </p>
-                    </div>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div class="modal-body">
-                    <div class="container">
-                      <div class="row g-3">
-                        <div class="col-12 col-md-6">
-                          <div class="p-2 border border-1">
-                            <h6>Giá trị cũ:</h6>
-                            <% const oldValues = activity.oldValues || {}; %> 
-                            <% const replacer = (key, value) => key === '_id' ? undefined : value; %> 
-                            <% Object.entries(oldValues).forEach(([key, value]) => { %>
-                            <% if (key !== '_id' && key !== '__v' && key !== 'slug' && key !== 'supplierSlug') { %>
-                              <div>
-                                <strong><%= key %>:</strong>
-                                <pre><code><%= value == null ? '' : (typeof value === 'object' ? JSON.stringify(value, replacer, 2) : value) %></code></pre>
-                              </div>
-                              <% } %> 
-                            <% }); %>
-                          </div>
-                        </div>
-                        <div class="col-12 col-md-6">
-                          <div class="p-2 border border-1">
-                            <% const newValues = activity.newValues || {}; %>  
-                            <h6 class="<%= Object.keys(newValues).length > 0 ? '' : 'm-0' %>">Giá trị mới:</h6> 
-                            <% Object.entries(newValues).forEach(([key, value]) => { %>
-                            <% if (key !== '_id' && key !== '__v' && key !== 'slug' && key !== 'supplierSlug') { %>
-                              <div>
-                                <strong><%= key %>:</strong>
-                                <pre><code><%= value == null ? '' : (typeof value === 'object' ? JSON.stringify(value, replacer, 2) : value) %></code></pre>
-                              </div>
-                              <% } %> 
-                            <% }); %>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-      
-            <!-- Delete Modal -->
-            <div class="modal fade" id="deleteModal<%= activity._id %>" aria-hidden="true" aria-labelledby="exampleModalToggleLabel" tabindex="-1">
-              <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalToggleLabel">
-                      Xóa nhật ký dữ liệu của ngày <%= new Date(activity.timestamp).toLocaleDateString("vi-VN") %>
-                    </h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <form action="/du-lieu/nhat-ky-hoat-dong/<%= activity._id %>?_method=DELETE" method="post">
-                    <div class="modal-body">
-                      <p><strong>Hành động: </strong> <%= activity.details %></p>
-                      Bạn có muốn xóa nhật ký dữ liệu của <strong><%= activity.userId.username %></strong>? Hành động này không thể hoàn tác.
-                    </div>
-                    <div class="modal-footer">
-                      <% if(user.role === 'Admin' || user.role === 'Quản lý'){ %>
-                      <button type="submit" class="btn btn-danger">Xác nhận</button>
-                      <% } else { %>
-                      <div class="tooltip-wrapper" data-tippy-content="Bạn không có quyền thao tác" tabindex="0">
-                        <button type="button" class="btn btn-danger" disabled>Xác nhận</button>
-                      </div>
-                      <% } %>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            </div>
-          <% }); %>
-        <% }); %>
-      
-        <!-- Display when no data -->
-        <div class="text-center mt-5 <%= Object.keys(groupedActivities).length > 0 ? 'd-none' : '' %>">
-          <h4 class="text-muted">Không có dữ liệu</h4>
-        </div>
-      
-        <!-- Pagination bar -->
-        <nav aria-label="Page navigation" class="justify-content-end <%= Object.keys(groupedActivities).length > 0 ? 'd-flex' : 'd-none' %>">
-          <ul class="pagination">
-            <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
-              <a class="page-link" href="<%= currentPage === 1 ? '#' : '?page=' + (currentPage - 1) %>" aria-label="Previous">
-                <span aria-hidden="true">&laquo;</span>
-              </a>
-            </li>
-            <li class="page-item <%= currentPage === 1 ? 'active' : '' %>">
-              <a class="page-link" href="?page=1">1</a>
-            </li>
-            <% if (currentPage > 3) { %>
-              <li class="page-item disabled">
-                <span class="page-link">...</span>
-              </li>
-            <% } %>
-            <% for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) { %>
-              <li class="page-item <%= currentPage === i ? 'active' : '' %>">
-                <a class="page-link" href="?page=<%= i %>"><%= i %></a>
-              </li>
-            <% } %>
-            <% if (currentPage < totalPages - 2) { %>
-              <li class="page-item disabled">
-                <span class="page-link">...</span>
-              </li>
-            <% } %>
-            <li class="page-item <%= currentPage === totalPages ? 'active' : '' %>">
-              <a class="page-link" href="?page=<%= totalPages %>"><%= totalPages %></a>
-            </li>
-            <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
-              <a class="page-link" href="<%= currentPage === totalPages ? '#' : '?page=' + (currentPage + 1) %>" aria-label="Next">
-                <span aria-hidden="true">&raquo;</span>
-              </a>
-            </li>
-          </ul>
-        </nav>
-      </div>
-      <div class="col-12 col-md-6">
-        <div class="card">
-          <div class="card-header bg-light">
-            <h4 class="m-0">Bộ lọc</h4>
-          </div>
-          <div class="card-body">
-            <%- include('../partials/notificationMessage.ejs') %>
-            
-            <form action="/du-lieu/nhat-ky-hoat-dong" method="get">
-              <%- include('../partials/dateSelection.ejs') %>
-              <div class="my-3">
-                <div class="input-group mb-3">
-                  <label for="userId" class="input-group-text"
-                    >Người thao tác</label
-                  >
-                  <select name="selectedUser" class="form-select" id="userId">
-                    <option disabled selected>Choose...</option>
-                    <% users.forEach(user => { %>
-                    <option value="<%= user._id %>"  <% if (user._id === selectedUser) { %> selected <% } %>>
 
-                      <%= user.username %>
-                    </option>
+    <div class="card mb-3">
+      <div class="card-header <%= activity.actionType === 'create' ? 'bg-success' : activity.actionType === 'delete' ? 'bg-danger' : activity.actionType === 'update' ? 'bg-primary' : '' %> d-flex">
+        <button type="button" class="btn-close ms-auto tooltip-wrapper" aria-label="Close" data-bs-toggle="modal" data-bs-target="#deleteModal<%= activity._id %>" data-tippy-content="Xóa nhật ký dữ liệu" tabindex="0"></button>
+      </div>
+      <div class="card-body">
+        <div class="activity-header">
+          <%= actionText %> bởi: <%= activity.userId.username %>
+          <span class="activity-time float-right"><%= new Date(activity.timestamp).toLocaleTimeString() %></span>
+        </div>
+        <p class="mb-1"><%= activity.details %></p>
+        <small class="text-muted">
+          Các thay đổi:
+          <button class="btn btn-link p-0" type="button" data-bs-toggle="modal" data-bs-target="#detailModal<%= activity._id %>">
+            Xem
+          </button>
+        </small>
+      </div>
+    </div>
+
+    <!-- Detail Modal -->
+    <div class="modal fade" id="detailModal<%= activity._id %>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header">
+            <div>
+              <h5 class="modal-title" id="exampleModalLabel"><%= activity.details %></h5>
+              <p class="m-0">
+                Người thao tác:
+                <strong><%= activity.userId.username %></strong> (<%= activity.userId.role %>)
+              </p>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="container">
+              <div class="row g-3">
+                <div class="col-12 col-md-6">
+                  <div class="p-2 border border-1">
+                    <h6>Giá trị cũ:</h6>
+                    <% const oldValues = activity.oldValues || {}; %>
+                    <% const replacer = (key, value) => key === '_id' ? undefined : value; %>
+                    <% Object.entries(oldValues).forEach(([key, value]) => { %>
+                    <% if (key !== '_id' && key !== '__v' && key !== 'slug' && key !== 'supplierSlug') { %>
+                    <div>
+                      <strong><%= key %>:</strong>
+                      <pre><code><%= value == null ? '' : (typeof value === 'object' ? JSON.stringify(value, replacer, 2) : value) %></code></pre>
+                    </div>
+                    <% } %>
                     <% }); %>
-                  </select>
+                  </div>
+                </div>
+                <div class="col-12 col-md-6">
+                  <div class="p-2 border border-1">
+                    <% const newValues = activity.newValues || {}; %>
+                    <h6 class="<%= Object.keys(newValues).length > 0 ? '' : 'm-0' %>">Giá trị mới:</h6>
+                    <% Object.entries(newValues).forEach(([key, value]) => { %>
+                    <% if (key !== '_id' && key !== '__v' && key !== 'slug' && key !== 'supplierSlug') { %>
+                    <div>
+                      <strong><%= key %>:</strong>
+                      <pre><code><%= value == null ? '' : (typeof value === 'object' ? JSON.stringify(value, replacer, 2) : value) %></code></pre>
+                    </div>
+                    <% } %>
+                    <% }); %>
+                  </div>
                 </div>
               </div>
-              <div class="my-3">
-                  <label class="form-label">Loại hành động</label>
-                  <br>
-                  <div class="g-3">
-                    <input type="checkbox" class="btn-check" name="createAction" value="createAction" id="Create" <%= createAction ? 'checked' : '' %> />
-                    <label class="btn btn-outline-success" for="Create">Tạo</label>
-                    <input type="checkbox" class="btn-check" name="updateAction" value="updateAction" id="Update" <%= updateAction ? 'checked' : '' %> />
-                    <label class="btn btn-outline-primary" for="Update">Cập nhật</label>
-                    <input type="checkbox" class="btn-check" name="deleteAction" value="deleteAction" id="Delete" <%= deleteAction ? 'checked' : '' %> />
-                    <label class="btn btn-outline-danger" for="Delete">Xóa</label>
-                  </div>
-              </div>
-              <div class="my-3">
-                <button type="submit" class="btn btn-primary">Lọc kết quả</button>
-                <button type="reset" class="btn text-dark" id="resetButton"> Bỏ lọc</button>
-              </div>
-            </form>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
           </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Modal for deleting all actionHistory -->
-  <div
-  class="modal fade"
-  id="deleteAll"
-  data-bs-backdrop="static"
-  data-bs-keyboard="false"
-  tabindex="-1"
-  aria-labelledby="deleteUsers"
-  aria-hidden="true"
-  >
+    <!-- Delete Modal -->
+    <div class="modal fade" id="deleteModal<%= activity._id %>" aria-hidden="true" aria-labelledby="exampleModalToggleLabel" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalToggleLabel">
+              Xóa nhật ký dữ liệu của ngày <%= new Date(activity.timestamp).toLocaleDateString("vi-VN") %>
+            </h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <form action="/du-lieu/nhat-ky-hoat-dong/<%= activity._id %>?_method=DELETE" method="post">
+            <div class="modal-body">
+              <p><strong>Hành động: </strong> <%= activity.details %></p>
+              Bạn có muốn xóa nhật ký dữ liệu của <strong><%= activity.userId.username %></strong>? Hành động này không thể hoàn tác.
+            </div>
+            <div class="modal-footer">
+              <% if(user.role === 'Admin' || user.role === 'Quản lý'){ %>
+              <button type="submit" class="btn btn-danger">Xác nhận</button>
+              <% } else { %>
+              <div class="tooltip-wrapper" data-tippy-content="Bạn không có quyền thao tác" tabindex="0">
+                <button type="button" class="btn btn-danger" disabled>Xác nhận</button>
+              </div>
+              <% } %>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <% }); %>
+    <% }); %>
+
+    <!-- Display when no data -->
+    <div class="text-center mt-5 <%= Object.keys(groupedActivities).length > 0 ? 'd-none' : '' %>">
+      <h4 class="text-muted">Không có dữ liệu</h4>
+    </div>
+
+    <!-- Pagination bar -->
+    <nav aria-label="Page navigation" class="justify-content-end <%= Object.keys(groupedActivities).length > 0 ? 'd-flex' : 'd-none' %>">
+      <ul class="pagination">
+        <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+          <a class="page-link" href="<%= currentPage === 1 ? '#' : '?page=' + (currentPage - 1) %>" aria-label="Previous">
+            <span aria-hidden="true">&laquo;</span>
+          </a>
+        </li>
+        <li class="page-item <%= currentPage === 1 ? 'active' : '' %>">
+          <a class="page-link" href="?page=1">1</a>
+        </li>
+        <% if (currentPage > 3) { %>
+        <li class="page-item disabled">
+          <span class="page-link">...</span>
+        </li>
+        <% } %>
+        <% for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) { %>
+        <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+          <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+        </li>
+        <% } %>
+        <% if (currentPage < totalPages - 2) { %>
+        <li class="page-item disabled">
+          <span class="page-link">...</span>
+        </li>
+        <% } %>
+        <li class="page-item <%= currentPage === totalPages ? 'active' : '' %>">
+          <a class="page-link" href="?page=<%= totalPages %>"><%= totalPages %></a>
+        </li>
+        <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+          <a class="page-link" href="<%= currentPage === totalPages ? '#' : '?page=' + (currentPage + 1) %>" aria-label="Next">
+            <span aria-hidden="true">&raquo;</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+  <div class="col-12 col-md-6">
+    <div class="card">
+      <div class="card-header bg-light">
+        <h4 class="m-0">Bộ lọc</h4>
+      </div>
+      <div class="card-body">
+        <%- include('../partials/notificationMessage.ejs') %>
+
+        <form action="/du-lieu/nhat-ky-hoat-dong" method="get">
+          <%- include('../partials/dateSelection.ejs') %>
+          <div class="my-3">
+            <div class="input-group mb-3">
+              <label for="userId" class="input-group-text">Người thao tác</label>
+              <select name="selectedUser" class="form-select" id="userId">
+                <option disabled selected>Choose...</option>
+                <% users.forEach(user => { %>
+                <option value="<%= user._id %>" <% if (user._id === selectedUser) { %> selected <% } %>>
+
+                  <%= user.username %>
+                </option>
+                <% }); %>
+              </select>
+            </div>
+          </div>
+          <div class="my-3">
+            <label class="form-label">Loại hành động</label>
+            <br>
+            <div class="g-3">
+              <input type="checkbox" class="btn-check" name="createAction" value="createAction" id="Create" <%= createAction ? 'checked' : '' %> />
+              <label class="btn btn-outline-success" for="Create">Tạo</label>
+              <input type="checkbox" class="btn-check" name="updateAction" value="updateAction" id="Update" <%= updateAction ? 'checked' : '' %> />
+              <label class="btn btn-outline-primary" for="Update">Cập nhật</label>
+              <input type="checkbox" class="btn-check" name="deleteAction" value="deleteAction" id="Delete" <%= deleteAction ? 'checked' : '' %> />
+              <label class="btn btn-outline-danger" for="Delete">Xóa</label>
+            </div>
+          </div>
+          <div class="my-3">
+            <button type="submit" class="btn btn-primary">Lọc kết quả</button>
+            <button type="reset" class="btn text-dark" id="resetButton"> Bỏ lọc</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal for deleting all actionHistory -->
+<div class="modal fade" id="deleteAll" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteUsers" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="deleteUsers">Xóa tất cả lịch sử hoạt động</h1>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
       <form action="/du-lieu/nhat-ky-hoat-dong/deleteAllData" method="post">
@@ -301,13 +269,12 @@
     </div>
   </div>
 </div>
-</body>
 
 
 
 <script>
   tippy('.tooltip-wrapper');
-  
+
   document.getElementById('resetButton').addEventListener('click', function() {
     // Clear all query parameters from the URL
     const url = new URL(window.location);

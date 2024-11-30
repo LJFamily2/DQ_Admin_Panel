@@ -32,6 +32,12 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slim-select/2.8.0/slimselect.min.css" integrity="sha512-QhrDqeRszsauAfwqszbR3mtxV3ZWp44Lfuio9t1ccs7H15+ggGbpOqaq4dIYZZS3REFLqjQEC1BjmYDxyqz0ZA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
   <style>
+    /* Make the container-fluid scrollable */
+    .container-fluid {
+      height: 100dvh;
+      overflow-y: auto;
+    }
+
     table {
       width: 100% !important;
       white-space: nowrap !important;
@@ -75,7 +81,8 @@
 <body style="display: flex; background: rgb(245, 245, 245)">
   <%- include('../partials/navigation') %>
   <div class="container-fluid paddingMobile">
-    <%- include('../partials/header') %> <%- body %>
+    <%- include('../partials/header') %>
+    <%- body %>
   </div>
 
   <script>
