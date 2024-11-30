@@ -50,10 +50,11 @@ async function setDateRange(req, res) {
 }
 
 async function updateDateRangeAutomatically() {
-  const today = new Date();
-  today.setUTCHours(0, 0, 0, 0);
-  const startDate = today;
-  const endDate = new Date(today);
+  const startDate = new Date();
+  startDate.setDate(startDate.getDate() - 14);
+  startDate.setUTCHours(0, 0, 0, 0);
+
+  const endDate = new Date();
   endDate.setUTCHours(23, 59, 59, 999);
 
   await dateRangeAccess.findOneAndUpdate(
