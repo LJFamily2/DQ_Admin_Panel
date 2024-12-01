@@ -8,44 +8,26 @@
     .hide {
       display: none;
     }
+
     .rotate {
       transform: rotate(180deg);
       transition: transform 0.3s ease-in-out;
     }
   </style>
 </head>
-<button
-  type="button"
-  class="btn btn-danger mx-2 mx-md-4 my-3"
-  data-bs-toggle="modal"
-  data-bs-target="#deleteAll-admin-user"
-  style="width: max-content"
->
-  Xóa tất cả khu vực
+<button type="button" class="btn btn-danger mx-2 mx-md-4 my-3" data-bs-toggle="modal" data-bs-target="#deleteAll-admin-user" style="width: max-content">
+  Xóa tất cả vườn
 </button>
 
 <div class="row m-0 px-2">
   <div class="col-12 col-md-9 p-0 px-md-3">
-    <div
-      class="col rounded-2 p-1"
-      style="box-shadow: 0 0 10px; max-height: 80dvh; overflow-y: auto"
-    >
-      <h4 class="my-3">Danh sách khu vực</h4>
+    <div class="col rounded-2 p-1" style="box-shadow: 0 0 10px; max-height: 80dvh; overflow-y: auto">
+      <h4 class="my-3">Danh sách vườn</h4>
       <% areas.forEach((area, index) => { %>
       <div class="areaList">
-        <button
-          class="btn <%= area.plantations.length === 0 ? 'btn-danger' : 'btn-secondary' %> w-100 d-flex justify-content-between my-2"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#area<%= index %>"
-          aria-expanded="false"
-          aria-controls="area<%= index %>"
-        >
+        <button class="btn <%= area.plantations.length === 0 ? 'btn-danger' : 'btn-secondary' %> w-100 d-flex justify-content-between my-2" type="button" data-bs-toggle="collapse" data-bs-target="#area<%= index %>" aria-expanded="false" aria-controls="area<%= index %>">
           <%= area.name %> (<%= area.plantations.length %> vườn)
-          <i
-            class="ri-arrow-up-s-line"
-            style="transition: transform 0.3s ease-in-out"
-          ></i>
+          <i class="ri-arrow-up-s-line" style="transition: transform 0.3s ease-in-out"></i>
         </button>
         <div class="collapse my-1" id="area<%= index %>">
           <div class="card card-body">
@@ -62,85 +44,40 @@
       <% }) %>
     </div>
   </div>
-  <div
-    class="col-12 col-md-3 rounded-2 my-5 m-md-0 py-3"
-    style="box-shadow: 0 0 10px; background: var(--background_color)"
-  >
+  <div class="col-12 col-md-3 rounded-2 my-5 m-md-0 py-3" style="box-shadow: 0 0 10px; background: var(--background_color)">
     <%- include('../partials/notificationMessage.ejs') %>
     <div class="accordion" id="areaAccordion">
       <div class="d-flex d-flex flex-wrap gap-2">
-        <button
-          class="btn btn-primary"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#createArea"
-          aria-expanded="false"
-          aria-controls="createArea"
-        >
-          Tạo khu vực
+        <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#createArea" aria-expanded="false" aria-controls="createArea">
+          Tạo vườn
         </button>
-        <button
-          class="btn btn-secondary"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#updateArea"
-          aria-expanded="false"
-          aria-controls="updateArea"
-        >
+        <button class="btn btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#updateArea" aria-expanded="false" aria-controls="updateArea">
           Chỉnh sửa
         </button>
-        <button
-          class="btn btn-danger"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#deleteArea"
-          aria-expanded="false"
-          aria-controls="deleteArea"
-        >
-          Xóa khu vực
+        <button class="btn btn-danger" type="button" data-bs-toggle="collapse" data-bs-target="#deleteArea" aria-expanded="false" aria-controls="deleteArea">
+          Xóa vườn
         </button>
       </div>
       <hr />
       <!-- Create Area -->
-      <div
-        id="createArea"
-        class="collapse show"
-        aria-labelledby="createAreaHeading"
-        data-bs-parent="#areaAccordion"
-      >
+      <div id="createArea" class="collapse show" aria-labelledby="createAreaHeading" data-bs-parent="#areaAccordion">
         <form action="/quan-ly-khu-vuc/addArea" method="post">
-          <h5>Tạo khu vực</h5>
+          <h5>Tạo vườn</h5>
           <div class="my-3">
-            <label for="name" class="form-label">Tên khu vực</label>
-            <input
-              type="text"
-              class="form-control"
-              id="name"
-              name="name"
-              required
-            />
+            <label for="name" class="form-label">Tên vườn</label>
+            <input type="text" class="form-control" id="name" name="name" required />
           </div>
           <div class="my-3" id="plantation-fields">
             <label for="plantation" class="form-label">Vườn</label>
             <div class="input_field d-flex align-items-center">
-              <input
-                type="text"
-                id="plantation"
-                class="form-control"
-                name="plantation"
-                list="plantations"
-              />
+              <input type="text" id="plantation" class="form-control" name="plantation" list="plantations" />
               <datalist id="plantations">
                 <% plantations.forEach(plantation => { %>
                 <option value="<%= plantation.name %>"></option>
                 <% }) %>
               </datalist>
 
-              <i
-                class="ri-add-line fs-4 mx-1"
-                onclick="addInputField('#plantation-fields', 'plantations')"
-                style="cursor: pointer"
-              ></i>
+              <i class="ri-add-line fs-4 mx-1" onclick="addInputField('#plantation-fields', 'plantations')" style="cursor: pointer"></i>
             </div>
           </div>
           <!-- Buttons -->
@@ -148,33 +85,21 @@
         </form>
       </div>
       <!-- Update Area -->
-      <div
-        id="updateArea"
-        class="collapse"
-        aria-labelledby="updateAreaHeading"
-        data-bs-parent="#areaAccordion"
-      >
+      <div id="updateArea" class="collapse" aria-labelledby="updateAreaHeading" data-bs-parent="#areaAccordion">
         <form action="/quan-ly-khu-vuc/updateArea" method="post">
-          <h5>Chỉnh sửa khu vực</h5>
+          <h5>Chỉnh sửa vườn</h5>
           <div class="my-3">
-            <label for="area" class="form-label">Chọn khu vực</label>
+            <label for="area" class="form-label">Chọn vườn</label>
             <select class="form-control slim-select" id="area" name="area">
-              <option selected disabled>Chọn khu vực</option>
+              <option selected disabled>Chọn vườn</option>
               <% areas.forEach((area) => { %>
               <option value="<%= area._id %>"><%= area.name %></option>
               <% }) %>
             </select>
           </div>
           <div class="my-3">
-            <label for="updateName" class="form-label">Tên khu vực</label>
-            <input
-              type="text"
-              class="form-control"
-              id="updateName"
-              name="name"
-              oninput="toggleButtons(true, '#updateArea button')"
-              disabled
-            />
+            <label for="updateName" class="form-label">Tên vườn</label>
+            <input type="text" class="form-control" id="updateName" name="name" oninput="toggleButtons(true, '#updateArea button')" disabled />
           </div>
           <div class="my-3">
             <ul class="list-group"></ul>
@@ -184,59 +109,33 @@
         </form>
       </div>
       <!-- Delete Area -->
-      <div
-        id="deleteArea"
-        class="collapse"
-        aria-labelledby="deleteAreaHeading"
-        data-bs-parent="#areaAccordion"
-      >
+      <div id="deleteArea" class="collapse" aria-labelledby="deleteAreaHeading" data-bs-parent="#areaAccordion">
         <form action="/quan-ly-khu-vuc/deleteAreas" method="post">
-          <h5>Xóa khu vực</h5>
+          <h5>Xóa vườn</h5>
           <div class="my-3">
-            <label for="deleteAreaField" class="form-label">Chọn khu vực</label>
-            <select
-              class="form-control slim-select-multi"
-              multiple
-              id="deleteAreaField"
-              name="areaID"
-            >
+            <label for="deleteAreaField" class="form-label">Chọn vườn</label>
+            <select class="form-control slim-select-multi" multiple id="deleteAreaField" name="areaID">
               <% areas.forEach((area) => { %>
               <option value="<%= area._id %>"><%= area.name %></option>
               <% }) %>
             </select>
           </div>
           <!-- Buttons -->
-          <button
-            type="button"
-            class="btn btn-danger"
-            data-bs-toggle="modal"
-            data-bs-target="#deleteModalToggle"
-          >
+          <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModalToggle">
             Xóa
           </button>
           <!-- Delete confirming modal  -->
-          <div
-            class="modal fade"
-            id="deleteModalToggle"
-            aria-hidden="true"
-            aria-labelledby="exampleModalToggleLabel"
-            tabindex="-1"
-          >
+          <div class="modal fade" id="deleteModalToggle" aria-hidden="true" aria-labelledby="exampleModalToggleLabel" tabindex="-1">
             <div class="modal-dialog modal-dialog-centered">
               <div class="modal-content">
                 <div class="modal-header">
                   <h1 class="modal-title fs-5" id="exampleModalToggleLabel">
                     Xác nhận xóa ?
                   </h1>
-                  <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal"
-                    aria-label="Close"
-                  ></button>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                  Bạn có muốn xóa khu vực này không? Hành động này không thể
+                  Bạn có muốn xóa vườn này không? Hành động này không thể
                   hoàn tác.
                 </div>
                 <div class="modal-footer">
@@ -252,29 +151,16 @@
 </div>
 
 <!-- Modal for deleting all products -->
-<div
-  class="modal fade"
-  id="deleteAll-admin-user"
-  data-bs-backdrop="static"
-  data-bs-keyboard="false"
-  tabindex="-1"
-  aria-labelledby="deleteUsers"
-  aria-hidden="true"
->
+<div class="modal fade" id="deleteAll-admin-user" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteUsers" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="deleteUsers">Xóa tất cả khu vực</h1>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
+        <h1 class="modal-title fs-5" id="deleteUsers">Xóa tất cả vườn</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <form action="/quan-ly-khu-vuc/deleteAll" method="post">
         <div class="modal-body">
-          Bạn có muốn xóa <strong>tất cả</strong> khu vực? Những không tin của
+          Bạn có muốn xóa <strong>tất cả</strong> vườn? Những không tin của
           vườn sẽ dc giữ. Hành động này không thể hoàn tác.
         </div>
         <div class="modal-footer">
@@ -286,23 +172,12 @@
 </div>
 
 <!-- Delete plantation Confirmation Modal -->
-<div
-  class="modal fade"
-  id="deleteConfirmModal"
-  tabindex="-1"
-  aria-labelledby="deleteConfirmModalLabel"
-  aria-hidden="true"
->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="deleteConfirmModalLabel">Xác nhận xóa?</h5>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <form action="/quan-ly-khu-vuc/removePlantaion" method="post">
         <input type="hidden" id="deleteAreaId" name="areaId" value="" />
@@ -312,11 +187,7 @@
           thể hoàn tác.
         </div>
         <div class="modal-footer">
-          <button
-            type="button"
-            class="btn btn-secondary"
-            data-bs-dismiss="modal"
-          >
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
             Hủy
           </button>
           <button type="submit" class="btn btn-danger">Xác nhận</button>

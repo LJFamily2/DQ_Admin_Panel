@@ -16,33 +16,78 @@
       -webkit-appearance: none;
       margin: 0;
     }
-  
+
     /* Hide the spinners in input type number for Firefox */
     input[type="number"] {
       -moz-appearance: textfield;
     }
   </style>
-  
+
 </head>
 
-<div class="row m-0 m-md-2 g-3 mb-4">
-  <% areas.forEach(areaData => { %>
-  <div class="col-12 col-md-3 mt-2">
-    <div class="card" style="box-shadow: 0 1px 2px">
-      <div class="card-header bg-transparent">
-        <h6 class="m-0">Khu vực</h6>
+<!-- Search bar for tabs -->
+<div class="d-flex justify-content-end mb-3 my-4">
+  <input type="text" id="tabSearch" placeholder="Tìm khu vực" class="form-control" style="width: 200px;">
+</div>
+
+<ul class="nav nav-tabs flex-nowrap overflow-auto p-1" id="myTab" role="tablist">
+  <% Object.keys(groupedAreas).forEach((areaName, index) => { %>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link <%= index === 0 ? 'active' : '' %>" id="tab-<%= index %>" data-bs-toggle="tab" data-bs-target="#content-<%= index %>" type="button" role="tab" aria-controls="content-<%= index %>" aria-selected="<%= index === 0 %>" style="white-space: nowrap;"><%= areaName %></button>
+  </li>
+  <% }) %>
+</ul>
+
+<!-- Search bar for tab content -->
+<div class="d-flex justify-content-end mt-3">
+  <input type="text" id="contentSearch" placeholder="Tìm vườn" class="form-control" style="width: 200px;">
+</div>
+
+<div class="tab-content" id="myTabContent">
+  <% Object.keys(groupedAreas).forEach((areaName, index) => { %>
+  <div class="tab-pane fade <%= index === 0 ? 'show active' : '' %>" id="content-<%= index %>" role="tabpanel" aria-labelledby="tab-<%= index %>">
+    <div class="row m-0 m-md-2 g-3 mb-4">
+      <% groupedAreas[areaName].forEach(areaData => { %>
+      <div class="col-12 col-md-3 mt-2">
+        <div class="card" style="box-shadow: 0 1px 2px">
+          <div class="card-header bg-transparent">
+            <h6 class="m-0">Khu vực</h6>
+          </div>
+          <div class="card-body">
+            <h4 class="m-0"><%= areaData.name %></h4>
+          </div>
+          <div class="card-footer text-end bg-transparent p-1">
+            <a href="/nhap-du-lieu/nguyen-lieu/<%= areaData.slug %>" class="btn btn-link">Nhập dữ liệu</a>
+          </div>
+        </div>
       </div>
-      <div class="card-body">
-        <h4 class="m-0"><%= areaData.name %></h4>
-      </div>
-      <div class="card-footer text-end bg-transparent p-1">
-        <button class="btn btn-link"> <a href="/nhap-du-lieu/nguyen-lieu/<%= areaData.slug %>" >Nhập dữ liệu</a></button>
-      </div>
+      <% }) %>
     </div>
   </div>
   <% }) %>
 </div>
 
 <script>
+  function filterElements(inputId, tabSelector, contentSelector) {
+    const searchValue = document.getElementById(inputId).value.toLowerCase();
+    const tabs = document.querySelectorAll(tabSelector);
+    const tabContents = document.querySelectorAll(contentSelector);
+
+    tabs.forEach((tab, index) => {
+      const tabText = tab.textContent.toLowerCase();
+      const content = tabContents[index];
+      if (tabText.includes(searchValue) || content.textContent.toLowerCase().includes(searchValue)) {
+        tab.style.display = '';
+        content.style.display = '';
+      } else {
+        tab.style.display = 'none';
+        content.style.display = 'none';
+      }
+    });
+  }
+
+  document.getElementById('tabSearch').addEventListener('input', () => filterElements('tabSearch', '#myTab .nav-item', '.tab-pane'));
+  document.getElementById('contentSearch').addEventListener('input', () => filterElements('contentSearch', '#myTab .nav-item', '.tab-pane'));
+
   tippy('[data-tippy-content]');
 </script>

@@ -84,6 +84,7 @@ const supplierSchema = new mongoose.Schema(
 const dailySupplySchema = new mongoose.Schema({
   accountID: { type: mongoose.Schema.Types.ObjectId, ref: 'Accounts' },
   name: { type: String, required: true },
+  area: { type: String, required: true },
   data: [dataSchema],
   suppliers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'suppliers' }],
   limitData: { type: Number },

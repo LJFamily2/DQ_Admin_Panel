@@ -24,7 +24,7 @@ document.getElementById("area").addEventListener("change", function () {
       updateName.value = data.name;
 
       const list = document.querySelector(".list-group");
-      list.innerHTML = `<h6>Các vườn trong khu vực:</h6>`;
+      list.innerHTML = `<h6>Các vườn trong vườn:</h6>`;
 
       if (data.plantations && data.plantations.length > 0) {
         data.plantations.forEach((plantation, index) => {
@@ -72,7 +72,6 @@ document.getElementById("area").addEventListener("change", function () {
       });
     });
 });
-
 
 document.querySelectorAll(".areaList .btn").forEach((button) => {
   button.addEventListener("click", function () {

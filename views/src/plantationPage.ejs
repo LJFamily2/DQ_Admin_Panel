@@ -25,7 +25,7 @@
       <table class="table table-striped table-bordered" id="plantations_table">
         <thead>
           <tr>
-            <% ['STT','Khu vực',"Mã vườn", 'Tên', 'Người quản lý',"Hợp đồng còn","Số mẫu", "Chi tiết", 'Chỉnh sửa'].forEach(header => { %>
+            <% ['STT','Vườn',"Mã vườn", 'Tên', 'Người quản lý',"Hợp đồng còn","Số mẫu", "Chi tiết", 'Chỉnh sửa'].forEach(header => { %>
             <th><%= header %></th>
             <% }) %>
           </tr>
@@ -48,8 +48,8 @@
                   <div class="modal-body">
 
                     <div>
-                      <label for="areaID<%= index + 1 %>" class="form-label">Tên khu vực</label>
-                      <input type="text" id="areaID<%= index + 1 %>" class="form-control" name="newArea" list="areas" placeholder="Chọn hoặc tạo khu vực" value="<%= plantation.areaID.name %>" required />
+                      <label for="areaID<%= index + 1 %>" class="form-label">Tên vườn</label>
+                      <input type="text" id="areaID<%= index + 1 %>" class="form-control" name="newArea" list="areas" placeholder="Chọn hoặc tạo vườn" value="<%= plantation.areaID.name %>" required />
                       <datalist id="areas">
                         <% areas.forEach(area => { %>
                         <option value="<%= area.name %>"></option>
@@ -191,8 +191,8 @@
           <h5>Tạo vườn mới</h5>
 
           <div class="my-3">
-            <label for="areaID" class="form-label">Tên khu vực</label>
-            <input type="text" id="areaID" class="form-control" name="areaID" list="areas" placeholder="Chọn hoặc tạo khu vực" required />
+            <label for="areaID" class="form-label">Tên vườn</label>
+            <input type="text" id="areaID" class="form-control" name="areaID" list="areas" placeholder="Chọn hoặc tạo vườn" required />
             <datalist id="areas">
               <% areas.forEach(area => { %>
               <option value="<%= area.name %>"></option>

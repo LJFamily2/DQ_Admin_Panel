@@ -12,7 +12,6 @@ router.use(authMiddlewares.ensureWorkingHours);
 // Main page
 router.get(
   "/",
-
   authMiddlewares.ensureRoles(["Admin", "Văn phòng"]),
   dailySupplyController.supplierAreaController.renderPage
 );
@@ -37,7 +36,6 @@ router.delete(
 // Detail page
 router.get(
   "/:slug",
-
   authMiddlewares.ensureRoles(["Admin", "Văn phòng"]),
   dailySupplyController.supplierController.renderDetailPage
 );

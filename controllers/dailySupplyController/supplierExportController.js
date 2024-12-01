@@ -70,7 +70,7 @@ async function updatePricesAndRatios(req, res) {
         res,
         404,
         "fail",
-        "Không tìm thấy khu vực cung cấp",
+        "Không tìm thấy vườn cung cấp",
         req.headers.referer
       );
     }
@@ -167,7 +167,7 @@ async function updatePricesAndRatios(req, res) {
       ActionHistory.create({
         actionType: "update",
         userId: req.user._id,
-        details: `Cập nhật giá cho khu vực ${area.name}`,
+        details: `Cập nhật giá cho vườn ${area.name}`,
         oldValues: initialAreaData,
         newValues: area.data,
       }),
@@ -196,7 +196,7 @@ async function updatePricesAndRatios(req, res) {
 
     const successMessage = supplierSlug
       ? "Cập nhật giá thành công cho nhà cung cấp"
-      : "Cập nhật giá thành công cho khu vực";
+      : "Cập nhật giá thành công cho vườn";
     return handleResponse(
       req,
       res,

@@ -41,7 +41,7 @@
           <thead>
             <tr>
               <th>STT</th>
-              <th>Khu vực</th>
+              <th>Vườn</th>
               <th>Nướng hàm lượng</th>
               <th>Thời hạn hợp đồng</th>
               <th>Chỉnh sửa</th>
@@ -57,13 +57,13 @@
                 <div class="modal-content">
                   <div class="modal-header">
                     <h1 class="modal-title fs-5" id="exampleModalToggleLabel">
-                      Xóa khu vực <%= area.name %>
+                      Xóa vườn <%= area.name %>
                     </h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
                   <form action="/du-lieu-hang-ngay/deleteArea/<%= area._id %>?_method=DELETE" method="post">
                     <div class="modal-body">
-                      Bạn có muốn xóa khu vực
+                      Bạn có muốn xóa vườn
                       <strong><%= area.name %></strong> ? Hành động này không
                       thể hoàn tác.
                     </div>
@@ -85,19 +85,29 @@
   <div class="col-12 col-md-3 mt-2">
     <div class="card" style="box-shadow: 0 1px 2px">
       <div class="card-header bg-transparent">
-        <h4 class="m-0">Tạo khu vực</h4>
+        <h4 class="m-0">Tạo vườn</h4>
       </div>
       <form action="/du-lieu-hang-ngay/?_method=POST" method="post">
         <div class="card-body">
           <%- include('../partials/notificationMessage.ejs') %>
           <div>
-            <label for="areaName" class="form-label fw-bold">Tên khu vực</label>
+            <label for="areaName" class="form-label fw-bold">Tên vườn</label>
             <input type="text" class="form-control" id="areaName" name="areaName" required />
+          </div>
+          <div class="my-3">
+            <label for="areaGroup" class="form-label fw-bold">Thuộc khu vực</label>
+            <input type="text" class="form-control" id="areaGroup" name="areaGroup" list="areaList" value="Chưa phân loại" required />
+            <datalist id="areaList">
+              <option value="Chưa phân loại"></option>
+              <% listOfGroupAreas.forEach(area => { %>
+                <option value="<%= area %>" ></option>
+              <% }) %>
+            </datalist>
           </div>
           <div class="my-3">
             <label for="accountID" class="form-label fw-bold">Người nướng hàm lượng</label>
             <select class="form-control slim-select" id="accountID" name="accountID" required>
-              <option disabled selected>Chọn tài khoản</option>
+              <option value="null" selected>Chọn tài khoản</option>
 
               <% unassignedHamLuongAccounts.forEach(account => { %>
               <option value="<%= account._id %>">
@@ -126,14 +136,14 @@
             <small class="text-muted">Để trống nếu không có ngày hợp đồng</small>
           </div>
           <div class="my-3">
-            <label for="areaDimension" class="form-label fw-bold">Diện tích khu vực (mẫu)</label>
+            <label for="areaDimension" class="form-label fw-bold">Diện tích vườn (mẫu)</label>
             <input type="number" class="form-control" id="areaDimension" name="areaDimension" step="0.1" min="0" oninput="toggleFields()" />
-            <small class="text-muted">Chỉ áp dụng cho khu vực hợp đồng</small>
+            <small class="text-muted">Chỉ áp dụng cho vườn hợp đồng</small>
           </div>
           <div class="my-3">
-            <label for="areaPrice" class="form-label fw-bold">Giá khu vực</label>
+            <label for="areaPrice" class="form-label fw-bold">Giá vườn</label>
             <input type="text" class="form-control" id="areaPrice" name="areaPrice" min="0" oninput="handleQuantityInput(this);toggleFields()" />
-            <small class="text-muted">Để trống nếu không khu vực không mua bán</small>
+            <small class="text-muted">Để trống nếu không vườn không mua bán</small>
           </div>
 
           <div class="accordion" id="supplierAccordion">

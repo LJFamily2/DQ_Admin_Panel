@@ -317,7 +317,7 @@ function initializeExportDataTable(
               const table = $(tableId).DataTable();
 
               if (exportPageFooter) {
-                addHeaderInfo(dateRange, `Khu vực: ${supplierName}`);
+                addHeaderInfo(dateRange, `Vườn: ${supplierName}`);
                 setCommonStyles();
               }
 

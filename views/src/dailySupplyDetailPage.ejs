@@ -67,14 +67,14 @@
           <div class="accordion-item">
             <h4 class="accordion-header" id="headingAreaInfo">
               <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAreaInfo" aria-expanded="false" aria-controls="collapseAreaInfo">
-                <h5 class="m-0">Thông tin khu vực</h5>
+                <h5 class="m-0">Thông tin vườn</h5>
               </button>
             </h4>
             <div id="collapseAreaInfo" class="accordion-collapse collapse" aria-labelledby="headingAreaInfo" data-bs-parent="#areaInfoAccordion">
               <div class="accordion-body">
                 <div class="row">
                   <div class="col-md-6">
-                    <p><strong>Tên khu vực:</strong> <%= area.name %></p>
+                    <p><strong>Tên vườn:</strong> <%= area.name %></p>
                     <p><strong>Người nướng hàm lượng:</strong> <%= area.accountID ? area.accountID.username : 'Chưa được chỉ định' %></p>
                     <p><strong>Địa chỉ:</strong> <%= area.address %></p>
                     <p><strong>Quản lý:</strong> <%= managerSupplier ? managerSupplier.name : 'Chưa có quản lý' %></p>
@@ -88,9 +88,9 @@
                       Không có thông tin
                       <% } %>
                     </p>
-                    <p><strong>Diện tích khu vực:</strong> <%= area.areaDimension ? area.areaDimension.toLocaleString('vi-VN') + ' mẫu' : 'Chưa có thông tin' %></p>
+                    <p><strong>Diện tích vườn:</strong> <%= area.areaDimension ? area.areaDimension.toLocaleString('vi-VN') + ' mẫu' : 'Chưa có thông tin' %></p>
                     <p><strong>Diện tích còn trống:</strong> <%= area.remainingAreaDimension.toLocaleString('vi-VN') + ' mẫu'  %></p>
-                    <p><strong>Giá khu vực:</strong> <%= area.areaPrice ? area.areaPrice.toLocaleString('vi-VN') + ' VNĐ' : 'Chưa có thông tin' %></p>
+                    <p><strong>Giá vườn:</strong> <%= area.areaPrice ? area.areaPrice.toLocaleString('vi-VN') + ' VNĐ' : 'Chưa có thông tin' %></p>
                   </div>
                 </div>
               </div>
@@ -444,8 +444,17 @@
             <h4 class="fw-bold">Chỉnh sửa</h4>
             <form action="/du-lieu-hang-ngay/<%= area._id %>?_method=PUT" method="post" onchange="this.querySelector('button[type=submit]').style.display = 'block';">
               <div>
-                <label for="areaName" class="form-label fw-bold">Khu vực</label>
+                <label for="areaName" class="form-label fw-bold">Vườn</label>
                 <input type="text" class="form-control" id="areaName" name="areaName" value="<%= area.name %>" required />
+              </div>
+              <div class="my-3">
+                <label for="areaGroup" class="form-label fw-bold">Thuộc khu vực</label>
+                <input type="text" class="form-control" id="areaGroup" name="areaGroup" list="areaList" value="<%= area.area %>" required />
+                <datalist id="areaList">
+                  <% listOfGroupAreas.forEach(area => { %>
+                  <option value="<%= area %>"></option>
+                  <% }) %>
+                </datalist>
               </div>
               <div class="my-3">
                 <label for="accountID" class="form-label fw-bold">Nướng hàm lượng</label>
@@ -479,14 +488,14 @@
                 <small class="text-muted">Để trống nếu không có ngày hợp đồng</small>
               </div>
               <div class="my-3">
-                <label for="areaDimension" class="form-label fw-bold">Diện tích khu vực (mẫu)</label>
+                <label for="areaDimension" class="form-label fw-bold">Diện tích vườn (mẫu)</label>
                 <input type="number" class="form-control" id="areaDimension" name="areaDimension" required step="0.1" min="0" value="<%= area.areaDimension %>" />
-                <small class="text-muted">Chỉ áp dụng cho khu vực hợp đồng</small>
+                <small class="text-muted">Chỉ áp dụng cho vườn hợp đồng</small>
               </div>
               <div class="my-3">
-                <label for="areaPrice" class="form-label fw-bold">Giá khu vực</label>
+                <label for="areaPrice" class="form-label fw-bold">Giá vườn</label>
                 <input type="text" class="form-control" id="areaPrice" name="areaPrice" min="0" value="<%= area.areaPrice.toLocaleString('vi-VN') %>" oninput="handleQuantityInput(this)" inputmode="numeric" />
-                <small class="text-muted">Để trống nếu không khu vực không mua bán</small>
+                <small class="text-muted">Để trống nếu không vườn không mua bán</small>
               </div>
               <button type="submit" class="btn btn-primary" style="display: none;">Lưu</button>
             </form>

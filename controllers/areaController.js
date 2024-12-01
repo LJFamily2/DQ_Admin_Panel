@@ -21,7 +21,7 @@ async function renderPage(req, res) {
 
     res.render("src/areaPage", {
       layout: "./layouts/defaultLayout",
-      title: "Quản lý khu vực",
+      title: "Quản lý vườn",
       areas,
       plantations,
       messages: req.flash(),
@@ -43,7 +43,7 @@ async function createArea(req, res) {
         res,
         404,
         "fail",
-        "Khu vực đã tồn tại",
+        "Vườn đã tồn tại",
         "/quan-ly-khu-vuc"
       );
     }
@@ -84,7 +84,7 @@ async function createArea(req, res) {
         res,
         404,
         "fail",
-        "Thêm khu vực thất bại",
+        "Thêm vườn thất bại",
         "/quan-ly-khu-vuc"
       );
     }
@@ -94,7 +94,7 @@ async function createArea(req, res) {
       res,
       201,
       "success",
-      "Thêm khu vực thành công",
+      "Thêm vườn thành công",
       "/quan-ly-khu-vuc"
     );
   } catch {
@@ -133,7 +133,7 @@ async function updateArea(req, res) {
         res,
         404,
         "fail",
-        "Cập nhật khu vực thất bại",
+        "Cập nhật vườn thất bại",
         "/quan-ly-khu-vuc"
       );
     }
@@ -143,7 +143,7 @@ async function updateArea(req, res) {
       res,
       200,
       "success",
-      "Cập nhật khu vực thành công",
+      "Cập nhật vườn thành công",
       "/quan-ly-khu-vuc"
     );
   } catch {
@@ -167,7 +167,7 @@ async function removePlantationFromArea(req, res) {
         res,
         404,
         "fail",
-        "Khu vực đã tồn tại",
+        "Vườn đã tồn tại",
         "/quan-ly-khu-vuc"
       );
     }
@@ -178,7 +178,7 @@ async function removePlantationFromArea(req, res) {
         res,
         200,
         "success",
-        "Xóa vườn khỏi khu vực thành công",
+        "Xóa vườn khỏi vườn thành công",
         "/quan-ly-khu-vuc"
       );
     } else {
@@ -187,7 +187,7 @@ async function removePlantationFromArea(req, res) {
         res,
         404,
         "fail",
-        "Không tìm thấy vườn trong khu vực này",
+        "Không tìm thấy vườn trong vườn này",
         "/quan-ly-khu-vuc"
       );
     }
@@ -208,7 +208,7 @@ async function deleteAreas(req, res) {
         res,
         404,
         "fail",
-        "Không tìm thấy khu vực để xóa",
+        "Không tìm thấy vườn để xóa",
         "/quan-ly-khu-vuc"
       );
     }
@@ -223,7 +223,7 @@ async function deleteAreas(req, res) {
         res,
         404,
         "fail",
-        "Xóa một hoặc nhiều khu vực thất bại",
+        "Xóa một hoặc nhiều vườn thất bại",
         "/quan-ly-khu-vuc"
       );
     }
@@ -233,7 +233,7 @@ async function deleteAreas(req, res) {
       res,
       200,
       "success",
-      "Xóa khu vực thành công",
+      "Xóa vườn thành công",
       "/quan-ly-khu-vuc"
     );
   } catch {
@@ -249,7 +249,7 @@ async function deleteAllAreas(req, res) {
       res,
       200,
       "success",
-      "Xóa tất cả khu vực thành công",
+      "Xóa tất cả vườn thành công",
       "/quan-ly-khu-vuc"
     );
   } catch {

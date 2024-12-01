@@ -25,12 +25,14 @@ async function renderPage(req, res) {
   try {
     const areas = await DailySupply.find({}).populate("accountID");
     const dateRangeAccess = await DateRangeAccess.findOne();
+    const listOfGroupAreas = await DailySupply.distinct("area");
 
     const hamLuongAccounts = await AccountModel.find({ role: "Hàm lượng" });
     const assignedAccounts = await DailySupply.distinct("accountID");
     const unassignedHamLuongAccounts = hamLuongAccounts.filter(
       (account) =>
         !assignedAccounts
+          .filter((id) => id !== null)
           .map((id) => id.toString())
           .includes(account._id.toString())
     );
@@ -39,6 +41,7 @@ async function renderPage(req, res) {
       layout: "./layouts/defaultLayout",
       title: "Dữ liệu mủ hằng ngày",
       unassignedHamLuongAccounts,
+      listOfGroupAreas,
       areas,
       dateRangeAccess,
       user: req.user,
@@ -52,7 +55,6 @@ async function renderPage(req, res) {
 
 async function addArea(req, res) {
   req.body = trimStringFields(req.body);
-  console.log(req.body);
   try {
     const existingArea = await DailySupply.findOne({ name: req.body.areaName });
     if (existingArea) {
@@ -61,7 +63,7 @@ async function addArea(req, res) {
         res,
         404,
         "fail",
-        "Khu vực đã tồn tại!",
+        "Vườn đã tồn tại!",
         req.headers.referer
       );
     }
@@ -82,20 +84,23 @@ async function addArea(req, res) {
         res,
         400,
         "fail",
-        "Tổng diện tích mua vượt quá diện tích khu vực!",
+        "Tổng diện tích mua vượt quá diện tích vườn!",
         req.headers.referer
       );
     }
 
     const remainingAreaDimension = areaDimension - totalPurchasedAreaDimension;
 
+    const accountID = req.body.accountID === "null" ? null : req.body.accountID;
     const newAreaData = {
       ...req.body,
       name: req.body.areaName,
+      area: req.body.areaGroup,
       areaDimension: areaDimension,
       remainingAreaDimension: remainingAreaDimension,
       areaPrice: convertToDecimal(req.body.areaPrice),
       suppliers: [],
+      accountID: accountID,
     };
 
     const suppliers = await createSuppliers(req);
@@ -111,7 +116,7 @@ async function addArea(req, res) {
         res,
         404,
         "fail",
-        "Tạo khu vực thất bại!",
+        "Tạo vườn thất bại!",
         req.headers.referer
       );
     }
@@ -126,7 +131,7 @@ async function addArea(req, res) {
           res,
           404,
           "fail",
-          "Thêm nhà vườn vào khu vực thất bại!",
+          "Thêm nhà vườn vào vườn thất bại!",
           req.headers.referer
         );
       }
@@ -136,7 +141,7 @@ async function addArea(req, res) {
     const actionHistory = await ActionHistory.create({
       actionType: "create",
       userId: req.user._id,
-      details: `Tạo khu vực mới ${newArea.name}`,
+      details: `Tạo vườn mới ${newArea.name}`,
       newValues: newArea,
     });
 
@@ -156,7 +161,7 @@ async function addArea(req, res) {
       res,
       201,
       "success",
-      "Tạo khu vực thành công",
+      "Tạo vườn thành công",
       req.headers.referer
     );
   } catch (error) {
@@ -174,7 +179,7 @@ async function deleteArea(req, res) {
         res,
         404,
         "fail",
-        "Xóa khu vực thất bại!",
+        "Xóa vườn thất bại!",
         req.headers.referer
       );
     }
@@ -214,7 +219,7 @@ async function deleteArea(req, res) {
         res,
         404,
         "fail",
-        "Xóa khu vực thất bại!",
+        "Xóa vườn thất bại!",
         req.headers.referer
       );
     }
@@ -227,7 +232,7 @@ async function deleteArea(req, res) {
         res,
         404,
         "fail",
-        "Xóa khu vực thất bại!",
+        "Xóa vườn thất bại!",
         req.headers.referer
       );
     }
@@ -236,7 +241,7 @@ async function deleteArea(req, res) {
     const actionHistory = await ActionHistory.create({
       actionType: "delete",
       userId: req.user._id,
-      details: `Xóa khu vực ${area.name}`,
+      details: `Xóa vườn ${area.name}`,
       oldValues: area,
     });
 
@@ -256,7 +261,7 @@ async function deleteArea(req, res) {
       res,
       200,
       "success",
-      "Xóa khu vực thành công",
+      "Xóa vườn thành công",
       req.headers.referer
     );
   } catch (error) {

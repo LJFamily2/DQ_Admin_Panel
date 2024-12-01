@@ -58,6 +58,7 @@ async function getRawMaterialData(deletionRequestId) {
 async function renderDetailPage(req, res) {
   try {
     const { startDate, endDate } = req.query;
+    const listOfGroupAreas = await DailySupply.distinct("area");
     const dateRangeAccess = await DateRangeAccess.findOne();
     const area = await DailySupply.findOne({ slug: req.params.slug })
       .populate("accountID")
@@ -91,6 +92,7 @@ async function renderDetailPage(req, res) {
       layout: "./layouts/defaultLayout",
       title: `Dữ liệu mủ của ${area.name}`,
       hamLuongAccounts,
+      listOfGroupAreas,
       area: {
         ...area.toObject(),
         deletionRequests: deletionRequestsWithRawMaterial,
@@ -110,12 +112,14 @@ async function renderDetailPage(req, res) {
 
 async function updateArea(req, res) {
   req.body = trimStringFields(req.body);
+  console.log(req.body);
   try {
     const id = req.params.id;
-    const { accountID, areaName, limitData } = req.body;
+    const { accountID, areaName, limitData, areaGroup } = req.body;
 
     // Check if the accountID is already assigned to another area
     const existingArea = await DailySupply.findOne({
+      accountID: { $exists: true, $ne: null },
       accountID,
       _id: { $ne: id },
     });
@@ -125,7 +129,7 @@ async function updateArea(req, res) {
         res,
         400,
         "fail",
-        "Tài khoản đã được gán cho khu vực khác!",
+        "Tài khoản đã được gán cho vườn khác!",
         req.headers.referer
       );
     }
@@ -137,7 +141,7 @@ async function updateArea(req, res) {
         res,
         404,
         "fail",
-        "Không tìm thấy khu vực!",
+        "Không tìm thấy vườn!",
         req.headers.referer
       );
     }
@@ -145,6 +149,7 @@ async function updateArea(req, res) {
     const updateFields = {
       ...req.body,
       name: areaName,
+      area: areaGroup,
       limitData: limitData || currentArea.limitData,
       areaPrice: convertToDecimal(req.body.areaPrice) || currentArea.areaPrice,
     };
@@ -163,7 +168,7 @@ async function updateArea(req, res) {
       ActionHistory.create({
         actionType: "update",
         userId: req.user._id,
-        details: `Cập nhật khu vực ${areaName}`,
+        details: `Cập nhật vườn ${areaName}`,
         oldValues: currentArea,
         newValues: updateFields,
       }),
@@ -175,7 +180,7 @@ async function updateArea(req, res) {
         res,
         404,
         "fail",
-        "Cập nhật khu vực thất bại!",
+        "Cập nhật vườn thất bại!",
         req.headers.referer
       );
     }
@@ -185,7 +190,7 @@ async function updateArea(req, res) {
       res,
       200,
       "success",
-      "Cập nhật khu vực thành công",
+      "Cập nhật vườn thành công",
       `/du-lieu-hang-ngay/${newData.slug}`
     );
   } catch (error) {
@@ -205,7 +210,7 @@ async function addSupplier(req, res) {
         res,
         404,
         "fail",
-        "Không tìm thấy khu vực!",
+        "Không tìm thấy vườn!",
         req.headers.referer
       );
     }
@@ -274,7 +279,7 @@ async function addSupplier(req, res) {
     const actionHistory = await ActionHistory.create({
       actionType: "create",
       userId: req.user._id,
-      details: `Thêm nhà vườn vào khu vực ${area.name}`,
+      details: `Thêm nhà vườn vào vườn ${area.name}`,
       newValues: newSuppliers,
     });
     if (!actionHistory) {
@@ -455,7 +460,7 @@ async function editSupplier(req, res) {
         res,
         404,
         "fail",
-        "Không tìm thấy khu vực!",
+        "Không tìm thấy vườn!",
         req.headers.referer
       );
     }

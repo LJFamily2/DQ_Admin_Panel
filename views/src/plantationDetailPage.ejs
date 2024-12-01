@@ -60,7 +60,7 @@
             user-select: none;
             -webkit-user-select: none;
           ">
-          <strong>Khu vực:</strong> <%= plantation.areaID?.name %>
+          <strong>Vườn:</strong> <%= plantation.areaID?.name %>
         </div>
         <div class="item rounded-1 p-2" style="
             box-shadow: 0 0 4px;
@@ -476,8 +476,8 @@
       <form action="/quan-ly-vuon/update/<%= plantation._id %>" method="post">
         <div class="modal-body">
           <div>
-            <label for="areaID" class="form-label">Tên khu vực</label>
-            <input type="text" id="areaID" class="form-control" name="newArea" list="areas" placeholder="Chọn hoặc tạo khu vực" value="<%= plantation.areaID.name %>" required />
+            <label for="areaID" class="form-label">Tên vườn</label>
+            <input type="text" id="areaID" class="form-control" name="newArea" list="areas" placeholder="Chọn hoặc tạo vườn" value="<%= plantation.areaID.name %>" required />
             <datalist id="areas">
               <% areas.forEach(area => { %>
               <option value="<%= area.name %>"></option>

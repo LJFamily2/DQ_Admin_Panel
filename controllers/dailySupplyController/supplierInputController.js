@@ -23,8 +23,9 @@ module.exports = {
 async function renderInputDataDashboardPage(req, res) {
   try {
     const { startDate, endDate } = req.query;
-    let areas;
 
+
+    let areas;
     if (req.user.role === "Hàm lượng") {
       const area = await DailySupply.findOne({ accountID: req.user._id })
         .populate("suppliers")
@@ -36,9 +37,19 @@ async function renderInputDataDashboardPage(req, res) {
         .populate("data.supplier");
     }
 
+     // Group by area
+     const groupedAreas = areas.reduce((acc, area) => {
+      if (!acc[area.area]) {
+        acc[area.area] = [];
+      }
+      acc[area.area].push(area);
+      return acc;
+    }, {});
+
     res.render("src/dailySupplyInputDashboardPage", {
       layout: "./layouts/defaultLayout",
       title: `Nguyên liệu hằng ngày`,
+      groupedAreas,
       areas,
       user: req.user,
       startDate,
