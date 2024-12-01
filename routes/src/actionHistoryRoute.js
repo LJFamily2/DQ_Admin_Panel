@@ -12,18 +12,18 @@ router.use(authMiddlewares.ensureWorkingHours);
 router.get(
   "/nhat-ky-hoat-dong",
 
-  authMiddlewares.ensureRoles(["Admin", "Quản lý", "Văn phòng"]),
+  authMiddlewares.ensureRoles(["Admin", "Văn phòng"]),
   actionHistory.renderPage
 );
 router.post(
   "/nhat-ky-hoat-dong/:id",
-  authMiddlewares.ensureRoles(["Admin", "Quản lý"]),
+  authMiddlewares.ensureRoles(["Admin"]),
   checkPermission("delete"),
   actionHistory.deleteData
 );
 router.delete(
   "/nhat-ky-hoat-dong/deleteAllData",
-  authMiddlewares.ensureRoles(["Admin", "Quản lý"]),
+  authMiddlewares.ensureRoles(["Admin"]),
   checkPermission("delete"),
   actionHistory.deleteAllData
 );

@@ -23,7 +23,7 @@ const deleteLimiter = rateLimit({
 // Custom middleware to conditionally apply rate limiting
 const conditionalRateLimiter = (req, res, next) => {
   const userRole = req.user.role;
-  if (userRole === "Admin" || userRole === "Quản lý") {
+  if (userRole === "Admin") {
     return next();
   }
   return deleteLimiter(req, res, next);

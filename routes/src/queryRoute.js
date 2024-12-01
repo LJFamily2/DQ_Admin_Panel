@@ -10,13 +10,13 @@ router.use(authMiddlewares.ensureWorkingHours);
 router.get(
   "/",
 
-  authMiddlewares.ensureRoles(["Admin", "Quản lý"]),
+  authMiddlewares.ensureRoles(["Admin"]),
   queryController.renderPage
 );
 // router.post('/getQuery', queryController.getQuery)
 router.post(
   "/getDataTotal",
-  authMiddlewares.ensureRoles(["Admin", "Quản lý"]),
+  authMiddlewares.ensureRoles(["Admin"]),
   queryController.getDataTotal
 );
 

@@ -6,7 +6,7 @@ const checkPermission = require("../../middlewares/checkPermission");
 
 router.post(
   "/setDateRange",
-  authMiddlewares.ensureRoles(["Admin", "Quản lý"]),
+  authMiddlewares.ensureRoles(["Admin"]),
   checkPermission("update"),
   dateRangeController.setDateRange
 );

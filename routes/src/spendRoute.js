@@ -11,35 +11,35 @@ router.use(authMiddlewares.ensureWorkingHours);
 router.get(
   "/",
 
-  authMiddlewares.ensureRoles(["Admin", "Quản lý"]),
+  authMiddlewares.ensureRoles(["Admin"]),
   spendController.renderPage
 );
 router.post(
   "/",
-  authMiddlewares.ensureRoles(["Admin", "Quản lý"]),
+  authMiddlewares.ensureRoles(["Admin"]),
   checkPermission("add"),
   spendController.createData
 );
 router.post(
   "/getData",
-  authMiddlewares.ensureRoles(["Admin", "Quản lý"]),
+  authMiddlewares.ensureRoles(["Admin"]),
   spendController.getData
 );
 router.put(
   "/:id",
-  authMiddlewares.ensureRoles(["Admin", "Quản lý"]),
+  authMiddlewares.ensureRoles(["Admin"]),
   checkPermission("update"),
   spendController.updateData
 );
 router.delete(
   "/:id",
-  authMiddlewares.ensureRoles(["Admin", "Quản lý"]),
+  authMiddlewares.ensureRoles(["Admin"]),
   checkPermission("delete"),
   spendController.deleteData
 );
 router.delete(
   "/deleteAll",
-  authMiddlewares.ensureRoles(["Admin", "Quản lý"]),
+  authMiddlewares.ensureRoles(["Admin"]),
   checkPermission("delete"),
   spendController.deleteAll
 );

@@ -52,7 +52,7 @@
                   <div class="mb-3">
                     <label for="role<%= index %>" class="form-label" style="float: left;">Vai trò</label>
                     <select class="form-select" id="role<%= index %>" name="role" aria-label="Default select example">
-                      <% const roles = ['Admin', 'Quản lý', 'Văn phòng', 'Hàm lượng']; %>
+                      <% const roles = ['Admin', 'Văn phòng', 'Hàm lượng']; %>
                       <% roles.forEach(role => { %>
                       <option value="<%= role %>" <%= (user.role === role) ? 'selected' : '' %>><%= role %></option>
                       <% }); %>
@@ -147,7 +147,6 @@
             <label for="role" class="form-label" style="float: left">Vai trò</label>
             <select class="form-control" name="role" id="role">
               <option value="Admin">Admin</option>
-              <option value="Quản lý" selected>Quản lý</option>
               <option value="Văn phòng" selected>Văn phòng</option>
               <option value="Hàm lượng" selected>Hàm lượng</option>
             </select>

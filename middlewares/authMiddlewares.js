@@ -32,7 +32,7 @@ function ensureWorkingHours(req, res, next) {
     req.isAuthenticated &&
     req.isAuthenticated() &&
     req.user &&
-    (req.user.role === "Admin" || req.user.role === "Quản lý")
+    (req.user.role === "Admin")
   ) {
     return next();
   }
@@ -55,8 +55,6 @@ module.exports = {
   ensureLoggedOut: ensureLoggedOut("/ho-so"),
   ensureLoggedIn: ensureLoggedIn("/dang-nhap"),
   ensureAdmin: ensureRole("Admin"),
-  ensureManager: ensureRole("Quản lý"),
-  ensureVanPhong: ensureRole("Văn phòng"),
   ensureRoles: ensureRoles,
   ensureWorkingHours,
 };

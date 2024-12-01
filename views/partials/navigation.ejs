@@ -27,7 +27,7 @@
         <i class="ri-line-chart-line"></i>
       </a>
     </li>
-    <% if(user.role === "Admin" || user.role === "Quản lý"){ %>
+    <% if(user.role === "Admin"){ %>
     <!-- <li class="nav-item">
       <a href="/truy-van" class="nav-link link-dark d-flex justify-content-between">
         Truy Vấn
@@ -86,7 +86,7 @@
       </a>
     </li>
     <% } %>
-    <% if(user.role === "Admin" || user.role === "Văn phòng" || user.role === "Quản lý"){ %>
+    <% if(user.role === "Admin" || user.role === "Văn phòng"){ %>
     <li class="nav-item">
       <a href="/du-lieu-hang-ngay" class="nav-link link-dark d-flex justify-content-between">
         Dữ liệu ngày
@@ -139,12 +139,12 @@
   <div class="d-flex flex-nowrap justify-content-start">
     <% 
       const navItems = [
-        { roles: ["Admin", "Quản lý"], href: "/tong", icon: "ri-line-chart-line", text: "Tổng" },
-        { roles: ["Admin", "Quản lý"], href: "/truy-van", icon: "ri-search-line", text: "Truy vấn" },
-        { roles: ["Admin", "Quản lý"], href: "/quan-ly-du-lieu", icon: "ri-database-line", text: "Dữ liệu tổng" },
-        { roles: ["Admin", "Quản lý"], href: "/quan-ly-hang-hoa", icon: "ri-instance-line", text: "Hàng hóa" },
-        { roles: ["Admin", "Quản lý"], href: "/quan-ly-hop-dong", icon: "ri-contract-line", text: "Hợp đồng" },
-        { roles: ["Admin", "Quản lý"], href: "/quan-ly-chi-tieu", icon: "ri-bill-line", text: "Chi tiêu" },
+        { roles: ["Admin"], href: "/tong", icon: "ri-line-chart-line", text: "Tổng" },
+        { roles: ["Admin"], href: "/truy-van", icon: "ri-search-line", text: "Truy vấn" },
+        { roles: ["Admin"], href: "/quan-ly-du-lieu", icon: "ri-database-line", text: "Dữ liệu tổng" },
+        { roles: ["Admin"], href: "/quan-ly-hang-hoa", icon: "ri-instance-line", text: "Hàng hóa" },
+        { roles: ["Admin"], href: "/quan-ly-hop-dong", icon: "ri-contract-line", text: "Hợp đồng" },
+        { roles: ["Admin"], href: "/quan-ly-chi-tieu", icon: "ri-bill-line", text: "Chi tiêu" },
         { roles: ["Admin", "Văn phòng"], href: "/du-lieu-hang-ngay", icon: "ri-numbers-line", text: "Dữ liệu ngày" },
         { roles: ["Admin", "Hàm lượng"], href: "/nhap-du-lieu/nguyen-lieu", icon: "ri-edit-line", text: "Thêm dữ liệu" },
 

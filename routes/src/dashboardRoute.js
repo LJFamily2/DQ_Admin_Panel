@@ -11,25 +11,25 @@ router.use(authMiddlewares.ensureWorkingHours);
 router.get(
   "/",
 
-  authMiddlewares.ensureRoles(["Admin", "Quản lý", "Văn phòng"]),
+  authMiddlewares.ensureRoles(["Admin", "Văn phòng"]),
   dashboardController.renderPage
 );
 router.get(
   "/getRawMaterial",
 
-  authMiddlewares.ensureRoles(["Admin", "Quản lý", "Văn phòng"]),
+  authMiddlewares.ensureRoles(["Admin", "Văn phòng"]),
   dashboardController.getRawMaterial
 );
 router.get(
   "/getProductData",
 
-  authMiddlewares.ensureRoles(["Admin", "Quản lý", "Văn phòng"]),
+  authMiddlewares.ensureRoles(["Admin", "Văn phòng"]),
   dashboardController.getProductData
 );
 router.get(
   "/getRevenueAndSpending",
 
-  authMiddlewares.ensureRoles(["Admin", "Quản lý", "Văn phòng"]),
+  authMiddlewares.ensureRoles(["Admin", "Văn phòng"]),
   dashboardController.getRevenueAndSpending
 );
 
