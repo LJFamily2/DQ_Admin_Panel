@@ -4,7 +4,7 @@ function checkPermission(action) {
       return next();
     } else {
         req.flash("fail", "Hành động không được cấp phép");
-        return res.status(403);
+        return res.status(403).redirect(req.headers.referer);
     }
   };
 }
