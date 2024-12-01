@@ -101,14 +101,12 @@
       </ul>
     </li>
     <% } %>
-    <% if(user.role === "Admin" || user.role === "Hàm lượng" || user.role === "Quản lý"){ %>
     <li class="nav-item">
       <a href="/nhap-du-lieu/nguyen-lieu" class="nav-link link-dark d-flex justify-content-between">
         Thêm nguyên liệu
         <i class="ri-edit-line"></i>
       </a>
     </li>
-    <% } %>
     <% if(user.role === 'Admin'){ %>
     <li class="nav-item">
       <a href="/quan-ly-tai-khoan" class="nav-link link-dark d-flex justify-content-between">

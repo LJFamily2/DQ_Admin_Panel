@@ -25,15 +25,15 @@ async function renderInputDataDashboardPage(req, res) {
     const { startDate, endDate } = req.query;
     let areas;
 
-    if (req.user.role === "Admin") {
-      areas = await DailySupply.find()
-        .populate("suppliers")
-        .populate("data.supplier");
-    } else {
+    if (req.user.role === "Hàm lượng") {
       const area = await DailySupply.findOne({ accountID: req.user._id })
         .populate("suppliers")
         .populate("data.supplier");
       areas = area ? [area] : [];
+    } else {
+      areas = await DailySupply.find()
+        .populate("suppliers")
+        .populate("data.supplier");
     }
 
     res.render("src/dailySupplyInputDashboardPage", {
@@ -54,11 +54,9 @@ async function renderInputDataDashboardPage(req, res) {
 async function renderInputDataPage(req, res) {
   try {
     const { startDate, endDate } = req.query;
-    const isAdmin = req.user.role === "Admin";
 
     const area = await DailySupply.findOne({
       slug: req.params.slug,
-      ...(isAdmin ? {} : { accountID: req.user._id }),
     })
       .populate("suppliers")
       .populate("data.supplier");

@@ -13,24 +13,22 @@ router.use(authMiddlewares.ensureWorkingHours);
 // User side for input data
 router.get(
   "/nguyen-lieu",
-
-  authMiddlewares.ensureRoles(["Admin", "Hàm lượng", "Quản lý"]),
+  authMiddlewares.ensureRoles(["Admin", "Hàm lượng", "Quản lý","Văn phòng"]),
   dailySupplyController.supplierInputController.renderInputDataDashboardPage
 );
 router.get(
   "/nguyen-lieu/:slug",
-
-  authMiddlewares.ensureRoles(["Admin", "Hàm lượng", "Quản lý"]),
+  authMiddlewares.ensureRoles(["Admin", "Hàm lượng", "Quản lý","Văn phòng"]),
   dailySupplyController.supplierInputController.renderInputDataPage
 );
 router.post(
   "/nguyen-lieu/getSupplierData/:slug",
-  authMiddlewares.ensureRoles(["Admin", "Hàm lượng", "Quản lý"]),
+  authMiddlewares.ensureRoles(["Admin", "Hàm lượng", "Quản lý","Văn phòng"]),
   dailySupplyController.getSupplierDataController.getSupplierData
 );
 router.post(
   "/:id",
-  authMiddlewares.ensureRoles(["Admin", "Hàm lượng", "Quản lý"]),
+  authMiddlewares.ensureRoles(["Admin", "Hàm lượng", "Quản lý","Văn phòng"]),
   checkPermission("add"),
   dailySupplyController.supplierInputController.addData
 );
