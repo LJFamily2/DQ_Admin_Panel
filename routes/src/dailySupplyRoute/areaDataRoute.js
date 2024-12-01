@@ -3,6 +3,7 @@ const router = express.Router();
 const dailySupplyController = require("../../../controllers/dailySupplyController");
 const authMiddlewares = require("../../../middlewares/authMiddlewares");
 const checkDateAccess = require("../../../middlewares/dateRangeAccessSetting");
+const checkPermission = require("../../../middlewares/checkPermission");
 
 // Apply ensureLoggedIn middleware to all routes
 router.use(authMiddlewares.ensureLoggedIn);
@@ -23,11 +24,13 @@ router.post(
 router.post(
   "/",
   authMiddlewares.ensureRoles(["Admin", "Văn phòng", "Quản lý"]),
+  checkPermission("add"),
   dailySupplyController.supplierAreaController.addArea
 );
 router.delete(
   "/deleteArea/:id",
   authMiddlewares.ensureRoles(["Admin", "Văn phòng", "Quản lý"]),
+  checkPermission("delete"),
   dailySupplyController.supplierAreaController.deleteArea
 );
 
@@ -41,21 +44,25 @@ router.get(
 router.put(
   "/:id",
   authMiddlewares.ensureRoles(["Admin", "Văn phòng", "Quản lý"]),
+  checkPermission("update"),
   dailySupplyController.supplierController.updateArea
 );
 router.post(
   "/addSupplier/:id",
   authMiddlewares.ensureRoles(["Admin", "Văn phòng", "Hàm lượng", "Quản lý"]),
+  checkPermission("add"),
   dailySupplyController.supplierController.addSupplier
 );
 router.delete(
   "/:id",
   authMiddlewares.ensureRoles(["Admin", "Văn phòng", "Quản lý"]),
+  checkPermission("delete"),
   dailySupplyController.supplierController.deleteSupplier
 );
 router.put(
   "/supplier/:id",
   authMiddlewares.ensureRoles(["Admin", "Văn phòng", "Quản lý"]),
+  checkPermission("update"),
   dailySupplyController.supplierController.editSupplier
 );
 router.post(
@@ -79,6 +86,7 @@ router.put(
   "/:slug/updatePrice/:supplierSlug?",
   authMiddlewares.ensureRoles(["Admin", "Văn phòng", "Quản lý"]),
   checkDateAccess,
+  checkPermission("update"),
   dailySupplyController.supplierExportController.updatePricesAndRatios
 );
 

@@ -1,7 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const accountController = require('../../controllers/accountController');
-const authMiddlewares = require('../../middlewares/authMiddlewares');
+const accountController = require("../../controllers/accountController");
+const authMiddlewares = require("../../middlewares/authMiddlewares");
+const checkPermission = require("../../middlewares/checkPermission");
 
 const commonMiddlewares = [
   authMiddlewares.ensureLoggedIn,
@@ -10,28 +11,39 @@ const commonMiddlewares = [
 ];
 
 // Initial setup route
-router.get('/tao-tai-khoan', accountController.initialSetupPage);
-router.post('/tao-tai-khoan', accountController.initialSetupCreateAccount);
+router.get("/tao-tai-khoan", accountController.initialSetupPage);
+router.post("/tao-tai-khoan", accountController.initialSetupCreateAccount);
 
 // Main page
-router.get('/', ...commonMiddlewares, accountController.renderPage);
+router.get("/", ...commonMiddlewares, accountController.renderPage);
 
 // Get all users
 router.post("/getUsers", ...commonMiddlewares, accountController.getUsers);
 
 // Create a new user
-router.post("/createUser", ...commonMiddlewares, accountController.createUser);
+router.post(
+  "/",
+  ...commonMiddlewares,
+  checkPermission("add"),
+  accountController.createUser
+);
 
 // Update a user by ID
-router.post("/update/:id", accountController.updateUser);
+router.put("/:id", checkPermission("update"), accountController.updateUser);
 
 // Delete a user by ID
-router.post("/delete/:id", ...commonMiddlewares, accountController.deleteUser);
+router.delete(
+  "/:id",
+  ...commonMiddlewares,
+  checkPermission("delete"),
+  accountController.deleteUser
+);
 
 // Delete all users
-router.post(
+router.delete(
   "/deleteAll",
   ...commonMiddlewares,
+  checkPermission("delete"),
   accountController.deleteAllUsers
 );
 

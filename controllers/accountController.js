@@ -62,6 +62,7 @@ async function renderPage(req, res) {
 
 async function createUser(req, res) {
   req.body = trimStringFields(req.body);
+  console.log(req.body);
   try {
     let existedUsername = await UserModel.findOne({
       username: req.body.username,
@@ -82,6 +83,11 @@ async function createUser(req, res) {
       username: req.body.username,
       password: hashedPassword,
       role: req.body.role || true,
+      permissions: {
+        add: req.body.addPermission,
+        update: req.body.updatePermission,
+        delete: req.body.deletePermission,
+      },
     });
     if (!user) {
       return handleResponse(
@@ -115,13 +121,16 @@ async function getUsers(req, res) {
     const sortDirection = order?.[0]?.dir === "asc" ? 1 : -1;
 
     const searchQuery = {
-      username: { $regex: searchValue, $options: "i" },
+      $or: [
+        { username: { $regex: searchValue, $options: "i" } },
+        { role: { $regex: searchValue, $options: "i" } }
+      ]
     };
 
     const totalRecords = await UserModel.countDocuments();
     const filteredRecords = await UserModel.countDocuments(searchQuery);
     const users = await UserModel.find(searchQuery)
-      .sort({ [sortColumn]: sortDirection })
+      .sort({ role: 1, [sortColumn]: sortDirection })
       .skip(parseInt(start, 10))
       .limit(parseInt(length, 10));
 
@@ -130,6 +139,7 @@ async function getUsers(req, res) {
       username: user.username,
       password: "**********",
       role: user.role,
+      permissions: user.permissions,
       id: user._id,
     }));
 
@@ -146,20 +156,19 @@ async function getUsers(req, res) {
 
 async function updateUser(req, res) {
   req.body = trimStringFields(req.body);
-  const userID = req.params.id;
-  console.log(req.body);
-  if (!userID) {
-    return handleResponse(
-      req,
-      res,
-      404,
-      "fail",
-      "Không thấy tài khoản",
-      req.body.currentUrl
-    );
-  }
-
   try {
+    const userID = req.params.id;
+    console.log(req.body);
+    if (!userID) {
+      return handleResponse(
+        req,
+        res,
+        404,
+        "fail",
+        "Không thấy tài khoản",
+        req.body.currentUrl
+      );
+    }
     const user = await UserModel.findById(userID);
 
     if (
@@ -179,6 +188,11 @@ async function updateUser(req, res) {
     const updateFields = {
       username: req.body.username,
       role: req.body.role,
+      permissions: {
+        add: req.body.addPermission,
+        update: req.body.updatePermission,
+        delete: req.body.deletePermission,
+      }
     };
 
     let passwordChanged = false;

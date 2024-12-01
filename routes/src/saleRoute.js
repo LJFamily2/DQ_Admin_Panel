@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const saleController = require("../../controllers/saleController");
 const authMiddlewares = require("../../middlewares/authMiddlewares");
+const checkPermission = require("../../middlewares/checkPermission");
 
 // Apply ensureLoggedIn middleware to all routes
 router.use(authMiddlewares.ensureLoggedIn);
@@ -16,6 +17,7 @@ router.get(
 router.post(
   "/",
   authMiddlewares.ensureRoles(["Admin", "Quản lý"]),
+  checkPermission("add"),
   saleController.createData
 );
 router.post(
@@ -26,16 +28,19 @@ router.post(
 router.put(
   "/:id",
   authMiddlewares.ensureRoles(["Admin", "Quản lý"]),
+  checkPermission("update"),
   saleController.updateData
 );
 router.delete(
   "/delete/:id",
   authMiddlewares.ensureRoles(["Admin", "Quản lý"]),
+  checkPermission("delete"),
   saleController.deleteData
 );
 router.delete(
   "/deleteAll",
   authMiddlewares.ensureRoles(["Admin", "Quản lý"]),
+  checkPermission("delete"),
   saleController.deleteAll
 );
 

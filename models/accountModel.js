@@ -13,6 +13,11 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  permissions: {
+    add: { type: Boolean, default: false },
+    update: { type: Boolean, default: false },
+    delete: { type: Boolean, default: false },
+  },
   createdAt: {
     type: Date,
     default: Date.now(),
@@ -20,20 +25,6 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-userSchema.methods.getFormattedDateTime = function () {
-    const dateOptions = { day: "2-digit", month: "2-digit", year: "numeric" };
-
-    if (this.createdAt) {
-      const formattedDate = this.createdAt.toLocaleDateString(
-        "en-GB",
-        dateOptions
-      );
-      
-      return `${formattedDate}`;
-    } else {
-      return "";
-    }
-  };
 
 const UserModel = mongoose.model("Accounts", userSchema);
 

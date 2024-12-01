@@ -6,17 +6,11 @@
 
 <section class="row m-2 position-relative">
   <!-- add button -->
-  <button
-  type="button"
-  class="btn btn-secondary"
-  data-bs-toggle="modal"
-  data-bs-target="#add-admin-user"
-  style="width: max-content"
-  >
-  Tạo tài khoản
-</button>
+  <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#add-admin-user" style="width: max-content">
+    Tạo tài khoản
+  </button>
 
-<div class="position-absolute" style="right: 10px; top: -3px;width: max-content;">
+  <div class="position-absolute" style="right: 10px; top: -3px;width: max-content;">
     <%- include('../partials/notificationMessage.ejs') %>
   </div>
 </section>
@@ -26,105 +20,88 @@
     <table class="table table-striped" id="user_accounts">
       <thead>
         <tr>
-          <% ['STT', 'Tài khoản', 'Mật Khẩu','Vai trò', 'Chỉnh Sửa'].forEach(header => { %>
-            <th><%= header %></th>
+          <% ['STT', 'Tài khoản', 'Mật Khẩu','Vai trò','Quyền hành động', 'Chỉnh Sửa'].forEach(header => { %>
+          <th><%= header %></th>
           <% }) %>
         </tr>
       </thead>
       <tbody>
         <% users.forEach( (user,index) => { %>
         <!-- Modal for updating -->
-        <div
-          class="modal fade"
-          id="staticBackdrop<%= user._id %>"
-          data-bs-backdrop="static"
-          data-bs-keyboard="false"
-          tabindex="-1"
-          aria-labelledby="staticBackdropLabel"
-          aria-hidden="true"
-        >
+        <div class="modal fade" id="staticBackdrop<%= user._id %>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
           <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
               <div class="modal-header">
                 <h1 class="modal-title fs-5" id="staticBackdropLabel">
                   Cập nhật thông tin cho <%= user.username %>
                 </h1>
-                <button
-                  type="button"
-                  class="btn-close"
-                  data-bs-dismiss="modal"
-                  aria-label="Close"
-                ></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
-  
-              <form action="/quan-ly-tai-khoan/update/<%= user._id %>" method="post">
-              <div class="modal-body">
+
+              <form action="/quan-ly-tai-khoan/<%= user._id %>?_method=PUT" method="post">
+                <div class="modal-body">
                   <div class="mb-3">
-                    <label for="username<%= index + 1 %>" class="form-label" style="float: left"
-                      >Tài khoản</label
-                    >
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="username<%= index + 1 %>"
-                      name="username"
-                      value="<%= user.username %>"
-                    />
+                    <label for="username<%= index + 1 %>" class="form-label" style="float: left">Tài khoản</label>
+                    <input type="text" class="form-control" id="username<%= index + 1 %>" name="username" value="<%= user.username %>" />
                   </div>
                   <div class="mb-3">
-                    <label for="password<%= index +1  %>" class="form-label" style="float: left"
-                      >Mật khẩu mới</label
-                    >
-                    <input
-                      type="password"
-                      class="form-control"
-                      id="password<%= index +1  %>"
-                      name="newPassword"
-                      placeholder="**********"
-                    />
+                    <label for="password<%= index +1  %>" class="form-label" style="float: left">Mật khẩu mới</label>
+                    <input type="password" class="form-control" id="password<%= index +1  %>" name="newPassword" placeholder="**********" />
                   </div>
-  
+
                   <div class="mb-3">
                     <label for="role<%= index %>" class="form-label" style="float: left;">Vai trò</label>
                     <select class="form-select" id="role<%= index %>" name="role" aria-label="Default select example">
                       <% const roles = ['Admin', 'Quản lý', 'Văn phòng', 'Hàm lượng']; %>
                       <% roles.forEach(role => { %>
-                        <option value="<%= role %>" <%= (user.role === role) ? 'selected' : '' %>><%= role %></option>
+                      <option value="<%= role %>" <%= (user.role === role) ? 'selected' : '' %>><%= role %></option>
                       <% }); %>
-                       </select>
-                 </div>
+                    </select>
+                  </div>
+                  <div class="mb-3">
+                    <label for="permissions" class="form-label">Quyền hành động</label>
+                    <div class="d-flex">
+                      <div class="form-check me-3">
+                        <input class="form-check-input" type="checkbox" id="addPermission<%= index %>" name="addPermission" value="true" style="cursor: pointer;" <%= user.permissions.add ? 'checked' : '' %>>
+                        <label class="form-check-label" for="addPermission<%= index %>" style="cursor: pointer;">
+                          Tạo
+                        </label>
+                      </div>
+                      <div class="form-check me-3">
+                        <input class="form-check-input" type="checkbox" id="updatePermission<%= index %>" name="updatePermission" value="true" style="cursor: pointer;" <%= user.permissions.update ? 'checked' : '' %>>
+                        <label class="form-check-label" for="updatePermission<%= index %>" style="cursor: pointer;">
+                          Cập nhật
+                        </label>
+                      </div>
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="deletePermission<%= index %>" name="deletePermission" value="true" style="cursor: pointer;" <%= user.permissions.delete ? 'checked' : '' %>>
+                        <label class="form-check-label" for="deletePermission<%= index %>" style="cursor: pointer;">
+                          Xóa
+                        </label>
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 <div class="modal-footer">
-                <button type="submit" class="btn btn-primary">Lưu</button>
-                <button type="reset" class="btn text-dark">Đặt lại</button>
-              </div>
-            </form>
+                  <button type="submit" class="btn btn-primary">Lưu</button>
+                  <button type="reset" class="btn text-dark">Đặt lại</button>
+                </div>
+              </form>
             </div>
           </div>
         </div>
-  
+
         <!-- Delete confirming modal  -->
-        <div
-          class="modal fade"
-          id="deleteModalToggle<%= user._id %>"
-          aria-hidden="true"
-          aria-labelledby="exampleModalToggleLabel"
-          tabindex="-1"
-        >
+        <div class="modal fade" id="deleteModalToggle<%= user._id %>" aria-hidden="true" aria-labelledby="exampleModalToggleLabel" tabindex="-1">
           <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
               <div class="modal-header">
                 <h1 class="modal-title fs-5" id="exampleModalToggleLabel">
                   Xóa tài khoản <%= user.username %>
                 </h1>
-                <button
-                  type="button"
-                  class="btn-close"
-                  data-bs-dismiss="modal"
-                  aria-label="Close"
-                ></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
-              <form action="/quan-ly-tai-khoan/delete/<%=  user._id %>" method="post">
+              <form action="/quan-ly-tai-khoan/<%=  user._id %>?_method=DELETE" method="post">
                 <div class="modal-body">
                   Bạn có muốn xóa tài khoản
                   <strong><%= user.username %></strong> ? Hành động này không thể
@@ -140,71 +117,63 @@
         <% }) %>
       </tbody>
     </table>
-    
+
   </div>
 </section>
 
 <!-- Modal for creating admin -->
-<div
-  class="modal fade"
-  id="add-admin-user"
-  data-bs-backdrop="static"
-  data-bs-keyboard="false"
-  tabindex="-1"
-  aria-labelledby="AddUser"
-  aria-hidden="true"
->
+<div class="modal fade" id="add-admin-user" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="AddUser" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="AddUser">
           Tạo tài khoản Văn phòng
         </h1>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
-      <form action="/quan-ly-tai-khoan/createUser" method="post">
-      <div class="modal-body">
+      <form action="/quan-ly-tai-khoan?_method=POST" method="post">
+        <div class="modal-body">
           <div class="mb-3">
-            <label for="username" class="form-label" style="float: left"
-              >Tài khoản</label
-            >
-            <input
-              type="text"
-              class="form-control"
-              id="username"
-              name="username"
-              required
-            />
+            <label for="username" class="form-label" style="float: left">Tài khoản</label>
+            <input type="text" class="form-control" id="username" name="username" required />
           </div>
           <div class="mb-3">
-            <label for="password" class="form-label" style="float: left"
-              >Mật khẩu</label
-            >
-            <input
-              type="password"
-              class="form-control"
-              id="password"
-              name="password"
-              required
-            />
+            <label for="password" class="form-label" style="float: left">Mật khẩu</label>
+            <input type="password" class="form-control" id="password" name="password" required />
           </div>
 
           <div class="mb-3">
-            <label for="role" class="form-label" style="float: left"
-              >Vai trò</label
-            >
+            <label for="role" class="form-label" style="float: left">Vai trò</label>
             <select class="form-control" name="role" id="role">
               <option value="Admin">Admin</option>
               <option value="Quản lý" selected>Quản lý</option>
               <option value="Văn phòng" selected>Văn phòng</option>
               <option value="Hàm lượng" selected>Hàm lượng</option>
             </select>
+          </div>
+          <div class="mb-3">
+            <label for="permissions" class="form-label">Quyền hành động</label>
+            <div class="d-flex">
+              <div class="form-check me-3">
+                <input class="form-check-input" type="checkbox" id="addPermission" name="addPermission" value="true" style="cursor: pointer;" checked>
+                <label class="form-check-label" for="addPermission" style="cursor: pointer;">
+                  Tạo
+                </label>
+              </div>
+              <div class="form-check me-3">
+                <input class="form-check-input" type="checkbox" id="updatePermission" name="updatePermission" value="true" style="cursor: pointer;" checked>
+                <label class="form-check-label" for="updatePermission" style="cursor: pointer;">
+                  Cập nhật
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="deletePermission" name="deletePermission" value="true" style="cursor: pointer;" checked>
+                <label class="form-check-label" for="deletePermission" style="cursor: pointer;">
+                  Xóa
+                </label>
+              </div>
+            </div>
           </div>
         </div>
         <div class="modal-footer">
@@ -216,80 +185,69 @@
 </div>
 
 <!-- Modal for deleting all users -->
-<div
-  class="modal fade"
-  id="deleteAll-admin-user"
-  data-bs-backdrop="static"
-  data-bs-keyboard="false"
-  tabindex="-1"
-  aria-labelledby="deleteUsers"
-  aria-hidden="true"
->
+<div class="modal fade" id="deleteAll-admin-user" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteUsers" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="deleteUsers">
-          Xóa tất cả tài khoản 
+          Xóa tất cả tài khoản
         </h1>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
-        <form action="/quan-ly-tai-khoan/deleteAll" method="post">
-          <div class="modal-body">
-            Bạn có muốn xóa <strong>tất cả</strong> tài khoản ? Hành động này không thể
-            hoàn tác.
-          </div>
-          <div class="modal-footer">
-            <button type="submit" class="btn btn-danger">Xác nhận</button>
-          </div>
-        </form>
+      <form action="/quan-ly-tai-khoan/deleteAll?_method=DELETE" method="post">
+        <div class="modal-body">
+          Bạn có muốn xóa <strong>tất cả</strong> tài khoản ? Hành động này không thể
+          hoàn tác.
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-danger">Xác nhận</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
 
 <script>
-  const userColumns = [
-    { data: "no", orderable: false, visible: false },
-    { data: "username", width:"25%" },
-    { data: "password", orderable: false, width:"25%" },
-    { data: "role", width:"15%", 
-    render: function (data) {
-        return data === 'Admin'  ? `  <div class="row">
-          <div class="col text-center "  >
-          <div class="badge bg-primary"  >
-              ${data}
-          </div>
-        </div>
-      </div>` : data === 'Quản lý' ? `  <div class="row">
-          <div class="col text-center "  >
-          <div class="badge bg-success text-light "  >
-              ${data}
-          </div>
-          </div>
-        </div>
-      `: data === 'Văn phòng' ? `  <div class="row">
-          <div class="col text-center "  >
-          <div class="badge bg-light text-dark "  >
-              ${data}
-          </div>
-          </div>
-        </div>
-      `: data === 'Hàm lượng' ? `  <div class="row">
-          <div class="col text-center "  >
-          <div class="badge bg-warning text-light "  >
-              ${data}
-          </div>
-          </div>
-        </div>
-      `: ``;
-      },
-     },
-    { data: "id", orderable: false, width:"28%" },
+  const userColumns = [{
+      data: "no",
+      orderable: false,
+      visible: false
+    },
+    {
+      data: "username",
+      orderable: false,
+    },
+    {
+      data: "password",
+      orderable: false,
+    },
+    {
+      data: "role",
+    },
+    {
+      data: "permissions",
+      orderable: false,
+      render: function(data, type, row) {
+        console.log(row)
+        let badges = '';
+        if (row.permissions.add) {
+          badges += '<span class="badge rounded-pill bg-success me-1">Tạo</span>';
+        }
+        if (row.permissions.update) {
+          badges += '<span class="badge rounded-pill bg-primary me-1">Cập nhật</span>';
+        }
+        if (row.permissions.delete) {
+          badges += '<span class="badge rounded-pill bg-danger">Xóa</span>';
+        }
+        return badges;
+      }
+    },
+
+    {
+      data: "id",
+      orderable: false,
+    },
   ];
 
   initializeDataTable(
