@@ -196,6 +196,12 @@
                       <button type="submit" class="btn btn-danger">
                         Xác nhận
                       </button>
+                      <% } else if(user.role === 'Văn phòng' ) { %>
+                      <div class="tooltip-wrapper" data-tippy-content="Hãy thao tác ở trang chỉnh sửa" tabindex="0">
+                        <button type="button" class="btn btn-danger" disabled>
+                          Xác nhận
+                        </button>
+                      </div>
                       <% } else { %>
                       <div class="tooltip-wrapper" data-tippy-content="Bạn không có quyền thao tác" tabindex="0">
                         <button type="button" class="btn btn-danger" disabled>
