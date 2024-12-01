@@ -71,7 +71,7 @@ async function updatePricesAndRatios(req, res) {
         404,
         "fail",
         "Không tìm thấy khu vực cung cấp",
-        req.body.currentUrl
+        req.headers.referer
       );
     }
 
@@ -104,7 +104,7 @@ async function updatePricesAndRatios(req, res) {
           404,
           "fail",
           "Không tìm thấy nhà cung cấp",
-          req.body.currentUrl
+          req.headers.referer
         );
       }
       supplierId = supplier._id;
@@ -180,7 +180,7 @@ async function updatePricesAndRatios(req, res) {
         500,
         "fail",
         "Lỗi cập nhật dữ liệu!",
-        req.body.currentUrl
+        req.headers.referer
       );
     }
     if (!actionHistory) {
@@ -190,7 +190,7 @@ async function updatePricesAndRatios(req, res) {
         500,
         "fail",
         "Lỗi lưu lịch sử dữ liệu!",
-        req.body.currentUrl
+        req.headers.referer
       );
     }
 
@@ -203,7 +203,7 @@ async function updatePricesAndRatios(req, res) {
       200,
       "success",
       successMessage,
-      req.body.currentUrl
+      req.headers.referer
     );
   } catch (error) {
     console.error("Error updating prices:", error);

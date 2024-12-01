@@ -17,7 +17,7 @@ async function checkDateRange(req, res, next) {
         403,
         "fail",
         "Lỗi truy cập vào giới hạn chỉnh sửa dữ liệu!",
-        req.body.currentUrl
+        req.headers.referer
       );
     }
 
@@ -35,7 +35,7 @@ async function checkDateRange(req, res, next) {
         403,
         "fail",
         "Truy cập vào dữ liệu đã bị từ chối",
-        req.body.currentUrl
+        req.headers.referer
       );
     }
 

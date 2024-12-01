@@ -9,7 +9,7 @@ const customRateLimitHandler = (req, res) => {
     404,
     "fail",
     "Vượt quá nhiều yêu cầu xóa. Vui lòng thử lại sau 15 phút.",
-    req.body.currentUrl
+    req.headers.referer
   );
 };
 

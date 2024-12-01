@@ -106,7 +106,7 @@ async function deleteData(req, res) {
         404,
         "fail",
         "Xóa dữ liệu thất bại",
-        req.body.currentUrl
+        req.headers.referer
       );
     }
 
@@ -116,7 +116,7 @@ async function deleteData(req, res) {
       200,
       "success",
       "Xóa dữ liệu thành công",
-      req.body.currentUrl
+      req.headers.referer
     );
   } catch (error) {
     console.log(error);
@@ -135,7 +135,7 @@ async function deleteAllData(req, res) {
         404,
         "fail",
         "Xóa tất cả dữ liệu thất bại",
-        req.body.currentUrl
+        req.headers.referer
       );
     }
 
@@ -145,7 +145,7 @@ async function deleteAllData(req, res) {
       200,
       "success",
       "Xóa dữ tất cả liệu thành công",
-      req.body.currentUrl
+      req.headers.referer
     );
   } catch (error) {
     console.log(error);

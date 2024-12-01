@@ -32,7 +32,7 @@ async function setDateRange(req, res) {
         500,
         "fail",
         "Nâng cấp ngày truy cập thất bại",
-        req.body.currentUrl
+        req.headers.referer
       );
     }
     return handleResponse(
@@ -41,7 +41,7 @@ async function setDateRange(req, res) {
       200,
       "success",
       "Nâng cấp ngày truy cập thành công",
-      req.body.currentUrl
+      req.headers.referer
     );
   } catch (error) {
     console.error("Error setting date range:", error);

@@ -90,7 +90,7 @@ async function createProduct(req, res) {
         404,
         "fail",
         "Đã có dữ liệu ngày này. Hãy chọn ngày khác!",
-        req.body.currentUrl
+        req.headers.referer
       );
     }
 
@@ -119,7 +119,7 @@ async function createProduct(req, res) {
       201,
       "success",
       "Thêm hàng hóa thành công",
-      req.body.currentUrl
+      req.headers.referer
     );
   } catch (err) {
     res.status(500).render("partials/500", { layout: false });
@@ -139,7 +139,7 @@ async function updateProduct(req, res) {
         404,
         "fail",
         "Đã có dữ liệu ngày này. Hãy chọn ngày khác!",
-        req.body.currentUrl
+        req.headers.referer
       );
     }
 
@@ -177,7 +177,7 @@ async function updateProduct(req, res) {
       200,
       "success",
       "Cập nhật hàng hóa thành công",
-      req.body.currentUrl
+      req.headers.referer
     );
   } catch (error) {
     console.log(error);
@@ -196,7 +196,7 @@ async function deleteProduct(req, res) {
         404,
         "fail",
         "Không tìm thấy hàng hóa trong cơ sở dữ liệu",
-        req.body.currentUrl
+        req.headers.referer
       );
     }
 
@@ -209,7 +209,7 @@ async function deleteProduct(req, res) {
         404,
         "fail",
         "Xóa hàng hóa thất bại",
-        req.body.currentUrl
+        req.headers.referer
       );
     }
 
@@ -226,7 +226,7 @@ async function deleteProduct(req, res) {
       200,
       "success",
       "Xóa hàng hóa thành công",
-      req.body.currentUrl
+      req.headers.referer
     );
   } catch {
     res.status(500).render("partials/500", { layout: false });
@@ -353,7 +353,7 @@ async function deleteAll(req, res) {
       200,
       "success",
       "Xóa tất cả hàng hóa thành công !",
-      req.body.currentUrl
+      req.headers.referer
     );
   } catch (err) {
     res.status(500).render("partials/500", { layout: false });

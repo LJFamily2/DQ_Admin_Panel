@@ -74,7 +74,7 @@ async function createUser(req, res) {
         404,
         "fail",
         "Tên tài khoản đã tồn tại. Hãy tạo với tên khác!",
-        req.body.currentUrl
+        req.headers.referer
       );
     }
 
@@ -96,7 +96,7 @@ async function createUser(req, res) {
         404,
         "fail",
         "Tạo tài khoản thất bại",
-        req.body.currentUrl
+        req.headers.referer
       );
     }
 
@@ -106,7 +106,7 @@ async function createUser(req, res) {
       201,
       "success",
       "Tạo tài khoản thành công",
-      req.user ? req.body.currentUrl : "/dang-nhap"
+      req.user ? req.headers.referer : "/dang-nhap"
     );
   } catch {
     res.status(500).render("partials/500", { layout: false });
@@ -123,8 +123,8 @@ async function getUsers(req, res) {
     const searchQuery = {
       $or: [
         { username: { $regex: searchValue, $options: "i" } },
-        { role: { $regex: searchValue, $options: "i" } }
-      ]
+        { role: { $regex: searchValue, $options: "i" } },
+      ],
     };
 
     const totalRecords = await UserModel.countDocuments();
@@ -166,7 +166,7 @@ async function updateUser(req, res) {
         404,
         "fail",
         "Không thấy tài khoản",
-        req.body.currentUrl
+        req.headers.referer
       );
     }
     const user = await UserModel.findById(userID);
@@ -181,7 +181,7 @@ async function updateUser(req, res) {
         404,
         "fail",
         "Mật khẩu cũ không đúng",
-        req.body.currentUrl
+        req.headers.referer
       );
     }
 
@@ -192,7 +192,7 @@ async function updateUser(req, res) {
         add: req.body.addPermission,
         update: req.body.updatePermission,
         delete: req.body.deletePermission,
-      }
+      },
     };
 
     let passwordChanged = false;
@@ -212,7 +212,7 @@ async function updateUser(req, res) {
         404,
         "fail",
         "Cập nhập tài khoản thất bại",
-        req.body.currentUrl
+        req.headers.referer
       );
     }
 
@@ -236,7 +236,7 @@ async function updateUser(req, res) {
             200,
             "success",
             "Cập nhập tài khoản thành công",
-            req.body.currentUrl
+            req.headers.referer
           );
         });
       });
@@ -248,7 +248,7 @@ async function updateUser(req, res) {
         200,
         "success",
         "Cập nhập tài khoản thành công",
-        req.body.currentUrl
+        req.headers.referer
       );
     }
   } catch (error) {
@@ -267,7 +267,7 @@ async function deleteUser(req, res) {
         404,
         "fail",
         "Không thấy tài khoản",
-        req.body.currentUrl
+        req.headers.referer
       );
     }
     if (user.role === "Admin") {
@@ -277,7 +277,7 @@ async function deleteUser(req, res) {
         404,
         "fail",
         "Không thể xóa tài khoản quản trị",
-        req.body.currentUrl
+        req.headers.referer
       );
     }
 
@@ -295,7 +295,7 @@ async function deleteUser(req, res) {
       200,
       "success",
       "Xóa tài khoản thành công",
-      req.body.currentUrl
+      req.headers.referer
     );
   } catch {
     res.status(500).render("partials/500", { layout: false });
@@ -314,7 +314,7 @@ async function deleteAllUsers(req, res) {
         404,
         "fail",
         "Không có tài khoản nào để xóa",
-        req.body.currentUrl
+        req.headers.referer
       );
     }
 
@@ -336,7 +336,7 @@ async function deleteAllUsers(req, res) {
       200,
       "success",
       "Xóa tất cả tài khoản nhân viên thành công",
-      req.body.currentUrl
+      req.headers.referer
     );
   } catch (error) {
     console.error(error);

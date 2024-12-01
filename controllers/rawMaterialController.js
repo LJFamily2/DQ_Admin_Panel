@@ -73,7 +73,7 @@ async function createData(req, res) {
         404,
         "fail",
         "Đã có dữ liệu ngày này. Hãy chọn ngày khác!",
-        req.body.currentUrl
+        req.headers.referer
       );
     }
 
@@ -95,7 +95,7 @@ async function createData(req, res) {
         404,
         "fail",
         "Tạo dữ liệu thất bại",
-        req.body.currentUrl
+        req.headers.referer
       );
     }
 
@@ -110,7 +110,7 @@ async function createData(req, res) {
         404,
         "fail",
         "Tạo dữ liệu thất bại",
-        req.body.currentUrl
+        req.headers.referer
       );
     }
 
@@ -120,7 +120,7 @@ async function createData(req, res) {
       200,
       "success",
       "Tạo dữ liệu thành công",
-      req.body.currentUrl
+      req.headers.referer
     );
   } catch (err) {
     console.log(err);
@@ -238,7 +238,7 @@ async function updateData(req, res) {
         404,
         "fail",
         "Đã có dữ liệu ngày này. Hãy chọn ngày khác !",
-        req.body.currentUrl
+        req.headers.referer
       );
     }
 
@@ -274,7 +274,7 @@ async function updateData(req, res) {
         404,
         "fail",
         "Cập nhật thông tin thất bại",
-        req.body.currentUrl
+        req.headers.referer
       );
     }
 
@@ -322,7 +322,7 @@ async function updateData(req, res) {
         404,
         "fail",
         "Cập nhật thông tin thất bại",
-        req.body.currentUrl
+        req.headers.referer
       );
     }
 
@@ -332,7 +332,7 @@ async function updateData(req, res) {
       200,
       "success",
       "Cập nhật thông tin thành công",
-      req.body.currentUrl
+      req.headers.referer
     );
   } catch {
     res.status(500).render("partials/500", { layout: false });
@@ -353,7 +353,7 @@ async function deleteData(req, res) {
         404,
         "fail",
         "Xóa dữ liệu thất bại",
-        req.body.currentUrl
+        req.headers.referer
       );
     }
 
@@ -369,7 +369,7 @@ async function deleteData(req, res) {
       200,
       "success",
       "Xóa dữ liệu thành công",
-      req.body.currentUrl
+      req.headers.referer
     );
   } catch {
     res.status(500).render("partials/500", { layout: false });
@@ -438,7 +438,7 @@ async function deleteAll(req, res) {
       200,
       "success",
       "Xóa tất cả dữ liệu thành công !",
-      req.body.currentUrl
+      req.headers.referer
     );
   } catch (err) {
     res.status(500).render("partials/500", { layout: false });
