@@ -112,6 +112,8 @@ const { updateDateRangeAutomatically } = require('./controllers/dateRangeAccessC
   // Call the function once at startup to set the initial date range
 updateDateRangeAutomatically();
 
-app.listen(process.env.PORT || 4000, () => {
-  console.log(`Server is running on port localhost:1000`);
+const port = process.env.PORT || 4000;
+
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 });

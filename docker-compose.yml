@@ -1,0 +1,59 @@
+services:
+  app1:
+    build: .
+    ports:
+      - "4001:4000"
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - MONGODB_URI=${MONGODB_URI}
+      - SESSION_SECRET=${SESSION_SECRET}
+      - PORT=${PORT}
+    depends_on:
+      - mongo
+
+  app2:
+    build: .
+    ports:
+      - "4002:4000"
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - MONGODB_URI=${MONGODB_URI}
+      - SESSION_SECRET=${SESSION_SECRET}
+      - PORT=${PORT}
+    depends_on:
+      - mongo
+
+  app3:
+    build: .
+    ports:
+      - "4003:4000"
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - MONGODB_URI=${MONGODB_URI}
+      - SESSION_SECRET=${SESSION_SECRET}
+      - PORT=${PORT}
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - /etc/letsencrypt:/etc/letsencrypt
+    depends_on:
+      - app1
+      - app2
+      - app3
+
+volumes:
+  mongo-data:
