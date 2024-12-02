@@ -21,12 +21,14 @@
     </a>
   </div>
   <ul class="nav nav-pills flex-column mb-auto">
+    <% if(user.role !== "Hàm lượng"){ %>
     <li class="nav-item">
       <a href="/tong" class="nav-link link-dark d-flex justify-content-between">
         Tổng
         <i class="ri-line-chart-line"></i>
       </a>
     </li>
+    <% } %>
     <% if(user.role === "Admin"){ %>
     <!-- <li class="nav-item">
       <a href="/truy-van" class="nav-link link-dark d-flex justify-content-between">
