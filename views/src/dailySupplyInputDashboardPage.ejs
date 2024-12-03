@@ -48,7 +48,7 @@
   <div class="tab-pane fade <%= index === 0 ? 'show active' : '' %>" id="content-<%= index %>" role="tabpanel" aria-labelledby="tab-<%= index %>">
     <div class="row m-0 m-md-2 g-3 mb-4">
       <% groupedAreas[areaName].forEach(areaData => { %>
-      <div class="col-12 col-md-3 mt-2">
+      <div class="col-12 col-md-3 mt-2 itemList">
         <div class="card" style="box-shadow: 0 1px 2px">
           <div class="card-header bg-transparent">
             <h6 class="m-0">Vườn</h6>
@@ -68,26 +68,25 @@
 </div>
 
 <script>
-  function filterElements(inputId, tabSelector, contentSelector) {
-    const searchValue = document.getElementById(inputId).value.toLowerCase();
-    const tabs = document.querySelectorAll(tabSelector);
-    const tabContents = document.querySelectorAll(contentSelector);
+  function normalizeText(text) {
+    return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  }
 
-    tabs.forEach((tab, index) => {
-      const tabText = tab.textContent.toLowerCase();
-      const content = tabContents[index];
-      if (tabText.includes(searchValue) || content.textContent.toLowerCase().includes(searchValue)) {
-        tab.style.display = '';
-        content.style.display = '';
-      } else {
-        tab.style.display = 'none';
-        content.style.display = 'none';
-      }
+  function filterElements(searchValue, selectors) {
+    const normalizedSearchValue = normalizeText(searchValue);
+    document.querySelectorAll(selectors).forEach(element => {
+      const text = normalizeText(element.textContent);
+      element.style.display = text.includes(normalizedSearchValue) ? '' : 'none';
     });
   }
 
-  document.getElementById('tabSearch').addEventListener('input', () => filterElements('tabSearch', '#myTab .nav-item', '.tab-pane'));
-  document.getElementById('contentSearch').addEventListener('input', () => filterElements('contentSearch', '#myTab .nav-item', '.tab-pane'));
+  document.getElementById('tabSearch').addEventListener('input', () => {
+    filterElements(document.getElementById('tabSearch').value, '#myTab .nav-item, .tab-pane');
+  });
+
+  document.getElementById('contentSearch').addEventListener('input', () => {
+    filterElements(document.getElementById('contentSearch').value, '.itemList');
+  });
 
   tippy('[data-tippy-content]');
 </script>
