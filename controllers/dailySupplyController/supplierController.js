@@ -117,10 +117,9 @@ async function updateArea(req, res) {
     const id = req.params.id;
     const { accountID, areaName, limitData, areaGroup } = req.body;
 
-    // Check if the accountID is already assigned to another area
+    // Check if the accountID is already assigned to another area, excluding null values
     const existingArea = await DailySupply.findOne({
-      accountID: { $exists: true, $ne: null },
-      accountID,
+      accountID: { $ne: null, $eq: accountID },
       _id: { $ne: id },
     });
     if (existingArea) {
