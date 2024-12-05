@@ -145,7 +145,7 @@
             </div>
             <div class="modal-footer">
               <% if(user.role === 'Admin'){ %>
-              <button type="submit" class="btn btn-danger">Xác nhận</button>
+              <button type="submit" onclick="handleFormSubmit(this)" class=" btn btn-danger">Xác nhận</button>
               <% } else { %>
               <div class="tooltip-wrapper" data-tippy-content="Bạn không có quyền thao tác" tabindex="0">
                 <button type="button" class="btn btn-danger" disabled>Xác nhận</button>
@@ -238,7 +238,7 @@
             </div>
           </div>
           <div class="my-3">
-            <button type="submit" class="btn btn-primary">Lọc kết quả</button>
+            <button type="submit" onclick="handleFormSubmit(this)" class=" btn btn-primary">Lọc kết quả</button>
             <button type="reset" class="btn text-dark" id="resetButton"> Bỏ lọc</button>
           </div>
         </form>
@@ -263,7 +263,7 @@
           động này không thể hoàn tác.
         </div>
         <div class="modal-footer">
-          <button type="submit" class="btn btn-danger">Xác nhận</button>
+          <button type="submit" onclick="handleFormSubmit(this)" class=" btn btn-danger">Xác nhận</button>
         </div>
       </form>
     </div>

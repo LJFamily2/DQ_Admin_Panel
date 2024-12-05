@@ -290,7 +290,7 @@
                     </div>
                     <div class="modal-footer bg-transparent">
                       <!-- Buttons -->
-                      <button type="submit" class="btn btn-primary">Lưu</button>
+                      <button type="submit" onclick="handleFormSubmit(this)" class=" btn btn-primary">Lưu</button>
                       <button type="reset" class="btn text-dark">Làm mới</button>
                     </div>
                   </form>
@@ -316,7 +316,7 @@
                     </div>
                     <div class="modal-footer">
                       <% if(user.role === 'Admin' || user.role === 'Văn phòng'){ %>
-                      <button type="submit" class="btn btn-danger">
+                      <button type="submit" onclick="handleFormSubmit(this)" class=" btn btn-danger">
                         Xác nhận
                       </button>
                       <% } else { %>
@@ -501,7 +501,7 @@
           </div>
         </div>
         <div class="card-footer bg-transparent">
-          <button type="submit" class="btn btn-primary">Lưu mới</button>
+          <button type="submit" onclick="handleFormSubmit(this)" class=" btn btn-primary">Lưu mới</button>
         </div>
       </form>
     </div>

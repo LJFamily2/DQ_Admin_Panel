@@ -1,25 +1,26 @@
 <header class="container-fluid" style="height: 70px;">
   <div class="row p-0 m-0 w-100 h-100 align-items-center">
-    <div class="col-11 col-10 p-0 p-md-2 "><h1 class="m-0"><%= title %></h1></div>
+    <div class="col-11 col-10 p-0 p-md-2 ">
+      <h1 class="m-0"><%= title %></h1>
+    </div>
 
     <div class="col-1 p-0">
-      <div class="dropdown mb-0 " id="dropdownUser2"  data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
+      <div class="dropdown mb-0 " id="dropdownUser2" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
         <i class="ri-account-circle-line fs-2"></i>
       </div>
       <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2">
-        <li><div class="mx-3 pb-1 fs-5">Tài khoản: <%= user.username %></div></li>
+        <li>
+          <div class="mx-3 pb-1 fs-5">Tài khoản: <%= user.username %></div>
+        </li>
         <hr class="m-0">
         <li><a class="dropdown-item" href="/ho-so">Hồ sơ cá nhân</a></li>
         <li>
-          <form
-          action="/quan-ly-tai-khoan/logOut"
-          method="post"
-          style="cursor: pointer"
-          >
-          <button type="submit" class="dropdown-item" style="border: none; background: none; width: 100% ; text-align: left;" >
-            Đăng xuất
-          </button>
-        </form></li>
+          <form action="/quan-ly-tai-khoan/logOut" method="post" style="cursor: pointer">
+            <button type="submit" onclick="handleFormSubmit(this)" class=" dropdown-item" style="border: none; background: none; width: 100% ; text-align: left;">
+              Đăng xuất
+            </button>
+          </form>
+        </li>
       </ul>
     </div>
   </div>

@@ -216,7 +216,7 @@
                     </div>
                     <div class="modal-footer bg-transparent">
                       <!-- Buttons -->
-                      <button type="submit" class="btn btn-primary">Lưu</button>
+                      <button type="submit" onclick="handleFormSubmit(this)" class=" btn btn-primary">Lưu</button>
                       <button type="reset" class="btn text-dark">
                         Làm mới
                       </button>
@@ -243,7 +243,7 @@
                       không thể hoàn tác.
                     </div>
                     <div class="modal-footer">
-                      <button type="submit" class="btn btn-danger">
+                      <button type="submit" onclick="handleFormSubmit(this)" class=" btn btn-danger">
                         Xác nhận
                       </button>
                     </div>
@@ -394,7 +394,7 @@
 
                       </div>
                       <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Lưu mới</button>
+                        <button type="submit" onclick="handleFormSubmit(this)" class=" btn btn-primary">Lưu mới</button>
                       </div>
                     </div>
                   </div>
@@ -420,7 +420,7 @@
                           không thể hoàn tác.
                         </div>
                         <div class="modal-footer">
-                          <button type="submit" class="btn btn-danger">Xác nhận</button>
+                          <button type="submit" onclick="handleFormSubmit(this)" class=" btn btn-danger">Xác nhận</button>
                         </div>
                       </form>
                     </div>
@@ -432,7 +432,7 @@
             </ol>
             <form action="/du-lieu-hang-ngay/addSupplier/<%= area._id %>?_method=POST" method="post" id="dynamicForm" onchange="this.querySelector('button[type=submit]').style.display = 'block';">
               <div class="additionalField"></div>
-              <button type="submit" class="btn btn-primary" style="display: none;">Lưu</button>
+              <button type="submit" onclick="handleFormSubmit(this)" class=" btn btn-primary" style="display: none;">Lưu</button>
             </form>
             <div class="tooltip-wrapper mt-1 d-none d-md-inline-flex" data-tippy-content="Tạo nhà vườn mới" tabindex="0">
               <i class="ri-add-circle-line fs-5" onclick="addFields('.additionalField')" style="cursor: pointer;"></i>
@@ -497,7 +497,7 @@
                 <input type="text" class="form-control" id="areaPrice" name="areaPrice" min="0" value="<%= area.areaPrice.toLocaleString('vi-VN') %>" oninput="handleQuantityInput(this)" inputmode="numeric" />
                 <small class="text-muted">Để trống nếu không vườn không mua bán</small>
               </div>
-              <button type="submit" class="btn btn-primary" style="display: none;">Lưu</button>
+              <button type="submit" onclick="handleFormSubmit(this)" class=" btn btn-primary" style="display: none;">Lưu</button>
             </form>
           </div>
           <!-- Setting -->
@@ -508,8 +508,7 @@
                 <label for="limitData" class="form-label">Giới hạn dữ liệu/ngày</label>
                 <input type="number" class="form-control" id="limitData" name="limitData" required value="<%= area.limitData ?  area.limitData : '' %>" />
               </div>
-              <button type="submit" class="btn btn-primary
-                ">Lưu</button>
+              <button type="submit" onclick="handleFormSubmit(this)" class=" btn btn-primary ">Lưu</button>
             </form>
           </div>
         </div>
@@ -606,99 +605,99 @@
     const newFields = document.createElement('div');
     newFields.className = 'supplierInfor my-3';
     newFields.innerHTML = `
-            <div class="supplier">
-              <div class="row mt-3">
-                <div class="row m-0 p-0">
-                  <div class="col">
-                    <label for="name" class="form-label fw-bold w-100 d-flex justify-content-between">
-                      Nhà vườn mới
-                      <span>
-                        <i class="ri-close-line" style="cursor: pointer" onclick="removeProduct(this, '.supplier',true)"></i>
-                      </span>
-                    </label>
-                  </div>
-                </div>
-                <div class="row normalFields m-0 p-0">
-                  <div class="col col-md-6">
-                    <label for="supplierName" class="form-label fw-bold">Tên</label>
-                    <input type="text" class="form-control" id="supplierName" name="supplierName" maxlength="30" />
-                  </div>
-                  <div class="col col-md-6">
-                    <label for="code" class="form-label fw-bold">Mã</label>
-                    <input type="text" class="form-control" id="code" name="code" maxlength="20" />
-                  </div>
-                </div>
-                <div class="mt-3">
-                  <label for="manager" class="form-label fw-bold">Vai trò</label>
-                  <select class="form-select" id="manager" name="manager" required>
-                    <option value="false" selected>Nhà vườn</option>
-                    <option value="true">Quản lý</option>
-                  </select>
-                </div>
-                <div class="mt-3">
-                  <label for="phone" class="form-label fw-bold">Số điện thoại</label>
-                  <input type="text" class="form-control" id="phone" name="phone" maxlength="10" oninput="this.value = this.value.replace(/\D/g, '');" />
-                </div>
-                <div class="row mt-3 m-0 p-0">
-                  <div class="col-7">
-                    <label for="identification" class="form-label fw-bold">Căn cước công dân</label>
-                    <input type="text" class="form-control" id="identification" name="identification" maxlength="12" />
-                  </div>
-                  <div class="col-5">
-                    <label for="issueDate" class="form-label fw-bold">Ngày cấp</label>
-                    <input type="text" class="form-control" id="issueDate" name="issueDate" oninput="this.value = this.value.replace(/\D/g, '').replace(/(\d{2})(?=\d)/g, '$1/');" maxlength="8" />
-                  </div>
-                </div>
-                <div class="mt-3">
-                  <label class="form-label fw-bold">Địa chỉ</label>
-                  <input type="text" class="form-control" name="supplierAddress" maxlength="150" />
-                </div>
-                <div class="mt-3 conditional-field">
-                  <label for="purchasedAreaDimension" class="form-label fw-bold">Diện tích mua (mẫu)</label>
-                  <input type="number" class="form-control" id="purchasedAreaDimension" name="purchasedAreaDimension" step="0.1" min="0" />
-                </div>
-                <div class="mt-3 conditional-field">
-                  <label for="purchasedAreaPrice" class="form-label fw-bold">Giá mua (VNĐ/mẫu)</label>
-                  <input type="text" class="form-control" id="purchasedAreaPrice" name="purchasedAreaPrice" oninput="handleQuantityInput(this)" inputmode="numeric" />
-                </div>
-                <div class="mt-3 conditional-field">
-                  <label for="areaDeposit" class="form-label fw-bold">Tiền đặt cọc</label>
-                  <input type="text" class="form-control" id="areaDeposit" name="areaDeposit" min="0" oninput="handleQuantityInput(this)" inputmode="numeric" />
-                </div>
-                <div class="mt-3 conditional-field">
-                  <label class="form-label fw-bold">Thời hạn mua</label>
-                  <div class="row">
-                    <div class="col-6">
-                      <label for="areaDurationStart" class="form-label">Ngày bắt đầu</label>
-                      <input type="date" class="form-control" id="areaDurationStart" name="areaDuration[start]" onfocus="this.min = document.getElementById('contractStart').value; this.max = document.getElementById('contractEnd').value;" />
-                    </div>
-                    <div class="col-6">
-                      <label for="areaDurationEnd" class="form-label">Ngày kết thúc</label>
-                      <input type="date" class="form-control" id="areaDurationEnd" name="areaDuration[end]" onfocus="this.min = document.getElementById('areaDurationStart').value; this.max = document.getElementById('contractEnd').value;" />
+            <div class=" supplier">
+                <div class="row mt-3">
+                  <div class="row m-0 p-0">
+                    <div class="col">
+                      <label for="name" class="form-label fw-bold w-100 d-flex justify-content-between">
+                        Nhà vườn mới
+                        <span>
+                          <i class="ri-close-line" style="cursor: pointer" onclick="removeProduct(this, '.supplier',true)"></i>
+                        </span>
+                      </label>
                     </div>
                   </div>
+                  <div class="row normalFields m-0 p-0">
+                    <div class="col col-md-6">
+                      <label for="supplierName" class="form-label fw-bold">Tên</label>
+                      <input type="text" class="form-control" id="supplierName" name="supplierName" maxlength="30" />
+                    </div>
+                    <div class="col col-md-6">
+                      <label for="code" class="form-label fw-bold">Mã</label>
+                      <input type="text" class="form-control" id="code" name="code" maxlength="20" />
+                    </div>
+                  </div>
+                  <div class="mt-3">
+                    <label for="manager" class="form-label fw-bold">Vai trò</label>
+                    <select class="form-select" id="manager" name="manager" required>
+                      <option value="false" selected>Nhà vườn</option>
+                      <option value="true">Quản lý</option>
+                    </select>
+                  </div>
+                  <div class="mt-3">
+                    <label for="phone" class="form-label fw-bold">Số điện thoại</label>
+                    <input type="text" class="form-control" id="phone" name="phone" maxlength="10" oninput="this.value = this.value.replace(/\D/g, '');" />
+                  </div>
+                  <div class="row mt-3 m-0 p-0">
+                    <div class="col-7">
+                      <label for="identification" class="form-label fw-bold">Căn cước công dân</label>
+                      <input type="text" class="form-control" id="identification" name="identification" maxlength="12" />
+                    </div>
+                    <div class="col-5">
+                      <label for="issueDate" class="form-label fw-bold">Ngày cấp</label>
+                      <input type="text" class="form-control" id="issueDate" name="issueDate" oninput="this.value = this.value.replace(/\D/g, '').replace(/(\d{2})(?=\d)/g, '$1/');" maxlength="8" />
+                    </div>
+                  </div>
+                  <div class="mt-3">
+                    <label class="form-label fw-bold">Địa chỉ</label>
+                    <input type="text" class="form-control" name="supplierAddress" maxlength="150" />
+                  </div>
+                  <div class="mt-3 conditional-field">
+                    <label for="purchasedAreaDimension" class="form-label fw-bold">Diện tích mua (mẫu)</label>
+                    <input type="number" class="form-control" id="purchasedAreaDimension" name="purchasedAreaDimension" step="0.1" min="0" />
+                  </div>
+                  <div class="mt-3 conditional-field">
+                    <label for="purchasedAreaPrice" class="form-label fw-bold">Giá mua (VNĐ/mẫu)</label>
+                    <input type="text" class="form-control" id="purchasedAreaPrice" name="purchasedAreaPrice" oninput="handleQuantityInput(this)" inputmode="numeric" />
+                  </div>
+                  <div class="mt-3 conditional-field">
+                    <label for="areaDeposit" class="form-label fw-bold">Tiền đặt cọc</label>
+                    <input type="text" class="form-control" id="areaDeposit" name="areaDeposit" min="0" oninput="handleQuantityInput(this)" inputmode="numeric" />
+                  </div>
+                  <div class="mt-3 conditional-field">
+                    <label class="form-label fw-bold">Thời hạn mua</label>
+                    <div class="row">
+                      <div class="col-6">
+                        <label for="areaDurationStart" class="form-label">Ngày bắt đầu</label>
+                        <input type="date" class="form-control" id="areaDurationStart" name="areaDuration[start]" onfocus="this.min = document.getElementById('contractStart').value; this.max = document.getElementById('contractEnd').value;" />
+                      </div>
+                      <div class="col-6">
+                        <label for="areaDurationEnd" class="form-label">Ngày kết thúc</label>
+                        <input type="date" class="form-control" id="areaDurationEnd" name="areaDuration[end]" onfocus="this.min = document.getElementById('areaDurationStart').value; this.max = document.getElementById('contractEnd').value;" />
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mt-3 conditional-field">
+                    <label for="moneyRetainedPercentage" class="form-label fw-bold">% Tiền giữ lại</label>
+                    <input type="text" class="form-control" id="moneyRetainedPercentage" name="moneyRetainedPercentage" oninput="handlePercentageInput(this)" inputmode="numeric" />
+                  </div>
+                  <div class="mt-3">
+                    <label for="advancePayment" class="form-label fw-bold">Tiền ứng</label>
+                    <input type="text" class="form-control" id="advancePayment" name="advancePayment" value="0" oninput="handleQuantityInput(this)" inputmode="numeric" />
+                  </div>
+                  <div class="mt-3">
+                    <label for="ratioRubberSplit" class="form-label fw-bold">% nhận mủ mặc định</label>
+                    <input type="text" class="form-control" id="ratioRubberSplit" name="ratioRubberSplit" value="100" oninput="handlePercentageInput(this)" inputmode="numeric" />
+                  </div>
+                  <div class="mt-3">
+                    <label for="ratioSumSplit" class="form-label fw-bold">% nhận tổng mặc định</label>
+                    <input type="text" class="form-control" id="ratioSumSplit" name="ratioSumSplit" value="100" oninput="handlePercentageInput(this)" inputmode="numeric" />
+                  </div>
+                  <div class="additionalFields my-3 m-0 p-0" style="display: none"></div>
                 </div>
-                <div class="mt-3 conditional-field">
-                  <label for="moneyRetainedPercentage" class="form-label fw-bold">% Tiền giữ lại</label>
-                  <input type="text" class="form-control" id="moneyRetainedPercentage" name="moneyRetainedPercentage" oninput="handlePercentageInput(this)" inputmode="numeric" />
-                </div>
-                <div class="mt-3">
-                  <label for="advancePayment" class="form-label fw-bold">Tiền ứng</label>
-                  <input type="text" class="form-control" id="advancePayment" name="advancePayment" value="0" oninput="handleQuantityInput(this)" inputmode="numeric" />
-                </div>
-                <div class="mt-3">
-                  <label for="ratioRubberSplit" class="form-label fw-bold">% nhận mủ mặc định</label>
-                  <input type="text" class="form-control" id="ratioRubberSplit" name="ratioRubberSplit" value="100" oninput="handlePercentageInput(this)" inputmode="numeric" />
-                </div>
-                <div class="mt-3">
-                  <label for="ratioSumSplit" class="form-label fw-bold">% nhận tổng mặc định</label>
-                  <input type="text" class="form-control" id="ratioSumSplit" name="ratioSumSplit" value="100" oninput="handlePercentageInput(this)" inputmode="numeric" />
-                </div>
-                <div class="additionalFields my-3 m-0 p-0" style="display: none"></div>
-              </div>
-              <hr>
-            </div>
+                <hr>
           </div>
+        </div>
         `;
 
     additionalContainer.appendChild(newFields);
@@ -710,60 +709,60 @@
   initializeToggleFields('areaDimension', 'areaPrice');
 
   // function checkAdditionalFields() {
-  //   const suppliers = document.querySelectorAll('.additionalField .supplier');
-  //   const submitButton = document.querySelector('#dynamicForm button[type="submit"]');
-  //   if (suppliers.length === 0) {
-  //     submitButton.style.display = 'none';
-  //   } else {
-  //     submitButton.style.display = 'block';
-  //   }
+  // const suppliers = document.querySelectorAll('.additionalField .supplier');
+  // const submitButton = document.querySelector('#dynamicForm button[type="submit" onclick="handleFormSubmit(this)"]');
+  // if (suppliers.length === 0) {
+  // submitButton.style.display = 'none';
+  // } else {
+  // submitButton.style.display = 'block';
+  // }
   // }
 
   // function calculateAverageRatioSplit(rawMaterials) {
-  //   const materialData = rawMaterials.reduce((acc, rawMaterialArray) => {
-  //     rawMaterialArray.forEach(raw => {
-  //       const {
-  //         name,
-  //         quantity = 0,
-  //         ratioSplit = 100,
-  //         price = 0,
-  //         percentage = 0
-  //       } = raw;
-  //       if (!acc[name]) {
-  //         acc[name] = {
-  //           quantity: 0,
-  //           ratioSplit: 0,
-  //           price: 0,
-  //           total: 0,
-  //           afterSplit: 0,
-  //           rawMaterial: [],
-  //           count: 0,
-  //         };
-  //       }
-  //       acc[name].quantity += quantity;
-  //       acc[name].rawMaterial.push(raw);
-  //       acc[name].count += 1;
+  // const materialData = rawMaterials.reduce((acc, rawMaterialArray) => {
+  // rawMaterialArray.forEach(raw => {
+  // const {
+  // name,
+  // quantity = 0,
+  // ratioSplit = 100,
+  // price = 0,
+  // percentage = 0
+  // } = raw;
+  // if (!acc[name]) {
+  // acc[name] = {
+  // quantity: 0,
+  // ratioSplit: 0,
+  // price: 0,
+  // total: 0,
+  // afterSplit: 0,
+  // rawMaterial: [],
+  // count: 0,
+  // };
+  // }
+  // acc[name].quantity += quantity;
+  // acc[name].rawMaterial.push(raw);
+  // acc[name].count += 1;
 
-  //       if (name === 'Mủ nước') {
-  //         acc[name].afterSplit += (quantity * percentage / 100 * ratioSplit / 100);
-  //         acc[name].total += (((quantity * (percentage / 100)) * (ratioSplit)) / 100) * price;
-  //       } else {
-  //         acc[name].afterSplit += (quantity * (ratioSplit) / 100);
-  //         acc[name].total += ((quantity * (ratioSplit)) / 100) * price;
-  //       }
+  // if (name === 'Mủ nước') {
+  // acc[name].afterSplit += (quantity * percentage / 100 * ratioSplit / 100);
+  // acc[name].total += (((quantity * (percentage / 100)) * (ratioSplit)) / 100) * price;
+  // } else {
+  // acc[name].afterSplit += (quantity * (ratioSplit) / 100);
+  // acc[name].total += ((quantity * (ratioSplit)) / 100) * price;
+  // }
 
-  //       if (price) {
-  //         acc[name].price += price;
-  //       }
-  //     });
-  //     return acc;
-  //   }, {});
+  // if (price) {
+  // acc[name].price += price;
+  // }
+  // });
+  // return acc;
+  // }, {});
 
-  //   Object.keys(materialData).forEach(key => {
-  //     materialData[key].ratioSplit = materialData[key].ratioSplit / materialData[key].count;
-  //   });
+  // Object.keys(materialData).forEach(key => {
+  // materialData[key].ratioSplit = materialData[key].ratioSplit / materialData[key].count;
+  // });
 
-  //   return materialData;
+  // return materialData;
   // }
 
   tippy('.tooltip-wrapper');

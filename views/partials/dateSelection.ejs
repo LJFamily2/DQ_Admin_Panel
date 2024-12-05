@@ -1,20 +1,8 @@
-<div
-  class="dateSelectionSelector rounded-2 p-2"
-  style="box-shadow: 0 0 1px; width: fit-content; cursor: pointer"
-  data-bs-toggle="modal"
-  data-bs-target="#staticBackdrop"
->
+<div class="dateSelectionSelector rounded-2 p-2" style="box-shadow: 0 0 1px; width: fit-content; cursor: pointer" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
   <strong>Chọn ngày: </strong><span></span>
 </div>
 
-<div
-  class="modal fade dateSelectionContainer rounded-2 mx-3 my-2 p-2"
-  id="staticBackdrop"
-  data-bs-backdrop="static"
-  data-bs-keyboard="false"
-  tabindex="-1"
-  aria-hidden="true"
->
+<div class="modal fade dateSelectionContainer rounded-2 mx-3 my-2 p-2" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
@@ -23,36 +11,17 @@
           var endDate = typeof endDate !== 'undefined' ? endDate : '';
         %>
         <h5>Lọc kết quả</h5>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <div class="row">
           <div class="col">
             <label for="startDate" class="form-label">Bắt đầu:</label>
-            <input
-              type="date"
-              id="startDate"
-              class="form-control"
-              name="startDate"
-              value="<%= startDate || '' %>"
-              onchange="updateDateFields('startDate', 'endDate')"
-            />
+            <input type="date" id="startDate" class="form-control" name="startDate" value="<%= startDate || '' %>" onchange="updateDateFields('startDate', 'endDate')" />
           </div>
           <div class="col">
             <label for="endDate" class="form-label">Kết thúc:</label>
-            <input
-              type="date"
-              id="endDate"
-              class="form-control"
-              name="endDate"
-              value="<%= endDate || '' %>"
-              onchange="updateDateFields('endDate', 'startDate')"
-            />
+            <input type="date" id="endDate" class="form-control" name="endDate" value="<%= endDate || '' %>" onchange="updateDateFields('endDate', 'startDate')" />
           </div>
         </div>
       </div>
@@ -60,33 +29,16 @@
         <div class="col my-2 d-flex align-items-end">
           <% var submitButton = typeof submitButton !== 'undefined' ? submitButton : false; %>
           <% if(submitButton){ %>
-            <button
-            type="submit"
-            id="filterButton"
-            class="btn btn-primary"
-          >
+          <button type="submit" onclick="handleFormSubmit(this)" id=" filterButton" class="btn btn-primary">
             <i class="ri-menu-search-fill"></i>
           </button>
           <% } else { %>
-           
-          <button
-            type="button"
-            id="filterButton"
-            class="btn btn-primary"
-            data-bs-dismiss="modal"
-            onclick="document.getElementById('clearFilterButton').style.display = 'inline'"
-          >
+
+          <button type="button" id="filterButton" class="btn btn-primary" data-bs-dismiss="modal" onclick="document.getElementById('clearFilterButton').style.display = 'inline'">
             <i class="ri-menu-search-fill"></i>
           </button>
           <% } %>
-          <button
-            type="button"
-            id="clearFilterButton"
-            class="btn btn-secondary mx-2"
-            style="display: none"
-            data-bs-dismiss="modal"
-            onclick="clearFilters()"
-          >
+          <button type="button" id="clearFilterButton" class="btn btn-secondary mx-2" style="display: none" data-bs-dismiss="modal" onclick="clearFilters()">
             <i class="ri-calendar-close-line"></i>
           </button>
         </div>
@@ -96,66 +48,66 @@
 </div>
 
 <% if(!submitButton){ %>
-  <script>
-    const startDateEl = document.getElementById('startDate');
-    const endDateEl = document.getElementById('endDate');
-    const dateDisplayEl = document.querySelector('.dateSelectionSelector span');
-    const clearFilterBtn = document.getElementById('clearFilterButton');
+<script>
+  const startDateEl = document.getElementById('startDate');
+  const endDateEl = document.getElementById('endDate');
+  const dateDisplayEl = document.querySelector('.dateSelectionSelector span');
+  const clearFilterBtn = document.getElementById('clearFilterButton');
 
-    function formatDate(dateString) {
-      return dateString ? dateString.split('-').reverse().join('-') : '';
-    }
+  function formatDate(dateString) {
+    return dateString ? dateString.split('-').reverse().join('-') : '';
+  }
 
-    function updateDateDisplay() {
-      const startDate = formatDate(startDateEl.value);
-      const endDate = formatDate(endDateEl.value);
-      dateDisplayEl.innerHTML = startDate && endDate
-        ? `${startDate} <i class="ri-arrow-right-line"></i> ${endDate}`
-        : startDate || endDate
-          ? `: ${startDate || endDate}`
-          : '';
-    }
+  function updateDateDisplay() {
+    const startDate = formatDate(startDateEl.value);
+    const endDate = formatDate(endDateEl.value);
+    dateDisplayEl.innerHTML = startDate && endDate ?
+      `${startDate} <i class="ri-arrow-right-line"></i> ${endDate}` :
+      startDate || endDate ?
+      `: ${startDate || endDate}` :
+      '';
+  }
 
-    function updateURLAndDisplay() {
-      const url = new URL(window.location.href);
-      [startDateEl, endDateEl].forEach(el => {
-        el.value ? url.searchParams.set(el.id, el.value) : url.searchParams.delete(el.id);
-      });
-      history.replaceState({}, '', url);
-      updateDateDisplay();
-      clearFilterBtn.style.display = startDateEl.value || endDateEl.value ? 'inline' : 'none';
-    }
-
-    function updateDateFields(changedFieldId, otherFieldId) {
-      const changedField = document.getElementById(changedFieldId);
-      const otherField = document.getElementById(otherFieldId);
-      if (changedFieldId === 'startDate') {
-        otherField.min = changedField.value;
-      } else {
-        otherField.max = changedField.value;
-      }
-      updateURLAndDisplay();
-      if (!otherField.value) {
-        otherField.focus();
-      }
-    }
-
-    function clearFilters() {
-      startDateEl.value = endDateEl.value = '';
-      dateDisplayEl.textContent = '';
-      history.pushState({}, '', window.location.pathname);
-      clearFilterBtn.style.display = 'none';
-    }
-
-    window.addEventListener('load', () => {
-      const url = new URL(window.location.href);
-      startDateEl.value = url.searchParams.get('startDate') || '';
-      endDateEl.value = url.searchParams.get('endDate') || '';
-      updateURLAndDisplay();
+  function updateURLAndDisplay() {
+    const url = new URL(window.location.href);
+    [startDateEl, endDateEl].forEach(el => {
+      el.value ? url.searchParams.set(el.id, el.value) : url.searchParams.delete(el.id);
     });
+    history.replaceState({}, '', url);
+    updateDateDisplay();
+    clearFilterBtn.style.display = startDateEl.value || endDateEl.value ? 'inline' : 'none';
+  }
 
-    [startDateEl, endDateEl].forEach(el => el.addEventListener('change', updateURLAndDisplay));
-    document.getElementById('filterButton').addEventListener('click', updateURLAndDisplay);
-    clearFilterBtn.addEventListener('click', clearFilters);
-  </script>
+  function updateDateFields(changedFieldId, otherFieldId) {
+    const changedField = document.getElementById(changedFieldId);
+    const otherField = document.getElementById(otherFieldId);
+    if (changedFieldId === 'startDate') {
+      otherField.min = changedField.value;
+    } else {
+      otherField.max = changedField.value;
+    }
+    updateURLAndDisplay();
+    if (!otherField.value) {
+      otherField.focus();
+    }
+  }
+
+  function clearFilters() {
+    startDateEl.value = endDateEl.value = '';
+    dateDisplayEl.textContent = '';
+    history.pushState({}, '', window.location.pathname);
+    clearFilterBtn.style.display = 'none';
+  }
+
+  window.addEventListener('load', () => {
+    const url = new URL(window.location.href);
+    startDateEl.value = url.searchParams.get('startDate') || '';
+    endDateEl.value = url.searchParams.get('endDate') || '';
+    updateURLAndDisplay();
+  });
+
+  [startDateEl, endDateEl].forEach(el => el.addEventListener('change', updateURLAndDisplay));
+  document.getElementById('filterButton').addEventListener('click', updateURLAndDisplay);
+  clearFilterBtn.addEventListener('click', clearFilters);
+</script>
 <% } %>

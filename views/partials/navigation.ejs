@@ -5,6 +5,7 @@
     .nav-link:hover {
       background-color: rgba(0, 0, 0, 0.3);
     }
+
     #mobileNav {
       transition: transform 0.3s ease-in-out;
     }
@@ -127,7 +128,7 @@
   <hr />
   <div class="logOut">
     <form action="/quan-ly-tai-khoan/logOut" method="post" style="cursor: pointer">
-      <button type="submit" class="fs-6 border-0 w-100 d-flex justify-content-between" style="background: none">
+      <button type="submit" onclick="handleFormSubmit(this)" class=" fs-6 border-0 w-100 d-flex justify-content-between" style="background: none">
         Đăng xuất
         <i class="ri-logout-box-r-line"></i>
       </button>

@@ -68,7 +68,7 @@
                       thể hoàn tác.
                     </div>
                     <div class="modal-footer">
-                      <button type="submit" class="btn btn-danger">
+                      <button type="submit" onclick="handleFormSubmit(this)" class=" btn btn-danger">
                         Xác nhận
                       </button>
                     </div>
@@ -100,7 +100,7 @@
             <datalist id="areaList">
               <option value="Chưa phân loại"></option>
               <% listOfGroupAreas.forEach(area => { %>
-                <option value="<%= area %>" ></option>
+              <option value="<%= area %>"></option>
               <% }) %>
             </datalist>
           </div>
@@ -260,7 +260,7 @@
         </div>
         <div class="card-footer bg-transparent">
           <!-- Buttons -->
-          <button type="submit" class="btn btn-primary">Tạo mới</button>
+          <button type="submit" onclick="handleFormSubmit(this)" class=" btn btn-primary">Tạo mới</button>
         </div>
       </form>
     </div>
