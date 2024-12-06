@@ -243,7 +243,8 @@ async function addData(req, res) {
   }
 }
 
-async function updateSupplierData(req, res, next) {
+async function updateSupplierData(req, res) {
+  console.log(req.body);
   try {
     const { id } = req.params;
     req.body = trimStringFields(req.body);
@@ -317,10 +318,10 @@ async function updateSupplierData(req, res, next) {
         999
       );
 
-      if (newDate < startDate || newDate > endDate) {
-        if  (req.user.role === "Admin") {
-          return next();
-        }
+      if (
+        req.user.role !== "Admin" &&
+        (newDate < startDate || newDate > endDate)
+      ) {
         return handleResponse(
           req,
           res,
