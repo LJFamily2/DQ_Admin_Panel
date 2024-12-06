@@ -24,7 +24,6 @@ async function renderInputDataDashboardPage(req, res) {
   try {
     const { startDate, endDate } = req.query;
 
-
     let areas;
     if (req.user.role === "Hàm lượng") {
       const area = await DailySupply.findOne({ accountID: req.user._id })
@@ -37,8 +36,8 @@ async function renderInputDataDashboardPage(req, res) {
         .populate("data.supplier");
     }
 
-     // Group by area
-     const groupedAreas = areas.reduce((acc, area) => {
+    // Group by area
+    const groupedAreas = areas.reduce((acc, area) => {
       if (!acc[area.area]) {
         acc[area.area] = [];
       }
@@ -244,7 +243,7 @@ async function addData(req, res) {
   }
 }
 
-async function updateSupplierData(req, res) {
+async function updateSupplierData(req, res, next) {
   try {
     const { id } = req.params;
     req.body = trimStringFields(req.body);
@@ -319,6 +318,9 @@ async function updateSupplierData(req, res) {
       );
 
       if (newDate < startDate || newDate > endDate) {
+        if  (req.user.role === "Admin") {
+          return next();
+        }
         return handleResponse(
           req,
           res,

@@ -3,7 +3,7 @@ const handleResponse = require("../controllers/utils/handleResponse");
 
 async function checkDateRange(req, res, next) {
   try {
-    // Bypass check for Admin or Quản lý
+    // Bypass check for Admin
     if (req.user.role === "Admin" ) {
       return next();
     }
