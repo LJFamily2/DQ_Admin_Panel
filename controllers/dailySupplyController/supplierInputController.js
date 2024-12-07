@@ -169,7 +169,10 @@ async function addData(req, res) {
     let debt, moneyRetained;
     if (dailySupply.areaPrice > 0 && dailySupply.areaDimension > 0) {
       [debt, moneyRetained] = await Promise.all([
-        Debt.create({ date: today, debtPaidAmount: 0 }),
+        Debt.create({
+          date: today,
+          debtPaidAmount: 0,
+        }),
         MoneyRetained.create({
           date: today,
           retainedAmount: 0,
@@ -244,7 +247,6 @@ async function addData(req, res) {
 }
 
 async function updateSupplierData(req, res) {
-  console.log(req.body);
   try {
     const { id } = req.params;
     req.body = trimStringFields(req.body);
@@ -268,6 +270,7 @@ async function updateSupplierData(req, res) {
       moneyRetainedPercentage,
     } = req.body;
 
+    // Find the daily supply data by id and populate the debt and moneyRetained fields
     const dailySupply = await DailySupply.findOne({ "data._id": id }).populate({
       path: "data",
       populate: ["debt", "moneyRetained"],
@@ -283,10 +286,9 @@ async function updateSupplierData(req, res) {
       );
     }
 
-    const dataIndex = dailySupply.data.findIndex(
-      (item) => item._id.toString() === id
-    );
-    if (dataIndex === -1) {
+    // Find the specific data entry by id
+    const dataEntry = dailySupply.data.id(id);
+    if (!dataEntry) {
       return handleResponse(
         req,
         res,
@@ -297,31 +299,17 @@ async function updateSupplierData(req, res) {
       );
     }
 
-    const dataBeforeUpdate = JSON.parse(
-      JSON.stringify(dailySupply.data[dataIndex])
-    );
+    // Store the current data before updating
+    const dataBeforeUpdate = JSON.parse(JSON.stringify(dataEntry));
 
     // Check if the new date is within the range of DateRangeAccessSetting
     const dateRangeSetting = await DateRangeAccessSetting.findOne();
     if (dateRangeSetting) {
       const newDate = new Date(date).setUTCHours(0, 0, 0, 0);
-      const startDate = new Date(dateRangeSetting.startDate).setUTCHours(
-        0,
-        0,
-        0,
-        0
-      );
-      const endDate = new Date(dateRangeSetting.endDate).setUTCHours(
-        23,
-        59,
-        59,
-        999
-      );
+      const startDate = new Date(dateRangeSetting.startDate).setUTCHours(0, 0, 0, 0);
+      const endDate = new Date(dateRangeSetting.endDate).setUTCHours(23, 59, 59, 999);
 
-      if (
-        req.user.role !== "Admin" &&
-        (newDate < startDate || newDate > endDate)
-      ) {
+      if (req.user.role !== "Admin" && (newDate < startDate || newDate > endDate)) {
         return handleResponse(
           req,
           res,
@@ -333,39 +321,36 @@ async function updateSupplierData(req, res) {
       }
     }
 
-    const updatedRawMaterial = dailySupply.data[dataIndex].rawMaterial.map(
-      (item) => {
-        const updatedItem = { ...item };
-        switch (item.name) {
-          case "Mủ nước":
-            updatedItem.quantity = convertToDecimal(muNuocQuantity);
-            updatedItem.percentage = convertToDecimal(muNuocPercentage);
-            updatedItem.ratioSplit = convertToDecimal(muNuocRatioSplit);
-            updatedItem.price = convertToDecimal(muNuocPrice);
-            break;
-          case "Mủ tạp":
-            updatedItem.quantity = convertToDecimal(muTapQuantity);
-            updatedItem.ratioSplit = convertToDecimal(muTapRatioSplit);
-            updatedItem.price = convertToDecimal(muTapPrice);
-            break;
-          case "Mủ ké":
-            updatedItem.quantity = convertToDecimal(muKeQuantity);
-            updatedItem.ratioSplit = convertToDecimal(muKeRatioSplit);
-            updatedItem.price = convertToDecimal(muKePrice);
-            break;
-          case "Mủ đông":
-            updatedItem.quantity = convertToDecimal(muDongQuantity);
-            updatedItem.ratioSplit = convertToDecimal(muDongRatioSplit);
-            updatedItem.price = convertToDecimal(muDongPrice);
-            break;
-        }
-        return updatedItem;
+    // Update the raw material data
+    dataEntry.rawMaterial.forEach((item) => {
+      switch (item.name) {
+        case "Mủ nước":
+          item.quantity = convertToDecimal(muNuocQuantity);
+          item.percentage = convertToDecimal(muNuocPercentage);
+          item.ratioSplit = muNuocRatioSplit !== undefined ? convertToDecimal(muNuocRatioSplit) : (item.ratioSplit !== undefined ? item.ratioSplit : 0);
+          item.price = muNuocPrice !== undefined ? convertToDecimal(muNuocPrice) : (item.price !== undefined ? item.price : 0);
+          break;
+        case "Mủ tạp":
+          item.quantity = convertToDecimal(muTapQuantity);
+          item.ratioSplit = muTapRatioSplit !== undefined ? convertToDecimal(muTapRatioSplit) : (item.ratioSplit !== undefined ? item.ratioSplit : 0);
+          item.price = muTapPrice !== undefined ? convertToDecimal(muTapPrice) : (item.price !== undefined ? item.price : 0);
+          break;
+        case "Mủ ké":
+          item.quantity = convertToDecimal(muKeQuantity);
+          item.ratioSplit = muKeRatioSplit !== undefined ? convertToDecimal(muKeRatioSplit) : (item.ratioSplit !== undefined ? item.ratioSplit : 0);
+          item.price = muKePrice !== undefined ? convertToDecimal(muKePrice) : (item.price !== undefined ? item.price : 0);
+          break;
+        case "Mủ đông":
+          item.quantity = convertToDecimal(muDongQuantity);
+          item.ratioSplit = muDongRatioSplit !== undefined ? convertToDecimal(muDongRatioSplit) : (item.ratioSplit !== undefined ? item.ratioSplit : 0);
+          item.price = muDongPrice !== undefined ? convertToDecimal(muDongPrice) : (item.price !== undefined ? item.price : 0);
+          break;
       }
-    );
+    });
 
-    dailySupply.data[dataIndex].date = new Date(date);
-    dailySupply.data[dataIndex].rawMaterial = updatedRawMaterial;
-    dailySupply.data[dataIndex].note = trimStringFields(note) || "";
+
+    dataEntry.date = new Date(date);
+    dataEntry.note = trimStringFields(note) || "";
 
     if (supplier) {
       const supplierDoc = await Supplier.findOne({ supplierSlug: supplier });
@@ -379,27 +364,27 @@ async function updateSupplierData(req, res) {
           req.headers.referer
         );
       }
-      dailySupply.data[dataIndex].supplier = supplierDoc._id;
+      dataEntry.supplier = supplierDoc._id;
     }
 
     const updatePromises = [dailySupply.save()];
 
+    // Update the debt and moneyRetained data if the area price and dimension are set
     if (dailySupply.areaPrice > 0 && dailySupply.areaDimension > 0) {
       const { debtPaid, retainedAmount } = calculateFinancials(
-        updatedRawMaterial,
-        moneyRetainedPercentage ||
-          dailySupply.data[dataIndex].moneyRetained.percentage
+        dataEntry.rawMaterial,
+        convertToDecimal(moneyRetainedPercentage) ||
+          convertToDecimal(dataEntry.moneyRetained.percentage)
       );
-      const debtPaidDifference =
-        debtPaid - (dailySupply.data[dataIndex].debt.debtPaidAmount || 0);
-      const moneyRetainedDifference =
-        retainedAmount -
-        (dailySupply.data[dataIndex].moneyRetained.retainedAmount || 0);
+
+      const debtPaidDifference = debtPaid - (dataEntry.debt.debtPaidAmount || 0);
+      const moneyRetainedDifference = retainedAmount - (dataEntry.moneyRetained.retainedAmount || 0);
+
 
       if (!isNaN(debtPaidDifference)) {
         updatePromises.push(
           Debt.findByIdAndUpdate(
-            dailySupply.data[dataIndex].debt._id,
+            dataEntry.debt._id,
             { $inc: { debtPaidAmount: debtPaidDifference } },
             { new: true }
           )
@@ -407,18 +392,13 @@ async function updateSupplierData(req, res) {
       }
 
       const moneyRetainedUpdate = {
-        percentage:
-          moneyRetainedPercentage ||
-          dailySupply.data[dataIndex].moneyRetained.percentage,
-        retainedAmount: !isNaN(debtPaidDifference)
-          ? dailySupply.data[dataIndex].moneyRetained.retainedAmount +
-            moneyRetainedDifference
-          : dailySupply.data[dataIndex].moneyRetained.retainedAmount,
+        percentage: convertToDecimal(moneyRetainedPercentage) || convertToDecimal(dataEntry.moneyRetained.percentage),
+        retainedAmount: !isNaN(moneyRetainedDifference) ? dataEntry.moneyRetained.retainedAmount + moneyRetainedDifference : dataEntry.moneyRetained.retainedAmount,
       };
 
       updatePromises.push(
         MoneyRetained.findByIdAndUpdate(
-          dailySupply.data[dataIndex].moneyRetained._id,
+          dataEntry.moneyRetained._id,
           moneyRetainedUpdate,
           { new: true }
         )
@@ -438,12 +418,13 @@ async function updateSupplierData(req, res) {
       );
     }
 
+    // Add the action history
     const actionHistory = await ActionHistory.create({
       actionType: "update",
       userId: req.user._id,
       details: `Cập nhật dữ liệu cho ${updatedDailySupply.name}`,
       oldValues: dataBeforeUpdate,
-      newValues: dailySupply.data[dataIndex],
+      newValues: dataEntry,
     });
 
     if (!actionHistory) {

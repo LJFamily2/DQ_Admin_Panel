@@ -43,7 +43,6 @@ async function renderPage(req, res) {
 
 async function updatePricesAndRatios(req, res) {
   req.body = trimStringFields(req.body);
-  console.log(req.body);
   try {
     const {
       startDate,
@@ -132,9 +131,9 @@ async function updatePricesAndRatios(req, res) {
           entry.moneyRetained.percentage
         );
 
+
         const debtAmount = entry.debt;
         const moneyRetainedAmount = entry.moneyRetained;
-
         // Store old values
         const oldDebtPaidAmount = debtAmount.debtPaidAmount || 0;
         const oldMoneyRetainedAmount = moneyRetainedAmount.retainedAmount || 0;
@@ -162,6 +161,13 @@ async function updatePricesAndRatios(req, res) {
     }
 
     // Execute bulk update operations concurrently
+    if (bulkDebtOps.length > 0) {
+      await Debt.bulkWrite(bulkDebtOps);
+    }
+    if (bulkMoneyRetainedOps.length > 0) {
+      await MoneyRetained.bulkWrite(bulkMoneyRetainedOps);
+    }
+
     const [saveData, actionHistory] = await Promise.all([
       area.save(),
       ActionHistory.create({
