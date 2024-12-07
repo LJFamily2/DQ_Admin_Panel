@@ -164,12 +164,12 @@
       <div class="card-header bg-transparent">
         <h4 class="m-0">Tạo hàng hóa</h4>
       </div>
-      <form action="/quan-ly-hang-hoa" method="post">
+      <form action="/quan-ly-hang-hoa?_method=POST" method="post">
         <div class="card-body">
           <%- include('../partials/notificationMessage.ejs') %>
           <div>
             <label for="date" class="form-label fw-bold">Ngày chạy lò</label>
-            <input type="date" class="form-control" id="date" name="date" required autofocus />
+            <input type="date" class="form-control" id="date" name="date" required />
           </div>
 
           <div class="my-3">
@@ -177,18 +177,18 @@
               <label for="dryRubberUsed" class="form-label fw-bold">Nguyên liệu</label>
               <div class="col-6">
                 <label for="dryRubberUsed" class="form-label">Số lượng</label>
-                <input type="text" class="form-control" id="dryRubberUsed" name="dryRubberUsed" oninput="handleQuantityInput(this)" inputmode="numeric" />
+                <input type="text" class="form-control" id="dryRubberUsed" name="dryRubberUsed" oninput="handleQuantityInput(this)" inputmode="numeric" required/>
               </div>
               <div class="col-6">
                 <label for="dryPercentage" class="form-label">Hàm lượng</label>
-                <input type="text" class="form-control" id="dryPercentage" name="dryPercentage" oninput="handlePercentageInput(this)" inputmode="numeric" />
+                <input type="text" class="form-control" id="dryPercentage" name="dryPercentage" oninput="handlePercentageInput(this)" inputmode="numeric" required/>
               </div>
             </div>
           </div>
 
           <div class="my-3">
             <label for="quantity" class="form-label fw-bold">Thành phẩm</label>
-            <input type="text" class="form-control" id="quantity" name="quantity" oninput="handleQuantityInput(this)" inputmode="numeric" />
+            <input type="text" class="form-control" id="quantity" name="quantity" oninput="handleQuantityInput(this)" inputmode="numeric" required/>
           </div>
 
           <div class="my-3">

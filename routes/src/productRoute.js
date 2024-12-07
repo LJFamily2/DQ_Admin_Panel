@@ -32,7 +32,7 @@ router.put(
   productController.updateProduct
 );
 router.delete(
-  "/delete/:id",
+  "/:id",
   authMiddlewares.ensureRoles(["Admin"]),
   checkPermission("delete"),
   productController.deleteProduct
