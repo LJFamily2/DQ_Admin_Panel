@@ -1,6 +1,7 @@
 const ActionHistory = require("../models/actionHistoryModel");
 
 const handleResponse = require("../controllers/utils/handleResponse");
+const cron = require("node-cron");
 
 module.exports = {
   renderPage,
@@ -162,7 +163,6 @@ async function deleteOldActionHistory() {
       timestamp: { $lt: thirtyDaysAgo },
     });
 
-    console.log(`Deleted ${result.deletedCount} old action history records.`);
   } catch (error) {
     console.error("Error deleting old action history:", error);
   }
