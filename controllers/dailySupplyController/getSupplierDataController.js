@@ -376,7 +376,7 @@ async function getSupplierExportData(req, res, isArea) {
     const calculateMaterialData = rawMaterials => {
       return rawMaterials.reduce((acc, rawMaterialArray) => {
         rawMaterialArray.forEach(raw => {
-          const { name, quantity = 0, ratioSplit = 100, price = 0, percentage = 0 } = raw;
+          const { name, quantity, ratioSplit, price, percentage } = raw;
           if (!acc[name]) {
             acc[name] = {
               quantity: 0,
@@ -388,14 +388,14 @@ async function getSupplierExportData(req, res, isArea) {
               rawMaterial: [],
             };
           }
-          acc[name].quantity += quantity;
+          acc[name].quantity += (quantity * percentage / 100) ;
           acc[name].ratioSplit += ratioSplit;
           acc[name].count += 1; 
           acc[name].rawMaterial.push(raw);
   
           if (name === 'Mủ nước') {
             acc[name].afterSplit += (quantity * percentage / 100 * ratioSplit / 100);
-            acc[name].total += (((quantity * (percentage / 100)) * (ratioSplit)) / 100) * price;
+            acc[name].total += (quantity * percentage / 100 * ratioSplit / 100) * price;
           } else {
             acc[name].afterSplit += (quantity * (ratioSplit) / 100);
             acc[name].total += ((quantity * (ratioSplit)) / 100) * price;
