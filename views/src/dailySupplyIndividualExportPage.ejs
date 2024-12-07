@@ -406,7 +406,9 @@
         <h4 class="m-0 fw-bold">Thông tin cá nhân</h4>
       </div>
 
-      <form action="/du-lieu-hang-ngay/<%= supplierData._id %>?_method=PUT" method="post">
+      <form action="/du-lieu-hang-ngay/supplier/<%= supplierData._id %>?_method=PUT" method="post">
+        <!-- Additional fields -->
+        <input type="text" name="slug" value="<%= area.slug %>" hidden>
         <div class="card-body">
           <%- include('../partials/notificationMessage.ejs') %>
           <div class="modal-body">
