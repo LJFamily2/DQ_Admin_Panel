@@ -19,7 +19,7 @@ app.use(compression());
 
 // Rate limiting
 // Trust the first proxy
-app.set('trust proxy', 1);
+app.set("trust proxy", 1);
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -106,11 +106,18 @@ app.use((req, res) => {
   res.status(404).render("partials/404", { layout: false });
 });
 
-// Update automatically
-const { updateDateRangeAutomatically } = require('./controllers/dateRangeAccessController');
+// Update automatically - Node cron
+const {
+  updateDateRangeAutomatically,
+} = require("./controllers/dateRangeAccessController");
+const {
+  deleteOldActionHistory,
+} = require("./controllers/actionHistoryController");
 
-  // Call the function once at startup to set the initial date range
+// Call the function once at startup to set the initial date range
 updateDateRangeAutomatically();
+// Call the function once at startup to clean up old records immediately
+deleteOldActionHistory();
 
 const port = process.env.PORT || 4000;
 

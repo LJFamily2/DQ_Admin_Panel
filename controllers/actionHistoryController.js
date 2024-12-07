@@ -5,7 +5,7 @@ const handleResponse = require("../controllers/utils/handleResponse");
 module.exports = {
   renderPage,
   deleteData,
-  deleteAllData,
+  deleteAllData,  deleteOldActionHistory,
 };
 async function renderPage(req, res) {
   try {
@@ -152,3 +152,21 @@ async function deleteAllData(req, res) {
     return res.status(500).render("partials/500", { layout: false });
   }
 }
+
+async function deleteOldActionHistory() {
+  try {
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    await ActionHistory.deleteMany({
+      timestamp: { $lt: thirtyDaysAgo },
+    });
+
+    console.log(`Deleted ${result.deletedCount} old action history records.`);
+  } catch (error) {
+    console.error("Error deleting old action history:", error);
+  }
+}
+
+// Schedule the job to run at midnight every day
+cron.schedule("0 0 * * *", deleteOldActionHistory);
