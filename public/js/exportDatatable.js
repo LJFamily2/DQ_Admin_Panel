@@ -168,7 +168,7 @@ function initializeExportDataTable(
     buttons: exportsOption
       ? [
           pdfButton,
-
+          
           {
             extend: "excel",
             exportOptions: {
@@ -327,14 +327,8 @@ function initializeExportDataTable(
                   areaDimension,
                   areaPrice
                 );
-                const addPrice =
-                  parseFloat(
-                    $(addPriceId).val().replace(/\./g, "").replace(",", ".")
-                  ) || 0;
-                const minusPrice =
-                  parseFloat(
-                    $(minusPriceId).val().replace(/\./g, "").replace(",", ".")
-                  ) || 0;
+                const addPrice = addPriceId ? parseFloat($(addPriceId).val().replace(/\./g, "").replace(",", ".")) || 0 : 0;
+                const minusPrice = minusPriceId ? parseFloat($(minusPriceId).val().replace(/\./g, "").replace(",", ".")) || 0 : 0;
                 const finalAmount = totalAmount + addPrice - minusPrice;
                 const totalAfterRatio =
                   finalAmount * (ratioSumSplit.replace(",", ".") / 100);
@@ -428,6 +422,12 @@ function initializeExportDataTable(
               },
             ],
           },
+          {
+            text: 'Làm mới',
+            action: function (e, dt, node, config) {
+              dt.ajax.reload();
+            }
+          }
         ]
       : [],
     // stateSave: true,

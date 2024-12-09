@@ -57,6 +57,13 @@
             <div class="col"><%- include('../partials/setPrice.ejs') %></div>
           </div>
         </form>
+        <div class="row">
+          <div class="col-4">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exportAllModal">
+              In tất cả
+            </button>
+          </div>
+        </div>
         <%- include('../partials/displayAccessDate.ejs') %>
       </div>
       <div class="card-body">
@@ -343,6 +350,203 @@
   </div>
 </div>
 
+<!-- Export All Modal -->
+<div class="modal fade" id="exportAllModal" tabindex="-1" aria-labelledby="exportAllModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exportAllModalLabel">In tất cả</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Printing options -->
+        <div class="container mb-3">
+          <div class="form-group">
+            <label for="printOption">Chọn hình thức in:</label>
+            <div>
+              <input type="radio" id="continuous" name="printOption" value="continuous" checked>
+              <label for="continuous">Liên tục</label>
+            </div>
+            <div>
+              <input type="radio" id="progress" name="printOption" value="progress">
+              <label for="progress">Từng phần</label>
+            </div>
+          </div>
+        </div>
+        <!-- Carousel -->
+        <div id="exportCarousel" class="carousel slide" data-bs-ride="carousel">
+          <div class="carousel-inner">
+            <% area.suppliers.forEach( (supplier, index) => { %>
+            <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
+              <table class="table table-striped" id="multiTable<%= index %>" data-supplier-slug="<%= supplier.supplierSlug %>" data-supplier-name="<%= supplier.name %>" data-ratio-sum-split="<%= supplier.ratioSumSplit %>" data-ratio-rubber-split="<%= supplier.ratioRubberSplit %>" data-remaining-debt="<%= supplier.remainingDebt %>" data-total-money-retained-amount="<%= supplier.totalMoneyRetainedAmount %>">
+                <thead>
+                  <% if (area.areaDimension > 0 && area.areaPrice > 0) { %>
+                  <tr>
+                    <th rowspan="2">STT</th>
+                    <th rowspan="2">Ngày</th>
+                    <th colspan="7">Mủ nước</th>
+                    <th colspan="5">Mủ tạp</th>
+                    <th colspan="5">Mủ ké</th>
+                    <th colspan="5">Mủ đông</th>
+                    <th rowspan="2">Tổng tiền</th>
+                    <th rowspan="2">Khác</th>
+                  </tr>
+                  <tr>
+                    <th>SL</th>
+                    <th>HL%</th>
+                    <th>Quy khô trc</th>
+                    <th>TL(%)</th>
+                    <th>Quy khô sau</th>
+                    <th>Đơn giá</th>
+                    <th>Thành tiền</th>
+                    <th>SL</th>
+                    <th>TL(%)</th>
+                    <th>SL sau</th>
+                    <th>Đơn giá</th>
+                    <th>Thành tiền</th>
+                    <th>SL</th>
+                    <th>TL(%)</th>
+                    <th>SL sau</th>
+                    <th>Đơn giá</th>
+                    <th>Thành tiền</th>
+                    <th>SL</th>
+                    <th>TL(%)</th>
+                    <th>SL sau</th>
+                    <th>Đơn giá</th>
+                    <th>Thành tiền</th>
+                  </tr>
+                  <% } else { %>
+                  <tr>
+                    <th rowspan="2">STT</th>
+                    <th rowspan="2">Ngày</th>
+                    <th colspan="4">Mủ nước</th>
+                    <th colspan="2">Mủ tạp</th>
+                    <th colspan="2">Mủ ké</th>
+                    <th colspan="2">Mủ đông</th>
+                    <th rowspan="2">Khác</th>
+                  </tr>
+                  <tr>
+                    <th>SL</th>
+                    <th>HL%</th>
+                    <th>Quy khô</th>
+                    <th>Đơn giá</th>
+                    <th>SL</th>
+                    <th>Đơn giá</th>
+                    <th>SL</th>
+                    <th>Đơn giá</th>
+                    <th>SL</th>
+                    <th>Đơn giá</th>
+                  </tr>
+                  <% } %>
+                </thead>
+                <tbody>
+                </tbody>
+                <tfoot>
+                  <% if (area.areaDimension > 0 && area.areaPrice > 0) { %>
+                  <tr>
+                    <th colspan="2">Tổng</th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                  </tr>
+                  <% } else { %>
+                  <tr>
+                    <th colspan="2">Tổng</th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                  </tr>
+                  <tr>
+                    <th colspan="2">Đơn giá</th>
+                    <th colspan="4"></th>
+                    <th colspan="2"></th>
+                    <th colspan="2"></th>
+                    <th colspan="2"></th>
+                    <th></th>
+                  </tr>
+                  <tr>
+                    <th colspan="2">Thành tiền</th>
+                    <th colspan="4"></th>
+                    <th colspan="2"></th>
+                    <th colspan="2"></th>
+                    <th colspan="2"></th>
+                    <th></th>
+                  </tr>
+                  <% } %>
+                </tfoot>
+              </table>
+            </div>
+            <% }); %>
+          </div>
+          <button class="carousel-control-prev" type="button" data-bs-target="#exportCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon bg-dark" aria-hidden="true"></span>
+            <span class="visually-hidden">Trước</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#exportCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon bg-dark" aria-hidden="true"></span>
+            <span class="visually-hidden">Sau</span>
+          </button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="exportAllButton">
+          In
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmModalLabel">Tiếp tục in?</h5>
+      </div>
+      <div class="modal-body">
+        <p>Bạn có muốn tiếp tục in bảng tiếp theo không?</p>
+        <p id="progressText">Tài liệu 0 / 0</p>
+        <div class="progress mt-2" style="width: 100%;" id="progressContainer">
+          <div class="progress-bar" role="progressbar" id="progressBar" style="width: 0%; height: 100%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="confirmNoButton" data-bs-dismiss="modal">Không</button>
+        <button type="button" class="btn btn-primary" id="confirmYesButton">Có</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
   let areaDimension = "<%= area.areaDimension %>";
   let areaPrice = "<%= area.areaPrice %>";
@@ -541,5 +745,252 @@
     }
   );
 
+
+  const columnsIndividual = parseFloat(areaDimension) === 0 && parseFloat(areaPrice) === 0 ? [{
+      data: 'no',
+      orderable: false
+    },
+    {
+      data: 'date'
+    },
+    {
+      data: 'muNuocQuantity',
+      orderable: false
+    },
+    {
+      data: 'muHamLuong',
+      orderable: false
+    },
+    {
+      data: 'muQuyKhoTotal',
+      orderable: false
+    },
+    {
+      data: 'muQuyKhoPrice',
+      orderable: false
+    },
+    {
+      data: 'muTapQuantity',
+      orderable: false
+    },
+    {
+      data: 'muTapPrice',
+      orderable: false
+    },
+    {
+      data: 'muKeQuantity',
+      orderable: false
+    },
+    {
+      data: 'muKePrice',
+      orderable: false
+    },
+    {
+      data: 'muDongQuantity',
+      orderable: false
+    },
+    {
+      data: 'muDongPrice',
+      orderable: false
+    },
+    {
+      data: 'note',
+      orderable: false
+    },
+
+  ] : [{
+      data: 'no',
+      orderable: false
+    },
+    {
+      data: 'date'
+    },
+    {
+      data: 'muNuocQuantity',
+      orderable: false
+    },
+    {
+      data: 'muHamLuong',
+      orderable: false
+    },
+    {
+      data: 'muQuyKhoTotal',
+      orderable: false
+    },
+    {
+      data: 'muNuocRatioSplit',
+      orderable: false
+    },
+    {
+      data: 'muQuyKhoTotalAfterSplit',
+      orderable: false
+    },
+    {
+      data: 'muQuyKhoPrice',
+      orderable: false
+    },
+    {
+      data: 'muQuyKhoTotalPrice',
+      orderable: false
+    },
+    {
+      data: 'muTapQuantity',
+      orderable: false
+    },
+    {
+      data: 'muTapRatioSplit',
+      orderable: false
+    },
+    {
+      data: 'muTapTotalAfterSplit',
+      orderable: false
+    },
+    {
+      data: 'muTapPrice',
+      orderable: false
+    },
+    {
+      data: 'muTapTotalPrice',
+      orderable: false
+    },
+    {
+      data: 'muKeQuantity',
+      orderable: false
+    },
+    {
+      data: 'muKeRatioSplit',
+      orderable: false
+    },
+    {
+      data: 'muKeTotalAfterSplit',
+      orderable: false
+    },
+    {
+      data: 'muKePrice',
+      orderable: false
+    },
+    {
+      data: 'muKeTotalPrice',
+      orderable: false
+    },
+    {
+      data: 'muDongQuantity',
+      orderable: false
+    },
+    {
+      data: 'muDongRatioSplit',
+      orderable: false
+    },
+    {
+      data: 'muDongTotalAfterSplit',
+      orderable: false
+    },
+    {
+      data: 'muDongPrice',
+      orderable: false
+    },
+    {
+      data: 'muDongTotalPrice',
+      orderable: false
+    },
+    {
+      data: 'totalPrice',
+      orderable: false
+    },
+    {
+      data: 'note',
+      orderable: false
+    },
+  ];
+
+  <% area.suppliers.forEach((supplier,index) => { %>
+  initializeExportDataTable(
+    '#multiTable<%= index%>',
+    `/du-lieu-hang-ngay/<%= area.slug %>/getSupplierExportData/<%= supplier.supplierSlug %>`,
+    '#staticBackdrop',
+    '#deleteModalToggle',
+    columnsIndividual,
+    false,
+    '#filterButton',
+    '#startDate',
+    '#endDate',
+    '#clearFilterButton',
+    true,
+    false,
+    true,
+    null,
+    null,
+    '<%= supplier.name %>',
+    '<%= supplier.ratioSumSplit %>',
+    '<%= supplier.ratioRubberSplit %>', {
+      debt: '<%= supplier.remainingDebt %>',
+      retainedAmount: '<%= supplier.totalMoneyRetainedAmount %>'
+    }, {
+      areaDimension: '<%= area.areaDimension %>',
+      areaPrice: '<%= area.areaPrice %>'
+    }
+  );
+  <% }) %>
+
   tippy(".tooltip-wrapper");
+</script>
+
+<script>
+  document.getElementById('exportAllButton').addEventListener('click', () => {
+    const tables = document.querySelectorAll('table[id^="multiTable"]');
+    const printOption = document.querySelector('input[name="printOption"]:checked').value;
+    let currentIndex = 0, stopPrinting = false;
+
+    const progressBar = document.getElementById('progressBar'),
+          progressContainer = document.getElementById('progressContainer'),
+          progressText = document.getElementById('progressText'),
+          confirmModal = new bootstrap.Modal(document.getElementById('confirmModal')),
+          exportAllModal = bootstrap.Modal.getInstance(document.getElementById('exportAllModal')),
+          confirmYesButton = document.getElementById('confirmYesButton'),
+          confirmNoButton = document.getElementById('confirmNoButton');
+
+    const updateProgress = () => {
+      const progress = ((currentIndex + 1) / tables.length) * 100;
+      progressBar.style.width = `${progress}%`;
+      progressBar.setAttribute('aria-valuenow', progress);
+      progressText.textContent = `Tài liệu ${currentIndex + 1} / ${tables.length}`;
+    };
+
+    const printNextTable = () => {
+      if (currentIndex > tables.length || stopPrinting) {
+        progressContainer.style.display = 'none';
+        return;
+      }
+
+      const tableId = `#${tables[currentIndex].id}`;
+      $(tableId).DataTable().button('.buttons-print').trigger();
+
+      setTimeout(() => {
+        if (printOption === 'progress' && currentIndex < tables.length - 1) {
+          confirmModal.show();
+        } else {
+          currentIndex++;
+          updateProgress();
+          printNextTable();
+        }
+      }, 500);
+    };
+
+    confirmYesButton.addEventListener('click', () => {
+      confirmModal.hide();
+      currentIndex++;
+      updateProgress();
+      printNextTable();
+    });
+
+    confirmNoButton.addEventListener('click', () => {
+      stopPrinting = true;
+      progressContainer.style.display = 'none';
+    });
+
+    exportAllModal.hide();
+    progressContainer.style.display = 'block';
+    updateProgress();
+    printNextTable();
+  });
 </script>
