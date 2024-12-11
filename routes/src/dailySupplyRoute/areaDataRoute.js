@@ -88,6 +88,12 @@ router.put(
   dailySupplyController.supplierExportController.updatePricesAndRatios
 );
 
+router.get(
+  "/:slug/xuat-file/tat-ca",
+  authMiddlewares.ensureRoles(["Admin", "Văn phòng"]),
+  dailySupplyController.supplierExportController.renderAllData
+);
+
 // Admin side for exporting individual
 router.get(
   "/:slug/xuat-file/:supplierSlug",
@@ -97,8 +103,7 @@ router.get(
 router.post(
   "/:slug/getSupplierExportData/:supplierSlug",
   authMiddlewares.ensureRoles(["Admin", "Văn phòng"]),
-  dailySupplyController.getSupplierDataController
-    .getIndividualSupplierExportData
+  dailySupplyController.getSupplierDataController.getIndividualSupplierExportData
 );
 
 module.exports = router;

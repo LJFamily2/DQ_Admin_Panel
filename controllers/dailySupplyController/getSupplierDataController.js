@@ -483,17 +483,21 @@ async function getSupplierExportData(req, res, isArea) {
   }
 }
 
-async function getIndividualSupplierExportData(req, res) {
-  try {
-    const { slug, supplierSlug } = req.params;
-    const { draw, startDate, endDate, order } = req.body;
+async function getIndividualSupplierExportData(req, res, sendResponse = true) {
+  const { slug, supplierSlug } = req.params;
+  const { draw, startDate, endDate, order } = sendResponse ? req.body : req.query;
 
+  try {
     const { startDateUTC, endDateUTC } = parseDates(startDate, endDate);
     const dateFilter = createDateFilter(startDateUTC, endDateUTC);
 
     const supplier = await Supplier.findOne({ supplierSlug });
     if (!supplier) {
-      return res.status(404).json({ error: "Supplier not found" });
+      if (sendResponse) {
+        return res.status(404).json({ error: "Supplier not found" });
+      } else {
+        throw new Error("Supplier not found");
+      }
     }
 
     const sortOrder = order && order[0] && order[0].dir === "desc" ? -1 : 1;
@@ -539,17 +543,26 @@ async function getIndividualSupplierExportData(req, res) {
     });
 
     const { data: flattenedData, latestPrices } = flattenData(data);
-    res.json({
+
+    const response = {
       draw: parseInt(draw),
       recordsTotal: totalRecords,
       recordsFiltered: totalRecords,
       data: flattenedData,
       latestPrices: latestPrices,
-    });
+    };
+
+    if (sendResponse) {
+      res.json(response);
+    } else {
+      return response;
+    }
   } catch (error) {
-    res
-      .status(500)
-      .json({ error: "Internal Server Error", details: error.message });
+    if (sendResponse) {
+      res.status(500).json({ error: "Internal Server Error", details: error.message });
+    } else {
+      throw new Error(`Internal Server Error: ${error.message}`);
+    }
   }
 
   function flattenData(data) {

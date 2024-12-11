@@ -6,6 +6,9 @@ const {
 } = require("../../models/dailySupplyModel");
 const ActionHistory = require("../../models/actionHistoryModel");
 const DateRangeAccess = require("../../models/dateRangeAccessModel");
+const {
+  getIndividualSupplierExportData,
+} = require("./getSupplierDataController");
 
 const trimStringFields = require("../utils/trimStringFields");
 const handleResponse = require("../utils/handleResponse");
@@ -15,6 +18,7 @@ const calculateFinancials = require("../dailySupplyController/helper/calculateFi
 module.exports = {
   renderPage,
   updatePricesAndRatios,
+  renderAllData,
 };
 async function renderPage(req, res) {
   try {
@@ -131,7 +135,6 @@ async function updatePricesAndRatios(req, res) {
           entry.moneyRetained.percentage
         );
 
-
         const debtAmount = entry.debt;
         const moneyRetainedAmount = entry.moneyRetained;
         // Store old values
@@ -213,6 +216,89 @@ async function updatePricesAndRatios(req, res) {
     );
   } catch (error) {
     console.error("Error updating prices:", error);
+    res.status(500).render("partials/500", { layout: false });
+  }
+}
+
+async function renderAllData(req, res) {
+  try {
+    const { slug } = req.params;
+    const { startDate, endDate } = req.query;
+
+    // Fetch the DailySupply document based on the slug
+    const dailySupply = await DailySupply.findOne({ slug }).populate({
+      path: "suppliers",
+      populate: ["moneyRetainedHistory", "debtHistory"],
+    });
+
+    if (!dailySupply) {
+      return res.status(404).render("partials/404", { layout: false });
+    }
+
+    // Initialize an array to hold all supplier data
+    const allSupplierData = [];
+    let totalDebtPaidAmount = 0;
+    let totalMoneyRetainedAmount = 0;
+    let remainingDebt = 0;
+
+    // Loop through each supplier and get their export data
+    for (const supplier of dailySupply.suppliers) {
+      try {
+        const supplierData = await getIndividualSupplierExportData(
+          {
+            params: { slug, supplierSlug: supplier.supplierSlug },
+            query: { startDate, endDate },
+          },
+          res,
+          false
+        );
+    
+        // Only process suppliers that have data within the date range
+        if (supplierData.data.length > 0) {
+          // Manually calculate totalDebtPaidAmount and totalMoneyRetainedAmount
+          totalDebtPaidAmount += supplier.debtHistory.reduce(
+            (total, debt) => total + debt.debtPaidAmount,
+            0
+          );
+          totalMoneyRetainedAmount += supplier.moneyRetainedHistory.reduce(
+            (total, retained) => total + retained.retainedAmount,
+            0
+          );
+    
+          // Calculate remainingDebt
+          remainingDebt += supplier.initialDebtAmount - totalDebtPaidAmount;
+    
+          allSupplierData.push({
+            supplierName: supplier.name,
+            ratioSumSplit: supplier.ratioSumSplit,
+            data: supplierData.data,
+            latestPrices: supplierData.latestPrices,
+          });
+        }
+      } catch (error) {
+        console.error(
+          `Error fetching data for supplier ${supplier.supplierSlug}:`,
+          error
+        );
+      }
+    }
+    console.dir(allSupplierData, { depth: null });
+    // Render the page with the collected data
+    res.render("src/dailySupplyExportAllPage", {
+      layout: false,
+      data: allSupplierData,
+      user: req.user,
+      area: dailySupply,
+      title: "Xuất dữ liệu mủ của tất cả nhà cung cấp",
+      startDate,
+      endDate,
+      remainingDebt,
+      totalMoneyRetainedAmount,
+      latestPrices:
+        allSupplierData.length > 0 ? allSupplierData[0].latestPrices : {},
+    });
+  } catch (error) {
+    console.error("Error fetching supplier data:", error);
     res.status(500).render("partials/500", { layout: false });
   }
 }
