@@ -271,6 +271,7 @@ async function renderAllData(req, res) {
           allSupplierData.push({
             supplierName: supplier.name,
             ratioSumSplit: supplier.ratioSumSplit,
+            initialDebtAmount: supplier.initialDebtAmount,
             data: supplierData.data,
             latestPrices: supplierData.latestPrices,
           });
