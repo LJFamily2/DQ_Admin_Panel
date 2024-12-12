@@ -51,6 +51,10 @@
       z-index: 1000;
     }
 
+    .scrollspy-container .form-check {
+      margin-bottom: 10px;
+    }
+
     @media print {
 
       th,
@@ -73,46 +77,60 @@
 <body>
   <div class="container-fluid p-0">
     <!-- Column selection checkboxes -->
-    <div class="column-selection no-print px-3 my-3 sticky-column-selection">
-      <div class="form-check form-check-inline">
-        <input class="form-check-input column-toggle" type="checkbox" id="toggle-date" data-column="date" checked>
-        <label class="form-check-label" for="toggle-date">Ngày</label>
+    <div class="column-selection no-print px-3 mb-3 sticky-column-selection d-flex justify-content-between align-items-center" style="border-bottom: 1px solid black;">
+      <div class="column-selection">
+        <div class="form-check form-check-inline">
+          <input class="form-check-input column-toggle" type="checkbox" id="toggle-date" data-column="date" checked>
+          <label class="form-check-label" for="toggle-date">Ngày</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input column-toggle" type="checkbox" id="toggle-muNuoc" data-column="muNuoc" checked>
+          <label class="form-check-label" for="toggle-muNuoc">Mủ nước</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input column-toggle" type="checkbox" id="toggle-muTap" data-column="muTap" checked>
+          <label class="form-check-label" for="toggle-muTap">Mủ tạp</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input column-toggle" type="checkbox" id="toggle-muKe" data-column="muKe" checked>
+          <label class="form-check-label" for="toggle-muKe">Mủ ké</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input column-toggle" type="checkbox" id="toggle-muDong" data-column="muDong" checked>
+          <label class="form-check-label" for="toggle-muDong">Mủ đông</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input column-toggle" type="checkbox" id="toggle-tongTien" data-column="tongTien" checked>
+          <label class="form-check-label" for="toggle-tongTien">Tổng tiền</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input column-toggle" type="checkbox" id="toggle-khac" data-column="khac" checked>
+          <label class="form-check-label" for="toggle-khac">Khác</label>
+        </div>
       </div>
-      <div class="form-check form-check-inline">
-        <input class="form-check-input column-toggle" type="checkbox" id="toggle-muNuoc" data-column="muNuoc" checked>
-        <label class="form-check-label" for="toggle-muNuoc">Mủ nước</label>
-      </div>
-      <div class="form-check form-check-inline">
-        <input class="form-check-input column-toggle" type="checkbox" id="toggle-muTap" data-column="muTap" checked>
-        <label class="form-check-label" for="toggle-muTap">Mủ tạp</label>
-      </div>
-      <div class="form-check form-check-inline">
-        <input class="form-check-input column-toggle" type="checkbox" id="toggle-muKe" data-column="muKe" checked>
-        <label class="form-check-label" for="toggle-muKe">Mủ ké</label>
-      </div>
-      <div class="form-check form-check-inline">
-        <input class="form-check-input column-toggle" type="checkbox" id="toggle-muDong" data-column="muDong" checked>
-        <label class="form-check-label" for="toggle-muDong">Mủ đông</label>
-      </div>
-      <div class="form-check form-check-inline">
-        <input class="form-check-input column-toggle" type="checkbox" id="toggle-tongTien" data-column="tongTien" checked>
-        <label class="form-check-label" for="toggle-tongTien">Tổng tiền</label>
-      </div>
-      <div class="form-check form-check-inline">
-        <input class="form-check-input column-toggle" type="checkbox" id="toggle-khac" data-column="khac" checked>
-        <label class="form-check-label" for="toggle-khac">Khác</label>
-      </div>
+      <!-- Print button -->
+      <button class="btn btn-primary no-print" onclick="window.print()">In</button>
     </div>
 
-    <div id="list-example" class="list-group scrollspy-container no-print">
+    <div id="list-example" class="list-group scrollspy-container no-print" style="border: 1px solid black; border-right: none;">
+      <div >
+        <label class=" list-group-item list-group-item-action" for="toggle-all">
+          <input class="form-check-input" type="checkbox" id="toggle-all" checked>
+          Tất cả
+        </label>
+      </div>
       <% data.forEach((supplier, index) => { %>
-      <a class="list-group-item list-group-item-action no-print" href="#supplier<%= index %>"><%= supplier.supplierName %></a>
+      <div >
+        <a class="list-group-item list-group-item-action no-print" href="#supplier<%= index %>">
+          <input class="form-check-input supplier-toggle" type="checkbox" id="toggle-supplier<%= index %>" data-index="<%= index %>" checked>
+          <%= supplier.supplierName %></a>
+      </div>
       <% }) %>
     </div>
 
     <div data-bs-spy="scroll" data-bs-target="#list-example" data-bs-offset="0" class="scrollspy-example">
       <% data.forEach((supplier, index) => { %>
-      <div id="supplier<%= index %>" class="<%= index === data.length - 1 ? '' : 'page-break' %>">
+      <div id="supplier<%= index %>" class="supplier-section <%= index === data.length - 1 ? '' : 'page-break' %>">
         <h4>Phiếu Tính Tiền Mủ Cao Su</h4>
         <h5>(<%= startDate ? new Date(startDate).toLocaleDateString('vi-VN') : "Không ngày" %> - <%= endDate ? new Date(endDate).toLocaleDateString('vi-VN') : "Không ngày" %>)</h5>
         <h6>Nhà cung cấp: <%= supplier.supplierName %> </h6>
@@ -314,17 +332,41 @@
       const scrollspyContainer = document.getElementById('list-example');
       let scrollTimeout;
 
-      window.addEventListener('scroll', function() {
+      const showScrollspyContainer = () => {
         clearTimeout(scrollTimeout);
         scrollspyContainer.style.display = 'block';
+      };
 
-        scrollTimeout = setTimeout(function() {
+      const hideScrollspyContainer = () => {
+        scrollTimeout = setTimeout(() => {
           scrollspyContainer.style.display = 'none';
         }, 3000);
+      };
+
+      window.addEventListener('scroll', showScrollspyContainer);
+      window.addEventListener('scroll', hideScrollspyContainer);
+
+      scrollspyContainer.addEventListener('mouseover', showScrollspyContainer);
+      scrollspyContainer.addEventListener('mouseout', hideScrollspyContainer);
+
+
+      // Supplier toggle functionality
+      document.querySelectorAll('.supplier-toggle').forEach(toggle => {
+        toggle.addEventListener('change', function() {
+          const index = this.dataset.index;
+          const isChecked = this.checked;
+          document.getElementById(`supplier${index}`).style.display = isChecked ? '' : 'none';
+        });
       });
 
-      new bootstrap.ScrollSpy(document.body, {
-        target: '#list-example'
+      // Toggle all functionality
+      document.getElementById('toggle-all').addEventListener('change', function() {
+        const isChecked = this.checked;
+        document.querySelectorAll('.supplier-toggle').forEach(toggle => {
+          toggle.checked = isChecked;
+          const index = toggle.dataset.index;
+          document.getElementById(`supplier${index}`).style.display = isChecked ? '' : 'none';
+        });
       });
     });
 
@@ -371,4 +413,4 @@
   </script>
 </body>
 
-</html> 
+</html>
