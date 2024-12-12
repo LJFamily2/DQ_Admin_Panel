@@ -64,7 +64,7 @@
       }
 
       .no-print {
-        display: none;
+        display: none !important;
       }
     }
   </style>
@@ -275,11 +275,11 @@
         </table>
         <p>Tổng số tiền: <span id="totalAmount<%= index %>"><%= ((totals.muQuyKho * latestPrices.muNuoc) + (totals.muTap * latestPrices.muTap) + (totals.muKe * latestPrices.muKe) + (totals.muDong * latestPrices.muDong)).toLocaleString('vi-VN') %></span></p>
         <p class="addContainer<%= index %> no-print d-flex align-items-center">Cộng:
-          <input type="number" class="form-control addPriceInput no-print mx-2" style="width: auto;" data-index="<%= index %>" oninput="updateFinalAmount(<%= index %>); document.getElementById('addPriceValue<%= index %>').textContent = parseFloat(this.value).toLocaleString('vi-VN')">
+          <input type="number" class="form-control addPriceInput no-print mx-2" style="width: auto;" data-index="<%= index %>" oninput="updateFinalAmount(<%= index %>); document.getElementById('addPriceValue<%= index %>').textContent = isNaN(parseFloat(this.value)) ? '' : parseFloat(this.value).toLocaleString('vi-VN')">
           <span id="addPriceValue<%= index %>"></span>
         </p>
         <p class="minusContainer<%= index %> no-print d-flex align-items-center">Trừ:
-          <input type="number" class="form-control minusPriceInput no-print mx-2" style="width: auto;" data-index="<%= index %>" oninput="updateFinalAmount(<%= index %>); document.getElementById('minusPriceValue<%= index %>').textContent = parseFloat(this.value).toLocaleString('vi-VN')">
+          <input type="number" class="form-control minusPriceInput no-print mx-2" style="width: auto;" data-index="<%= index %>" oninput="updateFinalAmount(<%= index %>); document.getElementById('minusPriceValue<%= index %>').textContent = isNaN(parseFloat(this.value)) ? '' : parseFloat(this.value).toLocaleString('vi-VN')">
           <span id="minusPriceValue<%= index %>"></span>
         </p>
         <p class="finalAmountContainer<%= index %> no-print">Tổng sau cộng/trừ: <span id="finalAmountSpan<%= index %>"></span></p>
@@ -371,4 +371,4 @@
   </script>
 </body>
 
-</html>
+</html> 
