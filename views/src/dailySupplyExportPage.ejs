@@ -59,7 +59,7 @@
         </form>
         <div class="row">
           <div class="col-4">
-            <button type="button" class="btn" >
+            <button type="button" class="btn">
               <a href="/du-lieu-hang-ngay/<%= area.slug %>/xuat-file/tat-ca?startDate=<%= startDate %>&endDate=<%= endDate %>" target="_blank"> In tất cả</a>
             </button>
           </div>
@@ -549,4 +549,37 @@
   );
 
   tippy(".tooltip-wrapper");
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const startDateInput = document.querySelector('#startDate');
+    const endDateInput = document.querySelector('#endDate');
+    const printAllButton = document.querySelector('a[href*="xuat-file/tat-ca"]');
+    const supplierLinks = document.querySelectorAll('a[href*="xuat-file/"]');
+
+    function updateURLParams() {
+      const startDate = startDateInput.value;
+      const endDate = endDateInput.value;
+      const urlParams = new URLSearchParams(window.location.search);
+
+      startDate ? urlParams.set('startDate', startDate) : urlParams.delete('startDate');
+      endDate ? urlParams.set('endDate', endDate) : urlParams.delete('endDate');
+
+      const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
+      window.history.replaceState({}, '', newUrl);
+
+      if (printAllButton) {
+        printAllButton.href = `/du-lieu-hang-ngay/<%= area.slug %>/xuat-file/tat-ca?${urlParams.toString()}`;
+      }
+
+      supplierLinks.forEach(link => {
+        const supplierUrl = new URL(link.href);
+        supplierUrl.searchParams.set('startDate', startDate);
+        supplierUrl.searchParams.set('endDate', endDate);
+        link.href = supplierUrl.toString();
+      });
+    }
+
+    startDateInput.addEventListener('change', updateURLParams);
+    endDateInput.addEventListener('change', updateURLParams);
+  });
 </script>

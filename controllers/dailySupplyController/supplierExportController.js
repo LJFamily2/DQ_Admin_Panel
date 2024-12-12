@@ -283,7 +283,7 @@ async function renderAllData(req, res) {
         );
       }
     }
-    console.dir(allSupplierData, { depth: null });
+    
     // Render the page with the collected data
     res.render("src/dailySupplyExportAllPage", {
       layout: false,

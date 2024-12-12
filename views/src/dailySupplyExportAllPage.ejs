@@ -7,8 +7,9 @@
   <title>Đăng Quang</title>
   <link rel="shortcut icon" href="/images/OIG3.HcFjYMBA3iNvsE-removebg-preview.png" type="image/x-icon" />
   <link rel="stylesheet" href="/css/globalStyle.css" />
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous" defer></script>
   <style>
     h4,
     h5,
@@ -22,6 +23,32 @@
 
     .hidden-column {
       display: none;
+    }
+
+    .sticky-column-selection {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background-color: white;
+      padding: 10px 0;
+    }
+
+    .form-check-input,
+    .form-check-label {
+      cursor: pointer;
+    }
+
+    .scrollspy-container {
+      position: fixed;
+      top: 10%;
+      right: 0;
+      width: 200px;
+      max-height: 80%;
+      overflow-y: auto;
+      display: none;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+      background-color: white;
+      z-index: 1000;
     }
 
     @media print {
@@ -45,199 +72,233 @@
 
 <body>
   <div class="container-fluid p-0">
-
     <!-- Column selection checkboxes -->
-    <div class="column-selection no-print">
-      <label><input type="checkbox" class="column-toggle" data-column="date" checked> Ngày</label>
-      <label><input type="checkbox" class="column-toggle" data-column="muNuoc" checked> Mủ nước</label>
-      <label><input type="checkbox" class="column-toggle" data-column="muTap" checked> Mủ tạp</label>
-      <label><input type="checkbox" class="column-toggle" data-column="muKe" checked> Mủ ké</label>
-      <label><input type="checkbox" class="column-toggle" data-column="muDong" checked> Mủ đông</label>
-      <label><input type="checkbox" class="column-toggle" data-column="tongTien" checked> Tổng tiền</label>
-      <label><input type="checkbox" class="column-toggle" data-column="khac" checked> Khác</label>
-    </div>
-
-    <% data.forEach((supplier, index) => { %>
-    <div class="<%= index === data.length - 1 ? '' : 'page-break' %>">
-      <h4>Phiếu Tính Tiền Mủ Cao Su</h4>
-      <h5>(<%= startDate ? new Date(startDate).toLocaleDateString('vi-VN') : "Không ngày" %> - <%= endDate ? new Date(endDate).toLocaleDateString('vi-VN') : "Không ngày" %>)</h5>
-      <h6>Nhà cung cấp: <%= supplier.supplierName %> </h6>
-      <table class="table table-bordered">
-        <thead>
-          <tr>
-            <th class="date" rowspan="2">Ngày</th>
-            <% if (area.areaDimension > 0 && area.areaPrice > 0) { %>
-            <th class="muNuoc" colspan="7">Mủ nước</th>
-            <th class="muTap" colspan="5">Mủ tạp</th>
-            <th class="muKe" colspan="5">Mủ ké</th>
-            <th class="muDong" colspan="5">Mủ đông</th>
-            <th class="tongTien" rowspan="2">Tổng tiền</th>
-            <% } else { %>
-            <th class="muNuoc" colspan="3">Mủ nước</th>
-            <th class="muTap">Mủ tạp</th>
-            <th class="muKe">Mủ ké</th>
-            <th class="muDong">Mủ đông</th>
-            <% } %>
-            <th class="khac" rowspan="2">Khác</th>
-          </tr>
-          <tr>
-            <% if (area.areaDimension > 0 && area.areaPrice > 0) { %>
-            <th class="muNuoc">SL</th>
-            <th class="muNuoc">HL%</th>
-            <th class="muNuoc">Quy khô trc</th>
-            <th class="muNuoc">Đơn giá</th>
-            <th class="muNuoc">TL(%)</th>
-            <th class="muNuoc">Quy khô sau</th>
-            <th class="muNuoc">Thành tiền</th>
-            <th class="muTap">SL</th>
-            <th class="muTap">Đơn giá</th>
-            <th class="muTap">TL(%)</th>
-            <th class="muTap">SL sau</th>
-            <th class="muTap">Thành tiền</th>
-            <th class="muKe">SL</th>
-            <th class="muKe">Đơn giá</th>
-            <th class="muKe">TL(%)</th>
-            <th class="muKe">SL sau</th>
-            <th class="muKe">Thành tiền</th>
-            <th class="muDong">SL</th>
-            <th class="muDong">Đơn giá</th>
-            <th class="muDong">TL(%)</th>
-            <th class="muDong">SL sau</th>
-            <th class="muDong">Thành tiền</th>
-            <% } else { %>
-            <th class="muNuoc">SL</th>
-            <th class="muNuoc">HL%</th>
-            <th class="muNuoc">Quy khô</th>
-            <th class="muTap">SL</th>
-            <th class="muKe">SL</th>
-            <th class="muDong">SL</th>
-            <% } %>
-          </tr>
-        </thead>
-        <tbody>
-          <% let totals = { muQuyKho: 0, muQuyKhoAfter: 0, muQuyKhoTotalPrice: 0, muTap: 0, muTapAfter: 0, muTapTotalPrice: 0, muKe: 0, muKeAfter: 0, muKeTotalPrice: 0, muDong: 0, muDongAfter: 0, muDongTotalPrice: 0, totalPrice: 0 }; %>
-          <% supplier.data.forEach((item) => { %>
-          <tr>
-            <td class="date"><%= item.date %></td>
-            <% if (area.areaDimension > 0 && area.areaPrice > 0) { %>
-            <td class="muNuoc"><%= item.muNuocQuantity %></td>
-            <td class="muNuoc"><%= item.muHamLuong %></td>
-            <td class="muNuoc"><%= item.muQuyKhoTotal %></td>
-            <td class="muNuoc"><%= item.muQuyKhoPrice %></td>
-            <td class="muNuoc"><%= item.muNuocRatioSplit %></td>
-            <td class="muNuoc"><%= item.muQuyKhoTotalAfterSplit %></td>
-            <td class="muNuoc"><%= item.muQuyKhoTotalPrice %></td>
-            <td class="muTap"><%= item.muTapQuantity %></td>
-            <td class="muTap"><%= item.muTapPrice %></td>
-            <td class="muTap"><%= item.muTapRatioSplit %></td>
-            <td class="muTap"><%= item.muTapTotalAfterSplit %></td>
-            <td class="muTap"><%= item.muTapTotalPrice %></td>
-            <td class="muTap"><%= item.muKeQuantity %></td>
-            <td class="muTap"><%= item.muKePrice %></td>
-            <td class="muKe"><%= item.muKeRatioSplit %></td>
-            <td class="muKe"><%= item.muKeTotalAfterSplit %></td>
-            <td class="muKe"><%= item.muKeTotalPrice %></td>
-            <td class="muKe"><%= item.muDongQuantity %></td>
-            <td class="muKe"><%= item.muDongPrice %></td>
-            <td class="muDong"><%= item.muDongRatioSplit %></td>
-            <td class="muDong"><%= item.muDongTotalAfterSplit %></td>
-            <td class="muDong"><%= item.muDongTotalPrice %></td>
-            <td class="muDong"><%= item.totalPrice %></td>
-            <% } else { %>
-            <td class="muNuoc"><%= item.muNuocQuantity %></td>
-            <td class="muNuoc"><%= item.muHamLuong %></td>
-            <td class="muNuoc"><%= item.muQuyKhoTotal %></td>
-            <td class="muTap"><%= item.muTapQuantity %></td>
-            <td class="muKe"><%= item.muKeQuantity %></td>
-            <td class="muDong"><%= item.muDongQuantity %></td>
-            <% } %>
-            <td class="khac"><%= item.note %></td>
-          </tr>
-          <% totals.muQuyKho += parseFloat(item.muQuyKhoTotal.replace(',', '.')) || 0; %>
-          <% totals.muQuyKhoAfter += parseFloat(item.muQuyKhoTotalAfterSplit.replace(',', '.')) || 0; %>
-          <% totals.muQuyKhoTotalPrice += parseFloat(item.muQuyKhoTotalPrice.replace(/\./g, '').replace(',', '.')) || 0; %>
-          <% totals.muTap += parseFloat(item.muTapQuantity.replace(',', '.')) || 0; %>
-          <% totals.muTapAfter += parseFloat(item.muTapTotalAfterSplit.replace(',', '.')) || 0; %>
-          <% totals.muTapTotalPrice += parseFloat(item.muTapTotalPrice.replace(/\./g, '').replace(',', '.')) || 0; %>
-          <% totals.muKe += parseFloat(item.muKeQuantity.replace(',', '.')) || 0; %>
-          <% totals.muKeAfter += parseFloat(item.muKeTotalAfterSplit.replace(',', '.')) || 0; %>
-          <% totals.muKeTotalPrice += parseFloat(item.muKeTotalPrice.replace(/\./g, '').replace(',', '.')) || 0; %>
-          <% totals.muDong += parseFloat(item.muDongQuantity.replace(',', '.')) || 0; %>
-          <% totals.muDongAfter += parseFloat(item.muDongTotalAfterSplit.replace(',', '.')) || 0; %>
-          <% totals.muDongTotalPrice += parseFloat(item.muDongTotalPrice.replace(/\./g, '').replace(',', '.')) || 0; %>
-          <% totals.totalPrice += parseFloat(item.totalPrice.replace(/\./g, '').replace(',', '.')) || 0; %>
-          <% }) %>
-        </tbody>
-        <tfoot>
-          <tr>
-            <th class="date">Tổng</th>
-            <% if (area.areaDimension > 0 && area.areaPrice > 0) { %>
-            <th class="muNuoc" class="date" colspan="2"></th>
-            <th class="muNuoc"><%= totals.muQuyKho.toLocaleString('vi-VN') %></th>
-            <th class="muNuoc" colspan="2"></th>
-            <th class="muNuoc"><%= totals.muQuyKhoAfter.toLocaleString('vi-VN') %></th>
-            <th class="muNuoc"><%= totals.muQuyKhoTotalPrice.toLocaleString('vi-VN') %></th>
-            <th class="muTap"><%= totals.muTap.toLocaleString('vi-VN') %></th>
-            <th class="muTap" colspan="2"></th>
-            <th class="muTap"><%= totals.muTapAfter.toLocaleString('vi-VN') %></th>
-            <th class="muTap"><%= totals.muTapTotalPrice.toLocaleString('vi-VN') %></th>
-            <th class="muKe"><%= totals.muKe.toLocaleString('vi-VN') %></th>
-            <th class="muKe" colspan="2"></th>
-            <th class="muKe"><%= totals.muKeAfter.toLocaleString('vi-VN') %></th>
-            <th class="muKe"><%= totals.muKeTotalPrice.toLocaleString('vi-VN') %></th>
-            <th class="muDong"><%= totals.muDong.toLocaleString('vi-VN') %></th>
-            <th class="muDong" colspan="2"></th>
-            <th class="muDong"><%= totals.muDongAfter.toLocaleString('vi-VN') %></th>
-            <th class="muDong"><%= totals.muDongTotalPrice.toLocaleString('vi-VN') %></th>
-            <th class="tongTien"><%= totals.totalPrice.toLocaleString('vi-VN') %></th>
-            <% } else { %>
-            <th class="date" colspan="2"></th>
-            <th class="muNuoc"><%= totals.muQuyKho.toLocaleString('vi-VN') %></th>
-            <th class="muTap"><%= totals.muTap.toLocaleString('vi-VN') %></th>
-            <th class="muKe"><%= totals.muKe.toLocaleString('vi-VN') %></th>
-            <th class="muDong"><%= totals.muDong.toLocaleString('vi-VN') %></th>
-            <% } %>
-            <th class="khac"></th>
-          </tr>
-          <% if (!(area.areaDimension > 0 && area.areaPrice > 0)) { %>
-          <tr>
-            <th class="date">Đơn giá</th>
-            <th class="muNuoc" colspan="3"><%= latestPrices.muNuoc.toLocaleString('vi-VN') %></th>
-            <th class="muTap"><%= latestPrices.muTap.toLocaleString('vi-VN') %></th>
-            <th class="muKe"><%= latestPrices.muKe.toLocaleString('vi-VN') %></th>
-            <th class="muDong"><%= latestPrices.muDong.toLocaleString('vi-VN') %></th>
-            <th class="khac"></th>
-          </tr>
-          <tr>
-            <th class="date">Thành tiền</th>
-            <th class="muNuoc" colspan="3"><%= (totals.muQuyKho * latestPrices.muNuoc).toLocaleString('vi-VN') %></th>
-            <th class="muTap"><%= (totals.muTap * latestPrices.muTap).toLocaleString('vi-VN') %></th>
-            <th class="muKe"><%= (totals.muKe * latestPrices.muKe).toLocaleString('vi-VN') %></th>
-            <th class="muDong"><%= (totals.muDong * latestPrices.muDong).toLocaleString('vi-VN') %></th>
-            <th class="khac"></th>
-          </tr>
-          <% } %>
-        </tfoot>
-      </table>
-      <p>Tổng số tiền: <span id="totalAmount<%= index %>"><%= ((totals.muQuyKho * latestPrices.muNuoc) + (totals.muTap * latestPrices.muTap) + (totals.muKe * latestPrices.muKe) + (totals.muDong * latestPrices.muDong)).toLocaleString('vi-VN') %></span></p>
-      <p class="addContainer<%= index %> no-print">Cộng: <input type="number" class="addPriceInput no-print" data-index="<%= index %>" oninput="updateFinalAmount(<%= index %>); document.getElementById('addPriceValue<%= index %>').textContent = parseFloat(this.value).toLocaleString('vi-VN')"><span id="addPriceValue<%= index %>"></span></p>
-      <p class="minusContainer<%= index %> no-print">Trừ: <input type="number" class="minusPriceInput no-print" data-index="<%= index %>" oninput="updateFinalAmount(<%= index %>); document.getElementById('minusPriceValue<%= index %>').textContent = parseFloat(this.value).toLocaleString('vi-VN')"><span id="minusPriceValue<%= index %>"></span></p>
-      <p class="finalAmountContainer<%= index %> no-print">Tổng sau cộng/trừ: <span id="finalAmountSpan<%= index %>"></span></p>
-      <p class="<%= supplier.ratioSumSplit === 100 ? 'no-print' : '' %>">Tỉ lệ phân chia tổng: <span class="ratioSumSplit" data-index="<%= index %>"><%= supplier.ratioSumSplit %></span>%</p>
-      <hr>
-      <div style="display: flex; justify-content: space-between; margin-top: 20px;">
-        <p>Thực nhận: <span id="finalAmountDisplay<%= index %>"></span></p>
-        <div style="display:flex; flex-direction: column; align-items: flex-end;">
-          <% if (supplier.initialDebtAmount > 0) { %>
-          <p>Công nợ còn lại: <%= remainingDebt.toLocaleString('vi-VN') %></p>
-          <% } %>
-          <% if (totalMoneyRetainedAmount > 0) { %>
-          <p>Tổng tiền giữ lại: <%= totalMoneyRetainedAmount.toLocaleString('vi-VN') %></p>
-          <% } %>
-        </div>
+    <div class="column-selection no-print px-3 my-3 sticky-column-selection">
+      <div class="form-check form-check-inline">
+        <input class="form-check-input column-toggle" type="checkbox" id="toggle-date" data-column="date" checked>
+        <label class="form-check-label" for="toggle-date">Ngày</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input column-toggle" type="checkbox" id="toggle-muNuoc" data-column="muNuoc" checked>
+        <label class="form-check-label" for="toggle-muNuoc">Mủ nước</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input column-toggle" type="checkbox" id="toggle-muTap" data-column="muTap" checked>
+        <label class="form-check-label" for="toggle-muTap">Mủ tạp</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input column-toggle" type="checkbox" id="toggle-muKe" data-column="muKe" checked>
+        <label class="form-check-label" for="toggle-muKe">Mủ ké</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input column-toggle" type="checkbox" id="toggle-muDong" data-column="muDong" checked>
+        <label class="form-check-label" for="toggle-muDong">Mủ đông</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input column-toggle" type="checkbox" id="toggle-tongTien" data-column="tongTien" checked>
+        <label class="form-check-label" for="toggle-tongTien">Tổng tiền</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input column-toggle" type="checkbox" id="toggle-khac" data-column="khac" checked>
+        <label class="form-check-label" for="toggle-khac">Khác</label>
       </div>
     </div>
-    <% }) %>
+
+    <div id="list-example" class="list-group scrollspy-container no-print">
+      <% data.forEach((supplier, index) => { %>
+      <a class="list-group-item list-group-item-action no-print" href="#supplier<%= index %>"><%= supplier.supplierName %></a>
+      <% }) %>
+    </div>
+
+    <div data-bs-spy="scroll" data-bs-target="#list-example" data-bs-offset="0" class="scrollspy-example">
+      <% data.forEach((supplier, index) => { %>
+      <div id="supplier<%= index %>" class="<%= index === data.length - 1 ? '' : 'page-break' %>">
+        <h4>Phiếu Tính Tiền Mủ Cao Su</h4>
+        <h5>(<%= startDate ? new Date(startDate).toLocaleDateString('vi-VN') : "Không ngày" %> - <%= endDate ? new Date(endDate).toLocaleDateString('vi-VN') : "Không ngày" %>)</h5>
+        <h6>Nhà cung cấp: <%= supplier.supplierName %> </h6>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th class="date" rowspan="2">Ngày</th>
+              <% if (area.areaDimension > 0 && area.areaPrice > 0) { %>
+              <th class="muNuoc" colspan="7">Mủ nước</th>
+              <th class="muTap" colspan="5">Mủ tạp</th>
+              <th class="muKe" colspan="5">Mủ ké</th>
+              <th class="muDong" colspan="5">Mủ đông</th>
+              <th class="tongTien" rowspan="2">Tổng tiền</th>
+              <% } else { %>
+              <th class="muNuoc" colspan="3">Mủ nước</th>
+              <th class="muTap">Mủ tạp</th>
+              <th class="muKe">Mủ ké</th>
+              <th class="muDong">Mủ đông</th>
+              <% } %>
+              <th class="khac" rowspan="2">Khác</th>
+            </tr>
+            <tr>
+              <% if (area.areaDimension > 0 && area.areaPrice > 0) { %>
+              <th class="muNuoc">SL</th>
+              <th class="muNuoc">HL%</th>
+              <th class="muNuoc">Quy khô trc</th>
+              <th class="muNuoc">Đơn giá</th>
+              <th class="muNuoc">TL(%)</th>
+              <th class="muNuoc">Quy khô sau</th>
+              <th class="muNuoc">Thành tiền</th>
+              <th class="muTap">SL</th>
+              <th class="muTap">Đơn giá</th>
+              <th class="muTap">TL(%)</th>
+              <th class="muTap">SL sau</th>
+              <th class="muTap">Thành tiền</th>
+              <th class="muKe">SL</th>
+              <th class="muKe">Đơn giá</th>
+              <th class="muKe">TL(%)</th>
+              <th class="muKe">SL sau</th>
+              <th class="muKe">Thành tiền</th>
+              <th class="muDong">SL</th>
+              <th class="muDong">Đơn giá</th>
+              <th class="muDong">TL(%)</th>
+              <th class="muDong">SL sau</th>
+              <th class="muDong">Thành tiền</th>
+              <% } else { %>
+              <th class="muNuoc">SL</th>
+              <th class="muNuoc">HL%</th>
+              <th class="muNuoc">Quy khô</th>
+              <th class="muTap">SL</th>
+              <th class="muKe">SL</th>
+              <th class="muDong">SL</th>
+              <% } %>
+            </tr>
+          </thead>
+          <tbody>
+            <% let totals = { muQuyKho: 0, muQuyKhoAfter: 0, muQuyKhoTotalPrice: 0, muTap: 0, muTapAfter: 0, muTapTotalPrice: 0, muKe: 0, muKeAfter: 0, muKeTotalPrice: 0, muDong: 0, muDongAfter: 0, muDongTotalPrice: 0, totalPrice: 0 }; %>
+            <% supplier.data.forEach((item) => { %>
+            <tr>
+              <td class="date"><%= item.date %></td>
+              <% if (area.areaDimension > 0 && area.areaPrice > 0) { %>
+              <td class="muNuoc"><%= item.muNuocQuantity %></td>
+              <td class="muNuoc"><%= item.muHamLuong %></td>
+              <td class="muNuoc"><%= item.muQuyKhoTotal %></td>
+              <td class="muNuoc"><%= item.muQuyKhoPrice %></td>
+              <td class="muNuoc"><%= item.muNuocRatioSplit %></td>
+              <td class="muNuoc"><%= item.muQuyKhoTotalAfterSplit %></td>
+              <td class="muNuoc"><%= item.muQuyKhoTotalPrice %></td>
+              <td class="muTap"><%= item.muTapQuantity %></td>
+              <td class="muTap"><%= item.muTapPrice %></td>
+              <td class="muTap"><%= item.muTapRatioSplit %></td>
+              <td class="muTap"><%= item.muTapTotalAfterSplit %></td>
+              <td class="muTap"><%= item.muTapTotalPrice %></td>
+              <td class="muKe"><%= item.muKeQuantity %></td>
+              <td class="muKe"><%= item.muKePrice %></td>
+              <td class="muKe"><%= item.muKeRatioSplit %></td>
+              <td class="muKe"><%= item.muKeTotalAfterSplit %></td>
+              <td class="muKe"><%= item.muKeTotalPrice %></td>
+              <td class="muDong"><%= item.muDongQuantity %></td>
+              <td class="muDong"><%= item.muDongPrice %></td>
+              <td class="muDong"><%= item.muDongRatioSplit %></td>
+              <td class="muDong"><%= item.muDongTotalAfterSplit %></td>
+              <td class="muDong"><%= item.muDongTotalPrice %></td>
+              <td class="tongTien"><%= item.totalPrice %></td>
+              <% } else { %>
+              <td class="muNuoc"><%= item.muNuocQuantity %></td>
+              <td class="muNuoc"><%= item.muHamLuong %></td>
+              <td class="muNuoc"><%= item.muQuyKhoTotal %></td>
+              <td class="muTap"><%= item.muTapQuantity %></td>
+              <td class="muKe"><%= item.muKeQuantity %></td>
+              <td class="muDong"><%= item.muDongQuantity %></td>
+              <% } %>
+              <td class="khac"><%= item.note %></td>
+            </tr>
+            <% totals.muQuyKho += parseFloat(item.muQuyKhoTotal.replace(',', '.')) || 0; %>
+            <% totals.muQuyKhoAfter += parseFloat(item.muQuyKhoTotalAfterSplit.replace(',', '.')) || 0; %>
+            <% totals.muQuyKhoTotalPrice += parseFloat(item.muQuyKhoTotalPrice.replace(/\./g, '').replace(',', '.')) || 0; %>
+            <% totals.muTap += parseFloat(item.muTapQuantity.replace(',', '.')) || 0; %>
+            <% totals.muTapAfter += parseFloat(item.muTapTotalAfterSplit.replace(',', '.')) || 0; %>
+            <% totals.muTapTotalPrice += parseFloat(item.muTapTotalPrice.replace(/\./g, '').replace(',', '.')) || 0; %>
+            <% totals.muKe += parseFloat(item.muKeQuantity.replace(',', '.')) || 0; %>
+            <% totals.muKeAfter += parseFloat(item.muKeTotalAfterSplit.replace(',', '.')) || 0; %>
+            <% totals.muKeTotalPrice += parseFloat(item.muKeTotalPrice.replace(/\./g, '').replace(',', '.')) || 0; %>
+            <% totals.muDong += parseFloat(item.muDongQuantity.replace(',', '.')) || 0; %>
+            <% totals.muDongAfter += parseFloat(item.muDongTotalAfterSplit.replace(',', '.')) || 0; %>
+            <% totals.muDongTotalPrice += parseFloat(item.muDongTotalPrice.replace(/\./g, '').replace(',', '.')) || 0; %>
+            <% totals.totalPrice += parseFloat(item.totalPrice.replace(/\./g, '').replace(',', '.')) || 0; %>
+            <% }) %>
+          </tbody>
+          <tfoot>
+            <tr>
+              <th class="date">Tổng</th>
+              <% if (area.areaDimension > 0 && area.areaPrice > 0) { %>
+              <th class="muNuoc" class="date" colspan="2"></th>
+              <th class="muNuoc"><%= totals.muQuyKho.toLocaleString('vi-VN') %></th>
+              <th class="muNuoc" colspan="2"></th>
+              <th class="muNuoc"><%= totals.muQuyKhoAfter.toLocaleString('vi-VN') %></th>
+              <th class="muNuoc"><%= totals.muQuyKhoTotalPrice.toLocaleString('vi-VN') %></th>
+              <th class="muTap"><%= totals.muTap.toLocaleString('vi-VN') %></th>
+              <th class="muTap" colspan="2"></th>
+              <th class="muTap"><%= totals.muTapAfter.toLocaleString('vi-VN') %></th>
+              <th class="muTap"><%= totals.muTapTotalPrice.toLocaleString('vi-VN') %></th>
+              <th class="muKe"><%= totals.muKe.toLocaleString('vi-VN') %></th>
+              <th class="muKe" colspan="2"></th>
+              <th class="muKe"><%= totals.muKeAfter.toLocaleString('vi-VN') %></th>
+              <th class="muKe"><%= totals.muKeTotalPrice.toLocaleString('vi-VN') %></th>
+              <th class="muDong"><%= totals.muDong.toLocaleString('vi-VN') %></th>
+              <th class="muDong" colspan="2"></th>
+              <th class="muDong"><%= totals.muDongAfter.toLocaleString('vi-VN') %></th>
+              <th class="muDong"><%= totals.muDongTotalPrice.toLocaleString('vi-VN') %></th>
+              <th class="tongTien"><%= totals.totalPrice.toLocaleString('vi-VN') %></th>
+              <% } else { %>
+              <th class="date" colspan="2"></th>
+              <th class="muNuoc"><%= totals.muQuyKho.toLocaleString('vi-VN') %></th>
+              <th class="muTap"><%= totals.muTap.toLocaleString('vi-VN') %></th>
+              <th class="muKe"><%= totals.muKe.toLocaleString('vi-VN') %></th>
+              <th class="muDong"><%= totals.muDong.toLocaleString('vi-VN') %></th>
+              <% } %>
+              <th class="khac"></th>
+            </tr>
+            <% if (!(area.areaDimension > 0 && area.areaPrice > 0)) { %>
+            <tr>
+              <th class="date">Đơn giá</th>
+              <th class="muNuoc" colspan="3"><%= latestPrices.muNuoc.toLocaleString('vi-VN') %></th>
+              <th class="muTap"><%= latestPrices.muTap.toLocaleString('vi-VN') %></th>
+              <th class="muKe"><%= latestPrices.muKe.toLocaleString('vi-VN') %></th>
+              <th class="muDong"><%= latestPrices.muDong.toLocaleString('vi-VN') %></th>
+              <th class="khac"></th>
+            </tr>
+            <tr>
+              <th class="date">Thành tiền</th>
+              <th class="muNuoc" colspan="3"><%= (totals.muQuyKho * latestPrices.muNuoc).toLocaleString('vi-VN') %></th>
+              <th class="muTap"><%= (totals.muTap * latestPrices.muTap).toLocaleString('vi-VN') %></th>
+              <th class="muKe"><%= (totals.muKe * latestPrices.muKe).toLocaleString('vi-VN') %></th>
+              <th class="muDong"><%= (totals.muDong * latestPrices.muDong).toLocaleString('vi-VN') %></th>
+              <th class="khac"></th>
+            </tr>
+            <% } %>
+          </tfoot>
+        </table>
+        <p>Tổng số tiền: <span id="totalAmount<%= index %>"><%= ((totals.muQuyKho * latestPrices.muNuoc) + (totals.muTap * latestPrices.muTap) + (totals.muKe * latestPrices.muKe) + (totals.muDong * latestPrices.muDong)).toLocaleString('vi-VN') %></span></p>
+        <p class="addContainer<%= index %> no-print d-flex align-items-center">Cộng:
+          <input type="number" class="form-control addPriceInput no-print mx-2" style="width: auto;" data-index="<%= index %>" oninput="updateFinalAmount(<%= index %>); document.getElementById('addPriceValue<%= index %>').textContent = parseFloat(this.value).toLocaleString('vi-VN')">
+          <span id="addPriceValue<%= index %>"></span>
+        </p>
+        <p class="minusContainer<%= index %> no-print d-flex align-items-center">Trừ:
+          <input type="number" class="form-control minusPriceInput no-print mx-2" style="width: auto;" data-index="<%= index %>" oninput="updateFinalAmount(<%= index %>); document.getElementById('minusPriceValue<%= index %>').textContent = parseFloat(this.value).toLocaleString('vi-VN')">
+          <span id="minusPriceValue<%= index %>"></span>
+        </p>
+        <p class="finalAmountContainer<%= index %> no-print">Tổng sau cộng/trừ: <span id="finalAmountSpan<%= index %>"></span></p>
+        <p class="<%= supplier.ratioSumSplit === 100 ? 'no-print' : '' %>">Tỉ lệ phân chia tổng: <span class="ratioSumSplit" data-index="<%= index %>"><%= supplier.ratioSumSplit %></span>%</p>
+        <hr>
+        <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+          <p>Thực nhận: <span id="finalAmountDisplay<%= index %>"></span></p>
+          <div style="display:flex; flex-direction: column; align-items: flex-end;">
+            <% if (supplier.initialDebtAmount > 0) { %>
+            <p>Công nợ còn lại: <%= remainingDebt.toLocaleString('vi-VN') %></p>
+            <% } %>
+            <% if (totalMoneyRetainedAmount > 0) { %>
+            <p>Tổng tiền giữ lại: <%= totalMoneyRetainedAmount.toLocaleString('vi-VN') %></p>
+            <% } %>
+          </div>
+        </div>
+      </div>
+      <% }) %>
+    </div>
   </div>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -249,6 +310,22 @@
           updateFinalAmount(index);
         })
       );
+
+      const scrollspyContainer = document.getElementById('list-example');
+      let scrollTimeout;
+
+      window.addEventListener('scroll', function() {
+        clearTimeout(scrollTimeout);
+        scrollspyContainer.style.display = 'block';
+
+        scrollTimeout = setTimeout(function() {
+          scrollspyContainer.style.display = 'none';
+        }, 3000);
+      });
+
+      new bootstrap.ScrollSpy(document.body, {
+        target: '#list-example'
+      });
     });
 
     function updateFinalAmount(index) {
