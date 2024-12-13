@@ -183,10 +183,6 @@ function initializeExportDataTable(
             exportOptions: {
               columns: ":visible",
             },
-            key: {
-              altKey: true,
-              key: "q",
-            },
             customize: function (win) {
               const formatDateRange = () => {
                 const startDate = new Date(
@@ -203,11 +199,16 @@ function initializeExportDataTable(
               const setCommonStyles = () => {
                 $(win.document.body).find("th, td").css({
                   "font-size": "0.65rem",
-                  padding: "5px",
+                  border: '1px solid black',
                 });
                 $(win.document.body).find("th").css({
                   "white-space": "nowrap",
-                  padding: "5px",
+                });
+                $(win.document.body).find("hr").css({
+                  margin: 0,
+                });
+                $(win.document.body).find("p").css({
+                  fontSize: "0.6rem",
                 });
               };
 
