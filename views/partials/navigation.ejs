@@ -38,45 +38,12 @@
     </li>
     <% } %>
     <% if(user.role === "Admin"){ %>
-    <!-- <li class="nav-item">
-      <a href="/truy-van" class="nav-link link-dark d-flex justify-content-between">
-        Truy Vấn
-        <i class="ri-search-line"></i>
-      </a>
-    </li> -->
     <li class="nav-item">
       <a href="/quan-ly-du-lieu" class="nav-link link-dark d-flex justify-content-between">
         Dữ liệu tổng
         <i class="ri-database-line"></i>
       </a>
     </li>
-    <!-- <li>
-      <a
-        href="/quan-ly-khu-vuc"
-        class="nav-link link-dark d-flex justify-content-between"
-      >
-        Khu Vực
-        <i class="ri-map-pin-line"></i>
-      </a>
-    </li> -->
-    <!-- <li>
-      <a
-        href="/quan-ly-vuon"
-        class="nav-link link-dark d-flex justify-content-between"
-      >
-        Vườn
-        <i class="ri-tree-line"></i>
-      </a>
-    </li> -->
-    <!-- <li>
-      <a
-        href="/quan-ly-nguoi-quan-ly"
-        class="nav-link link-dark d-flex justify-content-between"
-      >
-        Người Quản Lý
-        <i class="ri-user-3-line"></i>
-      </a>
-    </li> -->
     <li class="nav-item">
       <a href="/quan-ly-hang-hoa" class="nav-link link-dark d-flex justify-content-between">
         Chạy lò
@@ -128,12 +95,6 @@
       </a>
     </li>
     <% } %>
-    <!-- <li>
-      <a href="#" class="nav-link link-dark d-flex justify-content-between">
-        Xuất Dữ Liệu
-        <i class="ri-export-line"></i>
-      </a>
-    </li> -->
   </ul>
   <hr />
   <div class="logOut">
@@ -147,35 +108,37 @@
 </nav>
 
 
-<!-- navigatoin for mobile -->
-<nav id="mobileNav" class="d-md-none navbar fixed-bottom nav-pills" style="background: white; overflow-x: auto; overflow-y: hidden;">
-  <div class="d-flex flex-nowrap justify-content-start">
-    <% 
-      const navItems = [
-        { roles: ["Admin"], href: "/tong", icon: "ri-line-chart-line", text: "Tổng" },
-        { roles: ["Admin"], href: "/truy-van", icon: "ri-search-line", text: "Truy vấn" },
-        { roles: ["Admin"], href: "/quan-ly-du-lieu", icon: "ri-database-line", text: "Dữ liệu tổng" },
-        { roles: ["Admin"], href: "/quan-ly-hang-hoa", icon: "ri-instance-line", text: "Hàng hóa" },
-        { roles: ["Admin"], href: "/quan-ly-hop-dong", icon: "ri-contract-line", text: "Hợp đồng" },
-        { roles: ["Admin"], href: "/quan-ly-chi-tieu", icon: "ri-bill-line", text: "Chi tiêu" },
-        { roles: ["Admin", "Văn phòng"], href: "/du-lieu-hang-ngay", icon: "ri-numbers-line", text: "Dữ liệu ngày" },
-        { roles: ["Admin", "Hàm lượng"], href: "/nhap-du-lieu/nguyen-lieu", icon: "ri-edit-line", text: "Thêm dữ liệu" },
-
-        { roles: ["Admin"], href: "/quan-ly-tai-khoan", icon: "ri-group-line", text: "Tài khoản" }
-      ];
-
-      navItems.forEach(item => {
-        if (item.roles.includes(user.role)) {
-    %>
-    <a class="nav-link link-dark d-flex align-items-center justify-content-center flex-column" href="<%= item.href %>" style="width: 5rem ; text-align: center; font-size: 0.8rem; margin: 5px; ">
-      <i class="<%= item.icon %>" style="font-size: 1.4rem; display: block"></i><%= item.text %>
+<!-- navigation for mobile -->
+<nav id="mobileNav" class="d-md-none navbar fixed-bottom nav-pills" style="background: white">
+  <div class="w-100 d-flex flex-nowrap justify-content-evenly">
+    <a class="nav-link link-dark d-flex align-items-center justify-content-center flex-column" href="/tong" style="width: 5rem; text-align: center; font-size: 0.8rem; padding: 5px;">
+      <i class="ri-line-chart-line" style="font-size: 1.4rem; display: block"></i>Tổng
     </a>
-    <% 
-        }
-      });
-    %>
+    <a class="nav-link link-dark d-flex align-items-center justify-content-center flex-column" href="/quan-ly-hop-dong" style="width: 5rem; text-align: center; font-size: 0.8rem; padding: 5px;">
+      <i class="ri-search-line" style="font-size: 1.4rem; display: block"></i>Hợp đồng
+    </a>
+    <a class="nav-link link-dark d-flex align-items-center justify-content-center flex-column" href="#collapseNav" role="button" data-bs-toggle="collapse" data-bs-target="#collapseNav" aria-expanded="false" aria-controls="collapseNav" style="width: 5rem; text-align: center; font-size: 1.4rem; padding: 5px;">
+      +
+    </a>
+    <a class="nav-link link-dark d-flex align-items-center justify-content-center flex-column" href="/quan-ly-du-lieu" style="width: 5rem; text-align: center; font-size: 0.8rem; padding: 5px;">
+      <i class="ri-database-line" style="font-size: 1.4rem; display: block"></i>Dữ liệu tổng
+    </a>
+    <a class="nav-link link-dark d-flex align-items-center justify-content-center flex-column" href="/quan-ly-hang-hoa" style="width: 5rem; text-align: center; font-size: 0.8rem; padding: 5px;">
+      <i class="ri-instance-line" style="font-size: 1.4rem; display: block"></i>Hàng hóa
+    </a>
   </div>
 </nav>
+
+<div class="collapse" id="collapseNav">
+  <ul class="list-group">
+    <li class="list-group-item"><a href="/quan-ly-hop-dong">Hợp đồng</a></li>
+    <li class="list-group-item"><a href="/quan-ly-chi-tieu">Chi tiêu</a></li>
+    <li class="list-group-item"><a href="/du-lieu-hang-ngay">Dữ liệu ngày</a></li>
+    <li class="list-group-item"><a href="/nhap-du-lieu/nguyen-lieu">Thêm dữ liệu</a></li>
+    <li class="list-group-item"><a href="/quan-ly-tai-khoan">Tài khoản</a></li>
+    <!-- Add more items as needed -->
+  </ul>
+</div>
 
 <script>
   let lastScrollTop = 0;

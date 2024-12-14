@@ -2,7 +2,6 @@ const signInRoute = require('./src/signInRoute');
 const profileRoute = require('./src/profileRoute');
 const accountRoute = require('./src/accountRoute') 
 const productRoute = require('./src/productRoute') 
-const queryRoute = require("./src/queryRoute")
 const rawMaterialRoute = require("./src/rawMaterialRoute")
 const saleRoute = require("./src/saleRoute")
 const spendRoute = require("./src/spendRoute")
@@ -17,7 +16,6 @@ const routes = [
     {path: "/ho-so", route: profileRoute},
     {path: "/quan-ly-tai-khoan", route: accountRoute},
     {path: "/quan-ly-hang-hoa", route: productRoute},
-    {path: "/truy-van", route: queryRoute},
     {path: "/quan-ly-du-lieu", route: rawMaterialRoute},
     {path: "/quan-ly-hop-dong", route: saleRoute},
     {path: "/quan-ly-chi-tieu", route: spendRoute},
