@@ -3,6 +3,7 @@ const router = express.Router();
 const authMiddlewares = require("../../middlewares/authMiddlewares");
 const actionHistory = require("../../controllers/actionHistoryController");
 const checkPermission = require("../../middlewares/checkPermission");
+const setUnreadCount = require("../../middlewares/unreadCountMiddleware");
 
 // Apply ensureLoggedIn middleware to all routes
 router.use(authMiddlewares.ensureLoggedIn);
@@ -11,7 +12,7 @@ router.use(authMiddlewares.ensureWorkingHours);
 // Activity history
 router.get(
   "/nhat-ky-hoat-dong",
-
+  setUnreadCount,
   authMiddlewares.ensureRoles(["Admin", "Văn phòng"]),
   actionHistory.renderPage
 );

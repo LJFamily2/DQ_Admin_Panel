@@ -3,6 +3,7 @@ const router = express.Router();
 const spendController = require("../../controllers/spendController");
 const authMiddlewares = require("../../middlewares/authMiddlewares");
 const checkPermission = require("../../middlewares/checkPermission");
+const setUnreadCount = require("../../middlewares/unreadCountMiddleware");
 
 // Apply ensureLoggedIn middleware to all routes
 router.use(authMiddlewares.ensureLoggedIn);
@@ -10,7 +11,7 @@ router.use(authMiddlewares.ensureWorkingHours);
 
 router.get(
   "/",
-
+  setUnreadCount,
   authMiddlewares.ensureRoles(["Admin"]),
   spendController.renderPage
 );

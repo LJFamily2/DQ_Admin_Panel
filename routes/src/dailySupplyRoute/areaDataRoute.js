@@ -4,6 +4,7 @@ const dailySupplyController = require("../../../controllers/dailySupplyControlle
 const authMiddlewares = require("../../../middlewares/authMiddlewares");
 const checkDateAccess = require("../../../middlewares/dateRangeAccessSetting");
 const checkPermission = require("../../../middlewares/checkPermission");
+const setUnreadCount = require("../../../middlewares/unreadCountMiddleware");
 
 // Apply ensureLoggedIn middleware to all routes
 router.use(authMiddlewares.ensureLoggedIn);
@@ -12,6 +13,7 @@ router.use(authMiddlewares.ensureWorkingHours);
 // Main page
 router.get(
   "/",
+  setUnreadCount,
   authMiddlewares.ensureRoles(["Admin", "Văn phòng"]),
   dailySupplyController.supplierAreaController.renderPage
 );
@@ -72,6 +74,7 @@ router.post(
 // Admin side for export
 router.get(
   "/:slug/xuat-file",
+  setUnreadCount,
   authMiddlewares.ensureRoles(["Admin", "Văn phòng"]),
   dailySupplyController.supplierExportController.renderPage
 );
@@ -90,6 +93,7 @@ router.put(
 
 router.get(
   "/:slug/xuat-file/tat-ca",
+  setUnreadCount,
   authMiddlewares.ensureRoles(["Admin", "Văn phòng"]),
   dailySupplyController.supplierExportController.renderAllData
 );
@@ -97,6 +101,7 @@ router.get(
 // Admin side for exporting individual
 router.get(
   "/:slug/xuat-file/:supplierSlug",
+  setUnreadCount,
   authMiddlewares.ensureRoles(["Admin", "Văn phòng"]),
   dailySupplyController.supplierIndividualExportController.renderPage
 );

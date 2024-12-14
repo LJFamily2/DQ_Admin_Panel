@@ -13,6 +13,13 @@
     #mobileNav.hide {
       transform: translateY(100%);
     }
+
+    .badge-top-right {
+      position: absolute;
+      top: 50%;
+      right: 0;
+      transform: translate(50%, -50%);
+    }
   </style>
 </head>
 <nav class="min-vh-100 d-none d-md-flex flex-column flex-shrink-0 p-3" style="width: 230px; background: white;">
@@ -97,8 +104,11 @@
       </a>
       <ul class="nav flex-column ms-3">
         <li class="nav-item">
-          <a href="/du-lieu/nhat-ky-hoat-dong" class="nav-link link-dark d-flex justify-content-between">
+          <a href="/du-lieu/nhat-ky-hoat-dong" class="nav-link link-dark d-flex justify-content-between position-relative">
             Lịch sử hoạt động <i class="ri-history-line"></i>
+            <% if (unreadCount > 0) { %>
+              <span class="badge bg-danger badge-top-right"><%= unreadCount < 100 ? unreadCount : '99+' %></span>
+            <% } %>
           </a>
         </li>
       </ul>

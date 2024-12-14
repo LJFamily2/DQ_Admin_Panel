@@ -26,6 +26,10 @@ const actionHistorySchema = new mongoose.Schema({
   newValues: { 
     type: Object, 
   },
+  isRead: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 // Create the ActionHistory model

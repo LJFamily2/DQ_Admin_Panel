@@ -3,6 +3,7 @@ const router = express.Router();
 const saleController = require("../../controllers/saleController");
 const authMiddlewares = require("../../middlewares/authMiddlewares");
 const checkPermission = require("../../middlewares/checkPermission");
+const setUnreadCount = require("../../middlewares/unreadCountMiddleware");
 
 // Apply ensureLoggedIn middleware to all routes
 router.use(authMiddlewares.ensureLoggedIn);
@@ -10,6 +11,7 @@ router.use(authMiddlewares.ensureWorkingHours);
 
 router.get(
   "/",
+  setUnreadCount,
 
   authMiddlewares.ensureRoles(["Admin"]),
   saleController.renderPage
@@ -44,6 +46,6 @@ router.delete(
   saleController.deleteAll
 );
 
-router.get("/hop-dong/:slug", saleController.renderDetailPage);
+router.get("/hop-dong/:slug",setUnreadCount, saleController.renderDetailPage);
 
 module.exports = router;

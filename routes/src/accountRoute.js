@@ -3,6 +3,7 @@ const router = express.Router();
 const accountController = require("../../controllers/accountController");
 const authMiddlewares = require("../../middlewares/authMiddlewares");
 const checkPermission = require("../../middlewares/checkPermission");
+const setUnreadCount = require("../../middlewares/unreadCountMiddleware");
 
 const commonMiddlewares = [
   authMiddlewares.ensureLoggedIn,
@@ -11,11 +12,11 @@ const commonMiddlewares = [
 ];
 
 // Initial setup route
-router.get("/tao-tai-khoan", accountController.initialSetupPage);
+router.get("/tao-tai-khoan", setUnreadCount, accountController.initialSetupPage);
 router.post("/tao-tai-khoan", accountController.initialSetupCreateAccount);
 
 // Main page
-router.get("/", ...commonMiddlewares, accountController.renderPage);
+router.get("/", ...commonMiddlewares, setUnreadCount, accountController.renderPage);
 
 // Get all users
 router.post("/getUsers", ...commonMiddlewares, accountController.getUsers);

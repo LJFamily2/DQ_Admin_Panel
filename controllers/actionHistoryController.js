@@ -6,7 +6,8 @@ const cron = require("node-cron");
 module.exports = {
   renderPage,
   deleteData,
-  deleteAllData,  deleteOldActionHistory,
+  deleteAllData,
+  deleteOldActionHistory,
 };
 async function renderPage(req, res) {
   try {
@@ -71,6 +72,9 @@ async function renderPage(req, res) {
       _id: id,
       username,
     }));
+
+    // Mark all notifications as read
+    await ActionHistory.updateMany({ isRead: false }, { isRead: true });
 
     res.render("src/actionHistoryPage", {
       layout: "./layouts/defaultLayout",
@@ -162,7 +166,6 @@ async function deleteOldActionHistory() {
     await ActionHistory.deleteMany({
       timestamp: { $lt: thirtyDaysAgo },
     });
-
   } catch (error) {
     console.error("Error deleting old action history:", error);
   }

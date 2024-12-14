@@ -3,9 +3,11 @@ const router = express.Router();
 const dateRangeController = require("../../controllers/dateRangeAccessController");
 const authMiddlewares = require("../../middlewares/authMiddlewares");
 const checkPermission = require("../../middlewares/checkPermission");
+const setUnreadCount = require("../../middlewares/unreadCountMiddleware");
 
 router.post(
   "/setDateRange",
+  setUnreadCount,
   authMiddlewares.ensureRoles(["Admin"]),
   checkPermission("update"),
   dateRangeController.setDateRange
