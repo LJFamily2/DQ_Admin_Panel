@@ -1,6 +1,4 @@
 <head>
-  <script src="/js/activeLink.js" defer></script>
-
   <style>
     .nav-link:hover {
       background-color: rgba(0, 0, 0, 0.3);
@@ -19,6 +17,16 @@
       top: 50%;
       right: 0;
       transform: translate(50%, -50%);
+    }
+
+    .rotate-45 {
+      transform: rotate(45deg);
+      transition: transform 0.3s ease-in-out;
+    }
+
+    .rotate-0 {
+      transform: rotate(0deg);
+      transition: transform 0.3s ease-in-out;
     }
   </style>
 </head>
@@ -74,7 +82,7 @@
           <a href="/du-lieu/nhat-ky-hoat-dong" class="nav-link link-dark d-flex justify-content-between position-relative">
             Lịch sử hoạt động <i class="ri-history-line"></i>
             <% if (unreadCount > 0) { %>
-              <span class="badge bg-danger badge-top-right"><%= unreadCount < 100 ? unreadCount : '99+' %></span>
+            <span class="badge bg-danger badge-top-right"><%= unreadCount < 100 ? unreadCount : '99+' %></span>
             <% } %>
           </a>
         </li>
@@ -109,52 +117,82 @@
 
 
 <!-- navigation for mobile -->
-<nav id="mobileNav" class="d-md-none navbar fixed-bottom nav-pills" style="background: white">
+<nav id="mobileNav" class="d-md-none navbar fixed-bottom nav-pills" style="background: white ; height: 4.8rem ; border-top: 1px solid rgba(0, 0, 0, 0.275) ; ">
   <div class="w-100 d-flex flex-nowrap justify-content-evenly">
     <a class="nav-link link-dark d-flex align-items-center justify-content-center flex-column" href="/tong" style="width: 5rem; text-align: center; font-size: 0.8rem; padding: 5px;">
       <i class="ri-line-chart-line" style="font-size: 1.4rem; display: block"></i>Tổng
     </a>
-    <a class="nav-link link-dark d-flex align-items-center justify-content-center flex-column" href="/quan-ly-hop-dong" style="width: 5rem; text-align: center; font-size: 0.8rem; padding: 5px;">
-      <i class="ri-search-line" style="font-size: 1.4rem; display: block"></i>Hợp đồng
-    </a>
-    <a class="nav-link link-dark d-flex align-items-center justify-content-center flex-column" href="#collapseNav" role="button" data-bs-toggle="collapse" data-bs-target="#collapseNav" aria-expanded="false" aria-controls="collapseNav" style="width: 5rem; text-align: center; font-size: 1.4rem; padding: 5px;">
-      +
-    </a>
     <a class="nav-link link-dark d-flex align-items-center justify-content-center flex-column" href="/quan-ly-du-lieu" style="width: 5rem; text-align: center; font-size: 0.8rem; padding: 5px;">
       <i class="ri-database-line" style="font-size: 1.4rem; display: block"></i>Dữ liệu tổng
     </a>
+    <button class="btn d-flex align-items-center justify-content-center flex-column" role="button" data-bs-toggle="collapse" data-bs-target="#collapseNav" aria-expanded="false" aria-controls="collapseNav" style="width: 4rem; height: 4rem; font-size: 4rem; padding: 5px; border-radius: 50%;">
+      <i id="collapseIcon" class="ri-add-circle-fill rotate-0" style="color: #e8c06b;"></i>
+    </button>
     <a class="nav-link link-dark d-flex align-items-center justify-content-center flex-column" href="/quan-ly-hang-hoa" style="width: 5rem; text-align: center; font-size: 0.8rem; padding: 5px;">
-      <i class="ri-instance-line" style="font-size: 1.4rem; display: block"></i>Hàng hóa
+      <i class="ri-database-line" style="font-size: 1.4rem; display: block"></i>Chạy lò
+    </a>
+    <a class="nav-link link-dark d-flex align-items-center justify-content-center flex-column" href="/quan-ly-hop-dong" style="width: 5rem; text-align: center; font-size: 0.8rem; padding: 5px;">
+      <i class="ri-instance-line" style="font-size: 1.4rem; display: block"></i>Hợp đồng
     </a>
   </div>
 </nav>
 
-<div class="collapse" id="collapseNav">
-  <ul class="list-group">
-    <li class="list-group-item"><a href="/quan-ly-hop-dong">Hợp đồng</a></li>
-    <li class="list-group-item"><a href="/quan-ly-chi-tieu">Chi tiêu</a></li>
-    <li class="list-group-item"><a href="/du-lieu-hang-ngay">Dữ liệu ngày</a></li>
-    <li class="list-group-item"><a href="/nhap-du-lieu/nguyen-lieu">Thêm dữ liệu</a></li>
-    <li class="list-group-item"><a href="/quan-ly-tai-khoan">Tài khoản</a></li>
-    <!-- Add more items as needed -->
+<nav class="collapse position-fixed w-100 navbar nav-pills p-0" id="collapseNav" style="z-index: 1000; bottom: 4.7rem;">
+  <ul class="list-group" style="border-top-right-radius: 20px; border-top-left-radius: 20px; width: 100%;">
+    <li class="list-group-item text-center p-0"><a class="nav-link link-dark p-3" href="/quan-ly-chi-tieu">Chi tiêu</a></li>
+    <li class="list-group-item text-center p-0"><a class="nav-link link-dark p-3" href="/du-lieu-hang-ngay">Dữ liệu ngày</a></li>
+    <li class="list-group-item text-center p-0"><a class="nav-link link-dark p-3" href="/du-lieu/nhat-ky-hoat-dong">Lịch sử hoạt động</a></li>
+    <li class="list-group-item text-center p-0"><a class="nav-link link-dark p-3" href="/nhap-du-lieu/nguyen-lieu">Thêm dữ liệu</a></li>
+    <li class="list-group-item text-center p-0"><a class="nav-link link-dark p-3" href="/quan-ly-tai-khoan">Quản lý tài khoản</a></li>
   </ul>
-</div>
+</nav>
 
+<!-- Active the link when on page -->
 <script>
-  let lastScrollTop = 0;
-  const mobileNav = document.getElementById('mobileNav');
+  const currentURL = window.location.pathname;
 
-  window.addEventListener('scroll', function() {
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+  const navigationLinks = document.querySelectorAll('nav a');
 
-    if (scrollTop > lastScrollTop) {
-      // Scrolling down
-      mobileNav.classList.add('hide');
+
+  navigationLinks.forEach(link => {
+    const linkHref = link.getAttribute('href');
+    if (currentURL.includes(linkHref)) {
+      link.classList.add('active');
+      link.classList.remove('link-dark');
     } else {
-      // Scrolling up
-      mobileNav.classList.remove('hide');
+      link.classList.remove('active');
+      link.classList.add('link-dark');
     }
+  });
+</script>
 
-    lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // For Mobile or negative scrolling
-  }, false);
+<!-- Hide mobile navigation on scroll down -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    let lastScrollTop = 0;
+    const mobileNav = document.getElementById('mobileNav');
+    const collapseNav = document.getElementById('collapseNav');
+    const scrollContainer = document.querySelector('.container-fluid');
+    const collapseIcon = document.getElementById('collapseIcon');
+
+    scrollContainer.addEventListener('scroll', function() {
+      const scrollTop = scrollContainer.scrollTop;
+      const isScrollingDown = scrollTop > lastScrollTop;
+
+      mobileNav.classList.toggle('hide', isScrollingDown);
+      collapseNav.classList.remove('show');
+      collapseIcon.classList.toggle('rotate-45', isScrollingDown);
+      collapseIcon.classList.toggle('rotate-0', !isScrollingDown);
+
+      lastScrollTop = Math.max(scrollTop, 0);
+    });
+  });
+</script>
+
+<!-- CollapseIcon animation -->
+<script>
+  document.getElementById('collapseIcon').addEventListener('click', function() {
+    this.classList.toggle('rotate-45');
+    this.classList.toggle('rotate-0');
+  });
 </script>
