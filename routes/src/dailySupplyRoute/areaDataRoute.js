@@ -38,6 +38,7 @@ router.delete(
 // Detail page
 router.get(
   "/:slug",
+  setUnreadCount,
   authMiddlewares.ensureRoles(["Admin", "Văn phòng"]),
   dailySupplyController.supplierController.renderDetailPage
 );
