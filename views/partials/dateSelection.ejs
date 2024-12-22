@@ -29,15 +29,15 @@
         <div class="col my-2 d-flex align-items-end">
           <% var submitButton = submitButton || false; %>
           <button type="button" id="clearFilterButton" class="btn btn-secondary mx-2" style="display: none" data-bs-dismiss="modal" onclick="clearFilters()">
-            Xóa lọc
+            Hủy bỏ
           </button>
           <% if(submitButton){ %>
           <button type="submit" onclick="handleFormSubmit(this)" id=" filterButton" class="btn btn-primary">
-            Lọc
+            Chọn
           </button>
           <% } else { %>
           <button type="button" id="filterButton" class="btn btn-primary" data-bs-dismiss="modal" onclick="document.getElementById('clearFilterButton').style.display = 'inline'">
-            Lọc
+            Chọn
           </button>
           <% } %>
         </div>

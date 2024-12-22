@@ -252,9 +252,8 @@ async function renderAllData(req, res) {
           res,
           false
         );
-    
+
         // Only process suppliers that have data within the date range
-        if (supplierData.data.length > 0) {
           // Manually calculate totalDebtPaidAmount and totalMoneyRetainedAmount
           totalDebtPaidAmount += supplier.debtHistory.reduce(
             (total, debt) => total + debt.debtPaidAmount,
@@ -264,18 +263,18 @@ async function renderAllData(req, res) {
             (total, retained) => total + retained.retainedAmount,
             0
           );
-    
+
           // Calculate remainingDebt
           remainingDebt += supplier.initialDebtAmount - totalDebtPaidAmount;
-    
+
           allSupplierData.push({
             supplierName: supplier.name,
+            supplierCode: supplier.code,
             ratioSumSplit: supplier.ratioSumSplit,
             initialDebtAmount: supplier.initialDebtAmount,
             data: supplierData.data,
             latestPrices: supplierData.latestPrices,
           });
-        }
       } catch (error) {
         console.error(
           `Error fetching data for supplier ${supplier.supplierSlug}:`,
@@ -283,7 +282,13 @@ async function renderAllData(req, res) {
         );
       }
     }
-    
+
+    allSupplierData.sort((a, b) => {
+      if (a.supplierName < b.supplierName) return -1;
+      if (a.supplierName > b.supplierName) return 1;
+      return 0;
+    });
+
     // Render the page with the collected data
     res.render("src/dailySupplyExportAllPage", {
       layout: false,

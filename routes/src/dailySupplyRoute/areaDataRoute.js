@@ -91,7 +91,7 @@ router.put(
   checkPermission("update"),
   dailySupplyController.supplierExportController.updatePricesAndRatios
 );
-
+// Export all supplier data
 router.get(
   "/:slug/xuat-file/tat-ca",
   setUnreadCount,
