@@ -7,8 +7,8 @@
     <div class="modal-content">
       <div class="modal-header">
         <% 
-          var startDate = typeof startDate !== 'undefined' ? startDate : '';
-          var endDate = typeof endDate !== 'undefined' ? endDate : '';
+        var startDate = startDate ?? '';
+        var endDate = endDate ?? '';
         %>
         <h5>Lọc kết quả</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -27,20 +27,19 @@
       </div>
       <div class="modal-footer">
         <div class="col my-2 d-flex align-items-end">
-          <% var submitButton = typeof submitButton !== 'undefined' ? submitButton : false; %>
+          <% var submitButton = submitButton || false; %>
+          <button type="button" id="clearFilterButton" class="btn btn-secondary mx-2" style="display: none" data-bs-dismiss="modal" onclick="clearFilters()">
+            Xóa lọc
+          </button>
           <% if(submitButton){ %>
           <button type="submit" onclick="handleFormSubmit(this)" id=" filterButton" class="btn btn-primary">
-            <i class="ri-menu-search-fill"></i>
+            Lọc
           </button>
           <% } else { %>
-
           <button type="button" id="filterButton" class="btn btn-primary" data-bs-dismiss="modal" onclick="document.getElementById('clearFilterButton').style.display = 'inline'">
-            <i class="ri-menu-search-fill"></i>
+            Lọc
           </button>
           <% } %>
-          <button type="button" id="clearFilterButton" class="btn btn-secondary mx-2" style="display: none" data-bs-dismiss="modal" onclick="clearFilters()">
-            <i class="ri-calendar-close-line"></i>
-          </button>
         </div>
       </div>
     </div>
