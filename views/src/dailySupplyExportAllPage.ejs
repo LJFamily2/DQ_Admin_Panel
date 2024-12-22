@@ -11,14 +11,13 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous" defer></script>
   <style>
-    h1 {
-      font-size: 1.2rem;
-    }
-
-    h1,
+    h4,
     h5,
     table {
       text-align: center;
+    }
+    h5,h6{
+      font-size: small;
     }
 
     .page-break {
@@ -71,11 +70,20 @@
       }
 
       p {
-        font-size: 0.6rem;
+        font-size: 0.8rem;
       }
 
       .no-print {
         display: none !important;
+      }
+
+      .print-footer {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        text-align: center;
+        font-size: 0.7rem;
+        padding: 10px;
       }
     }
   </style>
@@ -138,9 +146,9 @@
     <div data-bs-spy="scroll" data-bs-target="#list-example" data-bs-offset="0" class="scrollspy-example">
       <% data.forEach((supplier, index) => { %>
       <div id="supplier<%= index %>" class="supplier-section <%= index === data.length - 1 ? '' : 'page-break' %>">
-        <h1>Phiếu Tính Tiền Mủ Cao Su</h1>
-        <h6 style="text-align: center;">(<%= startDate ? new Date(startDate).toLocaleDateString('vi-VN') : "Không ngày" %> - <%= endDate ? new Date(endDate).toLocaleDateString('vi-VN') : "Không ngày" %>)</h6>
-        <h6>Nhà cung cấp: <%= supplier.supplierName %> </h6>
+        <h4>Phiếu Tính Tiền Mủ Cao Su</h4>
+        <h5>(<%= startDate ? new Date(startDate).toLocaleDateString('vi-VN') : "Không ngày" %> - <%= endDate ? new Date(endDate).toLocaleDateString('vi-VN') : "Không ngày" %>)</h5>
+        <h6>Tên: <%= supplier.supplierName %> </h6>
         <table class="table table-bordered">
           <thead>
             <tr>
@@ -324,6 +332,11 @@
       </div>
       <% }) %>
     </div>
+
+    <!-- Footer -->
+    <footer class="print-footer">
+      Vui lòng mang theo phiếu nếu sai xót
+    </footer>
   </div>
 
   <script>
