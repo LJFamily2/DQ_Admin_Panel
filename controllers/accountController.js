@@ -62,7 +62,6 @@ async function renderPage(req, res) {
 
 async function createUser(req, res) {
   req.body = trimStringFields(req.body);
-  console.log(req.body);
   try {
     let existedUsername = await UserModel.findOne({
       username: req.body.username,
@@ -82,7 +81,7 @@ async function createUser(req, res) {
     const user = await UserModel.create({
       username: req.body.username,
       password: hashedPassword,
-      role: req.body.role || true,
+      role: req.body.role || 'Admin',
       permissions: {
         add: req.body.addPermission,
         update: req.body.updatePermission,

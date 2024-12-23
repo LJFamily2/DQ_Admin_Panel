@@ -12,7 +12,7 @@ const commonMiddlewares = [
 ];
 
 // Initial setup route
-router.get("/tao-tai-khoan", setUnreadCount, accountController.initialSetupPage);
+router.get("/tao-tai-khoan", accountController.initialSetupPage);
 router.post("/tao-tai-khoan", accountController.initialSetupCreateAccount);
 
 // Main page

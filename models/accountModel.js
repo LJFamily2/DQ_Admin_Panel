@@ -14,9 +14,9 @@ const userSchema = new mongoose.Schema({
     required: true,
   },
   permissions: {
-    add: { type: Boolean, default: false },
-    update: { type: Boolean, default: false },
-    delete: { type: Boolean, default: false },
+    add: { type: Boolean, default: true },
+    update: { type: Boolean, default: true },
+    delete: { type: Boolean, default: true },
   },
   createdAt: {
     type: Date,
