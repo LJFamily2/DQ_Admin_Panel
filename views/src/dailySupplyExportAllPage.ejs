@@ -138,10 +138,12 @@
           <input class="form-check-input column-toggle" type="checkbox" id="toggle-muDong" data-column="muDong" checked>
           <label class="form-check-label" for="toggle-muDong">Mủ đông</label>
         </div>
+        <% if(area.areaPrice > 0 && area.areaDimension > 0){ %>
         <div class="form-check form-check-inline">
           <input class="form-check-input column-toggle" type="checkbox" id="toggle-tongTien" data-column="tongTien" checked>
           <label class="form-check-label" for="toggle-tongTien">Tổng tiền</label>
         </div>
+        <% } %>
         <div class="form-check form-check-inline">
           <input class="form-check-input column-toggle" type="checkbox" id="toggle-khac" data-column="khac" checked>
           <label class="form-check-label" for="toggle-khac">Khác</label>
