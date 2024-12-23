@@ -210,11 +210,11 @@
                 <label class="form-label fw-bold">Mủ nước</label>
                 <div class="col col-md-6">
                   <label for="dryQuantity" class="form-label">Số lượng</label>
-                  <input type="text" class="form-control" id="dryQuantity" name="dryQuantity" oninput="handleQuantityInput(this)" inputmode="numeric" />
+                  <input type="text" class="form-control" id="dryQuantity" name="dryQuantity" oninput="handleQuantityInput(this)" inputmode="numeric" required/>
                 </div>
                 <div class="col col-md-6">
                   <label for="dryPercentage" class="form-label">Hàm lượng</label>
-                  <input type="text" class="form-control" id="dryPercentage" name="dryPercentage" oninput="handlePercentageInput(this)" inputmode="numeric" />
+                  <input type="text" class="form-control" id="dryPercentage" name="dryPercentage" oninput="handlePercentageInput(this)" inputmode="numeric" required/>
                 </div>
               </div>
             </div>
@@ -226,7 +226,7 @@
                 <label class="form-label fw-bold">Mủ tạp</label>
                 <div class="col-12">
                   <label for="mixedQuantity" class="form-label">Số lượng</label>
-                  <input type="text" class="form-control" id="mixedQuantity" name="mixedQuantity" min="0" oninput="handleQuantityInput(this)" inputmode="numeric" />
+                  <input type="text" class="form-control" id="mixedQuantity" name="mixedQuantity" min="0" oninput="handleQuantityInput(this)" inputmode="numeric" required/>
                 </div>
               </div>
             </div>
@@ -237,11 +237,11 @@
                 <label class="form-label fw-bold">Mủ Ké</label>
                 <div class="col col-md-6">
                   <label for="keQuantity" class="form-label">Số lượng</label>
-                  <input type="text" class="form-control" id="keQuantity" name="keQuantity" oninput="handleQuantityInput(this)" inputmode="numeric" />
+                  <input type="text" class="form-control" id="keQuantity" name="keQuantity" oninput="handleQuantityInput(this)" inputmode="numeric" required/>
                 </div>
                 <div class="col col-md-6">
                   <label for="kePercentage" class="form-label">Hàm lượng</label>
-                  <input type="text" class="form-control" id="kePercentage" name="kePercentage" oninput="handlePercentageInput(this)" inputmode="numeric" />
+                  <input type="text" class="form-control" id="kePercentage" name="kePercentage" oninput="handlePercentageInput(this)" inputmode="numeric" required/>
                 </div>
               </div>
             </div>
@@ -272,7 +272,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
-      <form action="/quan-ly-du-lieu/deleteAll?_method=DELETE" method="post">
+      <form action="/quan-ly-du-lieu/deleteAll" method="post">
         <div class="modal-body">
           Bạn có muốn xóa <strong class="fs-3">tất cả</strong> thông tin ? Hành
           động này không thể hoàn tác.

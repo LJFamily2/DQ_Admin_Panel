@@ -45,7 +45,7 @@ async function updateProductTotal(data, operation) {
   const totalDryRubber = calculateTotalDryRubber(data.products) * multiplier;
   const mixedQuantityRounded = data.products.mixedQuantity * multiplier;
   const keQuantity =
-    ((data.products.keQuantity * data.products.dryPercentage) / 100) *
+    ((data.products.keQuantity * data.products.kePercentage) / 100) *
     multiplier;
 
   const updateData = {
@@ -227,9 +227,9 @@ async function getDatas(req, res) {
 }
 
 async function updateData(req, res) {
-  const { id } = req.params;
-
+  console.log(req.body)
   try {
+    const { id } = req.params;
     const date = await RawMaterialModel.findOne({ date: req.body.date });
     if (date && date._id.toString() !== id) {
       return handleResponse(
@@ -246,7 +246,7 @@ async function updateData(req, res) {
       dryQuantity: convertToDecimal(req.body.dryQuantity) || 0,
       dryPercentage: convertToDecimal(req.body.dryPercentage) || 0,
       keQuantity: convertToDecimal(req.body.keQuantity) || 0,
-      kePercentage: convertToDecimal(req.body.dryPercentage) || 0,
+      kePercentage: convertToDecimal(req.body.kePercentage) || 0,
       mixedQuantity: convertToDecimal(req.body.mixedQuantity) || 0,
     };
 
@@ -282,12 +282,14 @@ async function updateData(req, res) {
       dryQuantity: newDryQuantity,
       dryPercentage: newDryPercentage,
       keQuantity: newKeQuantity,
+      kePercentage: newKePercentage,
       mixedQuantity: newMixedQuantity,
     } = newData.products;
     const {
       dryQuantity: oldDryQuantity = 0,
       dryPercentage: oldDryPercentage = 0,
       keQuantity: oldKeQuantity = 0,
+      kePercentage: oldKePercentage = 0,
       mixedQuantity: oldMixedQuantity = 0,
     } = oldData.products || {};
 
@@ -297,7 +299,7 @@ async function updateData(req, res) {
       (newDryQuantity * newDryPercentage - oldDryQuantity * oldDryPercentage) /
       100;
     const keRubberDiff =
-      (newKeQuantity * newDryPercentage - oldKeQuantity * oldDryPercentage) /
+      (newKeQuantity * newKePercentage - oldKeQuantity * oldKePercentage) /
       100;
 
     // Initialize update object with mixedQuantity difference
@@ -407,7 +409,7 @@ async function deleteAll(req, res) {
                 {
                   $multiply: [
                     "$products.keQuantity",
-                    "$products.dryPercentage",
+                    "$products.kePercentage",
                   ],
                 },
                 100,

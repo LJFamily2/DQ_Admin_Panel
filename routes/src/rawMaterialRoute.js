@@ -38,7 +38,7 @@ router.delete(
   checkPermission("delete"),
   rawMaterialController.deleteData
 );
-router.delete(
+router.post(
   "/deleteAll",
   authMiddlewares.ensureRoles(["Admin"]),
   checkPermission("delete"),
