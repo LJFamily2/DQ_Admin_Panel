@@ -23,6 +23,13 @@
       font-size: small;
     }
 
+    table{ 
+      font-size: small;
+    }
+    p {
+        font-size: 0.8rem;
+      }
+
     .page-break {
       page-break-after: always;
     }
@@ -48,16 +55,17 @@
     .scrollspy-container {
       position: fixed;
       right: 0;
-      top: 6rem;
-      border: 1px solid black;
-      border-radius: 1rem;
+      top: 4rem;
+      border-left: 1px solid rgba(0, 0, 0, 0.5);
       overflow: auto;
       scrollbar-width: none; /* For Firefox */
+      background: white;
+
+      ::-webkit-scrollbar {
+        width: 0; /* For Chrome, Safari, and Opera */
+      }
     }
 
-    .scrollspy-container::-webkit-scrollbar {
-      width: 0; /* For Chrome, Safari, and Opera */
-    }
 
     .scrollspy-container .form-check {
       margin-bottom: 10px;
@@ -85,10 +93,6 @@
         margin: 0;
       }
 
-      p {
-        font-size: 0.8rem;
-      }
-
       .no-print {
         display: none !important;
       }
@@ -109,7 +113,7 @@
 <body>
   <div class="container-fluid p-0">
     <!-- Column selection checkboxes -->
-    <div class="column-selection no-print px-3 mb-3 sticky-column-selection d-flex justify-content-between align-items-center" style="border-bottom: 1px solid black;">
+    <div class="column-selection no-print px-3 sticky-column-selection d-flex justify-content-between align-items-center" style="border-bottom: 1px solid rgba(0, 0, 0, 0.5);">
       <div class="column-selection">
         <div class="form-check form-check-inline">
           <input class="form-check-input column-toggle" type="checkbox" id="toggle-date" data-column="date" checked>
@@ -146,9 +150,9 @@
 
 
     <div class="container-fluid p-0 d-flex">
-      <div data-bs-spy="scroll" data-bs-target="#list-example" data-bs-offset="0" class="scrollspy-example p-2" style="width: 90%;">
+      <div data-bs-spy="scroll" data-bs-target="#list-example" data-bs-offset="0" class="scrollspy-example " style="width: 90% ;background: rgb(245, 245, 245)">
         <% data.forEach((supplier, index) => { %>
-        <div id="supplier<%= index %>" class="supplier-section <%= index === data.length - 1 ? '' : 'page-break' %>">
+        <div id="supplier<%= index %>" class="supplier-section <%= index === data.length - 1 ? '' : 'page-break' %> m-2 p-2" style="background: white;">
           <h4 style="font-weight: bold; position: relative;">Phiếu Tính Tiền Mủ Cao Su <span style="position: absolute; right: 0; font-style: italic;">Số: <%= index + 1 %></span></h4>
           <h5>(<%= startDate ? new Date(startDate).toLocaleDateString('vi-VN') : "Không ngày" %> - <%= endDate ? new Date(endDate).toLocaleDateString('vi-VN') : "Không ngày" %>)</h5>
           <h6>Tên: <%= supplier.supplierName %> </h6>
@@ -309,13 +313,13 @@
               <% } %>
             </tfoot>
           </table>
-          <p>Tổng số tiền: <span id="totalAmount<%= index %>"><%= ((totals.muQuyKho * latestPrices.muNuoc) + (totals.muTap * latestPrices.muTap) + (totals.muKe * latestPrices.muKe) + (totals.muDong * latestPrices.muDong)).toLocaleString('vi-VN') %></span></p>
+          <p>Tổng số tiền: <span id="totalAmount<%= index %>"><%= Math.round(((totals.muQuyKho * latestPrices.muNuoc) + (totals.muTap * latestPrices.muTap) + (totals.muKe * latestPrices.muKe) + (totals.muDong * latestPrices.muDong))).toLocaleString('vi-VN') %></span></p>
           <p class="addContainer<%= index %> no-print d-flex align-items-center">Cộng:
-            <input type="number" class="form-control addPriceInput no-print mx-2" style="width: auto;" data-index="<%= index %>" oninput="updateFinalAmount(<%= index %>); document.getElementById('addPriceValue<%= index %>').textContent = isNaN(parseFloat(this.value)) ? '' : parseFloat(this.value).toLocaleString('vi-VN')">
+            <input type="number" class="form-control addPriceInput no-print mx-2" style="width: auto;" data-index="<%= index %>" oninput="updateFinalAmount(<%= index %>); document.getElementById('addPriceValue<%= index %>').textContent = isNaN(parseFloat(this.value)) ? '' : Math.round(parseFloat(this.value)).toLocaleString('vi-VN')">
             <span id="addPriceValue<%= index %>"></span>
           </p>
           <p class="minusContainer<%= index %> no-print d-flex align-items-center">Trừ:
-            <input type="number" class="form-control minusPriceInput no-print mx-2" style="width: auto;" data-index="<%= index %>" oninput="updateFinalAmount(<%= index %>); document.getElementById('minusPriceValue<%= index %>').textContent = isNaN(parseFloat(this.value)) ? '' : parseFloat(this.value).toLocaleString('vi-VN')">
+            <input type="number" class="form-control minusPriceInput no-print mx-2" style="width: auto;" data-index="<%= index %>" oninput="updateFinalAmount(<%= index %>); document.getElementById('minusPriceValue<%= index %>').textContent = isNaN(parseFloat(this.value)) ? '' : Math.round(parseFloat(this.value)).toLocaleString('vi-VN')">
             <span id="minusPriceValue<%= index %>"></span>
           </p>
           <p class="finalAmountContainer<%= index %> no-print">Tổng sau cộng/trừ: <span id="finalAmountSpan<%= index %>"></span></p>
@@ -325,10 +329,10 @@
             <p>Thực nhận: <span id="finalAmountDisplay<%= index %>"></span></p>
             <div style="display:flex; flex-direction: column; align-items: flex-end;">
               <% if (supplier.initialDebtAmount > 0) { %>
-              <p>Công nợ còn lại: <%= remainingDebt.toLocaleString('vi-VN') %></p>
+              <p>Công nợ còn lại: <%= Math.round(remainingDebt).toLocaleString('vi-VN') %></p>
               <% } %>
               <% if (totalMoneyRetainedAmount > 0) { %>
-              <p>Tổng tiền giữ lại: <%= totalMoneyRetainedAmount.toLocaleString('vi-VN') %></p>
+              <p>Tổng tiền giữ lại: <%= Math.round(totalMoneyRetainedAmount).toLocaleString('vi-VN') %></p>
               <% } %>
             </div>
           </div>
@@ -339,7 +343,7 @@
         </footer>
         <% }) %>
       </div>
-      <div id="list-example" class="scrollspy-container no-print" style="width: 10%; height: 80dvh;">
+      <div id="list-example" class="scrollspy-container no-print" style="width: 10%; height: calc(100vh - 4rem);">
         <% data.forEach((supplier, index) => { %>
         <div class="list-group">
           <a class="list-group-item list-group-item-action no-print rounded-0" href="#supplier<%= index %>" style="font-size: 0.9rem;">

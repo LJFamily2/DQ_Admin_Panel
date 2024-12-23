@@ -167,16 +167,24 @@ function initializeExportDataTable(
       "<'row m-0 p-0 py-2'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7 d-flex justify-content-end'p>>",
     buttons: exportsOption
       ? [
-          pdfButton,
-          
           {
-            extend: "excel",
-            exportOptions: {
-              columns: ":visible",
-            },
+            extend: "collection",
+            text: "Xuất file",
+            collectionLayout: "fixed columns",
+            popoverTitle: `<h4 class='m-0'>Xuất file</h4><hr>`,
+            buttons: [
+              pdfButton,
+              {
+                extend: "excel",
+                exportOptions: {
+                  columns: ":visible",
+                },
+              },
+            ],
           },
           {
             extend: "print",
+            text: "In",
             title: individualExportPage
               ? "Phiếu Tính Tiền Mủ Cao Su"
               : "Bảng Kê Ký Nhận Tiền Thanh Toán Mua Mủ Cao Su",
@@ -199,7 +207,7 @@ function initializeExportDataTable(
               const setCommonStyles = () => {
                 $(win.document.body).find("th, td").css({
                   "font-size": "0.65rem",
-                  border: '1px solid black',
+                  border: "1px solid black",
                 });
                 $(win.document.body).find("th").css({
                   "white-space": "nowrap",
@@ -328,8 +336,16 @@ function initializeExportDataTable(
                   areaDimension,
                   areaPrice
                 );
-                const addPrice = addPriceId ? parseFloat($(addPriceId).val().replace(/\./g, "").replace(",", ".")) || 0 : 0;
-                const minusPrice = minusPriceId ? parseFloat($(minusPriceId).val().replace(/\./g, "").replace(",", ".")) || 0 : 0;
+                const addPrice = addPriceId
+                  ? parseFloat(
+                      $(addPriceId).val().replace(/\./g, "").replace(",", ".")
+                    ) || 0
+                  : 0;
+                const minusPrice = minusPriceId
+                  ? parseFloat(
+                      $(minusPriceId).val().replace(/\./g, "").replace(",", ".")
+                    ) || 0
+                  : 0;
                 const finalAmount = totalAmount + addPrice - minusPrice;
                 const totalAfterRatio =
                   finalAmount * (ratioSumSplit.replace(",", ".") / 100);
@@ -424,11 +440,11 @@ function initializeExportDataTable(
             ],
           },
           {
-            text: 'Làm mới',
+            text: "Làm mới",
             action: function (e, dt, node, config) {
               dt.ajax.reload();
-            }
-          }
+            },
+          },
         ]
       : [],
     // stateSave: true,

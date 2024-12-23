@@ -254,6 +254,7 @@ async function renderAllData(req, res) {
         );
 
         // Only process suppliers that have data within the date range
+        if (supplierData.data.length > 0) {
           // Manually calculate totalDebtPaidAmount and totalMoneyRetainedAmount
           totalDebtPaidAmount += supplier.debtHistory.reduce(
             (total, debt) => total + debt.debtPaidAmount,
@@ -275,6 +276,7 @@ async function renderAllData(req, res) {
             data: supplierData.data,
             latestPrices: supplierData.latestPrices,
           });
+        }
       } catch (error) {
         console.error(
           `Error fetching data for supplier ${supplier.supplierSlug}:`,
