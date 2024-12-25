@@ -148,6 +148,7 @@
           <input class="form-check-input column-toggle" type="checkbox" id="toggle-khac" data-column="khac" checked>
           <label class="form-check-label" for="toggle-khac">Khác</label>
         </div>
+        <%- include('../partials/moneySuggestion') %>
       </div>
       <!-- Print button -->
       <button class="btn btn-primary no-print" onclick="window.print()">In</button>
@@ -331,7 +332,7 @@
           <p class="<%= supplier.ratioSumSplit === 100 ? 'no-print' : '' %>">Tỉ lệ phân chia tổng: <span class="ratioSumSplit" data-index="<%= index %>"><%= supplier.ratioSumSplit %></span>%</p>
           <hr>
           <div style="display: flex; justify-content: space-between; margin-top: 20px;">
-            <p>Thực nhận: <span id="finalAmountDisplay<%= index %>"></span></p>
+            <p>Thực nhận: <span class="totalGet" id="finalAmountDisplay<%= index %>"></span></p>
             <div style="display:flex; flex-direction: column; align-items: flex-end;">
               <% if (supplier.initialDebtAmount > 0) { %>
               <p>Công nợ còn lại: <%= Math.round(remainingDebt).toLocaleString('vi-VN') %></p>
