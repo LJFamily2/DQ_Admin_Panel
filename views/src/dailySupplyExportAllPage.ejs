@@ -23,12 +23,13 @@
       font-size: small;
     }
 
-    table{ 
+    table {
       font-size: small;
     }
+
     p {
-        font-size: 0.8rem;
-      }
+      font-size: 0.8rem;
+    }
 
     .page-break {
       page-break-after: always;
@@ -58,11 +59,13 @@
       top: 4rem;
       border-left: 1px solid rgba(0, 0, 0, 0.5);
       overflow: auto;
-      scrollbar-width: none; /* For Firefox */
+      scrollbar-width: none;
+      /* For Firefox */
       background: white;
 
       ::-webkit-scrollbar {
-        width: 0; /* For Chrome, Safari, and Opera */
+        width: 0;
+        /* For Chrome, Safari, and Opera */
       }
     }
 
@@ -79,9 +82,11 @@
       @page {
         margin: 0.22in;
       }
-      .scrollspy-example{
+
+      .scrollspy-example {
         width: 100% !important;
       }
+
       table {
 
         th,
@@ -148,10 +153,14 @@
           <input class="form-check-input column-toggle" type="checkbox" id="toggle-khac" data-column="khac" checked>
           <label class="form-check-label" for="toggle-khac">Khác</label>
         </div>
-        <%- include('../partials/moneySuggestion') %>
       </div>
-      <!-- Print button -->
-      <button class="btn btn-primary no-print" onclick="window.print()">In</button>
+      <div>
+        <!-- Print button -->
+        <button class="btn btn-primary no-print" onclick="window.print()">In</button>
+      </div>
+    </div>
+    <div class="m-2">
+      <%- include('../partials/moneySuggestion', {slug: area.slug}) %>
     </div>
 
 
@@ -382,16 +391,6 @@
           document.getElementById(`supplier${index}`).style.display = isChecked ? '' : 'none';
         });
       });
-
-      // Toggle all functionality
-      document.getElementById('toggle-all').addEventListener('change', function() {
-        const isChecked = this.checked;
-        document.querySelectorAll('.supplier-toggle').forEach(toggle => {
-          toggle.checked = isChecked;
-          const index = toggle.dataset.index;
-          document.getElementById(`supplier${index}`).style.display = isChecked ? '' : 'none';
-        });
-      });
     });
 
     function updateFinalAmount(index) {
@@ -443,13 +442,20 @@
           if (mutation.attributeName === 'class') {
             const activeElement = scrollspyContainer.querySelector('.active');
             if (activeElement) {
-              activeElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+              activeElement.scrollIntoView({
+                behavior: 'smooth',
+                block: 'nearest'
+              });
             }
           }
         });
       });
-  
-      const config = { attributes: true, childList: false, subtree: true };
+
+      const config = {
+        attributes: true,
+        childList: false,
+        subtree: true
+      };
       const targetNode = scrollspyContainer;
       observer.observe(targetNode, config);
     });
