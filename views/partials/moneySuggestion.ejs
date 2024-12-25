@@ -3,8 +3,8 @@
   Gợi ý sắp xếp tiền
 </button>
 
-<div class="modal fade" id="suggestionModal" tabindex="-1" aria-labelledby="suggestionModalLabel" aria-hidden="true" >
-  <div class="modal-dialog modal-dialog-centered">
+<div class="modal fade" id="suggestionModal" tabindex="-1" aria-labelledby="suggestionModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="suggestionModalLabel">Gợi ý</h5>
@@ -12,45 +12,44 @@
       </div>
       <div class="modal-body">
         <div class="mb-3">
-          <label for="preferredDenomination" class="form-label">Nhập số lượng từng mệnh giá</label>
-          <div id="preferredDenomination">
-            <div class="form-check">
-              <label class="form-check-label" for="denomination500000">500,000 VNĐ</label>
+          <label class="form-label">Nhập số lượng từng mệnh giá</label>
+          <div class="row d-flex">
+            <div class="col form-check">
+              <label class="form-check-label" for="denomination500000" style="font-size: small;">500,000 VNĐ</label>
               <input class="form-control" type="number" name="denomination" id="denomination500000" value="0" min="0">
             </div>
-            <div class="form-check">
-              <label class="form-check-label" for="denomination200000">200,000 VNĐ</label>
+            <div class="col form-check">
+              <label class="form-check-label" for="denomination200000" style="font-size: small;">200,000 VNĐ</label>
               <input class="form-control" type="number" name="denomination" id="denomination200000" value="0" min="0">
             </div>
-            <div class="form-check">
-              <label class="form-check-label" for="denomination100000">100,000 VNĐ</label>
+            <div class="col form-check">
+              <label class="form-check-label" for="denomination100000" style="font-size: small;">100,000 VNĐ</label>
               <input class="form-control" type="number" name="denomination" id="denomination100000" value="0" min="0">
             </div>
-            <div class="form-check">
-              <label class="form-check-label" for="denomination50000">50,000 VNĐ</label>
+            <div class="col form-check">
+              <label class="form-check-label" for="denomination50000" style="font-size: small;">50,000 VNĐ</label>
               <input class="form-control" type="number" name="denomination" id="denomination50000" value="0" min="0">
             </div>
-            <div class="form-check">
-              <label class="form-check-label" for="denomination20000">20,000 VNĐ</label>
+            <div class="col form-check">
+              <label class="form-check-label" for="denomination20000" style="font-size: small;">20,000 VNĐ</label>
               <input class="form-control" type="number" name="denomination" id="denomination20000" value="0" min="0">
             </div>
-            <div class="form-check">
-              <label class="form-check-label" for="denomination10000">10,000 VNĐ</label>
+            <div class="col form-check">
+              <label class="form-check-label" for="denomination10000" style="font-size: small;">10,000 VNĐ</label>
               <input class="form-control" type="number" name="denomination" id="denomination10000" value="0" min="0">
             </div>
-            <div class="form-check">
-              <label class="form-check-label" for="denomination5000">5,000 VNĐ</label>
+            <div class="col form-check">
+              <label class="form-check-label" for="denomination5000" style="font-size: small;">5,000 VNĐ</label>
               <input class="form-control" type="number" name="denomination" id="denomination5000" value="0" min="0">
             </div>
-            <div class="form-check">
-              <label class="form-check-label" for="denomination2000">2,000 VNĐ</label>
+            <div class="col form-check">
+              <label class="form-check-label" for="denomination2000" style="font-size: small;">2,000 VNĐ</label>
               <input class="form-control" type="number" name="denomination" id="denomination2000" value="0" min="0">
             </div>
-            <div class="form-check">
-              <label class="form-check-label" for="denomination1000">1,000 VNĐ</label>
+            <div class="col form-check">
+              <label class="form-check-label" for="denomination1000" style="font-size: small;">1,000 VNĐ</label>
               <input class="form-control" type="number" name="denomination" id="denomination1000" value="0" min="0">
             </div>
-            <!-- Add more denominations as needed -->
           </div>
         </div>
         <div id="suggestionResult" class="mt-3"></div>
@@ -78,7 +77,10 @@
       }
     });
 
-    return { distribution, remainingAmount };
+    return {
+      distribution,
+      remainingAmount
+    };
   }
 
   function suggestMoneyDistributionForAll() {
@@ -104,7 +106,10 @@
       let totalPrice = parseInt(totalGet.textContent.replace(/\./g, '').replace(/\,/g, '.')) || 0;
       totalPrice = Math.round(totalPrice / 1000) * 1000;
 
-      const { distribution, remainingAmount } = getOptimalMoneyDistribution(totalPrice, availableQuantities);
+      const {
+        distribution,
+        remainingAmount
+      } = getOptimalMoneyDistribution(totalPrice, availableQuantities);
 
       resultHtml += `<li>Tổng số tiền (${totalPrice.toLocaleString('vi-VN')} VNĐ):<ul>`;
       Object.entries(distribution).forEach(([denomination, count]) => {
@@ -136,7 +141,7 @@
     document.getElementById('suggestionResult').innerHTML = resultHtml;
   }
 
-  function saveQuantitiesToLocalStorage() {
+  function saveQuantitiesToSessionStorage() {
     const quantities = {};
     denominations.forEach(denomination => {
       const element = document.getElementById(`denomination${denomination}`);
@@ -144,11 +149,11 @@
         quantities[denomination] = element.value;
       }
     });
-    localStorage.setItem(`quantities_${dailySupplyId}`, JSON.stringify(quantities));
+    sessionStorage.setItem(`quantities_${dailySupplyId}`, JSON.stringify(quantities));
   }
 
-  function loadQuantitiesFromLocalStorage() {
-    const quantities = JSON.parse(localStorage.getItem(`quantities_${dailySupplyId}`));
+  function loadQuantitiesFromSessionStorage() {
+    const quantities = JSON.parse(sessionStorage.getItem(`quantities_${dailySupplyId}`));
     if (quantities) {
       denominations.forEach(denomination => {
         const element = document.getElementById(`denomination${denomination}`);
@@ -162,9 +167,9 @@
   document.querySelectorAll('input[name="denomination"]').forEach(input => {
     input.addEventListener('input', () => {
       suggestMoneyDistributionForAll();
-      saveQuantitiesToLocalStorage();
+      saveQuantitiesToSessionStorage();
     });
   });
 
-  document.addEventListener('DOMContentLoaded', loadQuantitiesFromLocalStorage);
+  document.addEventListener('DOMContentLoaded', loadQuantitiesFromSessionStorage);
 </script>
