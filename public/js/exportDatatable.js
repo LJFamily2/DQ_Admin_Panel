@@ -531,9 +531,4 @@ function initializeExportDataTable(
     $(endDateId).val("");
     table.ajax.reload();
   });
-
-  // Reload the table every 30 seconds
-  setInterval(function () {
-    table.ajax.reload(null, false);
-  }, 60000);
 }
