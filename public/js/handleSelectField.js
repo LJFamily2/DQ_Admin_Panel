@@ -36,7 +36,7 @@ function getDryRubberFields(detailPage) {
           id="quantity"
           name="quantity"
           
-          oninput="handleQuantityInput(this)" inputmode="numeric"
+          oninput="handleQuantityInput(this)" inputmode="numeric" required
         />
       </div>
       <div class="col col-md-3">
@@ -46,8 +46,7 @@ function getDryRubberFields(detailPage) {
           class="form-control"
           id="percentage"
           name="percentage"
-          
-          oninput="handlePercentageInput(this)" inputmode="numeric"
+          oninput="handlePercentageInput(this)" inputmode="numeric" required
         />
       </div>
       <div class="col col-md-6 ">
@@ -57,8 +56,7 @@ function getDryRubberFields(detailPage) {
           class="form-control"
           id="price"
           name="price"
-          
-          oninput="handlePriceInput(this)"
+          oninput="handleQuantityInput(this)"
         />
       </div>
     </div>
@@ -73,8 +71,7 @@ function getDryRubberFields(detailPage) {
           class="form-control"
           id="quantity"
           name="quantity"
-          
-          oninput="handleQuantityInput(this)" inputmode="numeric"
+          oninput="handleQuantityInput(this)" inputmode="numeric" required
         />
       </div>
       <div class="col col-md-6">
@@ -84,8 +81,7 @@ function getDryRubberFields(detailPage) {
           class="form-control"
           id="percentage"
           name="percentage"
-          
-          oninput="handlePercentageInput(this)" inputmode="numeric"
+          oninput="handlePercentageInput(this)" inputmode="numeric" required
         />
       </div>
       <div class="row m-0 my-2 p-0">
@@ -96,8 +92,8 @@ function getDryRubberFields(detailPage) {
             class="form-control"
             id="price"
             name="price"
-            
-            oninput="handlePriceInput(this)"
+            oninput="handleQuantityInput(this)"
+            required
           />
         </div>
       </div>
@@ -115,8 +111,7 @@ function getNormalFields() {
           type="text"
           class="form-control"
           name="quantity"
-          
-          oninput="handleQuantityInput(this)" inputmode="numeric"
+          oninput="handleQuantityInput(this)" inputmode="numeric" required
         />
       </div>
       <div class="col col-md-6">
@@ -125,8 +120,8 @@ function getNormalFields() {
           type="text"
           class="form-control"
           name="price"
-          
-          oninput="handlePriceInput(this)"
+          oninput="handleQuantityInput(this)"
+          required
         />
       </div>
     </div>

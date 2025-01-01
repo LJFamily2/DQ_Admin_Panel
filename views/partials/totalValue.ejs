@@ -5,7 +5,7 @@
       <div
         class="card-body <%= total[0]?.dryRubber?.raw < 0 ? 'text-danger' : total[0]?.dryRubber?.raw > 0 ? 'text-success' : '' %>"
       >
-        <h5><%= total[0]?.dryRubber?.formatted || 0 %></h5>
+        <h5><%= total[0]?.dryRubber?.formatted.toLocaleString('vi-VN') || 0 %></h5>
         <div class="card-text text-muted" style="font-size: smaller">
           <div class="d-flex justify-content-between align-items-center">
             <div class="w-75">
@@ -22,7 +22,7 @@
       <div
         class="card-body <%= total[0]?.product?.raw < 0 ? 'text-danger' : total[0]?.product?.raw > 0 ? 'text-success' : '' %>"
       >
-        <h5><%= total[0]?.product?.formatted || 0 %></h5>
+        <h5><%= total[0]?.product?.formatted.toLocaleString('vi-VN') || 0 %></h5>
         <div class="card-text text-muted" style="font-size: smaller">
           <div class="d-flex justify-content-between align-items-center">
             <div class="w-75">
@@ -39,7 +39,7 @@
       <div
         class="card-body <%= total[0]?.mixedQuantity?.raw < 0 ? 'text-danger' : total[0]?.mixedQuantity?.raw > 0 ? 'text-success' : '' %>"
       >
-        <h5><%= total[0]?.mixedQuantity?.formatted || 0 %></h5>
+        <h5><%= total[0]?.mixedQuantity?.formatted.toLocaleString('vi-VN') || 0 %></h5>
         <div class="card-text text-muted" style="font-size: smaller">
           <div class="d-flex justify-content-between align-items-center">
             <div class="w-75">
@@ -56,7 +56,7 @@
       <div
         class="card-body <%= total[0]?.income?.raw < 0 ? 'text-danger' : total[0]?.income?.raw > 0 ? 'text-success' : '' %>"
       >
-        <h5><%= total[0]?.income?.formatted || 0 %></h5>
+        <h5><%= Math.round(total[0]?.income?.formatted).toLocaleString('vi-VN') || 0 %></h5>
         <div class="card-text text-muted" style="font-size: smaller">
           <div class="d-flex justify-content-between align-items-center">
             <div class="w-75">
@@ -73,7 +73,7 @@
       <div
         class="card-body <%= total[0]?.spend?.raw > 0 ? 'text-danger' : '' %>"
       >
-        <h5><%= total[0]?.spend?.formatted || 0 %></h5>
+        <h5><%= Math.round(total[0]?.spend?.formatted).toLocaleString('vi-VN') || 0 %></h5>
         <div class="card-text text-muted" style="font-size: smaller">
           <div class="d-flex justify-content-between align-items-center">
             <div class="w-75">
@@ -90,7 +90,7 @@
       <div
         class="card-body <%= total[0]?.profit?.raw < 0 ? 'text-danger' : total[0]?.profit?.raw > 0 ? 'text-success' : '' %>"
       >
-        <h5><%= total[0]?.profit?.formatted || 0 %></h5>
+        <h5><%= Math.round(total[0]?.profit?.formatted).toLocaleString('vi-VN') || 0 %></h5>
         <div class="card-text text-muted" style="font-size: smaller">
           <div class="d-flex justify-content-between align-items-center">
             <div class="w-75">

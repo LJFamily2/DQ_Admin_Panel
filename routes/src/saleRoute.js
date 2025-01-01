@@ -34,12 +34,12 @@ router.put(
   saleController.updateData
 );
 router.delete(
-  "/delete/:id",
+  "/:id",
   authMiddlewares.ensureRoles(["Admin"]),
   checkPermission("delete"),
   saleController.deleteData
 );
-router.delete(
+router.post(
   "/deleteAll",
   authMiddlewares.ensureRoles(["Admin"]),
   checkPermission("delete"),

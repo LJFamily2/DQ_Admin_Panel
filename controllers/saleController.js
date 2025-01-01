@@ -57,12 +57,14 @@ const calculateDifferences = (newProducts, oldSale) => {
   };
 
   oldSale.products.forEach((product) => {
-    if (product.name === "dryRubber") {
-      oldTotals.dryRubber += (product.quantity * product.percentage) / 100;
-    } else {
-      oldTotals[product.name] += product.quantity;
-    }
-    oldTotals.income += product.quantity * product.price;
+      if (product.name === "dryRubber") {
+        const dryAmount = (product.quantity * product.percentage) / 100;
+        oldTotals.dryRubber += dryAmount;
+        oldTotals.income += dryAmount * product.price;
+      } else {
+        oldTotals[product.name] = (oldTotals[product.name] || 0) + product.quantity;
+        oldTotals.income += product.quantity * product.price;
+      }
   });
 
   let newTotals = {
@@ -158,11 +160,13 @@ async function createData(req, res) {
     const totals = products.reduce(
       (acc, { name, quantity, price, percentage }) => {
         if (name === "dryRubber") {
-          acc.dryRubber += (quantity * percentage) / 100;
+          const dryAmount = (quantity * percentage) / 100;
+          acc.dryRubber += dryAmount;
+          acc.totalIncome += dryAmount * price;
         } else {
           acc[name] = (acc[name] || 0) + quantity;
+          acc.totalIncome += quantity * price;
         }
-        acc.totalIncome += quantity * price;
         return acc;
       },
       { product: 0, dryRubber: 0, mixedQuantity: 0, totalIncome: 0 }
@@ -275,11 +279,12 @@ async function getDatas(req, res) {
     const sales = await dataQuery;
 
     const data = sales.map((sale, index) => {
-      // Assuming each sale has a 'products' array
-      const totalPrice = sale.products.reduce(
-        (acc, product) => acc + product.quantity * product.price,
+      let totalPrice = sale.products?.reduce(
+        (acc, product) => acc + product.quantity * (product.percentage / 100 || 1) * product.price,
         0
-      );
+      ) || 0;
+      totalPrice = Math.round(totalPrice);
+
       return {
         no: parseInt(start, 10) + index + 1,
         date: sale.date.toLocaleDateString("vi-VN"),
@@ -367,7 +372,7 @@ async function updateData(req, res) {
         req.headers.referer
       );
 
-    handleResponse(
+    return handleResponse(
       req,
       res,
       200,
@@ -410,11 +415,13 @@ async function deleteData(req, res) {
     const totals = sale.products.reduce(
       (acc, { name, quantity, price, percentage }) => {
         if (name === "dryRubber") {
-          acc.dryRubber += (quantity * percentage) / 100;
+          const dryAmount = (quantity * percentage) / 100;
+          acc.dryRubber += dryAmount;
+          acc.totalIncome += dryAmount * price;
         } else {
           acc[name] = (acc[name] || 0) + quantity;
+          acc.totalIncome += quantity * price;
         }
-        acc.totalIncome += quantity * price;
         return acc;
       },
       { product: 0, dryRubber: 0, mixedQuantity: 0, totalIncome: 0 }
@@ -432,11 +439,22 @@ async function deleteData(req, res) {
       },
     };
 
-    await ProductTotalModel.findOneAndUpdate({}, updateData, {
+    const successUpdate = await ProductTotalModel.findOneAndUpdate({}, updateData, {
       new: true,
     });
 
-    handleResponse(
+    if (!successUpdate) {
+      return handleResponse(
+        req,
+        res,
+        404,  
+        "fail",
+        "Cập nhật dữ liệu tổng thất bại",
+        req.headers.referer
+      );
+    }
+
+    return handleResponse(
       req,
       res,
       200,
@@ -445,6 +463,7 @@ async function deleteData(req, res) {
       req.headers.referer
     );
   } catch (err) {
+    console.log(err)
     res.status(500).render("partials/500", { layout: false });
   }
 }
@@ -524,7 +543,17 @@ async function deleteAll(req, res) {
     );
 
     // Delete all sales
-    await SaleModel.deleteMany({});
+    const successUpdate = await SaleModel.deleteMany({});
+    if (!successUpdate) {
+      return handleResponse(
+        req,
+        res,
+        404,
+        "fail",
+        "Xóa tất cả hợp đồng thất bại!",
+        req.headers.referer
+      );
+    }
 
     return handleResponse(
       req,

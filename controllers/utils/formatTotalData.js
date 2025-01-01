@@ -11,7 +11,7 @@ const formatTotalData = totalData => {
     fieldsToFormat.forEach(field => {
       item[field] = {
         raw: item[field], 
-        formatted: item[field].toLocaleString('vi-VN'), 
+        formatted: item[field], 
       };
     });
     return item;

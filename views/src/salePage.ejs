@@ -80,30 +80,34 @@
                           </div>
                           <div class="row my-3 m-0 p-0">
                             <% if(product.name === "dryRubber"){ %>
-                            <div class="col col-md-3">
+                            <div class="col col-md-4">
                               <label class="form-label fw-bold">Số lượng</label>
                               <input type="text" class="form-control" value="<%= product.quantity.toLocaleString('vi-VN') %>" disabled />
                             </div>
-                            <div class="col col-md-3">
+                            <div class="col col-md-4">
                               <label class="form-label fw-bold">Hàm lượng</label>
                               <input type="text" class="form-control" value="<%= product.percentage %>" disabled />
+                            </div>
+                            <div class="col col-md-4">
+                              <label class="form-label fw-bold">Tổng</label>
+                              <input type="text" class="form-control" value="<%= ((product.quantity * product.percentage) / 100).toLocaleString('vi-VN') %>" disabled />
                             </div>
                             <% }else{ %>
                             <div class="col col-md-6">
                               <label class="form-label fw-bold">Số lượng</label>
                               <input type="text" class="form-control" value="<%= product.quantity.toLocaleString('vi-VN') %>" disabled />
                             </div>
-                            <% } %>
                             <div class="col col-md-6">
                               <label class="form-label fw-bold">Đơn giá</label>
                               <input type="text" class="form-control" value="<%= product.price.toLocaleString('vi-VN') %>" disabled />
                             </div>
+                            <% } %>
                           </div>
                           <% if(product.name === 'dryRubber'){ %>
                           <div class="row m-0 p-0">
                             <div class="col col-md-6">
-                              <label class="form-label fw-bold">Tổng</label>
-                              <input type="text" class="form-control" value="<%= ((product.quantity * product.percentage) / 100).toLocaleString('vi-VN') %>" disabled />
+                              <label class="form-label fw-bold">Đơn giá</label>
+                              <input type="text" class="form-control" value="<%= product.price.toLocaleString('vi-VN') %>" disabled />
                             </div>
                           </div>
                           <% } %>
@@ -194,11 +198,11 @@
                 <div class="row normalFields my-3 m-0 p-0">
                   <div class="col col-md-6">
                     <label for="quantity" class="form-label fw-bold">Số lượng</label>
-                    <input type="text" class="form-control" id="quantity" name="quantity" oninput="handleQuantityInput(this)" inputmode="numeric" />
+                    <input type="text" class="form-control" id="quantity" name="quantity" oninput="handleQuantityInput(this)" inputmode="numeric" required />
                   </div>
                   <div class="col col-md-6">
                     <label for="price" class="form-label fw-bold">Đơn giá</label>
-                    <input type="text" class="form-control" id="price" name="price" oninput="handleQuantityInput(this)" inputmode="numeric" />
+                    <input type="text" class="form-control" id="price" name="price" oninput="handleQuantityInput(this)" inputmode="numeric" required />
                   </div>
                 </div>
                 <div class="additionalFields my-3 m-0 p-0" style="display: none"></div>
@@ -236,7 +240,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
-      <form action="/quan-ly-hop-dong/deleteAll?_method=DELETE" method="post">
+      <form action="/quan-ly-hop-dong/deleteAll" method="post">
         <div class="modal-body">
           Bạn có muốn xóa <strong class="fs-3">tất cả</strong> thông tin ? Hành
           động này không thể hoàn tác.
