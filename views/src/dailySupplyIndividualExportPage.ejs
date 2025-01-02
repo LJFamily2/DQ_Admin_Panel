@@ -12,6 +12,7 @@
   <script src="/js/inputFieldRestriction.js" defer></script>
   <!-- Slim select -->
   <script src="/js/slim-select.js" defer></script>
+  <!-- Tippy -->
   <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css" />
   <script src="https://unpkg.com/@popperjs/core@2"></script>
   <script src="https://unpkg.com/tippy.js@6"></script>
@@ -74,11 +75,6 @@
                 <input type="text" class="form-control form-control-sm" id="minusPrice" name="minusPrice" oninput="handleQuantityInput(this)" inputmode="numeric" />
               </div>
             </div>
-          </div>
-        </div>
-        <div class="row my-3">
-          <div class="col">
-            <%- include('../partials/moneySuggestion') %>
           </div>
         </div>
         <%- include('../partials/displayAccessDate.ejs') %>
@@ -402,6 +398,9 @@
             <% } %>
           </tfoot>
         </table>
+        <div style="text-align: right">
+          <small>Lưu ý: Thành tiền trên chưa tính với ăn chia tổng</small>
+        </div>
       </div>
     </div>
   </div>
