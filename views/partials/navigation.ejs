@@ -45,7 +45,7 @@
       </a>
     </li>
     <% } %>
-    <% if(user.role === "Admin"){ %>
+    <% if(user.role === "Admin" || user.role === "Văn phòng"){ %>
     <li class="nav-item">
       <a href="/quan-ly-du-lieu" class="nav-link link-dark d-flex justify-content-between">
         Dữ liệu tổng
@@ -70,8 +70,6 @@
         <i class="ri-bill-line"></i>
       </a>
     </li>
-    <% } %>
-    <% if(user.role === "Admin" || user.role === "Văn phòng"){ %>
     <li class="nav-item">
       <a href="/du-lieu-hang-ngay" class="nav-link link-dark d-flex justify-content-between">
         Dữ liệu ngày

@@ -12,35 +12,35 @@ router.use(authMiddlewares.ensureWorkingHours);
 router.get(
   "/",
   setUnreadCount,
-  authMiddlewares.ensureRoles(["Admin"]),
+  authMiddlewares.ensureRoles(["Admin", "Văn phòng"]),
   rawMaterialController.renderPage
 );
 router.post(
   "/",
-  authMiddlewares.ensureRoles(["Admin"]),
+  authMiddlewares.ensureRoles(["Admin", "Văn phòng"]),
   checkPermission("add"),
   rawMaterialController.createData
 );
 router.post(
   "/getDatas",
-  authMiddlewares.ensureRoles(["Admin"]),
+  authMiddlewares.ensureRoles(["Admin", "Văn phòng"]),
   rawMaterialController.getDatas
 );
 router.put(
   "/:id",
-  authMiddlewares.ensureRoles(["Admin"]),
+  authMiddlewares.ensureRoles(["Admin", "Văn phòng"]),
   checkPermission("update"),
   rawMaterialController.updateData
 );
 router.delete(
   "/:id",
-  authMiddlewares.ensureRoles(["Admin"]),
+  authMiddlewares.ensureRoles(["Admin", "Văn phòng"]),
   checkPermission("delete"),
   rawMaterialController.deleteData
 );
 router.post(
   "/deleteAll",
-  authMiddlewares.ensureRoles(["Admin"]),
+  authMiddlewares.ensureRoles(["Admin", "Văn phòng"]),
   checkPermission("delete"),
   rawMaterialController.deleteAll
 );
