@@ -50,6 +50,7 @@ async function renderPage(req, res) {
 }
 
 async function createData(req, res) {
+  console.log(req.body);
   try {
     let quantity = convertToDecimal(req.body.quantity) || 1;
     let price = convertToDecimal(req.body.price) || 0;
@@ -61,15 +62,15 @@ async function createData(req, res) {
       price,
     });
 
-    await updateProductTotal(quantity * price);
+    const updateProduct = await updateProductTotal(quantity * price);
 
-    if (!spend) {
+    if (!spend && !updateProduct) {
       return handleResponse(
         req,
         res,
         400,
         "fail",
-        "Tạo chi tiêu thất bại !",
+        "Tạo chi tiêu thất bại!",
         req.headers.referer
       );
     }
@@ -79,10 +80,11 @@ async function createData(req, res) {
       res,
       201,
       "success",
-      "Tạo chi tiêu thành công !",
+      "Tạo chi tiêu thành công!",
       req.headers.referer
     );
   } catch (err) {
+    console.log(err)
     res.status(500).render("partials/500", { layout: false });
   }
 }
@@ -186,7 +188,7 @@ async function updateData(req, res) {
         res,
         404,
         "fail",
-        "Không tìm thấy sản phẩm !",
+        "Không tìm thấy sản phẩm!",
         req.headers.referer
       );
     }
@@ -232,7 +234,21 @@ async function updateData(req, res) {
           profit: -diff,
         },
       };
-      await ProductTotalModel.findOneAndUpdate({}, updateData, { new: true });
+      const successUpdate = await ProductTotalModel.findOneAndUpdate(
+        {},
+        updateData,
+        { new: true }
+      );
+      if (!successUpdate) {
+        return handleResponse(
+          req,
+          res,
+          500,
+          "fail",
+          "Lỗi cập nhật tổng",
+          req.headers.referer
+        );
+      }
     }
 
     return handleResponse(
@@ -258,12 +274,15 @@ async function deleteData(req, res) {
         res,
         404,
         "fail",
-        "Không tìm thấy sản phẩm !",
+        "Không tìm thấy sản phẩm!",
         req.headers.referer
       );
     }
 
-    await updateProductTotal(product.price * product.quantity, false);
+    await updateProductTotal(
+      product.price * product.quantity,
+      false
+    );
 
     return handleResponse(
       req,
@@ -280,18 +299,29 @@ async function deleteData(req, res) {
 
 async function deleteAll(req, res) {
   try {
-    await SpendModel.deleteMany({});
+    const successUpdate = await SpendModel.deleteMany({});
 
     const productTotal = await ProductTotalModel.findOne({});
     const currentSpend = productTotal ? productTotal.spend : 0;
 
-    await ProductTotalModel.findOneAndUpdate(
+    const productTotalModel = await ProductTotalModel.findOneAndUpdate(
       {},
       {
         $set: { spend: 0 },
         $inc: { profit: currentSpend },
       }
     );
+
+    if (!successUpdate || !productTotalModel) {
+      return handleResponse(
+        req,
+        res,
+        404,
+        "fail",
+        "Xóa thông tin chi tiêu thất bại!",
+        req.headers.referer
+      );
+    }
 
     return handleResponse(
       req,

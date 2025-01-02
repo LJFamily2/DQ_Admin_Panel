@@ -50,15 +50,15 @@
                       <div>
                         <label for="date" class="form-label fw-bold">Ngày
                         </label>
-                        <input type="date" class="form-control" id="date" name="date" required autofocus value="<%= spend.date.toISOString().slice(0,10)  %>" />
+                        <input type="date" class="form-control" name="date" required autofocus value="<%= spend.date.toISOString().slice(0,10)  %>" />
                       </div>
 
                       <div class="my-3">
                         <label for="product" class="form-label fw-bold">Hàng hóa</label>
-                        <input type="text" class="form-control" id="product" name="product" required value="<%= spend.product %>" <%= spend.product === 'lương' ? 'disabled' : '' %> />
+                        <input type="text" class="form-control"  name="product" required value="<%= spend.product %>" <%= spend.product === 'Lương' ? 'disabled' : '' %> />
                       </div>
 
-                      <% if(spend.product === 'lương'){ %>
+                      <% if(spend.product === 'Lương'){ %>
                       <div class="my-3">
                         <label for="price" class="form-label fw-bold">Đơn giá</label>
                         <input type="text" class="form-control" id="price" name="price" oninput="handleQuantityInput(this)" inputmode="numeric" value="<%= spend.price.toLocaleString('vi-VN') %>" />
@@ -66,19 +66,19 @@
                       <% } else { %>
                       <div class="my-3">
                         <label for="quantity" class="form-label fw-bold">Số lượng</label>
-                        <input type="text" class="form-control" id="quantity" name="quantity" oninput="handleQuantityInput(this)" inputmode="numeric" value="<%= spend.quantity.toLocaleString('vi-VN') %>" />
+                        <input type="text" class="form-control"  name="quantity" oninput="handleQuantityInput(this)" inputmode="numeric" value="<%= spend.quantity.toLocaleString('vi-VN') %>" />
                       </div>
 
                       <div class="my-3">
                         <label for="price" class="form-label fw-bold">Đơn giá</label>
-                        <input type="text" class="form-control" id="price" name="price" oninput="handleQuantityInput(this)" inputmode="numeric" value="<%= spend.price.toLocaleString('vi-VN') %>" />
+                        <input type="text" class="form-control"  name="price" oninput="handleQuantityInput(this)" inputmode="numeric" value="<%= spend.price.toLocaleString('vi-VN') %>" />
                       </div>
 
                       <% } %>
 
                       <div class="my-3">
                         <label for="notes" class="form-label fw-bold">Ghi chú</label>
-                        <textarea type="text" class="form-control" rows="2" id="notes" name="notes">
+                        <textarea type="text" class="form-control" rows="2"  name="notes">
 <%= spend.notes %></textarea>
                       </div>
                     </div>
@@ -148,8 +148,8 @@
 
           <div class="my-3">
             <label class="form-label fw-bold">Loại chi tiêu</label>
-            <select class="form-control" onchange="displayOption(this)" style="cursor: pointer">
-              <option disabled selected>Chọn loại chi tiêu</option>
+            <select class="form-control" onchange="displayOption(this)" required style="cursor: pointer">
+              <option value="" disabled selected>Chọn loại chi tiêu</option>
               <option value="Hàng hóa">Hàng hóa</option>
               <option value="Lương">Lương</option>
             </select>
@@ -180,7 +180,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
-      <form action="/quan-ly-chi-tieu/deleteAll?_method=DELETE" method="post">
+      <form action="/quan-ly-chi-tieu/deleteAll" method="post">
         <div class="modal-body">
           Bạn có muốn xóa <strong class="fs-3">tất cả</strong> thông tin ? Hành
           động này không thể hoàn tác.
@@ -262,7 +262,7 @@
           type="text"
           class="form-control"
           id="product"
-          name="product"
+          name="product" required
         />
       </div>
       <div class="my-3">
@@ -272,7 +272,7 @@
           class="form-control"
           id="quantity"
           name="quantity"
-          oninput="handleQuantityInput(this)" inputmode="numeric"
+          oninput="handleQuantityInput(this)" inputmode="numeric" required
         />
       </div>
   
@@ -283,7 +283,7 @@
             class="form-control"
             id="price"
             name="price"
-            oninput="handleQuantityInput(this)" inputmode="numeric"
+            oninput="handleQuantityInput(this)" inputmode="numeric" required
           />
         </div>
       `;
@@ -291,7 +291,7 @@
       selectedOption.innerHTML = `
           <input
             name="product"
-            value="lương"
+            value="Lương"
             hidden
           />
         <div class="my-3">
@@ -301,7 +301,7 @@
             class="form-control"
             id="price"
             name="price"
-            oninput="handleQuantityInput(this)" inputmode="numeric"
+            oninput="handleQuantityInput(this)" inputmode="numeric" required
           />
         </div>
       `;
