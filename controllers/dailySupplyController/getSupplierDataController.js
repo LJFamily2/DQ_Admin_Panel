@@ -106,7 +106,6 @@ async function getData(req, res) {
     const products = await DailySupply.find(filter)
       .sort(sortObject)
       .skip(parseInt(start, 10))
-      .limit(parseInt(length, 10))
       .populate("accountID");
 
     // Map the products to the desired format
@@ -151,7 +150,7 @@ async function getAreaSupplierData(req, res) {
 
 async function getSupplierInputData(req, res, isArea) {
   try {
-    const { draw, search, startDate, endDate } = req.body;
+    const { draw, search, startDate, endDate, start, length } = req.body;
     const searchValue = search?.value?.toLowerCase() || "";
 
     const { startDateUTC, endDateUTC } = parseDates(startDate, endDate);
@@ -168,7 +167,13 @@ async function getSupplierInputData(req, res, isArea) {
     const totalRecords = result[0].totalRecords[0]?.count || 0;
     const data = result[0].data;
 
-    const flattenedData = flattenData(data, isArea);
+    // Handle the case where length is -1 (fetch all records)
+    const limit = length === '-1' ? totalRecords : parseInt(length, 10);
+
+    // Apply pagination
+    const paginatedData = data.slice(parseInt(start), parseInt(start) + limit);
+
+    const flattenedData = flattenData(paginatedData, isArea);
 
     res.json({
       draw,
