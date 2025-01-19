@@ -157,7 +157,6 @@ async function updateUser(req, res) {
   req.body = trimStringFields(req.body);
   try {
     const userID = req.params.id;
-    console.log(req.body);
     if (!userID) {
       return handleResponse(
         req,

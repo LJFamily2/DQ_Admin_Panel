@@ -227,7 +227,6 @@ async function getDatas(req, res) {
 }
 
 async function updateData(req, res) {
-  console.log(req.body)
   try {
     const { id } = req.params;
     const date = await RawMaterialModel.findOne({ date: req.body.date });

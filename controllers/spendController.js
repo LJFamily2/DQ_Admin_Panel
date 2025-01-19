@@ -50,7 +50,6 @@ async function renderPage(req, res) {
 }
 
 async function createData(req, res) {
-  console.log(req.body);
   try {
     let quantity = convertToDecimal(req.body.quantity) || 1;
     let price = convertToDecimal(req.body.price) || 0;

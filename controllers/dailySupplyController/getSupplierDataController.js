@@ -436,7 +436,6 @@ async function getSupplierExportData(req, res, isArea) {
       const muKeData = rawMaterials['Mủ ké'] || {};
       const muDongData = rawMaterials['Mủ đông'] || {};
       
-      console.log(muQuyKhoData)
       const totalSum = ((muQuyKhoData.total || 0) + (muTapData.total || 0) + (muKeData.total || 0) + (muDongData.total || 0)) * parseFloat(ratioSumSplit) / 100;
 
       const note = item.notes.filter(Boolean).join(', ');
