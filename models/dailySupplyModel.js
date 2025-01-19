@@ -47,11 +47,11 @@ const supplierSchema = new mongoose.Schema(
     identification: { type: String, required: true },
     issueDate: { type: String, required: true },
     manager: { type: Boolean, default: false },
-    ratioRubberSplit: { type: Number, default: 100 },
-    ratioSumSplit: { type: Number, default: 100 },
-    purchasedAreaPrice: { type: Number, default: 0 },
-    areaDeposit: { type: Number, default: 0 },
-    advancePayment: { type: Number, default: 0 },
+    ratioRubberSplit: { type: Number, default: 100 }, //Tỉ lệ chia mủmủ
+    ratioSumSplit: { type: Number, default: 100 }, //Tỉ lệ chia tổngtổng
+    purchasedAreaPrice: { type: Number, default: 0 }, //Giá mua mẫuẫu
+    areaDeposit: { type: Number, default: 0 }, //Tiền cọc
+    advancePayment: { type: Number, default: 0 }, //Tiền ứng
     initialDebtAmount: {
       type: Number,
       default: function () {
