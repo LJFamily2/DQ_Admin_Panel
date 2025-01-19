@@ -419,7 +419,7 @@
             <div class="row">
               <div class="col col-md-6">
                 <label for="name" class="form-label fw-bold">Tên</label>
-                <input type="text" class="form-control" id="name" name="name" maxlength="30" value="<%= supplierData.name %>" required />
+                <input type="text" class="form-control" id="name" name="name" maxlength="30" value="<%= supplierData.name %>" required disabled />
               </div>
               <div class="col col-md-6">
                 <label for="code" class="form-label fw-bold">Mã</label>
@@ -496,10 +496,12 @@
               <label for="advancePayment" class="form-label fw-bold">Tiền ứng</label>
               <input type="text" class="form-control" id="advancePayment" name="advancePayment" value="<%= supplierData.advancePayment.toLocaleString('vi-VN') %>" oninput="handleQuantityInput(this)" inputmode="numeric" />
             </div>
+            <% if (area.areaDimension > 0 && area.areaPrice > 0) { %>
             <div class="mt-3">
               <label for="ratioRubberSplit" class="form-label fw-bold">Ăn chia mủ mặc định</label>
               <input type="text" class="form-control" id="ratioRubberSplit" name="ratioRubberSplit" value="<%= supplierData.ratioRubberSplit.toLocaleString('vi-VN') %>" oninput="handlePercentageInput(this)" inputmode="numeric" />
             </div>
+            <% } %>
             <div class="mt-3">
               <label for="ratioSumSplit" class="form-label fw-bold">Ăn chia tổng mặc định</label>
               <input type="text" class="form-control" id="ratioSumSplit" name="ratioSumSplit" value="<%= supplierData.ratioSumSplit.toLocaleString('vi-VN') %>" min="1" />

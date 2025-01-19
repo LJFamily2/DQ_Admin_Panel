@@ -31,10 +31,10 @@ async function createSuppliers(req) {
           identification: ensureArray(identification)[index],
           issueDate: ensureArray(issueDate)[index],
           supplierAddress: ensureArray(supplierAddress)[index],
-          ratioSumSplit: convertToDecimal(ensureArray(ratioSumSplit)[index]) || 0,
+          ratioSumSplit: convertToDecimal(ensureArray(ratioSumSplit)[index]),
           ratioRubberSplit: convertToDecimal(
             ensureArray(ratioRubberSplit)[index],
-          )|| 0,
+          ),
           areaDeposit: convertToDecimal(ensureArray(areaDeposit)[index]),
           purchasedAreaPrice: convertToDecimal(
             ensureArray(purchasedAreaPrice)[index],

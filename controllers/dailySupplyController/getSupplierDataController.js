@@ -393,18 +393,19 @@ async function getSupplierExportData(req, res, isArea) {
               rawMaterial: [],
             };
           }
-          acc[name].quantity += (quantity * percentage / 100) ;
+          if (name === 'Mủ nước') {
+            acc[name].quantity += (quantity * percentage / 100) ;
+            acc[name].afterSplit += (quantity * percentage / 100 * ratioSplit / 100);
+            acc[name].total += (quantity * percentage / 100 * ratioSplit / 100) * price;
+          } else {
+            acc[name].quantity += quantity  ;
+            acc[name].afterSplit += (quantity * (ratioSplit) / 100);
+            acc[name].total += ((quantity * (ratioSplit)) / 100) * price;
+          }
           acc[name].ratioSplit += ratioSplit;
           acc[name].count += 1; 
           acc[name].rawMaterial.push(raw);
   
-          if (name === 'Mủ nước') {
-            acc[name].afterSplit += (quantity * percentage / 100 * ratioSplit / 100);
-            acc[name].total += (quantity * percentage / 100 * ratioSplit / 100) * price;
-          } else {
-            acc[name].afterSplit += (quantity * (ratioSplit) / 100);
-            acc[name].total += ((quantity * (ratioSplit)) / 100) * price;
-          }
   
           if (price) {
             acc[name].price += price;
@@ -430,12 +431,12 @@ async function getSupplierExportData(req, res, isArea) {
         ratioSumSplit
       } = item.supplier;
       const code = isArea ? supplierCode : undefined;
-  
       const muQuyKhoData = rawMaterials['Mủ nước'] || {};
       const muTapData = rawMaterials['Mủ tạp'] || {};
       const muKeData = rawMaterials['Mủ ké'] || {};
       const muDongData = rawMaterials['Mủ đông'] || {};
-
+      
+      console.log(muQuyKhoData)
       const totalSum = ((muQuyKhoData.total || 0) + (muTapData.total || 0) + (muKeData.total || 0) + (muDongData.total || 0)) * parseFloat(ratioSumSplit) / 100;
 
       const note = item.notes.filter(Boolean).join(', ');
