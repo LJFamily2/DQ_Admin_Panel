@@ -112,7 +112,7 @@ async function addData(req, res) {
     req.body = trimStringFields(req.body);
 
     const today = new Date();
-    today.setUTCHours(0, 0, 0, 0);
+    today.setUTCHours(today.getUTCHours() + 7);
 
     const dailySupply = await DailySupply.findById(req.params.id);
     if (!dailySupply) {
@@ -306,10 +306,23 @@ async function updateSupplierData(req, res) {
     const dateRangeSetting = await DateRangeAccessSetting.findOne();
     if (dateRangeSetting) {
       const newDate = new Date(date).setUTCHours(0, 0, 0, 0);
-      const startDate = new Date(dateRangeSetting.startDate).setUTCHours(0, 0, 0, 0);
-      const endDate = new Date(dateRangeSetting.endDate).setUTCHours(23, 59, 59, 999);
+      const startDate = new Date(dateRangeSetting.startDate).setUTCHours(
+        0,
+        0,
+        0,
+        0
+      );
+      const endDate = new Date(dateRangeSetting.endDate).setUTCHours(
+        23,
+        59,
+        59,
+        999
+      );
 
-      if (req.user.role !== "Admin" && (newDate < startDate || newDate > endDate)) {
+      if (
+        req.user.role !== "Admin" &&
+        (newDate < startDate || newDate > endDate)
+      ) {
         return handleResponse(
           req,
           res,
@@ -327,27 +340,66 @@ async function updateSupplierData(req, res) {
         case "Mủ nước":
           item.quantity = convertToDecimal(muNuocQuantity);
           item.percentage = convertToDecimal(muNuocPercentage);
-          item.ratioSplit = muNuocRatioSplit !== undefined ? convertToDecimal(muNuocRatioSplit) : (item.ratioSplit !== undefined ? item.ratioSplit : 0);
-          item.price = muNuocPrice !== undefined ? convertToDecimal(muNuocPrice) : (item.price !== undefined ? item.price : 0);
+          item.ratioSplit =
+            muNuocRatioSplit !== undefined
+              ? convertToDecimal(muNuocRatioSplit)
+              : item.ratioSplit !== undefined
+              ? item.ratioSplit
+              : 0;
+          item.price =
+            muNuocPrice !== undefined
+              ? convertToDecimal(muNuocPrice)
+              : item.price !== undefined
+              ? item.price
+              : 0;
           break;
         case "Mủ tạp":
           item.quantity = convertToDecimal(muTapQuantity);
-          item.ratioSplit = muTapRatioSplit !== undefined ? convertToDecimal(muTapRatioSplit) : (item.ratioSplit !== undefined ? item.ratioSplit : 0);
-          item.price = muTapPrice !== undefined ? convertToDecimal(muTapPrice) : (item.price !== undefined ? item.price : 0);
+          item.ratioSplit =
+            muTapRatioSplit !== undefined
+              ? convertToDecimal(muTapRatioSplit)
+              : item.ratioSplit !== undefined
+              ? item.ratioSplit
+              : 0;
+          item.price =
+            muTapPrice !== undefined
+              ? convertToDecimal(muTapPrice)
+              : item.price !== undefined
+              ? item.price
+              : 0;
           break;
         case "Mủ ké":
           item.quantity = convertToDecimal(muKeQuantity);
-          item.ratioSplit = muKeRatioSplit !== undefined ? convertToDecimal(muKeRatioSplit) : (item.ratioSplit !== undefined ? item.ratioSplit : 0);
-          item.price = muKePrice !== undefined ? convertToDecimal(muKePrice) : (item.price !== undefined ? item.price : 0);
+          item.ratioSplit =
+            muKeRatioSplit !== undefined
+              ? convertToDecimal(muKeRatioSplit)
+              : item.ratioSplit !== undefined
+              ? item.ratioSplit
+              : 0;
+          item.price =
+            muKePrice !== undefined
+              ? convertToDecimal(muKePrice)
+              : item.price !== undefined
+              ? item.price
+              : 0;
           break;
         case "Mủ đông":
           item.quantity = convertToDecimal(muDongQuantity);
-          item.ratioSplit = muDongRatioSplit !== undefined ? convertToDecimal(muDongRatioSplit) : (item.ratioSplit !== undefined ? item.ratioSplit : 0);
-          item.price = muDongPrice !== undefined ? convertToDecimal(muDongPrice) : (item.price !== undefined ? item.price : 0);
+          item.ratioSplit =
+            muDongRatioSplit !== undefined
+              ? convertToDecimal(muDongRatioSplit)
+              : item.ratioSplit !== undefined
+              ? item.ratioSplit
+              : 0;
+          item.price =
+            muDongPrice !== undefined
+              ? convertToDecimal(muDongPrice)
+              : item.price !== undefined
+              ? item.price
+              : 0;
           break;
       }
     });
-
 
     dataEntry.date = new Date(date);
     dataEntry.note = trimStringFields(note) || "";
@@ -373,12 +425,14 @@ async function updateSupplierData(req, res) {
     if (dailySupply.areaPrice > 0 && dailySupply.areaDimension > 0) {
       const { debtPaid, retainedAmount } = calculateFinancials(
         dataEntry.rawMaterial,
-        convertToDecimal(moneyRetainedPercentage) || convertToDecimal(dataEntry.moneyRetained.percentage.toString())
+        convertToDecimal(moneyRetainedPercentage) ||
+          convertToDecimal(dataEntry.moneyRetained.percentage.toString())
       );
 
-      const debtPaidDifference = debtPaid - (dataEntry.debt.debtPaidAmount || 0);
-      const moneyRetainedDifference = retainedAmount - (dataEntry.moneyRetained.retainedAmount || 0);
-
+      const debtPaidDifference =
+        debtPaid - (dataEntry.debt.debtPaidAmount || 0);
+      const moneyRetainedDifference =
+        retainedAmount - (dataEntry.moneyRetained.retainedAmount || 0);
 
       if (!isNaN(debtPaidDifference)) {
         updatePromises.push(
@@ -391,8 +445,12 @@ async function updateSupplierData(req, res) {
       }
 
       const moneyRetainedUpdate = {
-        percentage: convertToDecimal(moneyRetainedPercentage) || convertToDecimal(dataEntry.moneyRetained.percentage.toString()),
-        retainedAmount: !isNaN(moneyRetainedDifference) ? dataEntry.moneyRetained.retainedAmount + moneyRetainedDifference : dataEntry.moneyRetained.retainedAmount,
+        percentage:
+          convertToDecimal(moneyRetainedPercentage) ||
+          convertToDecimal(dataEntry.moneyRetained.percentage.toString()),
+        retainedAmount: !isNaN(moneyRetainedDifference)
+          ? dataEntry.moneyRetained.retainedAmount + moneyRetainedDifference
+          : dataEntry.moneyRetained.retainedAmount,
       };
 
       updatePromises.push(

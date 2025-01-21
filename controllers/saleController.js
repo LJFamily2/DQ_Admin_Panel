@@ -57,14 +57,15 @@ const calculateDifferences = (newProducts, oldSale) => {
   };
 
   oldSale.products.forEach((product) => {
-      if (product.name === "dryRubber") {
-        const dryAmount = (product.quantity * product.percentage) / 100;
-        oldTotals.dryRubber += dryAmount;
-        oldTotals.income += dryAmount * product.price;
-      } else {
-        oldTotals[product.name] = (oldTotals[product.name] || 0) + product.quantity;
-        oldTotals.income += product.quantity * product.price;
-      }
+    if (product.name === "dryRubber") {
+      const dryAmount = (product.quantity * product.percentage) / 100;
+      oldTotals.dryRubber += dryAmount;
+      oldTotals.income += dryAmount * product.price;
+    } else {
+      oldTotals[product.name] =
+        (oldTotals[product.name] || 0) + product.quantity;
+      oldTotals.income += product.quantity * product.price;
+    }
   });
 
   let newTotals = {
@@ -250,11 +251,11 @@ async function getDatas(req, res) {
       filter.date = {};
 
       const filterStartDate = new Date(startDate || endDate);
-      filterStartDate.setHours(0, 0, 0, 0);
+      filterStartDate.setUTCHours(0, 0, 0, 0);
       filter.date.$gte = filterStartDate;
 
       const filterEndDate = new Date(endDate || startDate);
-      filterEndDate.setHours(23, 59, 59, 999);
+      filterEndDate.setUTCHours(23, 59, 59, 999);
       filter.date.$lte = filterEndDate;
     }
 
@@ -279,10 +280,13 @@ async function getDatas(req, res) {
     const sales = await dataQuery;
 
     const data = sales.map((sale, index) => {
-      let totalPrice = sale.products?.reduce(
-        (acc, product) => acc + product.quantity * (product.percentage / 100 || 1) * product.price,
-        0
-      ) || 0;
+      let totalPrice =
+        sale.products?.reduce(
+          (acc, product) =>
+            acc +
+            product.quantity * (product.percentage / 100 || 1) * product.price,
+          0
+        ) || 0;
       totalPrice = Math.round(totalPrice);
 
       return {
@@ -439,15 +443,19 @@ async function deleteData(req, res) {
       },
     };
 
-    const successUpdate = await ProductTotalModel.findOneAndUpdate({}, updateData, {
-      new: true,
-    });
+    const successUpdate = await ProductTotalModel.findOneAndUpdate(
+      {},
+      updateData,
+      {
+        new: true,
+      }
+    );
 
     if (!successUpdate) {
       return handleResponse(
         req,
         res,
-        404,  
+        404,
         "fail",
         "Cập nhật dữ liệu tổng thất bại",
         req.headers.referer
@@ -463,7 +471,7 @@ async function deleteData(req, res) {
       req.headers.referer
     );
   } catch (err) {
-    console.log(err)
+    console.log(err);
     res.status(500).render("partials/500", { layout: false });
   }
 }

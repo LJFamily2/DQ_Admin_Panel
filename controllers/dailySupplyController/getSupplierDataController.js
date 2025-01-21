@@ -25,7 +25,9 @@ function getTodayDate() {
 }
 
 function adjustDates(startDate, endDate) {
-  const today = getTodayDate();
+  const today = new Date()
+  today.setUTCHours(today.getUTCHours() + 7);
+
   if (!startDate && !endDate) {
     return { effectiveStartDate: today, effectiveEndDate: today };
   } else if (startDate && !endDate) {
@@ -168,7 +170,7 @@ async function getSupplierInputData(req, res, isArea) {
     const data = result[0].data;
 
     // Handle the case where length is -1 (fetch all records)
-    const limit = length === '-1' ? totalRecords : parseInt(length, 10);
+    const limit = length === "-1" ? totalRecords : parseInt(length, 10);
 
     // Apply pagination
     const paginatedData = data.slice(parseInt(start), parseInt(start) + limit);
@@ -378,9 +380,9 @@ async function getSupplierExportData(req, res, isArea) {
   }
 
   function flattenData(data, isArea) {
-    const calculateMaterialData = rawMaterials => {
+    const calculateMaterialData = (rawMaterials) => {
       return rawMaterials.reduce((acc, rawMaterialArray) => {
-        rawMaterialArray.forEach(raw => {
+        rawMaterialArray.forEach((raw) => {
           const { name, quantity, ratioSplit, price, percentage } = raw;
           if (!acc[name]) {
             acc[name] = {
@@ -393,20 +395,21 @@ async function getSupplierExportData(req, res, isArea) {
               rawMaterial: [],
             };
           }
-          if (name === 'Mủ nước') {
-            acc[name].quantity += (quantity * percentage / 100) ;
-            acc[name].afterSplit += (quantity * percentage / 100 * ratioSplit / 100);
-            acc[name].total += (quantity * percentage / 100 * ratioSplit / 100) * price;
+          if (name === "Mủ nước") {
+            acc[name].quantity += (quantity * percentage) / 100;
+            acc[name].afterSplit +=
+              (((quantity * percentage) / 100) * ratioSplit) / 100;
+            acc[name].total +=
+              ((((quantity * percentage) / 100) * ratioSplit) / 100) * price;
           } else {
-            acc[name].quantity += quantity  ;
-            acc[name].afterSplit += (quantity * (ratioSplit) / 100);
-            acc[name].total += ((quantity * (ratioSplit)) / 100) * price;
+            acc[name].quantity += quantity;
+            acc[name].afterSplit += (quantity * ratioSplit) / 100;
+            acc[name].total += ((quantity * ratioSplit) / 100) * price;
           }
           acc[name].ratioSplit += ratioSplit;
-          acc[name].count += 1; 
+          acc[name].count += 1;
           acc[name].rawMaterial.push(raw);
-  
-  
+
           if (price) {
             acc[name].price += price;
           }
@@ -414,38 +417,46 @@ async function getSupplierExportData(req, res, isArea) {
         return acc;
       }, {});
     };
-  
+
     return data.map((item, index) => {
       const rawMaterials = calculateMaterialData(item.rawMaterials);
-  
+
       const no = index + 1;
       const {
-        name: supplier = '',
-        code: supplierCode = '',
+        name: supplier = "",
+        code: supplierCode = "",
         purchasedAreaDimension,
         purchasedAreaPrice,
         areaDeposit,
         debtHistory,
         initialDebtAmount,
         moneyRetainedHistory,
-        ratioSumSplit
+        ratioSumSplit,
       } = item.supplier;
       const code = isArea ? supplierCode : undefined;
-      const muQuyKhoData = rawMaterials['Mủ nước'] || {};
-      const muTapData = rawMaterials['Mủ tạp'] || {};
-      const muKeData = rawMaterials['Mủ ké'] || {};
-      const muDongData = rawMaterials['Mủ đông'] || {};
-      
-      
-      const note = item.notes.filter(Boolean).join(', ');
-      const signature = '';
-      
+      const muQuyKhoData = rawMaterials["Mủ nước"] || {};
+      const muTapData = rawMaterials["Mủ tạp"] || {};
+      const muKeData = rawMaterials["Mủ ké"] || {};
+      const muDongData = rawMaterials["Mủ đông"] || {};
+
+      const note = item.notes.filter(Boolean).join(", ");
+      const signature = "";
+
       // Calculate totalDebtPaidAmount and remainingDebt, retainedAmount
       const totalDebtPaidAmount = calculateTotalDebtPaidAmount(debtHistory);
-      const remainingDebt = calculateRemainingDebt(initialDebtAmount, totalDebtPaidAmount);
+      const remainingDebt = calculateRemainingDebt(
+        initialDebtAmount,
+        totalDebtPaidAmount
+      );
       const retainedAmount = getTotalRetainedAmount(moneyRetainedHistory);
-      
-      let totalSum = ((muQuyKhoData.total || 0) + (muTapData.total || 0) + (muKeData.total || 0) + (muDongData.total || 0)) * parseFloat(ratioSumSplit) / 100;
+
+      let totalSum =
+        (((muQuyKhoData.total || 0) +
+          (muTapData.total || 0) +
+          (muKeData.total || 0) +
+          (muDongData.total || 0)) *
+          parseFloat(ratioSumSplit)) /
+        100;
       if (purchasedAreaPrice > 0 && purchasedAreaDimension > 0) {
         totalSum -= retainedAmount;
       }
@@ -463,25 +474,35 @@ async function getSupplierExportData(req, res, isArea) {
         retainedAmount: formatNumber(retainedAmount > 0 ? retainedAmount : 0),
         // Mu nuoc
         muQuyKhoQuantity: formatNumber(muQuyKhoData.quantity || 0),
-        muQuyKhoSplit: formatNumber(muQuyKhoData.count > 0 ? muQuyKhoData.ratioSplit / muQuyKhoData.count : 0),
+        muQuyKhoSplit: formatNumber(
+          muQuyKhoData.count > 0
+            ? muQuyKhoData.ratioSplit / muQuyKhoData.count
+            : 0
+        ),
         muQuyKhoQuantityAfterSplit: formatNumber(muQuyKhoData.afterSplit || 0),
         muQuyKhoDonGia: formatNumber(muQuyKhoData.price || 0),
         muQuyKhoTotal: formatNumber(muQuyKhoData.total || 0),
         // Mu tap
         muTapQuantity: formatNumber(muTapData.quantity || 0),
-        muTapSplit: formatNumber(muTapData.count > 0 ? muTapData.ratioSplit / muTapData.count : 0),
+        muTapSplit: formatNumber(
+          muTapData.count > 0 ? muTapData.ratioSplit / muTapData.count : 0
+        ),
         muTapAfterSplit: formatNumber(muTapData.afterSplit || 0),
         muTapDonGia: formatNumber(muTapData.price || 0),
         muTapTotal: formatNumber(muTapData.total || 0),
         // Mu ke
         muKeQuantity: formatNumber(muKeData.quantity || 0),
-        muKeSplit: formatNumber(muKeData.count > 0 ? muKeData.ratioSplit / muKeData.count : 0),
+        muKeSplit: formatNumber(
+          muKeData.count > 0 ? muKeData.ratioSplit / muKeData.count : 0
+        ),
         muKeAfterSplit: formatNumber(muKeData.afterSplit || 0),
         muKeDonGia: formatNumber(muKeData.price || 0),
         muKeTotal: formatNumber(muKeData.total || 0),
         // Mu dong
         muDongQuantity: formatNumber(muDongData.quantity || 0),
-        muDongSplit: formatNumber(muDongData.count > 0 ? muDongData.ratioSplit / muDongData.count : 0),
+        muDongSplit: formatNumber(
+          muDongData.count > 0 ? muDongData.ratioSplit / muDongData.count : 0
+        ),
         muDongAfterSplit: formatNumber(muDongData.afterSplit || 0),
         muDongDonGia: formatNumber(muDongData.price || 0),
         muDongTotal: formatNumber(muDongData.total || 0),
@@ -495,7 +516,9 @@ async function getSupplierExportData(req, res, isArea) {
 
 async function getIndividualSupplierExportData(req, res, sendResponse = true) {
   const { slug, supplierSlug } = req.params;
-  const { draw, startDate, endDate, order } = sendResponse ? req.body : req.query;
+  const { draw, startDate, endDate, order } = sendResponse
+    ? req.body
+    : req.query;
 
   try {
     const { startDateUTC, endDateUTC } = parseDates(startDate, endDate);
@@ -569,7 +592,9 @@ async function getIndividualSupplierExportData(req, res, sendResponse = true) {
     }
   } catch (error) {
     if (sendResponse) {
-      res.status(500).json({ error: "Internal Server Error", details: error.message });
+      res
+        .status(500)
+        .json({ error: "Internal Server Error", details: error.message });
     } else {
       throw new Error(`Internal Server Error: ${error.message}`);
     }

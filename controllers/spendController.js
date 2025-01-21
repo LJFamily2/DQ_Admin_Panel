@@ -83,7 +83,7 @@ async function createData(req, res) {
       req.headers.referer
     );
   } catch (err) {
-    console.log(err)
+    console.log(err);
     res.status(500).render("partials/500", { layout: false });
   }
 }
@@ -120,11 +120,11 @@ async function getData(req, res) {
       filter.date = {};
 
       const filterStartDate = new Date(startDate || endDate);
-      filterStartDate.setHours(0, 0, 0, 0);
+      filterStartDate.setUTCHours(0, 0, 0, 0);
       filter.date.$gte = filterStartDate;
 
       const filterEndDate = new Date(endDate || startDate);
-      filterEndDate.setHours(23, 59, 59, 999);
+      filterEndDate.setUTCHours(23, 59, 59, 999);
       filter.date.$lte = filterEndDate;
     }
 
@@ -278,10 +278,7 @@ async function deleteData(req, res) {
       );
     }
 
-    await updateProductTotal(
-      product.price * product.quantity,
-      false
-    );
+    await updateProductTotal(product.price * product.quantity, false);
 
     return handleResponse(
       req,
