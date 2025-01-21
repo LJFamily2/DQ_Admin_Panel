@@ -373,8 +373,7 @@ async function updateSupplierData(req, res) {
     if (dailySupply.areaPrice > 0 && dailySupply.areaDimension > 0) {
       const { debtPaid, retainedAmount } = calculateFinancials(
         dataEntry.rawMaterial,
-        convertToDecimal(moneyRetainedPercentage) ||
-          convertToDecimal(dataEntry.moneyRetained.percentage)
+        convertToDecimal(moneyRetainedPercentage) || convertToDecimal(dataEntry.moneyRetained.percentage.toString())
       );
 
       const debtPaidDifference = debtPaid - (dataEntry.debt.debtPaidAmount || 0);
@@ -392,7 +391,7 @@ async function updateSupplierData(req, res) {
       }
 
       const moneyRetainedUpdate = {
-        percentage: convertToDecimal(moneyRetainedPercentage) || convertToDecimal(dataEntry.moneyRetained.percentage),
+        percentage: convertToDecimal(moneyRetainedPercentage) || convertToDecimal(dataEntry.moneyRetained.percentage.toString()),
         retainedAmount: !isNaN(moneyRetainedDifference) ? dataEntry.moneyRetained.retainedAmount + moneyRetainedDifference : dataEntry.moneyRetained.retainedAmount,
       };
 
