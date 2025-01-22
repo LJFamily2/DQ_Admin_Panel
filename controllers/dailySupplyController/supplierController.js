@@ -426,6 +426,25 @@ async function editSupplier(req, res) {
       );
     }
 
+    // Check if trying to set as manager when there's already a manager
+    if (req.body.manager === "true" && !existingSupplier.manager) {
+      const existingManager = await Supplier.findOne({ 
+        manager: true,
+        _id: { $ne: req.params.id } // Exclude current supplier
+      });
+      
+      if (existingManager) {
+        return handleResponse(
+          req,
+          res,
+          400, 
+          "fail",
+          `Đã có người quản lý khác: ${existingManager.name}`,
+          req.headers.referer
+        );
+      }
+    }
+
     // Generate new slug only if code is changed
     let newSlug = existingSupplier.supplierSlug;
     if (req.body.code && req.body.code !== existingSupplier.code) {
