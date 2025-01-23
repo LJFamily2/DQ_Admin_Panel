@@ -186,8 +186,8 @@ async function addData(req, res) {
       rawMaterial: rawMaterials,
       supplier: existedSupplier._id,
       note: trimStringFields(req.body.note) || "",
-      debt: debt?._id,
-      moneyRetained: moneyRetained?._id,
+      ...(debt && { debt: debt._id }),
+      ...(moneyRetained && { moneyRetained: moneyRetained._id }),
     };
 
     const [newData, updateSupplier] = await Promise.all([
@@ -197,8 +197,12 @@ async function addData(req, res) {
         { new: true, upsert: true }
       ),
       (async () => {
-        existedSupplier.debtHistory.push(debt?._id);
-        existedSupplier.moneyRetainedHistory.push(moneyRetained?._id);
+        if (debt?._id) {
+          existedSupplier.debtHistory.push(debt._id);
+        }
+        if (moneyRetained?._id) {
+          existedSupplier.moneyRetainedHistory.push(moneyRetained._id);
+        }
         return existedSupplier.save();
       })(),
     ]);
