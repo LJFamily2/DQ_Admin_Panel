@@ -211,7 +211,7 @@
       <div data-bs-spy="scroll" data-bs-target="#list-example" data-bs-offset="0" class="scrollspy-example" style="width: 90% ;background: rgb(245, 245, 245)">
         <% data.forEach((supplier, index) => { %>
         <div id="supplier<%= index %>" class="supplier-section <%= index === data.length - 1 ? '' : 'page-break' %> m-2 p-2 " style="background: white;">
-          <h4 style="font-weight: bold; position: relative;">Phiếu Tính Tiền Mủ Cao Su <span style="position: absolute; right: 0; font-style: italic;">Số: <%= index + 1 %></span></h4>
+          <h4 style="font-weight: bold; position: relative;">PHIẾU TÍNH TIỀN MỦ CAO SU <span style="position: absolute; right: 0; font-style: italic;">Số: <%= index + 1 %></span></h4>
           <h5>(<%= startDate ? new Date(startDate).toLocaleDateString('vi-VN') : "Không ngày" %> - <%= endDate ? new Date(endDate).toLocaleDateString('vi-VN') : "Không ngày" %>)</h5>
           <h6>Tên: <%= supplier.supplierName %> </h6>
           <table class="table table-bordered">
