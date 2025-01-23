@@ -49,24 +49,27 @@ const supplierSchema = new mongoose.Schema(
     manager: { type: Boolean, default: false },
     ratioRubberSplit: { type: Number, default: 100 }, //Tỉ lệ chia mủmủ
     ratioSumSplit: { type: Number, default: 100 }, //Tỉ lệ chia tổngtổng
-    purchasedAreaPrice: { type: Number, default: 0 }, //Giá mua mẫuẫu
-    areaDeposit: { type: Number, default: 0 }, //Tiền cọc
-    advancePayment: { type: Number, default: 0 }, //Tiền ứng
+    purchasedAreaPrice: { type: Number}, //Giá mua mẫuẫu
+    areaDeposit: { type: Number}, //Tiền cọc
+    advancePayment: { type: Number}, //Tiền ứng
     initialDebtAmount: {
       type: Number,
-      default: function () {
-        return (
-          this.purchasedAreaDimension * this.purchasedAreaPrice -
-          this.areaDeposit
-        );
-      },
+      default: function() {
+        if (this.purchasedAreaDimension > 0 && 
+            this.purchasedAreaPrice > 0) {
+          const deposit = this.areaDeposit || 0;
+          return this.purchasedAreaDimension * this.purchasedAreaPrice - deposit;
+        }
+        // Return 0 if values are not available
+        return 0;
+      }
     },
     debtHistory: [{ type: mongoose.Schema.Types.ObjectId, ref: 'debts' }],
     moneyRetainedHistory: [
       { type: mongoose.Schema.Types.ObjectId, ref: 'moneyRetaineds' },
     ],
-    moneyRetainedPercentage: { type: Number, default: 0 },
-    purchasedAreaDimension: { type: Number, default: 0 },
+    moneyRetainedPercentage: { type: Number},
+    purchasedAreaDimension: { type: Number},
     areaDuration: {
       start: { type: Date },
       end: { type: Date },

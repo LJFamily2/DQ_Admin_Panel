@@ -5,7 +5,6 @@ async function createSuppliers(req) {
   const {
     supplierName,
     code,
-    manager,
     phone,
     identification,
     issueDate,
@@ -26,7 +25,7 @@ async function createSuppliers(req) {
         const supplier = {
           name,
           code: ensureArray(code)[index],
-          manager: ensureArray(manager)[index],
+          manager: false,
           phone: ensureArray(phone)[index],
           identification: ensureArray(identification)[index],
           issueDate: ensureArray(issueDate)[index],
