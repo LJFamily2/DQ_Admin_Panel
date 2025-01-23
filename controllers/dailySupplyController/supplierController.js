@@ -428,20 +428,29 @@ async function editSupplier(req, res) {
 
     // Check if trying to set as manager when there's already a manager
     if (req.body.manager === "true" && !existingSupplier.manager) {
-      const existingManager = await Supplier.findOne({ 
-        manager: true,
-        _id: { $ne: req.params.id } // Exclude current supplier
-      });
-      
-      if (existingManager) {
-        return handleResponse(
-          req,
-          res,
-          400, 
-          "fail",
-          `Đã có người quản lý khác: ${existingManager.name}`,
-          req.headers.referer
+      // Find the daily supply that contains this supplier
+      const dailySupply = await DailySupply.findOne({
+        suppliers: existingSupplier._id,
+      }).populate("suppliers");
+
+      if (dailySupply) {
+        // Check for existing manager only within this daily supply's suppliers
+        const existingManager = dailySupply.suppliers.find(
+          (supplier) =>
+            supplier.manager === true &&
+            supplier._id.toString() !== req.params.id
         );
+
+        if (existingManager) {
+          return handleResponse(
+            req,
+            res,
+            400,
+            "fail",
+            `Đã có người quản lý khác trong vườn này: ${existingManager.name}`,
+            req.headers.referer
+          );
+        }
       }
     }
 
