@@ -289,9 +289,7 @@ async function renderAllData(req, res) {
 
     // Sort suppliers alphabetically
     allSupplierData.sort((a, b) => {
-      if (a.supplierName < b.supplierName) return -1;
-      if (a.supplierName > b.supplierName) return 1;
-      return 0;
+      return a.supplierName.toLowerCase().localeCompare(b.supplierName.toLowerCase());
     });
 
     // Render the page with collected data
