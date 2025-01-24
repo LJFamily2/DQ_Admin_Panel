@@ -556,6 +556,9 @@ async function getIndividualSupplierExportData(req, res, sendResponse = true) {
                 rawMaterial: "$data.rawMaterial",
                 note: "$data.note",
                 supplierId: "$data.supplier",
+                moneyRetainedPercentage: {
+                  $literal: supplier.moneyRetainedPercentage
+                }
               },
             },
           ],
@@ -662,10 +665,10 @@ async function getIndividualSupplierExportData(req, res, sendResponse = true) {
       const muKeTotalPrice = muKeTotalAfterSplit * muKe.price;
       const muDongTotalPrice = muDongTotalAfterSplit * muDong.price;
       const totalPrice =
-        muQuyKhoTotalPrice +
+       ( muQuyKhoTotalPrice +
         muTapTotalPrice +
         muKeTotalPrice +
-        muDongTotalPrice;
+        muDongTotalPrice) * (1 - item.moneyRetainedPercentage/100);
 
       return {
         no: index + 1,
@@ -696,11 +699,14 @@ async function getIndividualSupplierExportData(req, res, sendResponse = true) {
         muDongRatioSplit: formatNumber(muDong.ratioSplit),
         muDongTotalAfterSplit: formatNumber(muDongTotalAfterSplit),
         muDongTotalPrice: formatNumber(muDongTotalPrice),
+
+        moneyRetainedPercentage: item.moneyRetainedPercentage,
         totalPrice: formatNumber(totalPrice),
         note: item.note || "",
         id: item._id,
       };
     });
+
     return {
       data: flattenedData,
       latestPrices: latestPrices,

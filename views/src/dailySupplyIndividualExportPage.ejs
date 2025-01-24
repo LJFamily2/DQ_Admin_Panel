@@ -90,6 +90,7 @@
               <th colspan="5">Mủ tạp</th>
               <th colspan="5">Mủ ké</th>
               <th colspan="5">Mủ đông</th>
+              <th rowspan="2">Giữ lại(%)</th>
               <th rowspan="2">Tổng tiền</th>
               <th rowspan="2">Khác</th>
               <th rowspan="2">Chỉnh sửa</th>
@@ -361,6 +362,7 @@
               <th></th>
               <th></th>
               <th></th>
+              <th></th>
               <th colspan="2"></th>
             </tr>
             <% } else { %>
@@ -576,7 +578,9 @@
       data: 'id',
       orderable: false
     },
-  ] : [{
+  ] 
+  : 
+  [{
       data: 'no',
       orderable: false
     },
@@ -669,6 +673,10 @@
     },
     {
       data: 'muDongTotalPrice',
+      orderable: false
+    },
+    {
+      data: 'moneyRetainedPercentage',
       orderable: false
     },
     {

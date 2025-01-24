@@ -296,7 +296,7 @@
                 <td class="muDong"><%= item.muDongTotalAfterSplit %></td>
                 <td class="muDong"><%= item.muDongTotalPrice %></td>
                 <td class="tongTien"><%= supplier.moneyRetainedPercentage %></td>
-                <td class="tongTien"><%= ( (item.totalPrice.replace(/\./g, '').replace(',', '.')) - (item.totalPrice.replace(/\./g, '').replace(',', '.') * supplier.moneyRetainedPercentage / 100) ) %></td>
+                <td class="tongTien"><%= item.totalPrice %></td>
                 <% } else { %>
                 <td class="muNuoc"><%= item.muNuocQuantity %></td>
                 <td class="muNuoc"><%= item.muHamLuong %></td>
@@ -319,7 +319,7 @@
               <% totals.muDong += parseFloat(item.muDongQuantity.replace(',', '.')) || 0; %>
               <% totals.muDongAfter += parseFloat(item.muDongTotalAfterSplit.replace(',', '.')) || 0; %>
               <% totals.muDongTotalPrice += parseFloat(item.muDongTotalPrice.replace(/\./g, '').replace(',', '.')) || 0; %>
-              <% totals.totalPrice += parseFloat( (item.totalPrice.replace(/\./g, '').replace(',', '.')) - (item.totalPrice.replace(/\./g, '').replace(',', '.') * supplier.moneyRetainedPercentage / 100) ) || 0; %>
+              <% totals.totalPrice += parseFloat(item.totalPrice.replace(/\./g, '').replace(',', '.')) || 0; %>
               <% }) %>
             </tbody>
             <tfoot>

@@ -141,7 +141,7 @@ function initializeExportDataTable(
   if (individualExportPage) {
     if (parseNumber(areaDimension) > 0 && parseNumber(areaPrice) > 0) {
       footerCallbackOptions = setupFooterCallbackOptions([
-        2, 4, 6, 8, 9, 11, 13, 14, 16, 18, 19, 21, 23, 24,
+        2, 4, 6, 8, 9, 11, 13, 14, 16, 18, 19, 21, 23, 25,
       ]);
     } else {
       footerCallbackOptions = setupFooterCallbackOptions([4, 6, 8, 10]);
