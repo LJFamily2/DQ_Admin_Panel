@@ -223,6 +223,7 @@
                 <th class="muTap" colspan="5">Mủ tạp</th>
                 <th class="muKe" colspan="5">Mủ ké</th>
                 <th class="muDong" colspan="5">Mủ đông</th>
+                <th class="tongTien" rowspan="2">Giữ lại(%)</th>
                 <th class="tongTien" rowspan="2">Tổng tiền</th>
                 <% } else { %>
                 <th class="muNuoc" colspan="3">Mủ nước</th>
@@ -294,7 +295,8 @@
                 <td class="muDong"><%= item.muDongRatioSplit %></td>
                 <td class="muDong"><%= item.muDongTotalAfterSplit %></td>
                 <td class="muDong"><%= item.muDongTotalPrice %></td>
-                <td class="tongTien"><%= item.totalPrice %></td>
+                <td class="tongTien"><%= supplier.moneyRetainedPercentage %></td>
+                <td class="tongTien"><%= ( (item.totalPrice.replace(/\./g, '').replace(',', '.')) - (item.totalPrice.replace(/\./g, '').replace(',', '.') * supplier.moneyRetainedPercentage / 100) ) %></td>
                 <% } else { %>
                 <td class="muNuoc"><%= item.muNuocQuantity %></td>
                 <td class="muNuoc"><%= item.muHamLuong %></td>
@@ -317,7 +319,7 @@
               <% totals.muDong += parseFloat(item.muDongQuantity.replace(',', '.')) || 0; %>
               <% totals.muDongAfter += parseFloat(item.muDongTotalAfterSplit.replace(',', '.')) || 0; %>
               <% totals.muDongTotalPrice += parseFloat(item.muDongTotalPrice.replace(/\./g, '').replace(',', '.')) || 0; %>
-              <% totals.totalPrice += parseFloat(item.totalPrice.replace(/\./g, '').replace(',', '.')) || 0; %>
+              <% totals.totalPrice += parseFloat( (item.totalPrice.replace(/\./g, '').replace(',', '.')) - (item.totalPrice.replace(/\./g, '').replace(',', '.') * supplier.moneyRetainedPercentage / 100) ) || 0; %>
               <% }) %>
             </tbody>
             <tfoot>
@@ -341,6 +343,7 @@
                 <th class="muDong" colspan="2"></th>
                 <th class="muDong"><%= totals.muDongAfter.toLocaleString('vi-VN') %></th>
                 <th class="muDong"><%= totals.muDongTotalPrice.toLocaleString('vi-VN') %></th>
+                <th class="tongTien"><%= %></th>
                 <th class="tongTien"><%= totals.totalPrice.toLocaleString('vi-VN') %></th>
                 <% } else { %>
                 <th class="date" colspan="2"></th>
@@ -371,7 +374,11 @@
               <% } %>
             </tfoot>
           </table>
+          <% if (area.areaDimension > 0 && area.areaPrice > 0) { %>
+          <p>Tổng số tiền: <span id="totalAmount<%= index %>"><%= Math.round(totals.totalPrice).toLocaleString('vi-VN') %></span></p>
+          <% }else{ %>
           <p>Tổng số tiền: <span id="totalAmount<%= index %>"><%= Math.round(((totals.muQuyKho * latestPrices.muNuoc) + (totals.muTap * latestPrices.muTap) + (totals.muKe * latestPrices.muKe) + (totals.muDong * latestPrices.muDong))).toLocaleString('vi-VN') %></span></p>
+          <% } %>
           <p class="addContainer<%= index %> no-print d-flex align-items-center">Cộng:
             <input type="number" class="form-control addPriceInput no-print mx-2" style="width: auto;" data-index="<%= index %>" oninput="updateFinalAmount(<%= index %>); document.getElementById('addPriceValue<%= index %>').textContent = isNaN(parseFloat(this.value)) ? '' : Math.round(parseFloat(this.value)).toLocaleString('vi-VN')">
             <span id="addPriceValue<%= index %>"></span>
@@ -387,10 +394,10 @@
             <p>Thực nhận: <span class="totalGet" id="finalAmountDisplay<%= index %>"></span></p>
             <div style="display:flex; flex-direction: column; align-items: flex-end;">
               <% if (supplier.initialDebtAmount > 0) { %>
-              <p>Công nợ còn lại: <%= Math.round(remainingDebt).toLocaleString('vi-VN') %></p>
+              <p>Công nợ còn lại: <%= Math.round(supplier.remainingDebt).toLocaleString('vi-VN') %></p>
               <% } %>
-              <% if (totalMoneyRetainedAmount > 0) { %>
-              <p>Tổng tiền giữ lại: <%= Math.round(totalMoneyRetainedAmount).toLocaleString('vi-VN') %></p>
+              <% if (supplier.totalMoneyRetained > 0) { %>
+              <p>Tổng tiền giữ lại: <%= Math.round(supplier.totalMoneyRetained).toLocaleString('vi-VN') %></p>
               <% } %>
             </div>
           </div>

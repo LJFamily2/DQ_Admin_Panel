@@ -225,7 +225,7 @@ async function renderAllData(req, res) {
     const { slug } = req.params;
     const { startDate, endDate } = req.query;
 
-    // Fetch the DailySupply document based on the slug
+    // Fetch the DailySupply document with suppliers
     const dailySupply = await DailySupply.findOne({ slug }).populate({
       path: "suppliers",
       populate: ["moneyRetainedHistory", "debtHistory"],
@@ -235,15 +235,13 @@ async function renderAllData(req, res) {
       return res.status(404).render("partials/404", { layout: false });
     }
 
-    // Initialize an array to hold all supplier data
+    // Initialize array to hold all supplier data
     const allSupplierData = [];
-    let totalDebtPaidAmount = 0;
-    let totalMoneyRetainedAmount = 0;
-    let remainingDebt = 0;
 
-    // Loop through each supplier and get their export data
+    // Process each supplier
     for (const supplier of dailySupply.suppliers) {
       try {
+        // Get individual supplier export data
         const supplierData = await getIndividualSupplierExportData(
           {
             params: { slug, supplierSlug: supplier.supplierSlug },
@@ -255,24 +253,28 @@ async function renderAllData(req, res) {
 
         // Only process suppliers that have data within the date range
         if (supplierData.data.length > 0) {
-          // Manually calculate totalDebtPaidAmount and totalMoneyRetainedAmount
-          totalDebtPaidAmount += supplier.debtHistory.reduce(
-            (total, debt) => total + debt.debtPaidAmount,
-            0
-          );
-          totalMoneyRetainedAmount += supplier.moneyRetainedHistory.reduce(
-            (total, retained) => total + retained.retainedAmount,
+          // Calculate supplier-specific totals
+          const totalDebtPaidAmount = supplier.debtHistory.reduce(
+            (total, debt) => total + (debt.debtPaidAmount || 0),
             0
           );
 
-          // Calculate remainingDebt
-          remainingDebt += supplier.initialDebtAmount - totalDebtPaidAmount;
+          const totalMoneyRetainedAmount = supplier.moneyRetainedHistory.reduce(
+            (total, retained) => total + (retained.retainedAmount || 0),
+            0
+          );
 
+          // Calculate remaining debt for this supplier
+          const remainingDebt = supplier.initialDebtAmount - totalDebtPaidAmount;
+          // Add supplier data with their specific calculations
           allSupplierData.push({
             supplierName: supplier.name,
             supplierCode: supplier.code,
             ratioSumSplit: supplier.ratioSumSplit,
+            moneyRetainedPercentage: supplier.moneyRetainedPercentage,
             initialDebtAmount: supplier.initialDebtAmount,
+            remainingDebt: remainingDebt,
+            totalMoneyRetained: totalMoneyRetainedAmount,
             data: supplierData.data,
             latestPrices: supplierData.latestPrices,
           });
@@ -285,13 +287,14 @@ async function renderAllData(req, res) {
       }
     }
 
+    // Sort suppliers alphabetically
     allSupplierData.sort((a, b) => {
       if (a.supplierName < b.supplierName) return -1;
       if (a.supplierName > b.supplierName) return 1;
       return 0;
     });
 
-    // Render the page with the collected data
+    // Render the page with collected data
     res.render("src/dailySupplyExportAllPage", {
       layout: false,
       data: allSupplierData,
@@ -300,10 +303,7 @@ async function renderAllData(req, res) {
       title: "Xuất dữ liệu mủ của tất cả nhà cung cấp",
       startDate,
       endDate,
-      remainingDebt,
-      totalMoneyRetainedAmount,
-      latestPrices:
-        allSupplierData.length > 0 ? allSupplierData[0].latestPrices : {},
+      latestPrices: allSupplierData.length > 0 ? allSupplierData[0].latestPrices : {},
     });
   } catch (error) {
     console.error("Error fetching supplier data:", error);
