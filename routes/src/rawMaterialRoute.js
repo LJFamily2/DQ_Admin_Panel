@@ -12,6 +12,7 @@ router.use(authMiddlewares.ensureWorkingHours);
 router.get(
   "/",
   setUnreadCount,
+  checkPermission("view"),
   authMiddlewares.ensureRoles(["Admin", "Văn phòng"]),
   rawMaterialController.renderPage
 );

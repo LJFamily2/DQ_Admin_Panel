@@ -12,7 +12,7 @@ router.use(authMiddlewares.ensureWorkingHours);
 router.get(
   "/",
   setUnreadCount,
-
+  checkPermission("view"),
   authMiddlewares.ensureRoles(["Admin", "Văn phòng"]),
   saleController.renderPage
 );
@@ -46,6 +46,6 @@ router.post(
   saleController.deleteAll
 );
 
-router.get("/hop-dong/:slug",setUnreadCount, saleController.renderDetailPage);
+router.get("/hop-dong/:slug",setUnreadCount, checkPermission('view'), saleController.renderDetailPage);
 
 module.exports = router;

@@ -95,6 +95,10 @@ mongoose
   .then(() => console.log("Connected to MongoDB Atlas"))
   .catch((error) => console.log("Error connecting to MongoDB:", error.message));
 
+// Middleware to check page access
+const checkPageAccess = require('./middlewares/checkPageAccess');
+app.use(checkPageAccess());
+
 // Routes
 const routes = require("./routes");
 routes.forEach((routeConfig) => {

@@ -14,11 +14,13 @@ router.use(authMiddlewares.ensureWorkingHours);
 router.get(
   "/",
   setUnreadCount,
+  checkPermission("view"),
   authMiddlewares.ensureRoles(["Admin", "Văn phòng"]),
   dailySupplyController.supplierAreaController.renderPage
 );
 router.post(
   "/getData",
+  checkPermission("view"),
   authMiddlewares.ensureRoles(["Admin", "Văn phòng"]),
   dailySupplyController.getSupplierDataController.getData
 );
@@ -39,6 +41,7 @@ router.delete(
 router.get(
   "/:slug",
   setUnreadCount,
+  checkPermission("view"),
   authMiddlewares.ensureRoles(["Admin", "Văn phòng"]),
   dailySupplyController.supplierController.renderDetailPage
 );
@@ -68,6 +71,7 @@ router.put(
 );
 router.post(
   "/getAreaSupplierData/:slug",
+  checkPermission("view"),
   authMiddlewares.ensureRoles(["Admin", "Văn phòng"]),
   dailySupplyController.getSupplierDataController.getAreaSupplierData
 );
@@ -76,11 +80,13 @@ router.post(
 router.get(
   "/:slug/xuat-file",
   setUnreadCount,
+  checkPermission("view"),
   authMiddlewares.ensureRoles(["Admin", "Văn phòng"]),
   dailySupplyController.supplierExportController.renderPage
 );
 router.post(
   "/:slug/xuat-file",
+  checkPermission("view"),
   authMiddlewares.ensureRoles(["Admin", "Văn phòng"]),
   dailySupplyController.getSupplierDataController.getSupplierExportData
 );
@@ -95,6 +101,7 @@ router.put(
 router.get(
   "/:slug/xuat-file/tat-ca",
   setUnreadCount,
+  checkPermission("view"),
   authMiddlewares.ensureRoles(["Admin", "Văn phòng"]),
   dailySupplyController.supplierExportController.renderAllData
 );
@@ -103,11 +110,13 @@ router.get(
 router.get(
   "/:slug/xuat-file/:supplierSlug",
   setUnreadCount,
+  checkPermission("view"),
   authMiddlewares.ensureRoles(["Admin", "Văn phòng"]),
   dailySupplyController.supplierIndividualExportController.renderPage
 );
 router.post(
   "/:slug/getSupplierExportData/:supplierSlug",
+  checkPermission("view"),
   authMiddlewares.ensureRoles(["Admin", "Văn phòng"]),
   dailySupplyController.getSupplierDataController.getIndividualSupplierExportData
 );

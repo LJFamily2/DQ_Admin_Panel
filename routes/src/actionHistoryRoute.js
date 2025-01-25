@@ -13,6 +13,7 @@ router.use(authMiddlewares.ensureWorkingHours);
 router.get(
   "/nhat-ky-hoat-dong",
   setUnreadCount,
+  checkPermission("view"),
   authMiddlewares.ensureRoles(["Admin", "Văn phòng"]),
   actionHistory.renderPage
 );

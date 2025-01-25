@@ -40,20 +40,20 @@
 
   <ul class="nav nav-pills flex-column mb-auto">
     <% const pages = [
-      { path: '/tong', title: 'Tổng', icon: 'ri-line-chart-line', roles: ['Admin', 'Văn phòng'] },
-      { path: '/quan-ly-du-lieu', title: 'Dữ liệu tổng', icon: 'ri-database-line', roles: ['Admin', 'Văn phòng'] },
-      { path: '/quan-ly-hang-hoa', title: 'Chạy lò', icon: 'ri-instance-line', roles: ['Admin', 'Văn phòng'] },
-      { path: '/quan-ly-hop-dong', title: 'Hợp đồng', icon: 'ri-contract-line', roles: ['Admin', 'Văn phòng'] },
-      { path: '/quan-ly-chi-tieu', title: 'Chi tiêu', icon: 'ri-bill-line', roles: ['Admin', 'Văn phòng'] },
-      { path: '/du-lieu-hang-ngay', title: 'Dữ liệu ngày', icon: 'ri-numbers-line', roles: ['Admin', 'Văn phòng'] },
-      { path: '/du-lieu/nhat-ky-hoat-dong', title: 'Lịch sử hoạt động', icon: 'ri-history-line', roles: ['Admin', 'Văn phòng'] },
-      { path: '/nhap-du-lieu/nguyen-lieu', title: 'Thêm nguyên liệu', icon: 'ri-edit-line', roles: ['Admin', 'Văn phòng', 'Hàm lượng'] },
-      { path: '/quan-ly-tai-khoan', title: 'Quản lý tài khoản', icon: 'ri-group-line', roles: ['Admin'] }
+      { path: '/tong', title: 'Tổng', icon: 'ri-line-chart-line' },
+      { path: '/quan-ly-du-lieu', title: 'Dữ liệu tổng', icon: 'ri-database-line' },
+      { path: '/quan-ly-hang-hoa', title: 'Chạy lò', icon: 'ri-instance-line' },
+      { path: '/quan-ly-hop-dong', title: 'Hợp đồng', icon: 'ri-contract-line' },
+      { path: '/quan-ly-chi-tieu', title: 'Chi tiêu', icon: 'ri-bill-line' },
+      { path: '/du-lieu-hang-ngay', title: 'Dữ liệu ngày', icon: 'ri-numbers-line' },
+      { path: '/nhap-du-lieu/nguyen-lieu', title: 'Thêm nguyên liệu', icon: 'ri-edit-line' },
+      { path: '/du-lieu/nhat-ky-hoat-dong', title: 'Lịch sử hoạt động', icon: 'ri-history-line' },
+      { path: '/quan-ly-tai-khoan', title: 'Quản lý tài khoản', icon: 'ri-group-line'}
     ] %>
 
     <% pages.forEach(page => { %>
     <% if (user.role === 'Admin' || 
-            (page.roles.includes(user.role) && 
+            ( 
              user.permissions.pages.find(p => p.path === page.path)?.allowed)) { %>
     <li class="nav-item">
       <a href="<%= page.path %>" class="nav-link link-dark d-flex justify-content-between">
@@ -84,7 +84,7 @@
   <div class="w-100 d-flex flex-nowrap justify-content-evenly">
     <% const mobilePages = pages.filter(page => 
       user.role === 'Admin' || 
-      (page.roles.includes(user.role) && 
+      ( 
        user.permissions.pages.find(p => p.path === page.path)?.allowed)
     ).slice(0, 3) %>
 
@@ -105,7 +105,7 @@
   <ul class="list-group" style="border-top-right-radius: 20px; border-top-left-radius: 20px; width: 100%;">
     <% const collapsedPages = pages.filter(page => 
       user.role === 'Admin' || 
-      (page.roles.includes(user.role) && 
+      ( 
        user.permissions.pages.find(p => p.path === page.path)?.allowed)
     ).slice(3) %>
 

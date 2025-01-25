@@ -15,17 +15,20 @@ router.use(authMiddlewares.ensureWorkingHours);
 router.get(
   "/nguyen-lieu",
   setUnreadCount,
+  checkPermission("view"),
   authMiddlewares.ensureRoles(["Admin", "Hàm lượng","Văn phòng"]),
   dailySupplyController.supplierInputController.renderInputDataDashboardPage
 );
 router.get(
   "/nguyen-lieu/:slug",
   setUnreadCount,
+  checkPermission("view"),
   authMiddlewares.ensureRoles(["Admin", "Hàm lượng","Văn phòng"]),
   dailySupplyController.supplierInputController.renderInputDataPage
 );
 router.post(
   "/nguyen-lieu/getSupplierData/:slug",
+  checkPermission("view"),
   authMiddlewares.ensureRoles(["Admin", "Hàm lượng","Văn phòng"]),
   dailySupplyController.getSupplierDataController.getSupplierData
 );
