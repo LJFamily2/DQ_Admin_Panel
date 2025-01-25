@@ -2,9 +2,9 @@ const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
   username: {
-    type: String, 
-    required: true, 
-  }, 
+    type: String,
+    required: true,
+  },
   password: {
     type: String,
     required: true,
@@ -14,9 +14,24 @@ const userSchema = new mongoose.Schema({
     required: true,
   },
   permissions: {
-    add: { type: Boolean, default: true },
-    update: { type: Boolean, default: true },
-    delete: { type: Boolean, default: true },
+    pages: [
+      {
+        path: {
+          type: String,
+          required: true,
+        },
+        allowed: {
+          type: Boolean,
+          default: false,
+        },
+        actions: {
+          view: { type: Boolean, default: false },
+          add: { type: Boolean, default: false },
+          update: { type: Boolean, default: false },
+          delete: { type: Boolean, default: false },
+        },
+      },
+    ],
   },
   createdAt: {
     type: Date,
@@ -25,8 +40,6 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-
 const UserModel = mongoose.model("Accounts", userSchema);
-
 
 module.exports = UserModel;

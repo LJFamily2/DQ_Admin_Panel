@@ -1,6 +1,11 @@
 <head>
   <!-- js -->
   <script src="/js/datatable.js"></script>
+  <style>
+    .cursor-pointer{
+      cursor: pointer;
+    }
+  </style>
 </head>
 
 
@@ -20,7 +25,7 @@
     <table class="table table-striped" id="user_accounts">
       <thead>
         <tr>
-          <% ['STT', 'Tài khoản', 'Mật Khẩu','Vai trò','Quyền hành động', 'Chỉnh Sửa'].forEach(header => { %>
+          <% ['STT', 'Tài khoản', 'Mật Khẩu','Vai trò', 'Chỉnh Sửa'].forEach(header => { %>
           <th><%= header %></th>
           <% }) %>
         </tr>
@@ -29,28 +34,28 @@
         <% users.forEach( (user,index) => { %>
         <!-- Modal for updating -->
         <div class="modal fade" id="staticBackdrop<%= user._id %>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+          <div class="modal-dialog modal-lg modal-dialog-scrollable">
             <div class="modal-content">
               <div class="modal-header">
-                <h1 class="modal-title fs-5" id="staticBackdropLabel">
+                <h1 class="modal-title fs-5 fw-bold" id="staticBackdropLabel">
                   Cập nhật thông tin cho <%= user.username %>
                 </h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
 
               <form action="/quan-ly-tai-khoan/<%= user._id %>?_method=PUT" method="post">
-                <div class="modal-body">
+                <div class="modal-body" style="max-height: 80vh; overflow-y: auto;">
                   <div class="mb-3">
-                    <label for="username<%= index + 1 %>" class="form-label" style="float: left">Tài khoản</label>
+                    <label for="username<%= index + 1 %>" class="form-label fw-bold cursor-pointer" style="float: left">Tài khoản</label>
                     <input type="text" class="form-control" id="username<%= index + 1 %>" name="username" value="<%= user.username %>" />
                   </div>
                   <div class="mb-3">
-                    <label for="password<%= index +1  %>" class="form-label" style="float: left">Mật khẩu mới</label>
+                    <label for="password<%= index +1  %>" class="form-label fw-bold cursor-pointer" style="float: left">Mật khẩu mới</label>
                     <input type="password" class="form-control" id="password<%= index +1  %>" name="newPassword" placeholder="**********" />
                   </div>
 
                   <div class="mb-3">
-                    <label for="role<%= index %>" class="form-label" style="float: left;">Vai trò</label>
+                    <label for="role<%= index %>" class="form-label fw-bold cursor-pointer" style="float: left;">Vai trò</label>
                     <select class="form-select" id="role<%= index %>" name="role" aria-label="Default select example">
                       <% const roles = ['Admin', 'Văn phòng', 'Hàm lượng']; %>
                       <% roles.forEach(role => { %>
@@ -58,32 +63,64 @@
                       <% }); %>
                     </select>
                   </div>
-                  <div class="mb-3">
-                    <label for="permissions" class="form-label">Quyền hành động</label>
-                    <div class="d-flex">
-                      <div class="form-check me-3">
-                        <input class="form-check-input" type="checkbox" id="addPermission<%= index %>" name="addPermission" value="true" style="cursor: pointer;" <%= user.permissions.add ? 'checked' : '' %>>
-                        <label class="form-check-label" for="addPermission<%= index %>" style="cursor: pointer;">
-                          Tạo
-                        </label>
+
+                  <div class="card mb-4">
+                    <div class="card-header">
+                      <h5 class="mb-0 fw-bold"><i class="fas fa-lock me-2"></i>Quyền truy cập</h5>
+                    </div>
+                    <div class="card-body">
+                      <% const commonPages = [ 
+                      {title: 'Tổng', url: '/tong'},
+                      {title: 'Dữ liệu tổng', url: '/quan-ly-du-lieu'},
+                      {title: 'Chạy lò', url: '/quan-ly-hang-hoa'}, 
+                      {title: 'Hợp đồng', url: '/quan-ly-hop-dong'},
+                      {title: 'Chi tiêu', url: '/quan-ly-chi-tieu'},
+                      {title: 'Dữ liệu hàng ngày', url: '/du-lieu-hang-ngay'},
+                      {title: 'Nhập dữ liệu', url: '/nhap-du-lieu'},
+                      {title: 'Lịch sử hoạt động', url: '/du-lieu/nhat-ky-hoat-dong'},
+                      {title: 'Quản lý tài khoản', url: '/quan-ly-tai-khoan'}] 
+                      %>
+                      <% commonPages.forEach(page => { %>
+                      <div class="permission-group border rounded p-3 mb-3">
+                        <div class="row align-items-center">
+                          <div class="col-md-3">
+                            <h6 class="mb-0"><%= page.title %></h6>
+                          </div>
+                          <div class="col-md-2">
+                            <div class="form-check form-switch">
+                              <input type="checkbox" id="Truy cập<%= page.title %><%= index %>" class="form-check-input" name="pages[][allowed]" value="true" <%= user.permissions.pages.find(p => p.path === page.url)?.allowed ? 'checked' : '' %>>
+                              <label for="Truy cập<%= page.title %><%= index %>" class="form-check-label cursor-pointer" style="white-space: nowrap;">Truy cập</label>
+                            </div>
+                          </div>
+                          <div class="col-md-7">
+                            <div class="d-flex gap-3">
+                              <div class="form-check">
+                                <input type="checkbox" id="Xem<%= page.title %><%= index %>" class="form-check-input" name="pages[][view]" value="true" <%= user.permissions.pages.find(p => p.path === page.url)?.actions?.view ? 'checked' : '' %>>
+                                <label for="Xem<%= page.title %><%= index %>" class="form-check-label cursor-pointer">Xem</label>
+                              </div>
+                              <div class="form-check">
+                                <input type="checkbox" id="Thêm<%= page.title %><%= index %>" class="form-check-input" name="pages[][add]" value="true" <%= user.permissions.pages.find(p => p.path === page.url)?.actions?.add ? 'checked' : '' %>>
+                                <label for="Thêm<%= page.title %><%= index %>" class="form-check-label cursor-pointer">Thêm</label>
+                              </div>
+                              <div class="form-check">
+                                <input type="checkbox" id="Cập nhật<%= page.title %><%= index %>" class="form-check-input" name="pages[][update]" value="true" <%= user.permissions.pages.find(p => p.path === page.url)?.actions?.update ? 'checked' : '' %>>
+                                <label for="Cập nhật<%= page.title %><%= index %>" class="form-check-label cursor-pointer">Cập nhật</label>
+                              </div>
+                              <div class="form-check">
+                                <input type="checkbox" id="Xóa<%= page.title %><%= index %>" class="form-check-input" name="pages[][delete]" value="true" <%= user.permissions.pages.find(p => p.path === page.url)?.actions?.delete ? 'checked' : '' %>>
+                                <label for="Xóa<%= page.title %><%= index %>" class="form-check-label cursor-pointer">Xóa</label>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <input type="hidden" name="pages[][path]" value="<%= page.url %>">
                       </div>
-                      <div class="form-check me-3">
-                        <input class="form-check-input" type="checkbox" id="updatePermission<%= index %>" name="updatePermission" value="true" style="cursor: pointer;" <%= user.permissions.update ? 'checked' : '' %>>
-                        <label class="form-check-label" for="updatePermission<%= index %>" style="cursor: pointer;">
-                          Cập nhật
-                        </label>
-                      </div>
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="deletePermission<%= index %>" name="deletePermission" value="true" style="cursor: pointer;" <%= user.permissions.delete ? 'checked' : '' %>>
-                        <label class="form-check-label" for="deletePermission<%= index %>" style="cursor: pointer;">
-                          Xóa
-                        </label>
-                      </div>
+                      <% }) %>
                     </div>
                   </div>
                 </div>
                 <div class="modal-footer">
-                  <button type="submit" onclick="handleFormSubmit(this)" class=" btn btn-primary">Lưu</button>
+                  <button type="submit" onclick="handleFormSubmit(this)" class="btn btn-primary">Lưu</button>
                   <button type="reset" class="btn text-dark">Đặt lại</button>
                 </div>
               </form>
@@ -96,7 +133,7 @@
           <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
               <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalToggleLabel">
+                <h1 class="modal-title fs-5 fw-bold" id="exampleModalToggleLabel">
                   Xóa tài khoản <%= user.username %>
                 </h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -121,57 +158,89 @@
   </div>
 </section>
 
-<!-- Modal for creating admin -->
+<!-- Modal for creating account -->
 <div class="modal fade" id="add-admin-user" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="AddUser" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+  <div class="modal-dialog modal-lg  modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="AddUser">
-          Tạo tài khoản Văn phòng
+        <h1 class="modal-title fs-5 fw-bold" id="AddUser">
+          Tạo tài khoản mới
         </h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
       <form action="/quan-ly-tai-khoan?_method=POST" method="post">
-        <div class="modal-body">
+        <div class="modal-body" style="max-height: 80vh; overflow-y: auto;">
           <div class="mb-3">
-            <label for="username" class="form-label" style="float: left">Tài khoản</label>
+            <label for="username" class="form-label fw-bold cursor-pointer" style="float: left">Tài khoản</label>
             <input type="text" class="form-control" id="username" name="username" required />
           </div>
           <div class="mb-3">
-            <label for="password" class="form-label" style="float: left">Mật khẩu</label>
+            <label for="password" class="form-label fw-bold cursor-pointer" style="float: left">Mật khẩu</label>
             <input type="password" class="form-control" id="password" name="password" required />
           </div>
 
           <div class="mb-3">
-            <label for="role" class="form-label" style="float: left">Vai trò</label>
+            <label for="role" class="form-label fw-bold cursor-pointer" style="float: left">Vai trò</label>
             <select class="form-control" name="role" id="role">
               <option value="Admin">Admin</option>
               <option value="Văn phòng" selected>Văn phòng</option>
               <option value="Hàm lượng" selected>Hàm lượng</option>
             </select>
           </div>
-          <div class="mb-3">
-            <label for="permissions" class="form-label">Quyền hành động</label>
-            <div class="d-flex">
-              <div class="form-check me-3">
-                <input class="form-check-input" type="checkbox" id="addPermission" name="addPermission" value="true" style="cursor: pointer;" checked>
-                <label class="form-check-label" for="addPermission" style="cursor: pointer;">
-                  Tạo
-                </label>
+          <div class="card mb-4">
+            <div class="card-header">
+              <h5 class="mb-0 fw-bold"><i class="fas fa-lock me-2"></i>Quyền truy cập</h5>
+            </div>
+            <div class="card-body">
+              <% const commonPages = [ 
+              {title: 'Tổng', url: '/tong'},
+              {title: 'Dữ liệu tổng', url: '/quan-ly-du-lieu'},
+              {title: 'Chạy lò', url: '/quan-ly-hang-hoa'}, 
+              {title: 'Hợp đồng', url: '/quan-ly-hop-dong'},
+              {title: 'Chi tiêu', url: '/quan-ly-chi-tieu'},
+              {title: 'Dữ liệu hàng ngày', url: '/du-lieu-hang-ngay'},
+              {title: 'Nhập dữ liệu', url: '/nhap-du-lieu'},
+              {title: 'Lịch sử hoạt động', url: '/du-lieu/nhat-ky-hoat-dong'},
+              {title: 'Quản lý tài khoản', url: '/quan-ly-tai-khoan'}] 
+              %>
+              <% commonPages.forEach(page => { %>
+              <div class="permission-group border rounded p-3 mb-3">
+                <div class="row align-items-center">
+                  <div class="col-md-3">
+                    <h6 class="mb-0"><%= page.title %></h6>
+                  </div>
+                  <div class="col-md-2">
+                    <div class="form-check form-switch">
+                      <input type="checkbox" id="Truy cập<%= page.title %>" class="form-check-input" name="pages[][allowed]" value="true" <%= user.permissions.pages.find(p => p.path === page.url)?.allowed ? 'checked' : '' %>>
+                      <label for="Truy cập<%= page.title %>" class="form-check-label cursor-pointer" style="white-space: nowrap;">Truy cập</label>
+                    </div>
+                  </div>
+                  <div class="col-md-7">
+                    <div class="d-flex gap-3">
+                      <div class="form-check">
+                        <input type="checkbox" id="Xem<%= page.title %>" class="form-check-input" name="pages[][view]" value="true">
+                        <label for="Xem<%= page.title %>" class="form-check-label cursor-pointer">Xem</label>
+                      </div>
+                      <div class="form-check">
+                        <input type="checkbox" id="Thêm<%= page.title %>" class="form-check-input" name="pages[][add]" value="true">
+                        <label for="Thêm<%= page.title %>" class="form-check-label cursor-pointer">Thêm</label>
+                      </div>
+                      <div class="form-check">
+                        <input type="checkbox" id="Cập nhật<%= page.title %>" class="form-check-input" name="pages[][update]" value="true">
+                        <label for="Cập nhật<%= page.title %>" class="form-check-label cursor-pointer">Cập nhật</label>
+                      </div>
+                      <div class="form-check">
+                        <input type="checkbox" id="Xóa<%= page.title %>" class="form-check-input" name="pages[][delete]" value="true">
+                        <label for="Xóa<%= page.title %>" class="form-check-label cursor-pointer">Xóa</label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Add this hidden input for the page path -->
+                <input type="hidden" name="pages[][path]" value="<%= page.url %>">
               </div>
-              <div class="form-check me-3">
-                <input class="form-check-input" type="checkbox" id="updatePermission" name="updatePermission" value="true" style="cursor: pointer;" checked>
-                <label class="form-check-label" for="updatePermission" style="cursor: pointer;">
-                  Cập nhật
-                </label>
-              </div>
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="deletePermission" name="deletePermission" value="true" style="cursor: pointer;" checked>
-                <label class="form-check-label" for="deletePermission" style="cursor: pointer;">
-                  Xóa
-                </label>
-              </div>
+              <% }) %>
             </div>
           </div>
         </div>
@@ -224,24 +293,6 @@
     {
       data: "role",
     },
-    {
-      data: "permissions",
-      orderable: false,
-      render: function(data, type, row) {
-        let badges = '';
-        if (row.permissions.add) {
-          badges += '<span class="badge rounded-pill bg-success me-1">Tạo</span>';
-        }
-        if (row.permissions.update) {
-          badges += '<span class="badge rounded-pill bg-primary me-1">Cập nhật</span>';
-        }
-        if (row.permissions.delete) {
-          badges += '<span class="badge rounded-pill bg-danger">Xóa</span>';
-        }
-        return badges;
-      }
-    },
-
     {
       data: "id",
       orderable: false,
