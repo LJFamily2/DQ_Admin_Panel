@@ -5,9 +5,6 @@
   <script src="/js/inputFieldRestriction.js" defer></script>
   <!-- Slim select -->
   <script src="/js/slim-select.js" defer></script>
-  <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css">
-  <script src="https://unpkg.com/@popperjs/core@2"></script>
-  <script src="https://unpkg.com/tippy.js@6"></script>
 
   <style>
     /* Hide the spinners in input type number for Chrome, Safari, Edge, and Opera */
@@ -25,9 +22,9 @@
 
 </head>
 
-<!-- Search bar for tabs -->
-<div class="d-flex justify-content-end mb-3 my-4">
-  <input type="text" id="tabSearch" placeholder="Tìm khu vực" class="form-control" style="width: 200px;">
+<!-- Search bar for tab content -->
+<div class="d-flex justify-content-end mt-3">
+  <input type="text" id="search" placeholder="Tìm vườn" class="form-control" style="width: 200px;">
 </div>
 
 <ul class="nav nav-tabs flex-nowrap overflow-auto p-1" id="myTab" role="tablist">
@@ -37,11 +34,6 @@
   </li>
   <% }) %>
 </ul>
-
-<!-- Search bar for tab content -->
-<div class="d-flex justify-content-end mt-3">
-  <input type="text" id="contentSearch" placeholder="Tìm vườn" class="form-control" style="width: 200px;">
-</div>
 
 <div class="tab-content" id="myTabContent">
   <% Object.keys(groupedAreas).forEach((areaName, index) => { %>
@@ -68,25 +60,31 @@
 </div>
 
 <script>
-  function normalizeText(text) {
-    return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-  }
+const normalize = t => t.toLowerCase().replace(/[\s\u0300-\u036f]/g, '');
 
-  function filterElements(searchValue, selectors) {
-    const normalizedSearchValue = normalizeText(searchValue);
-    document.querySelectorAll(selectors).forEach(element => {
-      const text = normalizeText(element.textContent);
-      element.style.display = text.includes(normalizedSearchValue) ? '' : 'none';
-    });
-  }
+function filterAreas(val) {
+  const search = normalize(val);
+  const tabs = document.querySelectorAll('#myTab .nav-link');
+  const panes = document.querySelectorAll('.tab-content .tab-pane');
+  let hasActive = false;
 
-  document.getElementById('tabSearch').addEventListener('input', () => {
-    filterElements(document.getElementById('tabSearch').value, '#myTab .nav-item, .tab-pane');
+  tabs.forEach((tab, i) => {
+    const matches = !search || normalize(tab.textContent + panes[i].textContent).includes(search);
+    tab.parentElement.style.display = tab.style.display = matches ? '' : 'none';
+    
+    if (matches && !hasActive) {
+      [tab, panes[i]].forEach(el => el.classList.add('show', 'active'));
+      hasActive = true;
+    } else {
+      [tab, panes[i]].forEach(el => el.classList.remove('show', 'active'));
+    }
   });
 
-  document.getElementById('contentSearch').addEventListener('input', () => {
-    filterElements(document.getElementById('contentSearch').value, '.itemList');
-  });
-
-  tippy('[data-tippy-content]');
+  if (!search && !hasActive && tabs[0]) {
+    [tabs[0], panes[0]].forEach(el => el.classList.add('show', 'active'));
+  }
+}
+document.getElementById('search').addEventListener('input', e => {
+  setTimeout(() => filterAreas(e.target.value), 200);
+});
 </script>
