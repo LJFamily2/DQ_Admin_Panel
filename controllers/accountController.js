@@ -78,31 +78,19 @@ async function createUser(req, res) {
       );
     }
 
-    // Create array of page permission objects
-    const paths = [
-      '/tong',
-      '/quan-ly-du-lieu',
-      '/quan-ly-hang-hoa',
-      '/quan-ly-hop-dong',
-      '/quan-ly-chi-tieu', 
-      '/du-lieu-hang-ngay',
-      '/nhap-du-lieu',
-      '/du-lieu/nhat-ky-hoat-dong',
-      '/quan-ly-tai-khoan'
-    ];
-
-    const pages = paths.map((path, index) => ({
-      path,
-      allowed: req.body.pages?.[0]?.allowed?.[index] === 'true',
+    // Process permissions
+    const pages = req.body.pages.map(page => ({
+      path: page.path,
+      allowed: page.allowed === 'true',
       actions: {
-        view: req.body.pages?.[0]?.view?.[index] === 'true',
-        add: req.body.pages?.[0]?.add?.[index] === 'true', 
-        update: req.body.pages?.[0]?.update?.[index] === 'true',
-        delete: req.body.pages?.[0]?.delete?.[index] === 'true'
+        view: page.view === 'true',
+        add: page.add === 'true',
+        update: page.update === 'true',
+        delete: page.delete === 'true'
       }
     }));
 
-    // If Admin role, override permissions with full access
+    // If Admin role, set full permissions
     if (req.body.role === 'Admin') {
       pages.forEach(page => {
         page.allowed = true;
@@ -129,7 +117,7 @@ async function createUser(req, res) {
         req,
         res,
         404,
-        "fail",
+        "fail", 
         "Tạo tài khoản thất bại",
         req.headers.referer
       );
@@ -140,7 +128,7 @@ async function createUser(req, res) {
       res,
       200,
       "success",
-      "Tạo tài khoản thành công",
+      "Tạo tài khoản thành công", 
       req.headers.referer
     );
 
@@ -191,96 +179,52 @@ async function getUsers(req, res) {
 }
 
 async function updateUser(req, res) {
-  req.body = trimStringFields(req.body);
   try {
-    const userID = req.params.id;
-    if (!userID) {
-      return handleResponse(
-        req,
-        res,
-        404,
-        "fail",
-        "Không thấy tài khoản",
-        req.headers.referer
-      );
-    }
-    const user = await UserModel.findById(userID);
+    const { id } = req.params;
+    req.body = trimStringFields(req.body);
 
-    // Check password if changing
-    if (
-      req.body.oldPassword &&
-      !(await bcrypt.compare(req.body.oldPassword, user.password))
-    ) {
-      return handleResponse(
-        req,
-        res,
-        404,
-        "fail",
-        "Mật khẩu cũ không đúng",
-        req.headers.referer
-      );
-    }
-
-    // Define default paths
-    const paths = [
-      '/tong',
-      '/quan-ly-du-lieu',
-      '/quan-ly-hang-hoa',
-      '/quan-ly-hop-dong',
-      '/quan-ly-chi-tieu',
-      '/du-lieu-hang-ngay',
-      '/nhap-du-lieu',
-      '/du-lieu/nhat-ky-hoat-dong',
-      '/quan-ly-tai-khoan'
-    ];
-
-    // Map permissions from form data
-    const pages = paths.map((path, index) => ({
-      path,
-      allowed: req.body.pages?.[0]?.allowed?.[index] === 'true',
+    // Process permissions
+    const pages = req.body.pages.map(page => ({
+      path: page.path,
+      allowed: page.allowed === 'true',
       actions: {
-        view: req.body.pages?.[0]?.view?.[index] === 'true',
-        add: req.body.pages?.[0]?.add?.[index] === 'true',
-        update: req.body.pages?.[0]?.update?.[index] === 'true',
-        delete: req.body.pages?.[0]?.delete?.[index] === 'true'
+        view: page.view === 'true', 
+        add: page.add === 'true',
+        update: page.update === 'true', 
+        delete: page.delete === 'true'
       }
     }));
 
-    // If Admin role, set full permissions
+    // Admin gets full permissions
     if (req.body.role === 'Admin') {
       pages.forEach(page => {
         page.allowed = true;
         page.actions = {
           view: true,
-          add: true,
+          add: true, 
           update: true,
           delete: true
         };
       });
     }
 
-    // Prepare update fields
     const updateFields = {
-      username: req.body.username,
       role: req.body.role,
-      permissions: {
-        pages
-      }
+      permissions: { pages }
     };
 
-    // Handle password update if provided
-    let passwordChanged = false;
+    // Update password if provided
     if (req.body.newPassword) {
       updateFields.password = await bcrypt.hash(req.body.newPassword, 10);
-      passwordChanged = true;
     }
 
-    // Update user in database
-    const newUser = await UserModel.findByIdAndUpdate(userID, updateFields, {
-      new: true,
-    });
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      id,
+      updateFields,
+      { new: true }
+    );
 
-    if (!newUser) {
+    if (!updatedUser) {
       return handleResponse(
         req,
         res,
@@ -291,39 +235,17 @@ async function updateUser(req, res) {
       );
     }
 
-    // Special handling for password changes
-    if (passwordChanged && req.user._id.toString() === userID) {
-      req.session.regenerate(function (err) {
-        if (err) {
-          return res.status(500).render("partials/500", { layout: false });
-        }
-        req.session.save(function (saveErr) {
-          if (saveErr) {
-            return res.status(500).render("partials/500", { layout: false });
-          }
-          return handleResponse(
-            req,
-            res,
-            200,
-            "success",
-            "Cập nhật tài khoản thành công",
-            req.headers.referer
-          );
-        });
-      });
-    } else {
-      return handleResponse(
-        req,
-        res,
-        200,
-        "success",
-        "Cập nhật tài khoản thành công",
-        req.headers.referer
-      );
-    }
+    return handleResponse(
+      req,
+      res,
+      200, 
+      "success",
+      "Cập nhật tài khoản thành công",
+      req.headers.referer
+    );
 
   } catch (error) {
-    console.error("Error updating user:", error);
+    console.error('Update user error:', error);
     res.status(500).render("partials/500", { layout: false });
   }
 }

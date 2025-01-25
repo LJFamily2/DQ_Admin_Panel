@@ -2,7 +2,7 @@
   <!-- js -->
   <script src="/js/datatable.js"></script>
   <style>
-    .cursor-pointer{
+    .cursor-pointer {
       cursor: pointer;
     }
   </style>
@@ -80,40 +80,40 @@
                       {title: 'Lịch sử hoạt động', url: '/du-lieu/nhat-ky-hoat-dong'},
                       {title: 'Quản lý tài khoản', url: '/quan-ly-tai-khoan'}] 
                       %>
-                      <% commonPages.forEach(page => { %>
+                      <% commonPages.forEach((page,pageIndex) => { %>
                       <div class="permission-group border rounded p-3 mb-3">
                         <div class="row align-items-center">
                           <div class="col-md-3">
                             <h6 class="mb-0"><%= page.title %></h6>
                           </div>
                           <div class="col-md-2">
+                            <input type="hidden" name="pages[<%= pageIndex %>][path]" value="<%= page.url %>">
                             <div class="form-check form-switch">
-                              <input type="checkbox" id="Truy cập<%= page.title %><%= index %>" class="form-check-input" name="pages[][allowed]" value="true" <%= user.permissions.pages.find(p => p.path === page.url)?.allowed ? 'checked' : '' %>>
-                              <label for="Truy cập<%= page.title %><%= index %>" class="form-check-label cursor-pointer" style="white-space: nowrap;">Truy cập</label>
+                              <input type="checkbox" id="Truy cập<%= page.title %>" class="form-check-input" name="pages[<%= pageIndex %>][allowed]" value="true" <%= user.permissions.pages.find(p => p.path === page.url)?.allowed ? 'checked' : '' %>>
+                              <label for="Truy cập<%= page.title %>" class="form-check-label cursor-pointer" style="white-space: nowrap;">Truy cập</label>
                             </div>
                           </div>
                           <div class="col-md-7">
                             <div class="d-flex gap-3">
                               <div class="form-check">
-                                <input type="checkbox" id="Xem<%= page.title %><%= index %>" class="form-check-input" name="pages[][view]" value="true" <%= user.permissions.pages.find(p => p.path === page.url)?.actions?.view ? 'checked' : '' %>>
-                                <label for="Xem<%= page.title %><%= index %>" class="form-check-label cursor-pointer">Xem</label>
+                                <input type="checkbox" id="Xem<%= page.title %>" class="form-check-input" name="pages[<%= pageIndex %>][view]" value="true" <%= user.permissions.pages.find(p => p.path === page.url)?.actions?.view ? 'checked' : '' %>>
+                                <label for="Xem<%= page.title %>" class="form-check-label cursor-pointer">Xem</label>
                               </div>
                               <div class="form-check">
-                                <input type="checkbox" id="Thêm<%= page.title %><%= index %>" class="form-check-input" name="pages[][add]" value="true" <%= user.permissions.pages.find(p => p.path === page.url)?.actions?.add ? 'checked' : '' %>>
-                                <label for="Thêm<%= page.title %><%= index %>" class="form-check-label cursor-pointer">Thêm</label>
+                                <input type="checkbox" id="Thêm<%= page.title %>" class="form-check-input" name="pages[<%= pageIndex %>][add]" value="true" <%= user.permissions.pages.find(p => p.path === page.url)?.actions?.add ? 'checked' : '' %>>
+                                <label for="Thêm<%= page.title %>" class="form-check-label cursor-pointer">Thêm</label>
                               </div>
                               <div class="form-check">
-                                <input type="checkbox" id="Cập nhật<%= page.title %><%= index %>" class="form-check-input" name="pages[][update]" value="true" <%= user.permissions.pages.find(p => p.path === page.url)?.actions?.update ? 'checked' : '' %>>
-                                <label for="Cập nhật<%= page.title %><%= index %>" class="form-check-label cursor-pointer">Cập nhật</label>
+                                <input type="checkbox" id="Cập nhật<%= page.title %>" class="form-check-input" name="pages[<%= pageIndex %>][update]" value="true" <%= user.permissions.pages.find(p => p.path === page.url)?.actions?.update ? 'checked' : '' %>>
+                                <label for="Cập nhật<%= page.title %>" class="form-check-label cursor-pointer">Cập nhật</label>
                               </div>
                               <div class="form-check">
-                                <input type="checkbox" id="Xóa<%= page.title %><%= index %>" class="form-check-input" name="pages[][delete]" value="true" <%= user.permissions.pages.find(p => p.path === page.url)?.actions?.delete ? 'checked' : '' %>>
-                                <label for="Xóa<%= page.title %><%= index %>" class="form-check-label cursor-pointer">Xóa</label>
+                                <input type="checkbox" id="Xóa<%= page.title %>" class="form-check-input" name="pages[<%= pageIndex %>][delete]" value="true" <%= user.permissions.pages.find(p => p.path === page.url)?.actions?.delete ? 'checked' : '' %>>
+                                <label for="Xóa<%= page.title %>" class="form-check-label cursor-pointer">Xóa</label>
                               </div>
                             </div>
                           </div>
                         </div>
-                        <input type="hidden" name="pages[][path]" value="<%= page.url %>">
                       </div>
                       <% }) %>
                     </div>
@@ -204,41 +204,40 @@
               {title: 'Lịch sử hoạt động', url: '/du-lieu/nhat-ky-hoat-dong'},
               {title: 'Quản lý tài khoản', url: '/quan-ly-tai-khoan'}] 
               %>
-              <% commonPages.forEach(page => { %>
+              <% commonPages.forEach((page, index) => { %>
               <div class="permission-group border rounded p-3 mb-3">
                 <div class="row align-items-center">
                   <div class="col-md-3">
                     <h6 class="mb-0"><%= page.title %></h6>
                   </div>
                   <div class="col-md-2">
+                    <input type="hidden" name="pages[<%= index %>][path]" value="<%= page.url %>">
                     <div class="form-check form-switch">
-                      <input type="checkbox" id="Truy cập<%= page.title %>" class="form-check-input" name="pages[][allowed]" value="true" <%= user.permissions.pages.find(p => p.path === page.url)?.allowed ? 'checked' : '' %>>
+                      <input type="checkbox" id="Truy cập<%= page.title %>" class="form-check-input" name="pages[<%= index %>][allowed]" value="true" checked>
                       <label for="Truy cập<%= page.title %>" class="form-check-label cursor-pointer" style="white-space: nowrap;">Truy cập</label>
                     </div>
                   </div>
                   <div class="col-md-7">
                     <div class="d-flex gap-3">
                       <div class="form-check">
-                        <input type="checkbox" id="Xem<%= page.title %>" class="form-check-input" name="pages[][view]" value="true">
+                        <input type="checkbox" id="Xem<%= page.title %>" class="form-check-input" name="pages[<%= index %>][view]" value="true">
                         <label for="Xem<%= page.title %>" class="form-check-label cursor-pointer">Xem</label>
                       </div>
                       <div class="form-check">
-                        <input type="checkbox" id="Thêm<%= page.title %>" class="form-check-input" name="pages[][add]" value="true">
+                        <input type="checkbox" id="Thêm<%= page.title %>" class="form-check-input" name="pages[<%= index %>][add]" value="true">
                         <label for="Thêm<%= page.title %>" class="form-check-label cursor-pointer">Thêm</label>
                       </div>
                       <div class="form-check">
-                        <input type="checkbox" id="Cập nhật<%= page.title %>" class="form-check-input" name="pages[][update]" value="true">
+                        <input type="checkbox" id="Cập nhật<%= page.title %>" class="form-check-input" name="pages[<%= index %>][update]" value="true">
                         <label for="Cập nhật<%= page.title %>" class="form-check-label cursor-pointer">Cập nhật</label>
                       </div>
                       <div class="form-check">
-                        <input type="checkbox" id="Xóa<%= page.title %>" class="form-check-input" name="pages[][delete]" value="true">
+                        <input type="checkbox" id="Xóa<%= page.title %>" class="form-check-input" name="pages[<%= index %>][delete]" value="true">
                         <label for="Xóa<%= page.title %>" class="form-check-label cursor-pointer">Xóa</label>
                       </div>
                     </div>
                   </div>
                 </div>
-                <!-- Add this hidden input for the page path -->
-                <input type="hidden" name="pages[][path]" value="<%= page.url %>">
               </div>
               <% }) %>
             </div>

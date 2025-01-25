@@ -6,11 +6,10 @@ function checkPermission(action) {
     }
 
     const pagePermissions = req.pagePermissions;
-    const defaultPermissions = req.user.permissions.defaultActions;
 
     // Check if action is allowed either in page permissions or defaults
     if ((pagePermissions && pagePermissions[action]) || 
-        (!pagePermissions && defaultPermissions[action])) {
+        (!pagePermissions)) {
       return next();
     }
 

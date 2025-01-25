@@ -30,82 +30,48 @@
     }
   </style>
 </head>
+
 <nav class="min-vh-100 d-none d-md-flex flex-column flex-shrink-0 p-3" style="width: 230px; background: white;">
   <div class="d-flex align-items-center justify-content-center">
     <a href="/tong">
       <img src="/images/OIG3.HcFjYMBA3iNvsE-removebg-preview.png" alt="Logo" loading="eager" height="100px" width="100px" />
     </a>
   </div>
+
   <ul class="nav nav-pills flex-column mb-auto">
-    <% if(user.role !== "Hàm lượng"){ %>
+    <% const pages = [
+      { path: '/tong', title: 'Tổng', icon: 'ri-line-chart-line', roles: ['Admin', 'Văn phòng'] },
+      { path: '/quan-ly-du-lieu', title: 'Dữ liệu tổng', icon: 'ri-database-line', roles: ['Admin', 'Văn phòng'] },
+      { path: '/quan-ly-hang-hoa', title: 'Chạy lò', icon: 'ri-instance-line', roles: ['Admin', 'Văn phòng'] },
+      { path: '/quan-ly-hop-dong', title: 'Hợp đồng', icon: 'ri-contract-line', roles: ['Admin', 'Văn phòng'] },
+      { path: '/quan-ly-chi-tieu', title: 'Chi tiêu', icon: 'ri-bill-line', roles: ['Admin', 'Văn phòng'] },
+      { path: '/du-lieu-hang-ngay', title: 'Dữ liệu ngày', icon: 'ri-numbers-line', roles: ['Admin', 'Văn phòng'] },
+      { path: '/du-lieu/nhat-ky-hoat-dong', title: 'Lịch sử hoạt động', icon: 'ri-history-line', roles: ['Admin', 'Văn phòng'] },
+      { path: '/nhap-du-lieu/nguyen-lieu', title: 'Thêm nguyên liệu', icon: 'ri-edit-line', roles: ['Admin', 'Văn phòng', 'Hàm lượng'] },
+      { path: '/quan-ly-tai-khoan', title: 'Quản lý tài khoản', icon: 'ri-group-line', roles: ['Admin'] }
+    ] %>
+
+    <% pages.forEach(page => { %>
+    <% if (user.role === 'Admin' || 
+            (page.roles.includes(user.role) && 
+             user.permissions.pages.find(p => p.path === page.path)?.allowed)) { %>
     <li class="nav-item">
-      <a href="/tong" class="nav-link link-dark d-flex justify-content-between">
-        Tổng
-        <i class="ri-line-chart-line"></i>
+      <a href="<%= page.path %>" class="nav-link link-dark d-flex justify-content-between">
+        <%= page.title %>
+        <i class="<%= page.icon %>"></i>
+        <% if (page.path === '/du-lieu/nhat-ky-hoat-dong' && unreadCount > 0) { %>
+        <span class="badge bg-danger badge-top-right"><%= unreadCount < 100 ? unreadCount : '99+' %></span>
+        <% } %>
       </a>
     </li>
     <% } %>
-    <% if(user.role === "Admin" || user.role === "Văn phòng"){ %>
-    <li class="nav-item">
-      <a href="/quan-ly-du-lieu" class="nav-link link-dark d-flex justify-content-between">
-        Dữ liệu tổng
-        <i class="ri-database-line"></i>
-      </a>
-    </li>
-    <li class="nav-item">
-      <a href="/quan-ly-hang-hoa" class="nav-link link-dark d-flex justify-content-between">
-        Chạy lò
-        <i class="ri-instance-line"></i>
-      </a>
-    </li>
-    <li class="nav-item">
-      <a href="/quan-ly-hop-dong" class="nav-link link-dark d-flex justify-content-between">
-        Hợp đồng
-        <i class="ri-contract-line"></i>
-      </a>
-    </li>
-    <li class="nav-item">
-      <a href="/quan-ly-chi-tieu" class="nav-link link-dark d-flex justify-content-between">
-        Chi tiêu
-        <i class="ri-bill-line"></i>
-      </a>
-    </li>
-    <li class="nav-item">
-      <a href="/du-lieu-hang-ngay" class="nav-link link-dark d-flex justify-content-between">
-        Dữ liệu ngày
-        <i class="ri-numbers-line"></i>
-      </a>
-      <ul class="nav flex-column ms-3">
-        <li class="nav-item">
-          <a href="/du-lieu/nhat-ky-hoat-dong" class="nav-link link-dark d-flex justify-content-between position-relative">
-            Lịch sử hoạt động <i class="ri-history-line"></i>
-            <% if (unreadCount > 0) { %>
-            <span class="badge bg-danger badge-top-right"><%= unreadCount < 100 ? unreadCount : '99+' %></span>
-            <% } %>
-          </a>
-        </li>
-      </ul>
-    </li>
-    <% } %>
-    <li class="nav-item">
-      <a href="/nhap-du-lieu/nguyen-lieu" class="nav-link link-dark d-flex justify-content-between">
-        Thêm nguyên liệu
-        <i class="ri-edit-line"></i>
-      </a>
-    </li>
-    <% if(user.role === 'Admin'){ %>
-    <li class="nav-item">
-      <a href="/quan-ly-tai-khoan" class="nav-link link-dark d-flex justify-content-between">
-        Quản lý tài khoản
-        <i class="ri-group-line"></i>
-      </a>
-    </li>
-    <% } %>
+    <% }) %>
   </ul>
+
   <hr />
   <div class="logOut">
     <form action="/quan-ly-tai-khoan/logOut" method="post" style="cursor: pointer">
-      <button type="submit" onclick="handleFormSubmit(this)" class=" fs-6 border-0 w-100 d-flex justify-content-between" style="background: none">
+      <button type="submit" onclick="handleFormSubmit(this)" class="fs-6 border-0 w-100 d-flex justify-content-between" style="background: none">
         Đăng xuất
         <i class="ri-logout-box-r-line"></i>
       </button>
@@ -113,44 +79,48 @@
   </div>
 </nav>
 
-
-<!-- navigation for mobile -->
-<nav id="mobileNav" class="d-md-none navbar fixed-bottom nav-pills" style="background: white ; height: 4.8rem ; border-top: 1px solid rgba(0, 0, 0, 0.275) ; ">
+<!-- Mobile navigation -->
+<nav id="mobileNav" class="d-md-none navbar fixed-bottom nav-pills" style="background: white; height: 4.8rem; border-top: 1px solid rgba(0, 0, 0, 0.275);">
   <div class="w-100 d-flex flex-nowrap justify-content-evenly">
-    <a class="nav-link link-dark d-flex align-items-center justify-content-center flex-column" href="/tong" style="width: 5rem; text-align: center; font-size: 0.8rem; padding: 5px;">
-      <i class="ri-line-chart-line" style="font-size: 1.4rem; display: block"></i>Tổng
+    <% const mobilePages = pages.filter(page => 
+      user.role === 'Admin' || 
+      (page.roles.includes(user.role) && 
+       user.permissions.pages.find(p => p.path === page.path)?.allowed)
+    ).slice(0, 3) %>
+
+    <% mobilePages.forEach(page => { %>
+    <a class="nav-link link-dark d-flex align-items-center justify-content-center flex-column" href="<%= page.path %>" style="width: 5rem; text-align: center; font-size: 0.8rem; padding: 5px;">
+      <i class="<%= page.icon %>" style="font-size: 1.4rem; display: block"></i>
+      <%= page.title %>
     </a>
-    <a class="nav-link link-dark d-flex align-items-center justify-content-center flex-column" href="/quan-ly-du-lieu" style="width: 5rem; text-align: center; font-size: 0.8rem; padding: 5px;">
-      <i class="ri-database-line" style="font-size: 1.4rem; display: block"></i>Dữ liệu tổng
-    </a>
+    <% }) %>
+
     <button class="btn d-flex align-items-center justify-content-center flex-column" role="button" data-bs-toggle="collapse" data-bs-target="#collapseNav" aria-expanded="false" aria-controls="collapseNav" style="width: 4rem; height: 4rem; font-size: 4rem; padding: 5px; border-radius: 50%;">
       <i id="collapseIcon" class="ri-add-circle-fill rotate-0" style="color: #e8c06b;"></i>
     </button>
-    <a class="nav-link link-dark d-flex align-items-center justify-content-center flex-column" href="/quan-ly-hang-hoa" style="width: 5rem; text-align: center; font-size: 0.8rem; padding: 5px;">
-      <i class="ri-database-line" style="font-size: 1.4rem; display: block"></i>Chạy lò
-    </a>
-    <a class="nav-link link-dark d-flex align-items-center justify-content-center flex-column" href="/quan-ly-hop-dong" style="width: 5rem; text-align: center; font-size: 0.8rem; padding: 5px;">
-      <i class="ri-instance-line" style="font-size: 1.4rem; display: block"></i>Hợp đồng
-    </a>
   </div>
 </nav>
 
 <nav class="collapse position-fixed w-100 navbar nav-pills p-0" id="collapseNav" style="z-index: 1000; bottom: 4.7rem;">
   <ul class="list-group" style="border-top-right-radius: 20px; border-top-left-radius: 20px; width: 100%;">
-    <li class="list-group-item text-center p-0"><a class="nav-link link-dark p-3" href="/quan-ly-chi-tieu">Chi tiêu</a></li>
-    <li class="list-group-item text-center p-0"><a class="nav-link link-dark p-3" href="/du-lieu-hang-ngay">Dữ liệu ngày</a></li>
-    <li class="list-group-item text-center p-0"><a class="nav-link link-dark p-3" href="/du-lieu/nhat-ky-hoat-dong">Lịch sử hoạt động</a></li>
-    <li class="list-group-item text-center p-0"><a class="nav-link link-dark p-3" href="/nhap-du-lieu/nguyen-lieu">Thêm dữ liệu</a></li>
-    <li class="list-group-item text-center p-0"><a class="nav-link link-dark p-3" href="/quan-ly-tai-khoan">Quản lý tài khoản</a></li>
+    <% const collapsedPages = pages.filter(page => 
+      user.role === 'Admin' || 
+      (page.roles.includes(user.role) && 
+       user.permissions.pages.find(p => p.path === page.path)?.allowed)
+    ).slice(3) %>
+
+    <% collapsedPages.forEach(page => { %>
+    <li class="list-group-item text-center p-0">
+      <a class="nav-link link-dark p-3" href="<%= page.path %>"><%= page.title %></a>
+    </li>
+    <% }) %>
   </ul>
 </nav>
 
-<!-- Active the link when on page -->
 <script>
+  // Active link highlighting
   const currentURL = window.location.pathname;
-
   const navigationLinks = document.querySelectorAll('nav a');
-
 
   navigationLinks.forEach(link => {
     const linkHref = link.getAttribute('href');
@@ -162,10 +132,8 @@
       link.classList.add('link-dark');
     }
   });
-</script>
 
-<!-- Hide mobile navigation on scroll down -->
-<script>
+  // Mobile navigation hide on scroll
   document.addEventListener('DOMContentLoaded', function() {
     let lastScrollTop = 0;
     const mobileNav = document.getElementById('mobileNav');
@@ -185,10 +153,8 @@
       lastScrollTop = Math.max(scrollTop, 0);
     });
   });
-</script>
 
-<!-- CollapseIcon animation -->
-<script>
+  // Collapse icon animation
   document.getElementById('collapseIcon').addEventListener('click', function() {
     this.classList.toggle('rotate-45');
     this.classList.toggle('rotate-0');
