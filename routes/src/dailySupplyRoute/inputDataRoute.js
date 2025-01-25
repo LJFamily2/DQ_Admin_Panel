@@ -6,10 +6,12 @@ const checkDateAccess = require("../../../middlewares/dateRangeAccessSetting");
 const conditionalRateLimiter = require("../../../middlewares/limitedDeletionRequest");
 const checkPermission = require("../../../middlewares/checkPermission");
 const setUnreadCount = require("../../../middlewares/unreadCountMiddleware");
+const checkPageAccess = require("../../../middlewares/checkPageAccess");
 
 // Apply ensureLoggedIn middleware to all routes
 router.use(authMiddlewares.ensureLoggedIn);
 router.use(authMiddlewares.ensureWorkingHours);
+router.use(checkPageAccess());
 
 // User side for input data
 router.get(

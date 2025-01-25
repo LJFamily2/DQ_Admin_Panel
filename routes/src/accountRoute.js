@@ -4,12 +4,15 @@ const accountController = require("../../controllers/accountController");
 const authMiddlewares = require("../../middlewares/authMiddlewares");
 const checkPermission = require("../../middlewares/checkPermission");
 const setUnreadCount = require("../../middlewares/unreadCountMiddleware");
+const checkPageAccess = require("../../middlewares/checkPageAccess");
+
 
 const commonMiddlewares = [
   authMiddlewares.ensureLoggedIn,
   authMiddlewares.ensureWorkingHours,
   authMiddlewares.ensureAdmin,
 ];
+router.use(checkPageAccess());
 
 // Initial setup route
 router.get("/tao-tai-khoan", accountController.initialSetupPage);

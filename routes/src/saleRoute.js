@@ -4,10 +4,12 @@ const saleController = require("../../controllers/saleController");
 const authMiddlewares = require("../../middlewares/authMiddlewares");
 const checkPermission = require("../../middlewares/checkPermission");
 const setUnreadCount = require("../../middlewares/unreadCountMiddleware");
+const checkPageAccess = require("../../middlewares/checkPageAccess");
 
 // Apply ensureLoggedIn middleware to all routes
 router.use(authMiddlewares.ensureLoggedIn);
 router.use(authMiddlewares.ensureWorkingHours);
+router.use(checkPageAccess());
 
 router.get(
   "/",

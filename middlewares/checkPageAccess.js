@@ -13,8 +13,8 @@ function checkPageAccess() {
     );
 
     if (!pagePermission || !pagePermission.allowed) {
-      req.flash('fail', 'Không có quyền truy cập trang này');
-      return res.redirect(req.headers.referer).status(403);
+      req.flash('fail', 'Không có quyền truy cập');
+      return res.redirect('/dang-nhap');
     }
 
     // Store page permissions in request for later use
