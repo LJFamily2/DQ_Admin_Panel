@@ -59,7 +59,7 @@
       </div>
       <div class="card-body">
         <div class="activity-header">
-          <%= actionText %> bởi: <%= activity.userId.username %>
+          <%= actionText %> bởi: <%= activity?.userId?.username %>
           <span class="activity-time float-right"><%= new Date(activity.timestamp).toLocaleTimeString() %></span>
         </div>
         <p class="mb-1"><%= activity.details %></p>
@@ -81,7 +81,7 @@
               <h5 class="modal-title" id="exampleModalLabel"><%= activity.details %></h5>
               <p class="m-0">
                 Người thao tác:
-                <strong><%= activity.userId.username %></strong> (<%= activity.userId.role %>)
+                <strong><%= activity?.userId?.username %></strong> (<%= activity?.userId?.role %>)
               </p>
             </div>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -141,7 +141,7 @@
           <form action="/du-lieu/nhat-ky-hoat-dong/<%= activity._id %>?_method=DELETE" method="post">
             <div class="modal-body">
               <p><strong>Hành động: </strong> <%= activity.details %></p>
-              Bạn có muốn xóa nhật ký dữ liệu của <strong><%= activity.userId.username %></strong>? Hành động này không thể hoàn tác.
+              Bạn có muốn xóa nhật ký dữ liệu của <strong><%= activity?.userId?.username %></strong>? Hành động này không thể hoàn tác.
             </div>
             <div class="modal-footer">
               <% if(user.role === 'Admin'){ %>
