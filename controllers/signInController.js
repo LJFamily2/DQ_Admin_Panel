@@ -33,7 +33,8 @@ function handleLogin(req, res, next) {
       }
       // Redirect based on user role
       switch (user.role) {
-        case "Admin" || "superAdmin":
+        case "Admin":
+        case "superAdmin":
           return res.redirect("/tong");
         case "Văn phòng":
           return res.redirect("/du-lieu-hang-ngay");
