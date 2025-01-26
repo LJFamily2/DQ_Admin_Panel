@@ -11,7 +11,7 @@
   <div class="col-md-6 col-12 mb-3" id="profile-section">
     <div class="card mb-0 rounded-3">
       <div class="card-body">
-        <form action="/quan-ly-tai-khoan/update/<%= user._id %>" method="post" class="profile-body">
+        <form action="/quan-ly-tai-khoan/<%= user._id %>?_method=PUT" method="post" class="profile-body">
           <div class="mb-3">
             <label for="username" class="form-label">Tài khoản</label>
             <input type="text" class="form-control" id="username" name="username" onfocus="toggleButtons(true, '.profile-body button')" value="<%= user.username %>" />
@@ -30,7 +30,7 @@
               Đổi mật khẩu
             </a>
           </div>
-          <button type="submit" onclick="handleFormSubmit(this)" class=" btn btn-success" style="display: none">
+          <button type="submit" onclick="handleFormSubmit(this)" class=" btn btn-primary" style="display: none">
             Lưu
           </button>
           <button type="reset" class="btn btn-secondary" style="display: none">
@@ -45,7 +45,7 @@
   <div class="col-md-6 col-12 mb-3" id="passwordForm" style="display: none">
     <div class="card mb-0 rounded-3">
       <div class="card-body">
-        <form action="/quan-ly-tai-khoan/update/<%= user._id %>" method="post">
+        <form action="/quan-ly-tai-khoan/<%= user._id %>?_method=PUT" method="post">
           <a href="#profile-section" style="text-decoration: none; color: black">
             <i class="ri-arrow-left-line" onclick="togglePasswordForm(false)" style="cursor: pointer"></i>
           </a>
@@ -62,7 +62,7 @@
             <label for="reEnterPassword" class="form-label">Nhập lại mật khẩu</label>
             <input type="password" class="form-control" id="reEnterPassword" minlength="8" onkeyup="checkPasswordsMatch()" required />
           </div>
-          <button type="submit" onclick="handleFormSubmit(this)" class=" btn btn-success" style="display: none" id="changePasswordSubmit">
+          <button type="submit" onclick="handleFormSubmit(this)" class=" btn btn-primary" style="display: none" id="changePasswordSubmit">
             Lưu
           </button>
         </form>

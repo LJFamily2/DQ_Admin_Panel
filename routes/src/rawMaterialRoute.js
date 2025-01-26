@@ -15,35 +15,35 @@ router.get(
   "/",
   setUnreadCount,
   checkPermission("view"),
-  authMiddlewares.ensureRoles([", 'superAdmin'", "Văn phòng"]),
+  authMiddlewares.ensureRoles(["Admin", "Văn phòng", 'superAdmin']),
   rawMaterialController.renderPage
 );
 router.post(
   "/",
-  authMiddlewares.ensureRoles(["Admin", "Văn phòng", "superAdmin"]),
+  authMiddlewares.ensureRoles(["Admin", "Văn phòng", 'superAdmin']),
   checkPermission("add"),
   rawMaterialController.createData
 );
 router.post(
   "/getDatas",
-  authMiddlewares.ensureRoles(["Admin", "Văn phòng", "superAdmin"]),
+  authMiddlewares.ensureRoles(["Admin", "Văn phòng", 'superAdmin']),
   rawMaterialController.getDatas
 );
 router.put(
   "/:id",
-  authMiddlewares.ensureRoles(["Admin", "Văn phòng", "superAdmin"]),
+  authMiddlewares.ensureRoles(["Admin", "Văn phòng", 'superAdmin']),
   checkPermission("update"),
   rawMaterialController.updateData
 );
 router.delete(
   "/:id",
-  authMiddlewares.ensureRoles(["Admin", "Văn phòng", "superAdmin"]),
+  authMiddlewares.ensureRoles(["Admin", "Văn phòng", 'superAdmin']),
   checkPermission("delete"),
   rawMaterialController.deleteData
 );
 router.post(
   "/deleteAll",
-  authMiddlewares.ensureRoles(["Admin", "Văn phòng", "superAdmin"]),
+  authMiddlewares.ensureRoles(["Admin", "Văn phòng", 'superAdmin']),
   checkPermission("delete"),
   rawMaterialController.deleteAll
 );

@@ -33,6 +33,7 @@
       <tbody>
         <% users.forEach( (user,index) => { %>
         <!-- Modal for updating -->
+        <% if (user.role !== 'superAdmin'){ %>
         <div class="modal fade" id="staticBackdrop<%= user._id %>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
           <div class="modal-dialog modal-lg modal-dialog-scrollable">
             <div class="modal-content">
@@ -57,10 +58,14 @@
                   <div class="mb-3">
                     <label for="role<%= index %>" class="form-label fw-bold cursor-pointer" style="float: left;">Vai trò</label>
                     <select class="form-select" id="role<%= index %>" name="role" aria-label="Default select example">
-                      <% const roles = ['Admin', 'Văn phòng', 'Hàm lượng']; %>
+                      <% const roles = ['Admin', 'Văn phòng', 'Hàm lượng', 'superAdmin']; %>
+                      <% if(user.role === 'superAdmin'){ %>
+                      <option value="superAdmin" selected>superAdmin</option>
+                      <%  } else { %>
                       <% roles.forEach(role => { %>
                       <option value="<%= role %>" <%= (user.role === role) ? 'selected' : '' %>><%= role %></option>
                       <% }); %>
+                      <% } %>
                     </select>
                   </div>
 
@@ -88,28 +93,28 @@
                           <div class="col-md-2">
                             <input type="hidden" name="pages[<%= pageIndex %>][path]" value="<%= page.url %>">
                             <div class="form-check form-switch">
-                              <input type="checkbox" id="Truy cập<%= page.title %>" class="form-check-input" name="pages[<%= pageIndex %>][allowed]" value="true" <%= user.permissions.pages.find(p => p.path === page.url)?.allowed ? 'checked' : '' %>>
-                              <label for="Truy cập<%= page.title %>" class="form-check-label cursor-pointer" style="white-space: nowrap;">Truy cập</label>
+                              <input type="checkbox" id="Truy cập<%= page.title %><%= index %>" class="form-check-input" name="pages[<%= pageIndex %>][allowed]" value="true" <%= user.permissions.pages.find(p => p.path === page.url)?.allowed ? 'checked' : '' %>>
+                              <label for="Truy cập<%= page.title %><%= index %>" class="form-check-label cursor-pointer" style="white-space: nowrap;">Truy cập</label>
                             </div>
                           </div>
                           <div class="col-md-7">
                             <div class="d-flex gap-3">
                               <div class="form-check">
-                                <input type="checkbox" id="Xem<%= page.title %>" class="form-check-input" name="pages[<%= pageIndex %>][view]" value="true" <%= user.permissions.pages.find(p => p.path === page.url)?.actions?.view ? 'checked' : '' %>>
-                                <label for="Xem<%= page.title %>" class="form-check-label cursor-pointer">Xem</label>
+                                <input type="checkbox" id="Xem<%= page.title %><%= index %>" class="form-check-input" name="pages[<%= pageIndex %>][view]" value="true" <%= user.permissions.pages.find(p => p.path === page.url)?.actions?.view ? 'checked' : '' %>>
+                                <label for="Xem<%= page.title %><%= index %>" class="form-check-label cursor-pointer">Xem</label>
                               </div>
                               <% if (!page.onlyView) { %>
                               <div class="form-check">
-                                <input type="checkbox" id="Thêm<%= page.title %>" class="form-check-input" name="pages[<%= pageIndex %>][add]" value="true" <%= user.permissions.pages.find(p => p.path === page.url)?.actions?.add ? 'checked' : '' %>>
-                                <label for="Thêm<%= page.title %>" class="form-check-label cursor-pointer">Thêm</label>
+                                <input type="checkbox" id="Thêm<%= page.title %><%= index %>" class="form-check-input" name="pages[<%= pageIndex %>][add]" value="true" <%= user.permissions.pages.find(p => p.path === page.url)?.actions?.add ? 'checked' : '' %>>
+                                <label for="Thêm<%= page.title %><%= index %>" class="form-check-label cursor-pointer">Thêm</label>
                               </div>
                               <div class="form-check">
-                                <input type="checkbox" id="Cập nhật<%= page.title %>" class="form-check-input" name="pages[<%= pageIndex %>][update]" value="true" <%= user.permissions.pages.find(p => p.path === page.url)?.actions?.update ? 'checked' : '' %>>
-                                <label for="Cập nhật<%= page.title %>" class="form-check-label cursor-pointer">Cập nhật</label>
+                                <input type="checkbox" id="Cập nhật<%= page.title %><%= index %>" class="form-check-input" name="pages[<%= pageIndex %>][update]" value="true" <%= user.permissions.pages.find(p => p.path === page.url)?.actions?.update ? 'checked' : '' %>>
+                                <label for="Cập nhật<%= page.title %><%= index %>" class="form-check-label cursor-pointer">Cập nhật</label>
                               </div>
                               <div class="form-check">
-                                <input type="checkbox" id="Xóa<%= page.title %>" class="form-check-input" name="pages[<%= pageIndex %>][delete]" value="true" <%= user.permissions.pages.find(p => p.path === page.url)?.actions?.delete ? 'checked' : '' %>>
-                                <label for="Xóa<%= page.title %>" class="form-check-label cursor-pointer">Xóa</label>
+                                <input type="checkbox" id="Xóa<%= page.title %><%= index %>" class="form-check-input" name="pages[<%= pageIndex %>][delete]" value="true" <%= user.permissions.pages.find(p => p.path === page.url)?.actions?.delete ? 'checked' : '' %>>
+                                <label for="Xóa<%= page.title %><%= index %>" class="form-check-label cursor-pointer">Xóa</label>
                               </div>
                               <% } %>
                             </div>
@@ -128,7 +133,7 @@
             </div>
           </div>
         </div>
-
+        <% } %>
         <!-- Delete confirming modal  -->
         <div class="modal fade" id="deleteModalToggle<%= user._id %>" aria-hidden="true" aria-labelledby="exampleModalToggleLabel" tabindex="-1">
           <div class="modal-dialog modal-dialog-centered">

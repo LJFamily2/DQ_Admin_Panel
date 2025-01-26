@@ -166,13 +166,14 @@ async function getUsers(req, res) {
     const sortDirection = order?.[0]?.dir === "asc" ? 1 : -1;
 
     const searchQuery = {
+      role: { $ne: "superAdmin" },
       $or: [
         { username: { $regex: searchValue, $options: "i" } },
         { role: { $regex: searchValue, $options: "i" } },
       ],
     };
 
-    const totalRecords = await UserModel.countDocuments();
+    const totalRecords = await UserModel.countDocuments({ role: { $ne: "superAdmin" } });
     const filteredRecords = await UserModel.countDocuments(searchQuery);
     const users = await UserModel.find(searchQuery)
       .sort({ role: 1, [sortColumn]: sortDirection })
@@ -201,72 +202,62 @@ async function getUsers(req, res) {
 async function updateUser(req, res) {
   try {
     const { id } = req.params;
-    req.body = trimStringFields(req.body);
+    const { username, role, pages, newPassword } = trimStringFields(req.body);
     const requestingUser = req.user;
 
-    // Fetch user to update first
     const userToUpdate = await UserModel.findById(id);
     if (!userToUpdate) {
       return handleResponse(req, res, 404, "fail", "Không tìm thấy tài khoản", req.headers.referer);
     }
 
-    // Prevent modifying admin accounts unless you're a super admin
-    if (userToUpdate.role === 'Admin' && requestingUser.role !== 'superAdmin') {
-      return handleResponse(
-        req,
-        res,
-        403,
-        'fail',
-        'Không có quyền thay đổi tài khoản quản trị',
-        req.headers.referer
-      );
+    // Check permissions
+    if (userToUpdate.role === 'superAdmin' && requestingUser.role !== 'superAdmin') {
+      return handleResponse(req, res, 403, "fail", "Không có quyền cập nhật", req.headers.referer);
     }
 
-    // Process permissions
-    const pages = req.body.pages.map(page => ({
-      path: page.path,
-      allowed: page.allowed === 'true',
-      actions: {
-        view: page.view === 'true', 
-        add: page.add === 'true',
-        update: page.update === 'true', 
-        delete: page.delete === 'true'
+    // Build update object
+    const updateFields = { ...userToUpdate.toObject() };
+
+    // Handle username update
+    if (username && username !== userToUpdate.username) {
+      const exists = await UserModel.findOne({ username, _id: { $ne: id } });
+      if (exists) {
+        return handleResponse(req, res, 400, "fail", "Tên tài khoản đã tồn tại", req.headers.referer);
       }
-    }));
-
-    const updateFields = {
-      role: req.body.role,
-      permissions: { pages }
-    };
-
-    // Update password if provided 
-    if (req.body.newPassword) {
-      updateFields.password = await bcrypt.hash(req.body.newPassword, 10);
+      updateFields.username = username;
     }
 
-    const updatedUser = await UserModel.findByIdAndUpdate(
-      id,
-      updateFields,
-      { new: true }
-    );
-
-    if (!updatedUser) {
-      return handleResponse(
-        req,
-        res,
-        404,
-        "fail",
-        "Cập nhật tài khoản thất bại", 
-        req.headers.referer
-      );
+    // Handle role & permissions
+    if (pages) {
+      updateFields.permissions = {
+        pages: pages.map(p => ({
+          path: p.path,
+          allowed: p.allowed === 'true',
+          actions: {
+            view: p.view === 'true',
+            add: p.add === 'true',
+            update: p.update === 'true',
+            delete: p.delete === 'true'
+          }
+        }))
+      };
     }
 
+    if (role && userToUpdate.role !== 'superAdmin') {
+      updateFields.role = role;
+    }
+
+    if (newPassword) {
+      updateFields.password = await bcrypt.hash(newPassword, 10);
+    }
+
+    const updatedUser = await UserModel.findByIdAndUpdate(id, updateFields, { new: true });
+    
     return handleResponse(
-      req,
-      res,
-      200,
-      "success", 
-      "Cập nhật tài khoản thành công",
+      req, res,
+      updatedUser ? 200 : 404,
+      updatedUser ? "success" : "fail",
+      updatedUser ? "Cập nhật thành công" : "Cập nhật thất bại",
       req.headers.referer
     );
 
@@ -279,6 +270,8 @@ async function updateUser(req, res) {
 async function deleteUser(req, res) {
   try {
     const user = await UserModel.findById(req.params.id);
+    const requestingUser = req.user; 
+
     if (!user) {
       return handleResponse(
         req,
@@ -289,19 +282,34 @@ async function deleteUser(req, res) {
         req.headers.referer
       );
     }
-    if (user.role === "Admin") {
+
+    // Only superAdmin can delete Admin accounts
+    if (user.role === "Admin" && requestingUser.role !== "superAdmin") {
       return handleResponse(
         req,
         res,
-        404,
+        403,
         "fail",
-        "Không thể xóa tài khoản quản trị",
+        "Bạn không thể xóa tài khoản Admin",
+        req.headers.referer
+      );
+    }
+
+    // Nobody can delete superAdmin accounts
+    if (user.role === "superAdmin") {
+      return handleResponse(
+        req,
+        res,
+        403,
+        "fail",
+        "Không thể xóa tài khoản superAdmin",
         req.headers.referer
       );
     }
 
     // Proceed to delete the user from the database
     await UserModel.findByIdAndDelete(req.params.id);
+    
     // Remove the accountID from the DailySupply collection
     await DailySupply.updateMany(
       { accountID: req.params.id },
@@ -323,8 +331,16 @@ async function deleteUser(req, res) {
 
 async function deleteAllUsers(req, res) {
   try {
-    // Find all users with role not equal to 'Admin'
-    const usersToDelete = await UserModel.find({ role: { $ne: "Admin" } });
+    const requestingUser = req.user;
+
+    // Build query based on requesting user's role
+    let query = { role: { $nin: ["superAdmin"] } }; // Never delete superAdmin
+    if (requestingUser.role !== "superAdmin") {
+      query.role = { $nin: ["Admin", "superAdmin"] }; // Non-superAdmin users can't delete Admin accounts
+    }
+
+    // Find users to delete based on query
+    const usersToDelete = await UserModel.find(query);
 
     if (usersToDelete.length === 0) {
       return handleResponse(
@@ -340,7 +356,7 @@ async function deleteAllUsers(req, res) {
     // Extract user IDs
     const userIds = usersToDelete.map((user) => user._id);
 
-    // Delete all users with role not equal to 'Admin'
+    // Delete users based on query
     await UserModel.deleteMany({ _id: { $in: userIds } });
 
     // Remove the accountID from the DailySupply collection
@@ -354,7 +370,7 @@ async function deleteAllUsers(req, res) {
       res,
       200,
       "success",
-      "Xóa tất cả tài khoản nhân viên thành công",
+      "Xóa tất cả tài khoản được chọn thành công",
       req.headers.referer
     );
   } catch (error) {
