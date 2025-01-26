@@ -70,7 +70,7 @@
                     </div>
                     <div class="card-body">
                       <% const commonPages = [ 
-                      {title: 'Tổng', url: '/tong'},
+                      {title: 'Tổng', url: '/tong', onlyView: true},
                       {title: 'Dữ liệu tổng', url: '/quan-ly-du-lieu'},
                       {title: 'Chạy lò', url: '/quan-ly-hang-hoa'}, 
                       {title: 'Hợp đồng', url: '/quan-ly-hop-dong'},
@@ -99,6 +99,7 @@
                                 <input type="checkbox" id="Xem<%= page.title %>" class="form-check-input" name="pages[<%= pageIndex %>][view]" value="true" <%= user.permissions.pages.find(p => p.path === page.url)?.actions?.view ? 'checked' : '' %>>
                                 <label for="Xem<%= page.title %>" class="form-check-label cursor-pointer">Xem</label>
                               </div>
+                              <% if (!page.onlyView) { %>
                               <div class="form-check">
                                 <input type="checkbox" id="Thêm<%= page.title %>" class="form-check-input" name="pages[<%= pageIndex %>][add]" value="true" <%= user.permissions.pages.find(p => p.path === page.url)?.actions?.add ? 'checked' : '' %>>
                                 <label for="Thêm<%= page.title %>" class="form-check-label cursor-pointer">Thêm</label>
@@ -111,6 +112,7 @@
                                 <input type="checkbox" id="Xóa<%= page.title %>" class="form-check-input" name="pages[<%= pageIndex %>][delete]" value="true" <%= user.permissions.pages.find(p => p.path === page.url)?.actions?.delete ? 'checked' : '' %>>
                                 <label for="Xóa<%= page.title %>" class="form-check-label cursor-pointer">Xóa</label>
                               </div>
+                              <% } %>
                             </div>
                           </div>
                         </div>
@@ -194,7 +196,7 @@
             </div>
             <div class="card-body">
               <% const commonPages = [ 
-              {title: 'Tổng', url: '/tong'},
+              {title: 'Tổng', url: '/tong', onlyView: true},
               {title: 'Dữ liệu tổng', url: '/quan-ly-du-lieu'},
               {title: 'Chạy lò', url: '/quan-ly-hang-hoa'}, 
               {title: 'Hợp đồng', url: '/quan-ly-hop-dong'},
@@ -223,6 +225,7 @@
                         <input type="checkbox" id="Xem<%= page.title %>" class="form-check-input" name="pages[<%= index %>][view]" value="true">
                         <label for="Xem<%= page.title %>" class="form-check-label cursor-pointer">Xem</label>
                       </div>
+                      <% if (!page.onlyView) { %>
                       <div class="form-check">
                         <input type="checkbox" id="Thêm<%= page.title %>" class="form-check-input" name="pages[<%= index %>][add]" value="true">
                         <label for="Thêm<%= page.title %>" class="form-check-label cursor-pointer">Thêm</label>
@@ -235,6 +238,7 @@
                         <input type="checkbox" id="Xóa<%= page.title %>" class="form-check-input" name="pages[<%= index %>][delete]" value="true">
                         <label for="Xóa<%= page.title %>" class="form-check-label cursor-pointer">Xóa</label>
                       </div>
+                      <% } %>
                     </div>
                   </div>
                 </div>

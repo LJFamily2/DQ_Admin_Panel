@@ -11,7 +11,6 @@ const commonMiddlewares = [
   authMiddlewares.ensureLoggedIn,
   authMiddlewares.ensureWorkingHours,
   authMiddlewares.ensureAdmin,
-  checkPageAccess
 ];
 
 // Initial setup route
