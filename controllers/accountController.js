@@ -37,7 +37,7 @@ async function initialSetupPage(req, res) {
 async function initialSetupCreateAccount(req, res) {
   try {
     if (await isDatabaseEmpty()) {
-      await createUser(req, res);
+      await createUser(req, res, true);
     } else {
       res.status(404).redirect("/dang-nhap");
     }
@@ -61,7 +61,7 @@ async function renderPage(req, res) {
   }
 }
 
-async function createUser(req, res) {
+async function createUser(req, res, isNew) {
   req.body = trimStringFields(req.body);
   try {
     let existedUsername = await UserModel.findOne({
@@ -78,8 +78,24 @@ async function createUser(req, res) {
       );
     }
 
-    // Process permissions
-    const pages = req.body.pages.map(page => ({
+    // For new installation, force Admin role
+    if (isNew) {
+      req.body.role = "Admin";
+    }
+
+    // Initialize default permissions structure
+    const defaultPages = [
+      { path: "/tong", allowed: true },
+      { path: "/quan-ly-du-lieu", allowed: true },
+      { path: "/quan-ly-hang-hoa", allowed: true },
+      { path: "/quan-ly-hop-dong", allowed: true },
+      { path: "/quan-ly-chi-tieu", allowed: true },
+      { path: "/du-lieu-hang-ngay", allowed: true },
+      { path: "/nhap-du-lieu/nguyen-lieu", allowed: true },
+      { path: "/du-lieu/nhat-ky-hoat-dong", allowed: true }
+    ];
+
+    const pages = isNew ? defaultPages : req.body.pages.map(page => ({
       path: page.path,
       allowed: page.allowed === 'true',
       actions: {
@@ -90,7 +106,7 @@ async function createUser(req, res) {
       }
     }));
 
-    // If Admin role, set full permissions
+    // For Admin role (either new install or explicitly set), grant full permissions
     if (req.body.role === 'Admin') {
       pages.forEach(page => {
         page.allowed = true;
@@ -121,6 +137,10 @@ async function createUser(req, res) {
         "Tạo tài khoản thất bại",
         req.headers.referer
       );
+    }
+
+    if (isNew) {
+      return res.redirect("/dang-nhap");
     }
 
     return handleResponse(

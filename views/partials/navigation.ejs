@@ -47,14 +47,11 @@
       { path: '/quan-ly-chi-tieu', title: 'Chi tiêu', icon: 'ri-bill-line' },
       { path: '/du-lieu-hang-ngay', title: 'Dữ liệu ngày', icon: 'ri-numbers-line' },
       { path: '/nhap-du-lieu/nguyen-lieu', title: 'Thêm nguyên liệu', icon: 'ri-edit-line' },
-      { path: '/du-lieu/nhat-ky-hoat-dong', title: 'Lịch sử hoạt động', icon: 'ri-history-line' },
-      { path: '/quan-ly-tai-khoan', title: 'Quản lý tài khoản', icon: 'ri-group-line'}
+      { path: '/du-lieu/nhat-ky-hoat-dong', title: 'Lịch sử hoạt động', icon: 'ri-history-line' }
     ] %>
 
     <% pages.forEach(page => { %>
-    <% if (user.role === 'Admin' || 
-            ( 
-             user.permissions.pages.find(p => p.path === page.path)?.allowed)) { %>
+    <% if (user.role === 'Admin' || ( user.permissions.pages.find(p => p.path === page.path)?.allowed)) { %>
     <li class="nav-item">
       <a href="<%= page.path %>" class="nav-link link-dark d-flex justify-content-between">
         <%= page.title %>
@@ -66,6 +63,14 @@
     </li>
     <% } %>
     <% }) %>
+    <% if(user.role === "Admin"){ %>
+      <li class="nav-item">
+        <a href="/quan-ly-tai-khoan" class="nav-link link-dark d-flex justify-content-between">
+          Quản lý tài khoản
+          <i class="ri-group-line"></i>
+        </a>
+      </li>
+    <% } %>
   </ul>
 
   <hr />
@@ -114,6 +119,11 @@
       <a class="nav-link link-dark p-3" href="<%= page.path %>"><%= page.title %></a>
     </li>
     <% }) %>
+    <% if(user.role === "Admin"){ %>
+      <li class="list-group-item text-center p-0">
+        <a class="nav-link link-dark p-3" href="/quan-ly-tai-khoan">Quản lý tài khoản</a>
+      </li>
+    <% } %>
   </ul>
 </nav>
 

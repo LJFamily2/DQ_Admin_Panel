@@ -4,7 +4,6 @@ const accountController = require("../../controllers/accountController");
 const authMiddlewares = require("../../middlewares/authMiddlewares");
 const checkPermission = require("../../middlewares/checkPermission");
 const setUnreadCount = require("../../middlewares/unreadCountMiddleware");
-const checkPageAccess = require("../../middlewares/checkPageAccess");
 
 
 const commonMiddlewares = [
@@ -27,8 +26,8 @@ router.post("/getUsers", ...commonMiddlewares, accountController.getUsers);
 router.post(
   "/",
   ...commonMiddlewares,
-  checkPermission("add"),
-  accountController.createUser
+  checkPermission("add"), (req,res) =>
+  accountController.createUser(req, res,false)
 );
 
 // Update a user by ID
