@@ -215,19 +215,6 @@ async function updateUser(req, res) {
       }
     }));
 
-    // Admin gets full permissions
-    if (req.body.role === 'Admin') {
-      pages.forEach(page => {
-        page.allowed = true;
-        page.actions = {
-          view: true,
-          add: true, 
-          update: true,
-          delete: true
-        };
-      });
-    }
-
     const updateFields = {
       role: req.body.role,
       permissions: { pages }
