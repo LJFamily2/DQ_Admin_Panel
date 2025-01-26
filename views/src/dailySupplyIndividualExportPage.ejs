@@ -24,7 +24,7 @@
   </style>
 </head>
 <% 
-const onlyAdmin = user.role === "Admin" ? '' : 'disabled'; 
+const onlyAdmin = user.role === "Admin" || user.role === 'superAdmin' ? '' : 'disabled'; 
 %>
 <!-- breadcrumb -->
 <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: '>'" class="mx-2 mx-md-4">
@@ -319,7 +319,7 @@ const onlyAdmin = user.role === "Admin" ? '' : 'disabled';
                       ? Hành động này không thể hoàn tác.
                     </div>
                     <div class="modal-footer">
-                      <% if(user.role === 'Admin' || user.role === 'Văn phòng'){ %>
+                      <% if(user.role === 'Admin' || user.role === 'Văn phòng' || user.role === 'superAdmin'){ %>
                       <button type="submit" onclick="handleFormSubmit(this)" class=" btn btn-danger">
                         Xác nhận
                       </button>

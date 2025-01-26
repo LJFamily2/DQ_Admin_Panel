@@ -16,25 +16,25 @@ router.get(
   "/",
   setUnreadCount,
   checkPermission("view"),
-  authMiddlewares.ensureRoles(["Admin", "Văn phòng"]),
+  authMiddlewares.ensureRoles(["Admin", "Văn phòng", "superAdmin"]),
   dashboardController.renderPage
 );
 router.get(
   "/getRawMaterial",
   checkPermission("view"),
-  authMiddlewares.ensureRoles(["Admin", "Văn phòng"]),
+  authMiddlewares.ensureRoles(["Admin", "Văn phòng", "superAdmin"]),
   dashboardController.getRawMaterial
 );
 router.get(
   "/getProductData",
   checkPermission("view"),
-  authMiddlewares.ensureRoles(["Admin", "Văn phòng"]),
+  authMiddlewares.ensureRoles(["Admin", "Văn phòng", "superAdmin"]),
   dashboardController.getProductData
 );
 router.get(
   "/getRevenueAndSpending",
   checkPermission("view"),
-  authMiddlewares.ensureRoles(["Admin", "Văn phòng"]),
+  authMiddlewares.ensureRoles(["Admin", "Văn phòng", "superAdmin"]),
   dashboardController.getRevenueAndSpending
 );
 

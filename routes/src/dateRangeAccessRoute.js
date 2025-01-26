@@ -8,7 +8,7 @@ const setUnreadCount = require("../../middlewares/unreadCountMiddleware");
 router.post(
   "/setDateRange",
   setUnreadCount,
-  authMiddlewares.ensureRoles(["Admin"]),
+  authMiddlewares.ensureRoles(["Admin", "superAdmin"]),
   checkPermission("update"),
   dateRangeController.setDateRange
 );

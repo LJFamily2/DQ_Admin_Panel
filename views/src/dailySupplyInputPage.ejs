@@ -192,7 +192,7 @@
                       ? Hành động này không thể hoàn tác.
                     </div>
                     <div class="modal-footer">
-                      <% if(user.role === 'Admin' ){ %>
+                      <% if(user.role === 'Admin' || user.role === 'superAdmin' ){ %>
                       <button type="submit" onclick="handleFormSubmit(this)" class=" btn btn-danger">
                         Xác nhận
                       </button>

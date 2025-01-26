@@ -18,31 +18,31 @@ router.get(
   "/nguyen-lieu",
   setUnreadCount,
   checkPermission("view"),
-  authMiddlewares.ensureRoles(["Admin", "Hàm lượng","Văn phòng"]),
+  authMiddlewares.ensureRoles(["Admin", "Hàm lượng","Văn phòng", "superAdmin"]),
   dailySupplyController.supplierInputController.renderInputDataDashboardPage
 );
 router.get(
   "/nguyen-lieu/:slug",
   setUnreadCount,
   checkPermission("view"),
-  authMiddlewares.ensureRoles(["Admin", "Hàm lượng","Văn phòng"]),
+  authMiddlewares.ensureRoles(["Admin", "Hàm lượng","Văn phòng", "superAdmin"]),
   dailySupplyController.supplierInputController.renderInputDataPage
 );
 router.post(
   "/nguyen-lieu/getSupplierData/:slug",
   checkPermission("view"),
-  authMiddlewares.ensureRoles(["Admin", "Hàm lượng","Văn phòng"]),
+  authMiddlewares.ensureRoles(["Admin", "Hàm lượng","Văn phòng", "superAdmin"]),
   dailySupplyController.getSupplierDataController.getSupplierData
 );
 router.post(
   "/:id",
-  authMiddlewares.ensureRoles(["Admin", "Hàm lượng","Văn phòng"]),
+  authMiddlewares.ensureRoles(["Admin", "Hàm lượng","Văn phòng", "superAdmin"]),
   checkPermission("add"),
   dailySupplyController.supplierInputController.addData
 );
 router.put(
   "/:id",
-  authMiddlewares.ensureRoles(["Admin", "Hàm lượng", "Văn phòng"]),
+  authMiddlewares.ensureRoles(["Admin", "Hàm lượng", "Văn phòng", "superAdmin"]),
   checkDateAccess,
   checkPermission("update"),
   dailySupplyController.supplierInputController.updateSupplierData
@@ -50,7 +50,7 @@ router.put(
 router.delete(
   "/:id",
   conditionalRateLimiter,
-  authMiddlewares.ensureRoles(["Admin", "Văn phòng"]),
+  authMiddlewares.ensureRoles(["Admin", "Văn phòng", "superAdmin"]),
   checkDateAccess,
   checkPermission("delete"),
   dailySupplyController.supplierInputController.deleteSupplierData

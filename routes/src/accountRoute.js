@@ -9,7 +9,7 @@ const setUnreadCount = require("../../middlewares/unreadCountMiddleware");
 const commonMiddlewares = [
   authMiddlewares.ensureLoggedIn,
   authMiddlewares.ensureWorkingHours,
-  authMiddlewares.ensureAdmin,
+  authMiddlewares.ensureRoles(["Admin", "superAdmin"]),
 ];
 
 // Initial setup route

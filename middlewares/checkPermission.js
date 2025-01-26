@@ -1,7 +1,7 @@
 function checkPermission(action) {
   return function(req, res, next) {
     // Admin bypass
-    if (req.user.role === 'Admin') {
+    if (req.user.role === 'Admin' || req.user.role === 'superAdmin') {
       return next();
     }
 

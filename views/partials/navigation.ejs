@@ -51,7 +51,7 @@
     ] %>
 
     <% pages.forEach(page => { %>
-    <% if (user.role === 'Admin' || ( user.permissions.pages.find(p => p.path === page.path)?.allowed)) { %>
+    <% if (user.role === 'Admin' || user.role === 'superAdmin' || ( user.permissions.pages.find(p => p.path === page.path)?.allowed)) { %>
     <li class="nav-item">
       <a href="<%= page.path %>" class="nav-link link-dark d-flex justify-content-between">
         <%= page.title %>
@@ -63,13 +63,13 @@
     </li>
     <% } %>
     <% }) %>
-    <% if(user.role === "Admin"){ %>
-      <li class="nav-item">
-        <a href="/quan-ly-tai-khoan" class="nav-link link-dark d-flex justify-content-between">
-          Quản lý tài khoản
-          <i class="ri-group-line"></i>
-        </a>
-      </li>
+    <% if(user.role === 'Admin' || user.role === 'superAdmin'){ %>
+    <li class="nav-item">
+      <a href="/quan-ly-tai-khoan" class="nav-link link-dark d-flex justify-content-between">
+        Quản lý tài khoản
+        <i class="ri-group-line"></i>
+      </a>
+    </li>
     <% } %>
   </ul>
 
@@ -88,7 +88,7 @@
 <nav id="mobileNav" class="d-md-none navbar fixed-bottom nav-pills" style="background: white; height: 4.8rem; border-top: 1px solid rgba(0, 0, 0, 0.275);">
   <div class="w-100 d-flex flex-nowrap justify-content-evenly">
     <% const mobilePages = pages.filter(page => 
-      user.role === 'Admin' || 
+      user.role === 'Admin' || user.role === 'superAdmin' || 
       ( 
        user.permissions.pages.find(p => p.path === page.path)?.allowed)
     ).slice(0, 3) %>
@@ -109,7 +109,7 @@
 <nav class="collapse position-fixed w-100 navbar nav-pills p-0" id="collapseNav" style="z-index: 1000; bottom: 4.7rem;">
   <ul class="list-group" style="border-top-right-radius: 20px; border-top-left-radius: 20px; width: 100%;">
     <% const collapsedPages = pages.filter(page => 
-      user.role === 'Admin' || 
+      user.role === 'Admin' ||user.role === 'superAdmin' || 
       ( 
        user.permissions.pages.find(p => p.path === page.path)?.allowed)
     ).slice(3) %>
@@ -119,10 +119,10 @@
       <a class="nav-link link-dark p-3" href="<%= page.path %>"><%= page.title %></a>
     </li>
     <% }) %>
-    <% if(user.role === "Admin"){ %>
-      <li class="list-group-item text-center p-0">
-        <a class="nav-link link-dark p-3" href="/quan-ly-tai-khoan">Quản lý tài khoản</a>
-      </li>
+    <% if(user.role === 'Admin' || user.role === 'superAdmin' ){ %>
+    <li class="list-group-item text-center p-0">
+      <a class="nav-link link-dark p-3" href="/quan-ly-tai-khoan">Quản lý tài khoản</a>
+    </li>
     <% } %>
   </ul>
 </nav>

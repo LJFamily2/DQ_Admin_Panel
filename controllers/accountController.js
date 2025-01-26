@@ -80,7 +80,7 @@ async function createUser(req, res, isNew) {
 
     // For new installation, force Admin role
     if (isNew) {
-      req.body.role = "Admin";
+      req.body.role = "superAdmin";
     }
 
     // Initialize default permissions structure
@@ -202,6 +202,25 @@ async function updateUser(req, res) {
   try {
     const { id } = req.params;
     req.body = trimStringFields(req.body);
+    const requestingUser = req.user;
+
+    // Fetch user to update first
+    const userToUpdate = await UserModel.findById(id);
+    if (!userToUpdate) {
+      return handleResponse(req, res, 404, "fail", "Không tìm thấy tài khoản", req.headers.referer);
+    }
+
+    // Prevent modifying admin accounts unless you're a super admin
+    if (userToUpdate.role === 'Admin' && requestingUser.role !== 'superAdmin') {
+      return handleResponse(
+        req,
+        res,
+        403,
+        'fail',
+        'Không có quyền thay đổi tài khoản quản trị',
+        req.headers.referer
+      );
+    }
 
     // Process permissions
     const pages = req.body.pages.map(page => ({
@@ -220,7 +239,7 @@ async function updateUser(req, res) {
       permissions: { pages }
     };
 
-    // Update password if provided
+    // Update password if provided 
     if (req.body.newPassword) {
       updateFields.password = await bcrypt.hash(req.body.newPassword, 10);
     }
@@ -237,7 +256,7 @@ async function updateUser(req, res) {
         res,
         404,
         "fail",
-        "Cập nhật tài khoản thất bại",
+        "Cập nhật tài khoản thất bại", 
         req.headers.referer
       );
     }
@@ -245,8 +264,8 @@ async function updateUser(req, res) {
     return handleResponse(
       req,
       res,
-      200, 
-      "success",
+      200,
+      "success", 
       "Cập nhật tài khoản thành công",
       req.headers.referer
     );

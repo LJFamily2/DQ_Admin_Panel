@@ -244,7 +244,7 @@
                       ? Hành động này không thể hoàn tác.
                     </div>
                     <div class="modal-footer">
-                      <% if(user.role === 'Admin' || user.role === 'Văn phòng'){
+                      <% if(user.role === 'Admin' || user.role === 'Văn phòng' || user.role === 'superAdmin') {
                       %>
                       <button type="submit" onclick="handleFormSubmit(this)" class=" btn btn-danger">
                         Xác nhận

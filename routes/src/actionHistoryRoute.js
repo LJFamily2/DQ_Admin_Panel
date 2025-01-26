@@ -16,18 +16,18 @@ router.get(
   "/nhat-ky-hoat-dong",
   setUnreadCount,
   checkPermission("view"),
-  authMiddlewares.ensureRoles(["Admin", "Văn phòng"]),
+  authMiddlewares.ensureRoles(["Admin", "Văn phòng" , "superAdmin"]),
   actionHistory.renderPage
 );
 router.post(
   "/nhat-ky-hoat-dong/:id",
-  authMiddlewares.ensureRoles(["Admin"]),
+  authMiddlewares.ensureRoles(["Admin" , "superAdmin"]),
   checkPermission("delete"),
   actionHistory.deleteData
 );
 router.delete(
   "/nhat-ky-hoat-dong/deleteAllData",
-  authMiddlewares.ensureRoles(["Admin"]),
+  authMiddlewares.ensureRoles(["Admin" , "superAdmin"]),
   checkPermission("delete"),
   actionHistory.deleteAllData
 );
