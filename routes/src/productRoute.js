@@ -41,7 +41,7 @@ router.delete(
   checkPermission("delete"),
   productController.deleteProduct
 );
-router.delete(
+router.post(
   "/deleteAll",
   authMiddlewares.ensureRoles(["Admin", "Văn phòng", "superAdmin"]),
   checkPermission("delete"),

@@ -356,6 +356,7 @@ async function deleteAll(req, res) {
       req.headers.referer
     );
   } catch (err) {
+    console.log(err)
     res.status(500).render("partials/500", { layout: false });
   }
 }
