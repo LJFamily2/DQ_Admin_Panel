@@ -25,7 +25,7 @@ function getTodayDate() {
 }
 
 function adjustDates(startDate, endDate) {
-  const today = new Date()
+  const today = new Date();
   today.setUTCHours(today.getUTCHours() + 7);
 
   if (!startDate && !endDate) {
@@ -143,7 +143,7 @@ async function getData(req, res) {
 }
 
 async function getSupplierData(req, res) {
-  await getSupplierInputData(req, res, true);
+  await getSupplierInputData(req, res, false);
 }
 
 async function getAreaSupplierData(req, res) {
@@ -244,7 +244,11 @@ async function getSupplierInputData(req, res, isArea) {
       );
       return {
         no: index + 1,
-        date: new Date(item.data.date).toLocaleDateString("vi-VN"),
+        date: (() => {
+          const d = new Date(item.data.date);
+          d.setUTCHours(0, 0, 0, 0);
+          return d.toLocaleDateString("vi-VN");
+        })(),
         supplier: item.supplier.name || "",
         ...(isArea && { code: item.supplier.code || "" }),
         muNuocQuantity: muNuocQuantity.toLocaleString("vi-VN") || "",
@@ -557,8 +561,8 @@ async function getIndividualSupplierExportData(req, res, sendResponse = true) {
                 note: "$data.note",
                 supplierId: "$data.supplier",
                 moneyRetainedPercentage: {
-                  $literal: supplier.moneyRetainedPercentage
-                }
+                  $literal: supplier.moneyRetainedPercentage,
+                },
               },
             },
           ],
@@ -665,14 +669,19 @@ async function getIndividualSupplierExportData(req, res, sendResponse = true) {
       const muKeTotalPrice = muKeTotalAfterSplit * muKe.price;
       const muDongTotalPrice = muDongTotalAfterSplit * muDong.price;
       const totalPrice =
-       ( muQuyKhoTotalPrice +
-        muTapTotalPrice +
-        muKeTotalPrice +
-        muDongTotalPrice) * (1 - item.moneyRetainedPercentage/100);
+        (muQuyKhoTotalPrice +
+          muTapTotalPrice +
+          muKeTotalPrice +
+          muDongTotalPrice) *
+        (1 - item.moneyRetainedPercentage / 100);
 
       return {
         no: index + 1,
-        date: item.date.toLocaleDateString("vi-VN"),
+        date: (() => {
+          const d = new Date(item.date);
+          d.setUTCHours(0, 0, 0, 0);
+          return d.toLocaleDateString("vi-VN");
+        })(),
 
         muNuocQuantity: formatNumber(muNuoc.quantity),
         muHamLuong: formatNumber(muNuoc.percentage),
