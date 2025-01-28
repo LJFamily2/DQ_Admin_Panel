@@ -503,12 +503,12 @@ const onlyAdmin = user.role === "Admin" || user.role === 'superAdmin' ? '' : 'di
             </div>
             <% if (area.areaDimension > 0 && area.areaPrice > 0) { %>
             <div class="mt-3">
-              <label for="ratioRubberSplit" class="form-label fw-bold">Ăn chia mủ mặc định</label>
+              <label for="ratioRubberSplit" class="form-label fw-bold">% nhận mủ mặc định</label>
               <input type="text" class="form-control" id="ratioRubberSplit" name="ratioRubberSplit" value="<%= supplierData.ratioRubberSplit.toLocaleString('vi-VN') %>" oninput="handlePercentageInput(this)" inputmode="numeric" <%= onlyAdmin %>/>
             </div>
             <% } %>
             <div class="mt-3">
-              <label for="ratioSumSplit" class="form-label fw-bold">Ăn chia tổng mặc định</label>
+              <label for="ratioSumSplit" class="form-label fw-bold">% nhận tổng mặc định</label>
               <input type="text" class="form-control" id="ratioSumSplit" name="ratioSumSplit" value="<%= supplierData.ratioSumSplit.toLocaleString('vi-VN') %>" min="1" <%= onlyAdmin %>/>
             </div>
           </div>
