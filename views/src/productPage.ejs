@@ -2,6 +2,8 @@
   <!-- js -->
   <script src="/js/datatable.js"></script>
   <script src="/js/inputFieldRestriction.js" defer></script>
+  <script src="/js/newInput.js" defer></script>
+
   <!-- Slim select -->
   <script src="/js/slim-select.js" defer></script>
 </head>
@@ -51,7 +53,7 @@
                     <div class="modal-body">
                       <div>
                         <label for="date" class="form-label fw-bold">Ngày chạy lò</label>
-                        <input type="date" class="form-control"  name="date" value="<%= product.date.toISOString().slice(0,10)  %>" required />
+                        <input type="date" class="form-control"  name="date" value="<%= product.date.toISOString().slice(0,10)  %>" onchange="newInput(this)" required />
                       </div>
 
                       <div class="my-3">
@@ -59,23 +61,23 @@
                           <label for="dryRubberUsed" class="form-label fw-bold">Nguyên liệu</label>
                           <div class="col-6">
                             <label for="dryRubberUsed" class="form-label ">Số lượng</label>
-                            <input type="text" class="form-control"  name="dryRubberUsed" oninput="handleQuantityInput(this)" inputmode="numeric" value="<%= product.dryRubberUsed.toLocaleString('vi-VN') %>" />
+                            <input type="text" class="form-control"  name="dryRubberUsed" oninput="handleQuantityInput(this)" onchange="newInput(this)" inputmode="numeric" value="<%= product.dryRubberUsed.toLocaleString('vi-VN') %>" />
                           </div>
                           <div class="col-6">
                             <label for="dryPercentage" class="form-label ">Hàm lượng</label>
-                            <input type="text" class="form-control"  name="dryPercentage" oninput="handlePercentageInput(this)" inputmode="numeric" value="<%= product.dryPercentage.toLocaleString('vi-VN') %>" />
+                            <input type="text" class="form-control"  name="dryPercentage" oninput="handlePercentageInput(this)" onchange="newInput(this)" inputmode="numeric" value="<%= product.dryPercentage.toLocaleString('vi-VN') %>" />
                           </div>
                         </div>
                       </div>
 
                       <div class="my-3">
                         <label for="quantity" class="form-label fw-bold">Thành phẩm</label>
-                        <input type="text" class="form-control" name="quantity" oninput="handleQuantityInput(this)" inputmode="numeric" value="<%= product.quantity.toLocaleString('vi-VN') %>" />
+                        <input type="text" class="form-control" name="quantity" oninput="handleQuantityInput(this)" onchange="newInput(this)" inputmode="numeric" value="<%= product.quantity.toLocaleString('vi-VN') %>" />
                       </div>
 
                       <div class="my-3">
                         <label for="notes" class="form-label fw-bold">Ghi chú</label>
-                        <textarea type="text" class="form-control" rows="3" name="notes"><%= product.notes %></textarea>
+                        <textarea type="text" class="form-control" rows="3" onchange="newInput(this)" name="notes"><%= product.notes %></textarea>
                       </div>
                     </div>
                     <div class="modal-footer">

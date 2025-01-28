@@ -10,6 +10,8 @@
   <script src="/js/toggleFields.js"></script>
   <script src="/js/debounce.js" defer></script>
   <script src="/js/filterSuppliers.js" defer></script>
+  <script src="/js/newInput.js" defer></script>
+  
   <!-- Tippy.js -->
   <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css" />
   <script src="https://unpkg.com/@popperjs/core@2"></script>
@@ -151,7 +153,7 @@
                     <div class="modal-body">
                       <div>
                         <label for="date" class="form-label fw-bold">Ngày nhập</label>
-                        <input type="date" class="form-control" id="date" name="date" value="<%= eachData.date.toISOString().slice(0,10) %>" required />
+                        <input type="date" class="form-control" id="date" name="date" value="<%= eachData.date.toISOString().slice(0,10) %>" required onchange="newInput(this)" />
                       </div>
 
                       <div class="my-3">
@@ -167,11 +169,11 @@
                             <label class="form-label fw-bold">Mủ nước</label>
                             <div class="col col-md-6">
                               <label for="muNuocQuantity<%= index %>" class="form-label">Số lượng</label>
-                              <input type="text" class="form-control" id="muNuocQuantity<%= index %>" name="muNuocQuantity" value="<%= raw.quantity.toLocaleString('vi-VN')%>" required />
+                              <input type="text" class="form-control" id="muNuocQuantity<%= index %>" name="muNuocQuantity" value="<%= raw.quantity.toLocaleString('vi-VN')%>" required onchange="newInput(this)" />
                             </div>
                             <div class="col col-md-6">
                               <label for="muNuocPercentage<%= index %>" class="form-label">Hàm lượng</label>
-                              <input type="text" class="form-control" id="muNuocPercentage<%= index %>" name="muNuocPercentage" value="<%= raw.percentage.toLocaleString('vi-VN') %>" required />
+                              <input type="text" class="form-control" id="muNuocPercentage<%= index %>" name="muNuocPercentage" value="<%= raw.percentage.toLocaleString('vi-VN') %>" required onchange="newInput(this)" />
                             </div>
                           </div>
                         </div>
@@ -181,7 +183,7 @@
                             <label class="form-label fw-bold">Mủ tạp</label>
                             <div class="col-12">
                               <label for="muTapQuantity<%= index %>" class="form-label">Số lượng</label>
-                              <input type="text" class="form-control" id="muTapQuantity<%= index %>" name="muTapQuantity" value="<%= raw.quantity.toLocaleString('vi-VN') %>" required />
+                              <input type="text" class="form-control" id="muTapQuantity<%= index %>" name="muTapQuantity" value="<%= raw.quantity.toLocaleString('vi-VN') %>" required onchange="newInput(this)" />
                             </div>
                           </div>
                         </div>
@@ -191,7 +193,7 @@
                             <label class="form-label fw-bold">Mủ Ké</label>
                             <div class="col-12">
                               <label for="muKeQuantity<%= index %>" class="form-label">Số lượng</label>
-                              <input type="text" class="form-control" id="muKeQuantity<%= index %>" name="muKeQuantity" value="<%= raw.quantity.toLocaleString('vi-VN') %>" required />
+                              <input type="text" class="form-control" id="muKeQuantity<%= index %>" name="muKeQuantity" value="<%= raw.quantity.toLocaleString('vi-VN') %>" required onchange="newInput(this)" />
                             </div>
                           </div>
                         </div>
@@ -201,7 +203,7 @@
                             <label class="form-label fw-bold">Mủ Đông</label>
                             <div class="col-12">
                               <label for="muDongQuantity<%= index %>" class="form-label">Số lượng</label>
-                              <input type="text" class="form-control" id="muDongQuantity<%= index %>" name="muDongQuantity" value="<%= raw.quantity.toLocaleString('vi-VN') %>" required />
+                              <input type="text" class="form-control" id="muDongQuantity<%= index %>" name="muDongQuantity" value="<%= raw.quantity.toLocaleString('vi-VN') %>" required onchange="newInput(this)" />
                             </div>
                           </div>
                         </div>
@@ -212,7 +214,7 @@
                         <div class="row my-3">
                           <label class="form-label fw-bold">Ghi chú</label>
                           <div class="col-12">
-                            <textarea class="form-control" name="note" rows="3"><%= eachData.note %></textarea>
+                            <textarea class="form-control" name="note" rows="3" onchange="newInput(this)"><%= eachData.note %></textarea>
                           </div>
                         </div>
                       </div>

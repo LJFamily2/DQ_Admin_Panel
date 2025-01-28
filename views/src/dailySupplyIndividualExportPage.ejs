@@ -10,6 +10,7 @@
   <script src="/js/exportDatatable.js"></script>
 
   <script src="/js/inputFieldRestriction.js" defer></script>
+  <script src="/js/newInput.js" defer></script>
   <!-- Slim select -->
   <script src="/js/slim-select.js" defer></script>
   <!-- Tippy -->
@@ -167,7 +168,7 @@ const onlyAdmin = user.role === "Admin" || user.role === 'superAdmin' ? '' : 'di
 
                       <div>
                         <label for="date<%= index %>" class="form-label fw-bold">Ngày nhập</label>
-                        <input type="date" class="form-control" id="date<%= index %>" name="date" value="<%= item.date.toISOString().slice(0,10) %>" required />
+                        <input type="date" class="form-control" id="date<%= index %>" name="date" value="<%= item.date.toISOString().slice(0,10) %>" required onchange="newInput(this)" />
                       </div>
 
                       <div class="my-3">
@@ -189,11 +190,11 @@ const onlyAdmin = user.role === "Admin" || user.role === 'superAdmin' ? '' : 'di
                             <label class="form-label fw-bold">Mủ nước</label>
                             <div class="col col-md-6">
                               <label for="muNuocQuantity<%= index %>" class="form-label">Số lượng</label>
-                              <input type="text" class="form-control" id="muNuocQuantity<%= index %>" name="muNuocQuantity" value="<%= raw.quantity %>" required oninput="handleQuantityInput(this)" inputmode="numeric" />
+                              <input type="text" class="form-control" id="muNuocQuantity<%= index %>" name="muNuocQuantity" value="<%= raw.quantity %>" required oninput="handleQuantityInput(this)" inputmode="numeric" onchange="newInput(this)" />
                             </div>
                             <div class="col col-md-6">
                               <label for="muNuocPercentage<%= index %>" class="form-label">Hàm lượng</label>
-                              <input type="text" class="form-control" id="muNuocPercentage<%= index %>" name="muNuocPercentage" value="<%= raw.percentage.toLocaleString('vi-VN') %>" required oninput="handlePercentageInput(this)" inputmode="numeric" />
+                              <input type="text" class="form-control" id="muNuocPercentage<%= index %>" name="muNuocPercentage" value="<%= raw.percentage.toLocaleString('vi-VN') %>" required oninput="handlePercentageInput(this)" inputmode="numeric" onchange="newInput(this)" />
                             </div>
                           </div>
                           <div class="row my-3">
@@ -220,7 +221,7 @@ const onlyAdmin = user.role === "Admin" || user.role === 'superAdmin' ? '' : 'di
                             <label class="form-label fw-bold">Mủ tạp</label>
                             <div class="col col-md-6">
                               <label for="muTapQuantity<%= index %>" class="form-label">Số lượng</label>
-                              <input type="text" class="form-control" id="muTapQuantity<%= index %>" name="muTapQuantity" value="<%= raw.quantity %>" required oninput="handleQuantityInput(this)" inputmode="numeric" />
+                              <input type="text" class="form-control" id="muTapQuantity<%= index %>" name="muTapQuantity" value="<%= raw.quantity %>" required oninput="handleQuantityInput(this)" inputmode="numeric" onchange="newInput(this)" />
                             </div>
                             <div class="col col-md-6">
                               <label for="price<%= index %>" class="form-label">Đơn giá</label>
@@ -242,7 +243,7 @@ const onlyAdmin = user.role === "Admin" || user.role === 'superAdmin' ? '' : 'di
                             <label class="form-label fw-bold">Mủ Ké</label>
                             <div class="col col-md-6">
                               <label for="muKeQuantity<%= index %>" class="form-label">Số lượng </label>
-                              <input type="text" class="form-control" id="muKeQuantity<%= index %>" name="muKeQuantity" value="<%= raw.quantity %>" required oninput="handleQuantityInput(this)" inputmode="numeric" />
+                              <input type="text" class="form-control" id="muKeQuantity<%= index %>" name="muKeQuantity" value="<%= raw.quantity %>" required oninput="handleQuantityInput(this)" inputmode="numeric" onchange="newInput(this)" />
                             </div>
                             <div class="col col-md-6">
                               <label for="muKePrice<%= index %>" class="form-label">Đơn giá</label>
@@ -264,7 +265,7 @@ const onlyAdmin = user.role === "Admin" || user.role === 'superAdmin' ? '' : 'di
                             <label class="form-label fw-bold">Mủ Đông</label>
                             <div class="col col-md-6">
                               <label for="muDongQuantity<%= index %>" class="form-label">Số lượng</label>
-                              <input type="text" class="form-control" id="muDongQuantity<%= index %>" name="muDongQuantity" value="<%= raw.quantity %>" required oninput="handleQuantityInput(this)" inputmode="numeric" />
+                              <input type="text" class="form-control" id="muDongQuantity<%= index %>" name="muDongQuantity" value="<%= raw.quantity %>" required oninput="handleQuantityInput(this)" inputmode="numeric" onchange="newInput(this)" />
                             </div>
                             <div class="col col-md-6">
                               <label for="muDongPrice<%= index %>" class="form-label">Đơn giá</label>
@@ -285,11 +286,11 @@ const onlyAdmin = user.role === "Admin" || user.role === 'superAdmin' ? '' : 'di
                       </div>
                       <div class="my-3">
                         <label for="note<%= index %>" class="form-label fw-bold">Ghi chú</label>
-                        <textarea class="form-control" id="note<%= index %>" name="note" rows="3"><%= item.note %></textarea>
+                        <textarea class="form-control" id="note<%= index %>" name="note" rows="3" onchange="newInput(this)"><%= item.note %></textarea>
                       </div>
                       <div class="my-3">
                         <label for="moneyRetainedPercentage<%= index %>" class="form-label fw-bold">% tiền giữ lại</label>
-                        <input type="text" class="form-control" id="moneyRetainedPercentage<%= index %>" name="moneyRetainedPercentage" value="<%= item.moneyRetained?.percentage ? item.moneyRetained?.percentage.toLocaleString('vi-VN') : ''  %>" oninput="handlePercentageInput(this)" inputmode="numeric" <%= onlyAdmin %> />
+                        <input type="text" class="form-control" id="moneyRetainedPercentage<%= index %>" name="moneyRetainedPercentage" value="<%= item.moneyRetained?.percentage ? item.moneyRetained?.percentage.toLocaleString('vi-VN') : ''  %>" oninput="handlePercentageInput(this)" inputmode="numeric" onchange="newInput(this)" <%= onlyAdmin %> />
                       </div>
                     </div>
                     <div class="modal-footer bg-transparent">
@@ -413,7 +414,7 @@ const onlyAdmin = user.role === "Admin" || user.role === 'superAdmin' ? '' : 'di
       <div class="card-header bg-transparent">
         <h4 class="m-0 fw-bold">Thông tin cá nhân</h4>
       </div>
-
+      <!-- update supplier -->
       <form action="/du-lieu-hang-ngay/supplier/<%= supplierData._id %>?_method=PUT" method="post">
         <!-- Additional fields -->
         <input type="text" name="slug" value="<%= area.slug %>" hidden>
@@ -423,37 +424,37 @@ const onlyAdmin = user.role === "Admin" || user.role === 'superAdmin' ? '' : 'di
             <div class="row">
               <div class="col col-md-6">
                 <label for="name" class="form-label fw-bold">Tên</label>
-                <input type="text" class="form-control" id="name" name="name" maxlength="30" value="<%= supplierData.name %>" required />
+                <input type="text" class="form-control" id="name" name="name" maxlength="30" value="<%= supplierData.name %>" required onchange="newInput(this)" />
               </div>
               <div class="col col-md-6">
                 <label for="code" class="form-label fw-bold">Mã</label>
-                <input type="text" class="form-control" id="code" name="code" maxlength="20" value="<%= supplierData.code %>" required />
+                <input type="text" class="form-control" id="code" name="code" maxlength="20" value="<%= supplierData.code %>" required onchange="newInput(this)" />
               </div>
             </div>
             <div class="mt-3">
               <label for="manager" class="form-label fw-bold">Vai trò</label>
-              <select class="form-select" id="manager" name="manager" required>
+              <select class="form-select" id="manager" name="manager" required onchange="newInput(this)">
                 <option value="false" <%= supplierData.manager === false ? 'selected' : '' %>>Nhà vườn</option>
                 <option value="true" <%= supplierData.manager === true ? 'selected' : '' %>>Quản lý</option>
               </select>
             </div>
             <div class="mt-3">
               <label for="phone" class="form-label fw-bold">Số điện thoại</label>
-              <input type="text" class="form-control" id="phone" name="phone" maxlength="10" oninput="this.value = this.value.replace(/\D/g, '');" value="<%= supplierData.phone %>" required />
+              <input type="text" class="form-control" id="phone" name="phone" maxlength="10" oninput="this.value = this.value.replace(/\D/g, '');" value="<%= supplierData.phone %>" required onchange="newInput(this)" />
             </div>
             <div class="row">
               <div class="col-7 mt-3">
                 <label for="identification" class="form-label fw-bold">Căn cước công dân</label>
-                <input type="text" class="form-control" id="identification" name="identification" maxlength="12" value="<%= supplierData.identification %>" required />
+                <input type="text" class="form-control" id="identification" name="identification" maxlength="12" value="<%= supplierData.identification %>" required onchange="newInput(this)" />
               </div>
               <div class="col-5 mt-3">
                 <label for="issueDate" class="form-label fw-bold">Ngày cấp</label>
-                <input type="text" class="form-control" id="issueDate" name="issueDate" oninput="this.value = this.value.replace(/\D/g, '').replace(/(\d{2})(?=\d)/g, '$1/');" maxlength="8" value="<%= supplierData.issueDate %>" required />
+                <input type="text" class="form-control" id="issueDate" name="issueDate" oninput="this.value = this.value.replace(/\D/g, '').replace(/(\d{2})(?=\d)/g, '$1/');" maxlength="8" value="<%= supplierData.issueDate %>" required onchange="newInput(this)" />
               </div>
             </div>
             <div class="mt-3">
               <label class="form-label fw-bold">Địa chỉ</label>
-              <input type="text" class="form-control" name="supplierAddress" value="<%= supplierData.supplierAddress %>" maxlength="70" />
+              <input type="text" class="form-control" name="supplierAddress" value="<%= supplierData.supplierAddress %>" maxlength="70" onchange="newInput(this)" />
             </div>
 
             <% if (area.areaDimension > 0 && area.areaPrice > 0) { %>
@@ -499,7 +500,7 @@ const onlyAdmin = user.role === "Admin" || user.role === 'superAdmin' ? '' : 'di
             <% } %>
             <div class="mt-3">
               <label for="advancePayment" class="form-label fw-bold">Tiền ứng</label>
-              <input type="text" class="form-control" id="advancePayment" name="advancePayment" value="<%= supplierData.advancePayment.toLocaleString('vi-VN') %>" oninput="handleQuantityInput(this)" inputmode="numeric" <%= onlyAdmin %>/>
+              <input type="text" class="form-control" id="advancePayment" name="advancePayment" value="<%= supplierData.advancePayment.toLocaleString('vi-VN') %>" oninput="handleQuantityInput(this)" inputmode="numeric" onchange="newInput(this)" <%= onlyAdmin %>/>
             </div>
             <% if (area.areaDimension > 0 && area.areaPrice > 0) { %>
             <div class="mt-3">

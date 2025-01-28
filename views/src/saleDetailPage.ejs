@@ -3,6 +3,7 @@
   <script src="/js/inputFieldRestriction.js" defer></script>
   <script src="/js/multipleFieldsWithText.js" defer></script>
   <script src="/js/handleSelectField.js" defer></script>
+  <script src="/js/newInput.js" defer></script>
 </head>
 
 <!-- breadcrumb -->
@@ -17,7 +18,7 @@
 
 <%- include('../partials/totalValue') %>
 
-
+<!-- Update sale -->
 <form action="/quan-ly-hop-dong/<%= sale._id %>?_method=PUT" method="post">
   <div class="row m-2 g-3">
     <div class="col-12 col-md-6">
@@ -29,7 +30,7 @@
           <%- include('../partials/notificationMessage.ejs') %>
           <div>
             <label for="status" class="form-label fw-bold">Tình trạng</label>
-            <select class="form-select" name="status" id="status" required>
+            <select class="form-select" name="status" id="status" onchange="newInput(this)" required>
               <option value="active" <%= sale.status === "active" ? 'selected' : '' %>>Đang mở</option>
               <option value="closed" <%= sale.status === "closed" ? 'selected' : '' %>>Đã đóng</option>
             </select>
@@ -37,19 +38,19 @@
 
           <div class="my-3">
             <label for="date" class="form-label fw-bold">Ngày</label>
-            <input type="date" class="form-control" id="date" name="date" required value="<%= sale.date.toISOString().slice(0,10) %>" />
+            <input type="date" class="form-control" id="date" name="date"  onchange="newInput(this)" value="<%= sale.date.toISOString().slice(0,10) %>" required/>
           </div>
 
           <div class="my-3">
             <label for="code" class="form-label fw-bold">Mã hợp đồng</label>
-            <input type="text" class="form-control" id="code" name="code" required value="<%= sale.code %>" />
+            <input type="text" class="form-control" id="code" name="code" onchange="newInput(this)" value="<%= sale.code %>" required/>
           </div>
 
 
 
           <div class="my-3">
             <label for="notes" class="form-label fw-bold">Ghi chú</label>
-            <textarea type="text" class="form-control" rows="3" id="notes" name="notes"><%= sale.notes %></textarea>
+            <textarea type="text" class="form-control" rows="3" id="notes" onchange="newInput(this)" name="notes"><%= sale.notes %></textarea>
           </div>
 
         </div>
@@ -74,7 +75,7 @@
                 <div class="row m-0 p-0">
                   <div class="col-6">
                     <label for="name" class="form-label fw-bold w-100 d-flex justify-content-between"><%= index + 1 %>. Tên hàng hóa </label>
-                    <select class="form-control" name="name" onchange="handleProductChange(this, this.closest('.productList'), true)">
+                    <select class="form-select" name="name" onchange="handleProductChange(this, this.closest('.productList'), true); newInput(this)" >
                       <option value="product" <%= product.name === "product" ? "selected" : "" %>>Thành phẩm</option>
                       <option value="mixedQuantity" <%= product.name === "mixedQuantity" ? "selected" : "" %>>Mủ tạp</option>
                       <option value="dryRubber" <%= product.name === "dryRubber" ? "selected" : "" %>>Quy khô</option>
@@ -83,7 +84,7 @@
 
                   <div class="col-6">
                     <label class="form-label fw-bold w-100 d-flex justify-content-between">Ngày nhập <span><i class="ri-close-line" style="cursor: pointer;" onclick="removeProduct(this, '.productList')"></i></span></label>
-                    <input type="date" class="form-control" name="inputDate" required value="<%= product.date.toISOString().slice(0,10) %>" />
+                    <input type="date" class="form-control" name="inputDate" onchange="newInput(this)" value="<%= product.date.toISOString().slice(0,10) %>" required/>
                   </div>
                 </div>
                 <% if(product.name === "dryRubber"){ %>
@@ -91,15 +92,15 @@
                 <div class="row additionalFields my-3 m-0 p-0">
                   <div class="col col-md-3">
                     <label for="quantity" class="form-label fw-bold">Số lượng</label>
-                    <input type="text" class="form-control" id="quantity" name="quantity" oninput="handleQuantityInput(this)" inputmode="numeric" value="<%= product.quantity.toLocaleString('vi-VN') %>" />
+                    <input type="text" class="form-control" id="quantity" name="quantity" oninput="handleQuantityInput(this)" onchange="newInput(this)" inputmode="numeric" value="<%= product.quantity.toLocaleString('vi-VN') %>" />
                   </div>
                   <div class="col col-md-3">
                     <label for="percentage" class="form-label fw-bold">Hàm lượng</label>
-                    <input type="text" class="form-control" id="percentage" name="percentage" oninput="handlePercentageInput(this)" inputmode="numeric" value="<%= product.percentage.toLocaleString('vi-VN') %>" />
+                    <input type="text" class="form-control" id="percentage" name="percentage" oninput="handlePercentageInput(this)" onchange="newInput(this)" inputmode="numeric" value="<%= product.percentage.toLocaleString('vi-VN') %>" />
                   </div>
                   <div class="col col-md-6">
                     <label for="price" class="form-label fw-bold">Đơn giá</label>
-                    <input type="text" class="form-control" id="price" name="price" oninput="handleQuantityInput(this)" inputmode="numeric" value="<%= product.price.toLocaleString('vi-VN') %>" />
+                    <input type="text" class="form-control" id="price" name="price" oninput="handleQuantityInput(this)" onchange="newInput(this)" inputmode="numeric" value="<%= product.price.toLocaleString('vi-VN') %>" />
                   </div>
                   <div class="col col-md-6 mt-3 ">
                     <label class="form-label fw-bold">Tổng quy khô</label>
@@ -114,11 +115,11 @@
                 <div class="row normalFields my-3 m-0 p-0">
                   <div class="col col-md-6">
                     <label class="form-label fw-bold">Số lượng</label>
-                    <input type="text" class="form-control" name="quantity" oninput="handleQuantityInput(this)" inputmode="numeric" value="<%= product.quantity.toLocaleString('vi-VN') %>" />
+                    <input type="text" class="form-control" name="quantity" oninput="handleQuantityInput(this)" onchange="newInput(this)" inputmode="numeric" value="<%= product.quantity.toLocaleString('vi-VN') %>" />
                   </div>
                   <div class="col col-md-6">
                     <label class="form-label fw-bold">Đơn giá</label>
-                    <input type="text" class="form-control" name="price" oninput="handleQuantityInput(this)" inputmode="numeric" value="<%= product.price.toLocaleString('vi-VN') %>" />
+                    <input type="text" class="form-control" name="price" oninput="handleQuantityInput(this)" onchange="newInput(this)" inputmode="numeric" value="<%= product.price.toLocaleString('vi-VN') %>" />
                   </div>
                   <div class="col col-md-6 mt-3">
                     <label class="form-label fw-bold">Tổng</label>
