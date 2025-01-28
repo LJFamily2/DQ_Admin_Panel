@@ -53,11 +53,11 @@
     <% pages.forEach(page => { %>
     <% if (user.role === 'Admin' || user.role === 'superAdmin' || ( user.permissions.pages.find(p => p.path === page.path)?.allowed)) { %>
     <li class="nav-item">
-      <a href="<%= page.path %>" class="nav-link link-dark d-flex justify-content-between">
+      <a href="<%= page.path %>" class="position-relative nav-link link-dark d-flex justify-content-between">
         <%= page.title %>
         <i class="<%= page.icon %>"></i>
         <% if (page.path === '/du-lieu/nhat-ky-hoat-dong' && unreadCount > 0) { %>
-        <span class="badge bg-danger badge-top-right"><%= unreadCount < 100 ? unreadCount : '99+' %></span>
+        <span class="position-absolute badge bg-danger badge-top-right"><%= unreadCount < 100 ? unreadCount : '99+' %></span>
         <% } %>
       </a>
     </li>
