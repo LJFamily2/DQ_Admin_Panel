@@ -277,10 +277,10 @@
             Nhà vườn
           </button>
           <button class="btn btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#updateArea" aria-expanded="false" aria-controls="updateArea">
-            Chỉnh sửa
+            Chỉnh sửa 
           </button>
           <button class="btn btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#setting" aria-expanded="false" aria-controls="setting">
-            Cài đặt
+            Cài đặt hạn chế
           </button>
         </div>
       </div>
@@ -443,14 +443,21 @@
               <div class="additionalField"></div>
               <button type="submit" onclick="handleFormSubmit(this)" class=" btn btn-primary" style="display: none;">Lưu</button>
             </form>
-            <div class="tooltip-wrapper mt-1 d-none d-md-inline-flex" data-tippy-content="Tạo nhà vườn mới" tabindex="0">
-              <i class="ri-add-circle-line fs-5" onclick="addFields('.additionalField')" style="cursor: pointer;"></i>
+
+
+            <div class=" mt-1" >
+              <%- include('../partials/addButton', {
+                functionName: 'addFields',
+                selector: '.additionalField',
+                tooltip: 'Tạo nhà vườn mới',
+                iconSize: 'fs-5'
+            }) %> 
             </div>
 
           </div>
           <!-- Update Area -->
           <div id="updateArea" class="collapse" aria-labelledby="updateAreaHeading" data-bs-parent="#areaAccordion">
-            <h4 class="fw-bold">Chỉnh sửa</h4>
+            <h4 class="fw-bold">Chỉnh sửa thông tin vườn</h4>
             <form action="/du-lieu-hang-ngay/<%= area._id %>?_method=PUT" method="post" onchange="this.querySelector('button[type=submit]').style.display = 'block';">
               <div>
                 <label for="areaName" class="form-label fw-bold">Vườn</label>
@@ -511,7 +518,7 @@
           </div>
           <!-- Setting -->
           <div id="setting" class="collapse" aria-labelledby="suppliersHeading" data-bs-parent="#areaAccordion">
-            <h4>Cài đặt</h4>
+            <h4>Cài đặt hạn chế thông tin</h4>
             <form action="/du-lieu-hang-ngay/<%= area._id %>?_method=PUT" method="post" onchange="this.querySelector('button[type=submit]').style.display = 'block';">
               <div class="mb-3">
                 <label for="limitData" class="form-label">Giới hạn dữ liệu/ngày</label>

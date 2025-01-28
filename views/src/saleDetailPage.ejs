@@ -134,9 +134,15 @@
             <% }) %>
           </div>
           <div class="btnController my-3">
-            <button type="button" onclick="addInputField('.productLists', '.productList', true, 'Hàng hóa')" style="background: transparent; border: none;" title="Thêm hàng hóa">
-              <i class="ri-add-circle-line fs-4"></i>
-            </button>
+            <%- include('../partials/addButton', {
+                functionName: 'addInputField',
+                selector: '.productLists',
+                child: '.productList', 
+                detailPage: true,
+                label: 'Hàng hóa',
+                tooltip: 'Thêm hàng hóa',
+                iconSize: 'fs-5'
+            }) %>
           </div>
         </div>
       </div>

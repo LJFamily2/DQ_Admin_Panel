@@ -6,6 +6,13 @@
   <script src="/js/toggleButtons.js" defer></script>
   <script src="/js/inputFieldRestriction.js" defer></script>
   <script src="/js/toggleFields.js"></script>
+
+  <!-- Tippy -->
+  <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css" />
+  <script src="https://unpkg.com/@popperjs/core@2"></script>
+  <script src="https://unpkg.com/tippy.js@6"></script>
+
+  
   <style>
     .hide {
       display: none;
@@ -242,9 +249,15 @@
                     </div>
                   </div>
                   <div class="btnController my-3">
-                    <button type="button" onclick="addInputField('.supplierInfor', '.supplier', false, 'Nhà vườn');" style="background: transparent; border: none" title="Thêm hàng hóa">
-                      <i class="ri-add-circle-line fs-5"></i>
-                    </button>
+                    <%- include('../partials/addButton', {
+                        functionName: 'addInputField',
+                        selector: '.supplierInfor',
+                        child: '.supplier', 
+                        detailPage: true,
+                        label: 'Nhà vườn',
+                        tooltip: 'Thêm nhà vườn',
+                        iconSize: 'fs-5'
+                    }) %>
                   </div>
                 </div>
               </div>
@@ -341,4 +354,7 @@
   );
 
   initializeToggleFields("areaDimension", "areaPrice");
+
+  tippy('.tooltip-wrapper');
+
 </script>

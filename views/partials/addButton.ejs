@@ -1,0 +1,18 @@
+<% 
+// Handle different function calls based on parameters
+let functionCall;
+if (functionName === 'addFields') {
+    functionCall = `${functionName}('${selector}')`;
+} else {
+    functionCall = `${functionName}('${selector}', '${child}', ${detailPage}, '${label}')`;
+}
+%>
+
+<button type="button" 
+        onclick="<%= functionCall %>" 
+        style="background: transparent; border: none;" 
+        class="tooltip-wrapper" 
+        data-tippy-content="<%= tooltip %>" 
+        tabindex="0">
+    <i class="ri-add-circle-line <%= iconSize %>"></i>
+</button>

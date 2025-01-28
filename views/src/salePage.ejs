@@ -5,6 +5,11 @@
   <script src="/js/multipleFieldsWithText.js" defer></script>
   <script src="/js/handleSelectField.js" defer></script>
 
+  <!-- Tippy -->
+  <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css" />
+  <script src="https://unpkg.com/@popperjs/core@2"></script>
+  <script src="https://unpkg.com/tippy.js@6"></script>
+
   <!-- Css -->
   <style>
     .updateButton {
@@ -188,7 +193,7 @@
                         <i class="ri-close-line" style="cursor: pointer" onclick="removeProduct(this,'.productList')"></i>
                       </span>
                     </label>
-                    <select class="form-control" name="name" id="name" onchange="handleProductChange(this, this.closest('.productList'), false)">
+                    <select class="form-select" name="name" id="name" onchange="handleProductChange(this, this.closest('.productList'), false)">
                       <option value="product" selected>Thành phẩm</option>
                       <option value="mixedQuantity">Mủ tạp</option>
                       <option value="dryRubber">Quy khô</option>
@@ -211,9 +216,15 @@
           </div>
 
           <div class="btnController">
-            <button type="button" onclick="addInputField('form .productLists', '.productList', false, 'Hàng hóa')" style="background: transparent; border: none" title="Thêm hàng hóa">
-              <i class="ri-add-circle-line fs-5"></i>
-            </button>
+            <%- include('../partials/addButton', {
+                functionName: 'addInputField',
+                selector: '.form .productLists',
+                child: '.productList', 
+                detailPage: false,
+                label: 'Hàng hóa',
+                tooltip: 'Thêm hàng hóa',
+                iconSize: 'fs-5'
+            }) %>
           </div>
 
           <div class="my-3">
@@ -359,4 +370,6 @@
       el => (el.querySelector('.ri-close-line').style.display = displayStyle),
     );
   });
+
+  tippy('.tooltip-wrapper');
 </script>
