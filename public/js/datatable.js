@@ -117,7 +117,6 @@ function initializeDataTable(
     };
   }
 
-  var isMobile = window.innerWidth < 1100;
   const tableOptions = {
     dom:
       "<'row m-0 p-0 py-2'<'col-sm-12 col-md-6 d-flex align-items-center'lB><'col-sm-12 col-md-6 d-flex justify-content-end'f>>" +
@@ -164,7 +163,7 @@ function initializeDataTable(
     responsive: true,
     lengthMenu: [10, 20, { label: "Tất cả", value: -1 }],
     paging: !(queryPageFooter || dailySupplyFooter),
-    scrollX: isMobile,
+    scrollX: true,
     pagingType: "first_last_numbers",
     rowGroup: rowGroupOptions,
     ajax: {
