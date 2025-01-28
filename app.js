@@ -23,9 +23,19 @@ app.set("trust proxy", 1);
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5000, // limit each IP to 500 requests per windowMs
+  max: 100, // limit each IP to 100 requests per windowMs
+  standardHeaders: true,
+  legacyHeaders: false,
+    message: 'Đã quá nhiều thao tác trong thời gian ngắn. Vui lòng thử lại sau 15 phút.',
 });
 app.use(limiter);
+
+// Stricter limits for authentication routes
+const authLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 5
+});
+app.use('/dang-nhap', authLimiter);
 
 // Reduce the size of data being transferred over the network
 app.use(compression());
@@ -56,7 +66,7 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: "auto",
+      secure: process.env.NODE_ENV === 'production',
       maxAge: 1000 * 60 * 60 * 24 * 30,
       httpOnly: true,
     },
