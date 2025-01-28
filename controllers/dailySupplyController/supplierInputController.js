@@ -273,7 +273,6 @@ async function updateSupplierData(req, res) {
       note,
       moneyRetainedPercentage,
     } = req.body;
-
     // Find the daily supply data by id and populate the debt and moneyRetained fields
     const dailySupply = await DailySupply.findOne({ "data._id": id }).populate({
       path: "data",
@@ -404,8 +403,7 @@ async function updateSupplierData(req, res) {
           break;
       }
     });
-
-    dataEntry.date = new Date(date);
+    dataEntry.date = new Date(date).setUTCHours(new Date().getUTCHours() + 7, new Date().getMinutes(), new Date().getSeconds());
     dataEntry.note = trimStringFields(note) || "";
 
     if (supplier) {
