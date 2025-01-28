@@ -119,7 +119,7 @@ async function createUser(req, res, isNew) {
       });
     }
 
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    const hashedPassword = await bcrypt.hash(req.body.password, 20);
     
     const user = await UserModel.create({
       username: req.body.username,
@@ -248,7 +248,7 @@ async function updateUser(req, res) {
     }
 
     if (newPassword) {
-      updateFields.password = await bcrypt.hash(newPassword, 10);
+      updateFields.password = await bcrypt.hash(newPassword, 20);
     }
 
     const updatedUser = await UserModel.findByIdAndUpdate(id, updateFields, { new: true });
