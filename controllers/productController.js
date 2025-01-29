@@ -58,14 +58,12 @@ async function updateProductTotals(dryRubberAdjustment, productAdjustment) {
   if (dryRubberAdjustment !== 0) {
     updateData.$inc = {
       ...updateData.$inc,
-      // Convert to number after using toFixed to ensure it's stored as a float
       dryRubber: dryRubberAdjustment,
     };
   }
   if (productAdjustment !== 0) {
     updateData.$inc = {
       ...updateData.$inc,
-      // Convert to number after using toFixed to ensure it's stored as a float
       product: productAdjustment,
     };
   }

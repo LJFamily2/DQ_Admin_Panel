@@ -403,7 +403,8 @@ async function updateSupplierData(req, res) {
           break;
       }
     });
-    dataEntry.date = new Date(date).setUTCHours(new Date().getUTCHours() + 7, new Date().getMinutes(), new Date().getSeconds());
+    
+    dataEntry.date = new Date(date).setUTCHours(new Date().getUTCHours(), new Date().getMinutes(), new Date().getSeconds());
     dataEntry.note = trimStringFields(note) || "";
 
     if (supplier) {
