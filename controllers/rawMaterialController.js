@@ -4,6 +4,7 @@ const RawMaterialModel = require("../models/rawMaterialModel");
 const ProductTotalModel = require("../models/productTotalModel");
 const convertToDecimal = require("./utils/convertToDecimal");
 const formatTotalData = require("./utils/formatTotalData");
+const ActionHistory = require("../models/actionHistoryModel");
 
 module.exports = {
   renderPage,
@@ -122,6 +123,12 @@ async function createData(req, res) {
       "Tạo dữ liệu thành công",
       req.headers.referer
     );
+    await ActionHistory.create({
+      actionType: "create",
+      userId: req.user._id,
+      details: "Created new raw material data",
+      newValues: newData,
+    });
   } catch (err) {
     console.log(err);
     return res.status(500).render("partials/500", { layout: false });
@@ -335,6 +342,13 @@ async function updateData(req, res) {
       "Cập nhật thông tin thành công",
       req.headers.referer
     );
+    await ActionHistory.create({
+      actionType: "update",
+      userId: req.user._id,
+      details: "Updated raw material data",
+      oldValues: oldData,
+      newValues: newData,
+    });
   } catch {
     res.status(500).render("partials/500", { layout: false });
   }
@@ -372,6 +386,12 @@ async function deleteData(req, res) {
       "Xóa dữ liệu thành công",
       req.headers.referer
     );
+    await ActionHistory.create({
+      actionType: "delete",
+      userId: req.user._id,
+      details: "Deleted raw material data",
+      oldValues: data,
+    });
   } catch {
     res.status(500).render("partials/500", { layout: false });
   }
@@ -441,6 +461,11 @@ async function deleteAll(req, res) {
       "Xóa tất cả dữ liệu thành công !",
       req.headers.referer
     );
+    await ActionHistory.create({
+      actionType: "delete",
+      userId: req.user._id,
+      details: "Deleted all raw material data",
+    });
   } catch (err) {
     res.status(500).render("partials/500", { layout: false });
   }

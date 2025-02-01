@@ -1,9 +1,9 @@
 const SaleModel = require("../models/saleModel");
 const ProductTotalModel = require("../models/productTotalModel");
 const handleResponse = require("./utils/handleResponse");
-const trimStringFields = require("./utils/trimStringFields");
 const formatTotalData = require("./utils/formatTotalData");
 const convertToDecimal = require("./utils/convertToDecimal");
+const ActionHistory = require("../models/actionHistoryModel");
 
 module.exports = {
   renderPage,
@@ -203,6 +203,13 @@ async function createData(req, res) {
       );
     }
 
+    await ActionHistory.create({
+      actionType: "create",
+      userId: req.user._id,
+      details: "Created new sale data",
+      newValues: newSale,
+    });
+
     return handleResponse(
       req,
       res,
@@ -342,7 +349,7 @@ async function updateData(req, res) {
 
     const updateField = { ...req.body, products, notes: req.body.notes };
 
-    await SaleModel.findByIdAndUpdate(id, updateField, {
+    const newSale = await SaleModel.findByIdAndUpdate(id, updateField, {
       new: true,
     });
 
@@ -375,6 +382,14 @@ async function updateData(req, res) {
         "Cập nhật dữ liệu tổng thất bại",
         req.headers.referer
       );
+
+    await ActionHistory.create({
+      actionType: "update",
+      userId: req.user._id,
+      details: "Updated sale data",
+      oldValues: oldSale,
+      newValues: newSale,
+    });
 
     return handleResponse(
       req,
@@ -461,6 +476,13 @@ async function deleteData(req, res) {
         req.headers.referer
       );
     }
+
+    await ActionHistory.create({
+      actionType: "delete",
+      userId: req.user._id,
+      details: "Deleted sale data",
+      oldValues: sale,
+    });
 
     return handleResponse(
       req,

@@ -1,9 +1,9 @@
 const SpendModel = require("../models/spendModel");
 const ProductTotalModel = require("../models/productTotalModel");
 const formatTotalData = require("./utils/formatTotalData");
-const trimStringFields = require("./utils/trimStringFields");
 const handleResponse = require("./utils/handleResponse");
 const convertToDecimal = require("./utils/convertToDecimal");
+const ActionHistory = require("../models/actionHistoryModel");
 
 module.exports = {
   renderPage,
@@ -73,6 +73,13 @@ async function createData(req, res) {
         req.headers.referer
       );
     }
+
+    await ActionHistory.create({
+      actionType: "create",
+      userId: req.user._id,
+      details: "Created new spend data",
+      newValues: spend,
+    });
 
     return handleResponse(
       req,
@@ -250,6 +257,14 @@ async function updateData(req, res) {
       }
     }
 
+    await ActionHistory.create({
+      actionType: "update",
+      userId: req.user._id,
+      details: "Updated spend data",
+      oldValues: product,
+      newValues: newSpend,
+    });
+
     return handleResponse(
       req,
       res,
@@ -279,6 +294,13 @@ async function deleteData(req, res) {
     }
 
     await updateProductTotal(product.price * product.quantity, false);
+
+    await ActionHistory.create({
+      actionType: "delete",
+      userId: req.user._id,
+      details: "Deleted spend data",
+      oldValues: product,
+    });
 
     return handleResponse(
       req,
