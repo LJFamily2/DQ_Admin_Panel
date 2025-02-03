@@ -1,0 +1,233 @@
+<!-- Nút Import -->
+<button type="button" class="btn btn-secondary mt-3" data-bs-toggle="modal" data-bs-target="#importExcelModal">
+  <i class="ri-file-excel-line me-2"></i>Import Excel
+</button>
+
+<!-- Modal các bước Import -->
+<div class="modal fade" id="importExcelModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Import Dữ Liệu Excel</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Bước 1: Tải mẫu -->
+        <div class="card mb-3">
+          <div class="card-body">
+            <div class="d-flex align-items-center mb-3">
+              <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3" style="width: 32px; height: 32px;">1</div>
+              <h6 class="card-title mb-0">Tải Mẫu</h6>
+            </div>
+            <p class="card-text">Sử dụng mẫu Excel này để nhập dữ liệu của bạn:</p>
+            <a href="/templates/<%= page %>-template.xlsx" class="btn btn-primary">
+              <i class="ri-download-line me-2"></i>Tải Mẫu
+            </a>
+          </div>
+        </div>
+
+        <!-- Bước 2: Yêu cầu -->
+        <div class="card mb-3">
+          <div class="card-body">
+            <div class="d-flex align-items-center mb-3">
+              <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3" style="width: 32px; height: 32px;">2</div>
+              <h6 class="card-title mb-0">Các Trường Bắt Buộc</h6>
+            </div>
+            <div class="alert alert-info mb-0">
+              <ul class="mb-0">
+                <% requiredFields.forEach(field => { %>
+                <li><%= field.name %> - <%= field.description %></li>
+                <% }) %>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bước 3: Tải lên -->
+        <div class="card">
+          <div class="card-body">
+            <div class="d-flex align-items-center mb-3">
+              <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3" style="width: 32px; height: 32px;">3</div>
+              <h6 class="card-title mb-0">Tải Lên Tệp Excel</h6>
+            </div>
+            <form action="/import/<%= page %>" method="post" enctype="multipart/form-data">
+              <div class="mb-3">
+                <label class="form-label">Chọn Tệp Excel</label>
+                <input type="file" class="form-control" name="excelFile" accept=".xlsx,.xls" required>
+                <input type="hidden" name="requiredFields" value='<%= JSON.stringify(requiredFields) %>'>
+              </div>
+              <!-- Error Display -->
+              <div id="errorDisplay" class="alert alert-danger mt-3 d-none">
+                <ul id="errorList" class="m-0"></ul>
+              </div>
+              <!-- Table Display -->
+              <div id="tableDisplay" class="mt-3 d-none">
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <!-- Add table headers dynamically -->
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- Add table rows dynamically -->
+                  </tbody>
+                </table>
+              </div>
+              <div class="text-end">
+                <button type="reset" class="btn btn-secondary" >
+                  Tải lại
+                </button>
+                <button type="submit" class="btn btn-primary" id="submitButton">
+                  Tải Lên
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Xem Trước -->
+<div class="modal fade" id="previewModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Xem Trước Dữ Liệu Nhập</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="previewTable"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+        <button type="button" class="btn btn-primary" id="confirmImport">Nhập Dữ Liệu</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/exceljs/dist/exceljs.min.js"></script>
+<script>
+  const requiredFields = [
+    <% requiredFields.forEach((field, index) => { %> '<%= field.name %>'
+    <%= index < requiredFields.length - 1 ? ',' : '' %>
+    <% }); %>
+  ];
+
+  const isValidDate = (day, month, year) => {
+    // Check month and day ranges
+    if (month < 1 || month > 12) return false;
+    if (day < 1 || day > 31) return false;
+
+    // Check months with 30 days
+    if ([4, 6, 9, 11].includes(month) && day > 30) return false;
+
+    // Check February
+    if (month === 2) {
+      // Check leap year
+      const isLeapYear = (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+      if (day > (isLeapYear ? 29 : 28)) return false;
+    }
+
+    return true;
+  };
+
+  const formatExcelDate = date => {
+    if (typeof date === 'string' && /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(date)) {
+      const [day, month, year] = date.split('/').map(Number);
+      return isValidDate(day, month, year) ? date : null;
+    }
+    if (date instanceof Date) {
+      const day = date.getDate();
+      const month = date.getMonth() + 1;
+      const year = date.getFullYear();
+      return isValidDate(day, month, year)
+        ? `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}`
+        : null;
+    }
+    return null;
+  };
+
+  document.querySelector('input[name="excelFile"]').addEventListener('change', async e => {
+    try {
+      const file = e.target.files[0];
+      const arrayBuffer = await file.arrayBuffer();
+      const workbook = new ExcelJS.Workbook();
+      await workbook.xlsx.load(arrayBuffer);
+      
+      const worksheet = workbook.worksheets[0];
+      if (!worksheet) return displayError('File Excel không có dữ liệu');
+
+      const data = [];
+      worksheet.eachRow((row, rowNumber) => {
+        data.push(row.values.slice(1)); // ExcelJS row values start at index 1
+      });
+
+      // Remove empty rows
+      const filteredData = data.filter(row => row.some(cell => cell != null && cell !== ''));
+      if (filteredData.length < 2) return displayError('File Excel không có dữ liệu');
+
+      const headers = filteredData[0];
+      const missingFields = requiredFields.filter(field => !headers.includes(field));
+      if (missingFields.length) return displayError(`Thiếu các trường bắt buộc: ${missingFields.join(', ')}`);
+
+      const dateIdx = headers.indexOf('Ngày');
+      const errors = [];
+
+      filteredData.slice(1).forEach((row, i) => {
+        requiredFields.forEach(field => {
+          const idx = headers.indexOf(field);
+          if (idx === -1) return;
+
+          let value = row[idx];
+          if (field === 'Ngày' || field === 'Ngày bán') {
+            if (dateIdx !== -1) {
+              value = formatExcelDate(value);
+              if (!value || !/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(value)) {
+                errors.push(`Dòng ${i + 2}: Giá trị "${row[idx]}" không phải là ngày hợp lệ`);
+              }
+              row[idx] = value;
+            }
+          } else {
+            value = value == null || value === '' ? 0 : Number(value);
+            if (isNaN(value)) {
+              errors.push(`Dòng ${i + 2}: Giá trị "${row[idx]}" của "${field}" phải là số`);
+            } else if (value < 0) {
+              errors.push(`Dòng ${i + 2}: Giá trị "${value}" của "${field}" không được âm`);
+            }
+            row[idx] = value;
+          }
+        });
+      });
+
+      errors.length ? displayError(errors.join('<br>')) : displayTable(filteredData);
+    } catch (error) {
+      displayError('Lỗi khi đọc file Excel: ' + error.message);
+    }
+  });
+
+  const displayError = message => {
+    const errorDisplay = document.getElementById('errorDisplay');
+    document.getElementById('errorList').innerHTML = `<li>${message}</li>`;
+    errorDisplay.classList.remove('d-none');
+    document.getElementById('tableDisplay').classList.add('d-none');
+    document.getElementById('submitButton').disabled = true;
+  };
+
+  const displayTable = data => {
+    const tableDisplay = document.getElementById('tableDisplay');
+    const tableHead = tableDisplay.querySelector('thead tr');
+    const tableBody = tableDisplay.querySelector('tbody');
+
+    tableHead.innerHTML = data[0].map(header => `<th>${header}</th>`).join('');
+    tableBody.innerHTML = data.slice(1)
+      .map(row => `<tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>`)
+      .join('');
+
+    tableDisplay.classList.remove('d-none');
+    document.getElementById('errorDisplay').classList.add('d-none');
+    document.getElementById('submitButton').disabled = false;
+  };
+</script>

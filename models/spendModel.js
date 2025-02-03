@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const spendSchema = new mongoose.Schema({
     date: Date, 
     product: String,
-    quantity: Number,
+    quantity: {type: Number, default: 1},
     price:Number, 
     notes: String,
 });

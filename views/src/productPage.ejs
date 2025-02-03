@@ -21,6 +21,15 @@
     <div class="card" style="box-shadow: 0 1px 2px">
       <div class="card-header bg-transparent">
         <%- include('../partials/dateSelection.ejs') %>
+        <%- include('../partials/importExcelButton.ejs', {
+          page: 'product',
+          requiredFields: [
+            { name: 'Ngày', description: 'Theo format dd/mm/yyyy', type: 'date' },
+            { name: 'Số lượng mủ nước', description: '>0' , type:'number' },
+            { name: 'Hàm lượng mủ nước', description: '>0' , type:'number' },
+            { name: 'Thành phẩm', description: '>0' , type:'number' },
+          ]
+        }) %>
       </div>
       <div class="card-body">
         <table class="table table-striped" id="products_table">

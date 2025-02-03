@@ -9,7 +9,9 @@ const dailySupplyRoute = require("./src/dailySupplyRoute")
 const dashboard = require("./src/dashboardRoute")
 const actionHistory = require("./src/actionHistoryRoute")
 const dateAccessRange = require("./src/dateRangeAccessRoute")
+const importExcelRoute = require('./src/importExcelRoute');
 
+// Add to routes array:
 const routes = [
     {path: "/tong", route: dashboard},
     {path: "/dang-nhap", route: signInRoute},
@@ -23,7 +25,8 @@ const routes = [
     {path: "/nhap-du-lieu", route: dailySupplyRoute.inputDataRoute},
     {path: "/du-lieu", route: actionHistory},
     {path: "/date-access-range", route: dateAccessRange},
-
+    {path: "/import", route: importExcelRoute},
+    
 ]
 
 module.exports = routes;
