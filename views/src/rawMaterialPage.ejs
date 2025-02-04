@@ -40,6 +40,7 @@
         <%- include('../partials/dateSelection.ejs') %>
         <%- include('../partials/importExcelButton.ejs', {
           page: 'rawMaterial',
+          area: null,
           requiredFields: [
             { name: 'Ngày', description: 'Theo format dd/mm/yyyy', type:'date' },
             { name: 'Số lượng mủ nước', description: '>0' , type:'number' },

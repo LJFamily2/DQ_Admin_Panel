@@ -3,10 +3,15 @@ const SaleModel = require("../models/saleModel");
 const SpendModel = require("../models/spendModel");
 const RawMaterialModel = require("../models/rawMaterialModel");
 const ProductModel = require("../models/productModel");
-const DailySupplyModel = require("../models/dailySupplyModel");
+const { DailySupply } = require("../models/dailySupplyModel");
 const ActionHistory = require("../models/actionHistoryModel");
 const handleResponse = require("./utils/handleResponse");
 const convertToDecimal = require("./utils/convertToDecimal");
+const { addData } = require("./dailySupplyController/supplierInputController");
+const { createData } = require("./saleController");
+const { createData: createSpendData } = require('./spendController');
+const { createData: createRawMaterialData } = require('./rawMaterialController');
+const { createProduct: createProductData } = require('./productController');
 
 // Helper functions
 const formatExcelDate = (value) => {
@@ -21,14 +26,17 @@ const validateRow = (row, requiredFields) => {
   const errors = [];
   requiredFields.forEach((field) => {
     let value = row[field.name];
-    
+
     // Handle Excel cell object
-    if (value && typeof value === 'object' && value.hasOwnProperty('result')) {
+    if (value && typeof value === "object" && value.hasOwnProperty("result")) {
       value = value.result;
     }
 
     // Skip percentage validation if empty
-    if (field.name === 'Phần trăm' && (value === '' || value === null || value === undefined)) {
+    if (
+      field.name === "Phần trăm" &&
+      (value === "" || value === null || value === undefined)
+    ) {
       return;
     }
 
@@ -142,29 +150,30 @@ const handleImport = async (
 };
 
 // Add this helper function before the controller functions
-const groupSalesByCode = data => data.reduce((grouped, row) => {
-  const product = {
-    name: row['Tên sản phẩm'],
-    quantity: convertToDecimal(row['Số lượng']),
-    percentage: row['Phần trăm'] ? convertToDecimal(row['Phần trăm']) : 0,
-    price: convertToDecimal(row['Giá']),
-    date: row['Ngày bán']
-  };
+const groupSalesByCode = (data) =>
+  data.reduce((grouped, row) => {
+    const product = {
+      name: row["Tên sản phẩm"],
+      quantity: convertToDecimal(row["Số lượng"]),
+      percentage: row["Phần trăm"] ? convertToDecimal(row["Phần trăm"]) : 0,
+      price: convertToDecimal(row["Giá"]),
+      date: row["Ngày bán"],
+    };
 
-  const code = row['Mã hợp đồng'];
-  if (!grouped.has(code)) {
-    grouped.set(code, {
-      code,
-      date: row['Ngày'],
-      status: 'active',
-      notes: row['Ghi chú'] || '',
-      products: [product]
-    });
-  } else {
-    grouped.get(code).products.push(product);
-  }
-  return grouped;
-}, new Map());
+    const code = row["Mã hợp đồng"];
+    if (!grouped.has(code)) {
+      grouped.set(code, {
+        code,
+        date: row["Ngày"],
+        status: "active",
+        notes: row["Ghi chú"] || "",
+        products: [product],
+      });
+    } else {
+      grouped.get(code).products.push(product);
+    }
+    return grouped;
+  }, new Map());
 
 // Controller functions
 module.exports = {
@@ -176,99 +185,485 @@ module.exports = {
       );
 
       if (errors.length) {
-        return handleResponse(req, res, 400, "fail", 
-          `Lỗi kiểm tra dữ liệu: ${errors.join("; ")}`, req.headers.referer);
+        return handleResponse(
+          req,
+          res,
+          400,
+          "fail",
+          `Lỗi kiểm tra dữ liệu: ${errors.join("; ")}`,
+          req.headers.referer
+        );
       }
 
-      const groupedSales = Array.from(groupSalesByCode(processedData).values());
-      if (!groupedSales.length || !groupedSales.every(sale => 
-        sale.code && sale.date && Array.isArray(sale.products) && sale.products.length)) {
-        throw new Error('Invalid sale data structure');
+      // Create mock response object for use with createData
+      const mockRes = {
+        status: () => mockRes,
+        json: () => mockRes,
+        redirect: () => mockRes,
+        render: () => mockRes,
+        send: () => mockRes,
+      };
+
+      const results = [];
+      const failedRows = [];
+
+      // Process each row through createData
+      for (const [index, row] of processedData.entries()) {
+        try {
+          // Transform Excel data into the format expected by createData
+          const saleData = {
+            code: row["Mã hợp đồng"],
+            date: row["Ngày"],
+            notes: row["Ghi chú"] || "",
+            name: row["Tên sản phẩm"],
+            quantity: row["Số lượng"],
+            price: row["Giá"],
+            percentage: row["Phần trăm"] || 0,
+          };
+
+          // Create mock request object
+          const mockReq = {
+            body: saleData,
+            user: req.user,
+            headers: { referer: req.headers.referer },
+            flash: () => {},
+          };
+
+          await createData(mockReq, mockRes);
+          results.push(row);
+        } catch (error) {
+          failedRows.push(
+            `Dòng ${index + 2}: ${error.message || "Lỗi khi nhập dữ liệu"}`
+          );
+        }
       }
 
-      const result = await SaleModel.createWithSlug(groupedSales);
-      await ActionHistory.create({
-        actionType: "create",
-        userId: req.user._id,
-        details: "Imported sales data from Excel",
-        newValues: result
-      });
+      // Create history if any successful imports
+      if (results.length) {
+        await ActionHistory.create({
+          actionType: "create",
+          userId: req.user._id,
+          details: "Imported sales data from Excel",
+          newValues: results,
+        });
+      }
 
-      return handleResponse(req, res, 200, "success",
-        `Đã nhập thành công ${Array.isArray(result) ? result.length : 1} bản ghi`,
-        req.headers.referer);
+      // Return response
+      const success = results.length > 0;
+      const message = failedRows.length
+        ? `Đã nhập thành công ${
+            results.length
+          } bản ghi. Các lỗi: ${failedRows.join("; ")}`
+        : `Đã nhập thành công ${results.length} bản ghi`;
+
+      return handleResponse(
+        req,
+        res,
+        success ? 200 : 400,
+        success ? "success" : "fail",
+        message,
+        req.headers.referer
+      );
     } catch (error) {
-      return handleResponse(req, res, 500, "error",
-        `Lỗi khi nhập dữ liệu: ${error.message}`, req.headers.referer);
+      console.error("Import error:", error);
+      return handleResponse(
+        req,
+        res,
+        500,
+        "error",
+        `Lỗi khi nhập dữ liệu: ${error.message}`,
+        req.headers.referer
+      );
     }
   },
 
   async importSpendData(req, res) {
-    await handleImport(
-      req,
-      res,
-      (row) => ({
-        date: row["Ngày"],
-        product: row["Hàng hóa"],
-        quantity: convertToDecimal(row["Số lượng"]),
-        price: convertToDecimal(row["Đơn giá"]),
-        notes: row["Ghi chú"]
-      }),
-      SpendModel,
-      "Imported spend data from Excel"
-    );
+    try {
+      const { processedData, errors } = await processExcelFile(
+        req.file.buffer,
+        JSON.parse(req.body.requiredFields)
+      );
+
+      if (errors.length) {
+        return handleResponse(
+          req, res, 400, "fail", 
+          `Lỗi kiểm tra dữ liệu: ${errors.join("; ")}`, 
+          req.headers.referer
+        );
+      }
+
+      const mockRes = {
+        status: () => mockRes,
+        json: () => mockRes,
+        redirect: () => mockRes,
+        render: () => mockRes,
+        send: () => mockRes
+      };
+
+      const results = [];
+      const failedRows = [];
+
+      // Process each row through createData
+      for (const [index, row] of processedData.entries()) {
+        try {
+          // Transform Excel data into the format expected by createData
+          const spendData = {
+            date: row["Ngày"],
+            product: row["Hàng hóa"],
+            quantity: row["Số lượng"],
+            price: row["Đơn giá"],
+            notes: row["Ghi chú"] || ""
+          };
+
+          // Create mock request object
+          const mockReq = {
+            body: spendData,
+            user: req.user,
+            headers: { referer: req.headers.referer },
+            flash: () => {}
+          };
+
+          await createSpendData(mockReq, mockRes);
+          results.push(row);
+        } catch (error) {
+          failedRows.push(`Dòng ${index + 2}: ${error.message || 'Lỗi khi nhập dữ liệu'}`);
+        }
+      }
+
+      // Create history if any successful imports
+      if (results.length) {
+        await ActionHistory.create({
+          actionType: "create",
+          userId: req.user._id,
+          details: "Imported spend data from Excel",
+          newValues: results,
+        });
+      }
+
+      // Return response
+      const success = results.length > 0;
+      const message = failedRows.length 
+        ? `Đã nhập thành công ${results.length} bản ghi. Các lỗi: ${failedRows.join("; ")}`
+        : `Đã nhập thành công ${results.length} bản ghi`;
+
+      return handleResponse(
+        req, res,
+        success ? 200 : 400,
+        success ? "success" : "fail",
+        message,
+        req.headers.referer
+      );
+
+    } catch (error) {
+      console.error("Import error:", error);
+      return handleResponse(
+        req, res, 500, "error",
+        `Lỗi khi nhập dữ liệu: ${error.message}`, 
+        req.headers.referer
+      );
+    }
   },
 
   async importRawMaterialData(req, res) {
-    await handleImport(
-      req,
-      res,
-      (row) => ({
-        date: row["Ngày"],
-        notes: row["Ghi chú"],
-        products: {
-          dryQuantity: convertToDecimal(row["Số lượng mủ nước"]),
-          dryPercentage: convertToDecimal(row["Hàm lượng mủ nước"]),
-          keQuantity: convertToDecimal(row["Số lượng mủ ké"]),
-          kePercentage: convertToDecimal(row["Hàm lượng mủ ké"]),
-          mixedQuantity: convertToDecimal(row["Số lượng mủ tạp"])
+    try {
+      const { processedData, errors } = await processExcelFile(
+        req.file.buffer,
+        JSON.parse(req.body.requiredFields)
+      );
+
+      if (errors.length) {
+        return handleResponse(
+          req, res, 400, "fail", 
+          `Lỗi kiểm tra dữ liệu: ${errors.join("; ")}`, 
+          req.headers.referer
+        );
+      }
+
+      const mockRes = {
+        status: () => mockRes,
+        json: () => mockRes,
+        redirect: () => mockRes,
+        render: () => mockRes,
+        send: () => mockRes
+      };
+
+      const results = [];
+      const failedRows = [];
+
+      // Process each row through createData
+      for (const [index, row] of processedData.entries()) {
+        try {
+          // Transform Excel data into the format expected by createData
+          const rawMaterialData = {
+            date: row["Ngày"],
+            notes: row["Ghi chú"] || "",
+            dryQuantity: row["Số lượng mủ nước"] || 0,
+            dryPercentage: row["Hàm lượng mủ nước"] || 0,
+            keQuantity: row["Số lượng mủ ké"] || 0,
+            kePercentage: row["Hàm lượng mủ ké"] || 0,
+            mixedQuantity: row["Số lượng mủ tạp"] || 0
+          };
+
+          // Create mock request object
+          const mockReq = {
+            body: rawMaterialData,
+            user: req.user,
+            headers: { referer: req.headers.referer },
+            flash: () => {}
+          };
+
+          await createRawMaterialData(mockReq, mockRes);
+          results.push(row);
+        } catch (error) {
+          failedRows.push(`Dòng ${index + 2}: ${error.message || 'Lỗi khi nhập dữ liệu'}`);
         }
-      }),
-      RawMaterialModel,
-      "Imported raw materials from Excel"
-    );
+      }
+
+      // Create history if any successful imports
+      if (results.length) {
+        await ActionHistory.create({
+          actionType: "create",
+          userId: req.user._id,
+          details: "Imported raw materials data from Excel",
+          newValues: results,
+        });
+      }
+
+      // Return response
+      const success = results.length > 0;
+      const message = failedRows.length 
+        ? `Đã nhập thành công ${results.length} bản ghi. Các lỗi: ${failedRows.join("; ")}`
+        : `Đã nhập thành công ${results.length} bản ghi`;
+
+      return handleResponse(
+        req, res,
+        success ? 200 : 400,
+        success ? "success" : "fail",
+        message,
+        req.headers.referer
+      );
+
+    } catch (error) {
+      console.error("Import error:", error);
+      return handleResponse(
+        req, res, 500, "error",
+        `Lỗi khi nhập dữ liệu: ${error.message}`, 
+        req.headers.referer
+      );
+    }
   },
 
   async importProductData(req, res) {
-    await handleImport(
-      req,
-      res,
-      (row) => ({
-        date: row["Ngày"],
-        dryRubberUsed: convertToDecimal(row["Số lượng mủ nước"]),
-        dryPercentage: convertToDecimal(row["Hàm lượng mủ nước"]),
-        quantity: convertToDecimal(row["Thành phẩm"]),
-        notes: row["Ghi chú"]
-      }),
-      ProductModel,
-      "Imported products from Excel"
-    );
+    try {
+      const { processedData, errors } = await processExcelFile(
+        req.file.buffer,
+        JSON.parse(req.body.requiredFields)
+      );
+
+      if (errors.length) {
+        return handleResponse(
+          req, res, 400, "fail", 
+          `Lỗi kiểm tra dữ liệu: ${errors.join("; ")}`, 
+          req.headers.referer
+        );
+      }
+
+      const mockRes = {
+        status: () => mockRes,
+        json: () => mockRes,
+        redirect: () => mockRes,
+        render: () => mockRes,
+        send: () => mockRes
+      };
+
+      const results = [];
+      const failedRows = [];
+
+      // Process each row through createData
+      for (const [index, row] of processedData.entries()) {
+        try {
+          // Transform Excel data into the format expected by createData
+          const productData = {
+            date: row["Ngày"],
+            dryRubberUsed: row["Số lượng mủ nước"] || 0,
+            dryPercentage: row["Hàm lượng mủ nước"] || 0,
+            quantity: row["Thành phẩm"] || 0,
+            notes: row["Ghi chú"] || ""
+          };
+
+          // Create mock request object
+          const mockReq = {
+            body: productData,
+            user: req.user,
+            headers: { referer: req.headers.referer },
+            flash: () => {}
+          };
+
+          await createProductData(mockReq, mockRes);
+          results.push(row);
+        } catch (error) {
+          failedRows.push(`Dòng ${index + 2}: ${error.message || 'Lỗi khi nhập dữ liệu'}`);
+        }
+      }
+
+      // Create history if any successful imports
+      if (results.length) {
+        await ActionHistory.create({
+          actionType: "create",
+          userId: req.user._id,
+          details: "Imported products data from Excel",
+          newValues: results,
+        });
+      }
+
+      // Return response
+      const success = results.length > 0;
+      const message = failedRows.length 
+        ? `Đã nhập thành công ${results.length} bản ghi. Các lỗi: ${failedRows.join("; ")}`
+        : `Đã nhập thành công ${results.length} bản ghi`;
+
+      return handleResponse(
+        req, res,
+        success ? 200 : 400,
+        success ? "success" : "fail",
+        message,
+        req.headers.referer
+      );
+
+    } catch (error) {
+      console.error("Import error:", error);
+      return handleResponse(
+        req, res, 500, "error",
+        `Lỗi khi nhập dữ liệu: ${error.message}`, 
+        req.headers.referer
+      );
+    }
   },
 
   async importDailySupplyInputData(req, res) {
-    await handleImport(
-      req,
-      res,
-      (row) => ({
-        date: row.Ngày,
-        materialName: row["Tên nguyên liệu"],
-        quantity: convertToDecimal(row["Số lượng"]),
-        price: convertToDecimal(row["Giá"]),
-        supplier: row["Nhà cung cấp"],
-        status: "active",
-      }),
-      DailySupplyModel,
-      "Imported daily supply inputs from Excel"
-    );
+    try {
+      // Validate Excel data
+      const { processedData, errors } = await processExcelFile(
+        req.file.buffer,
+        JSON.parse(req.body.requiredFields)
+      );
+
+      if (errors.length) {
+        return handleResponse(
+          req,
+          res,
+          400,
+          "fail",
+          `Lỗi kiểm tra dữ liệu: ${errors.join("; ")}`,
+          req.headers.referer
+        );
+      }
+
+      // Get area data
+      const area = await DailySupply.findById(req.body.areaId).populate(
+        "suppliers"
+      );
+      if (!area?.suppliers?.length) {
+        return handleResponse(
+          req,
+          res,
+          404,
+          "fail",
+          "Không tìm thấy vườn hoặc vườn chưa có nhà vườn!",
+          req.headers.referer
+        );
+      }
+
+      // Process rows
+      const results = [];
+      const failedRows = [];
+      const mockRes = {
+        status: () => mockRes,
+        json: () => mockRes,
+        redirect: () => mockRes,
+        render: () => mockRes,
+        send: () => mockRes,
+      };
+
+      for (const [index, row] of processedData.entries()) {
+        try {
+          const supplier = area.suppliers.find(
+            (s) => s.code === row["Nhà vườn"]?.toString()
+          );
+          if (!supplier) {
+            failedRows.push(
+              `Dòng ${index + 2}: Không tìm thấy nhà vườn với mã ${
+                row["Nhà vườn"]
+              }`
+            );
+            continue;
+          }
+
+          await addData(
+            {
+              body: {
+                name: ["Mủ nước", "Mủ tạp", "Mủ ké", "Mủ đông"],
+                quantity: [
+                  row["Số lượng mủ nước"] || 0,
+                  row["Số lượng mủ tạp"] || 0,
+                  row["Số lượng mủ ké"] || 0,
+                  row["Số lượng mủ đông"] || 0,
+                ],
+                percentage: [row["Hàm lượng mủ nước"] || 0],
+                supplier: supplier.supplierSlug,
+                note: row["Ghi chú"] || "",
+                areaID: area._id,
+              },
+              params: { id: area._id },
+              user: req.user,
+              headers: { referer: req.headers.referer },
+              flash: () => {},
+            },
+            mockRes
+          );
+
+          results.push(row);
+        } catch (error) {
+          failedRows.push(`Dòng ${index + 2}: Lỗi khi nhập dữ liệu`);
+        }
+      }
+
+      // Create history if any successful imports
+      if (results.length) {
+        await ActionHistory.create({
+          actionType: "create",
+          userId: req.user._id,
+          details: "Imported daily supply data from Excel",
+          newValues: results,
+        });
+      }
+
+      // Return response
+      const success = results.length > 0;
+      const message = failedRows.length
+        ? `Đã nhập thành công ${
+            results.length
+          } bản ghi. Các lỗi: ${failedRows.join("; ")}`
+        : `Đã nhập thành công ${results.length} bản ghi`;
+
+      return handleResponse(
+        req,
+        res,
+        success ? 200 : 400,
+        success ? "success" : "fail",
+        message,
+        req.headers.referer
+      );
+    } catch (error) {
+      console.error("Import error:", error);
+      return handleResponse(
+        req,
+        res,
+        500,
+        "error",
+        "Lỗi khi nhập dữ liệu",
+        req.headers.referer
+      );
+    }
   },
 };

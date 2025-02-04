@@ -51,6 +51,9 @@
               <h6 class="card-title mb-0">Tải Lên Tệp Excel</h6>
             </div>
             <form action="/import/<%= page %>" method="post" enctype="multipart/form-data">
+              <% if(area && area._id){ %>
+                <input type="hidden" name="areaId" value="<%= area._id %>">
+              <% } %>
               <div class="mb-3">
                 <label class="form-label">Chọn Tệp Excel</label>
                 <input type="file" class="form-control" name="excelFile" accept=".xlsx,.xls" required>
@@ -74,10 +77,10 @@
                 </table>
               </div>
               <div class="text-end">
-                <button type="reset" class="btn btn-secondary" >
+                <button type="reset" class="btn btn-secondary">
                   Tải lại
                 </button>
-                <button type="submit" class="btn btn-primary" id="submitButton">
+                <button type="submit" onclick="handleFormSubmit(this)" class="btn btn-primary" id="submitButton">
                   Tải Lên
                 </button>
               </div>
@@ -143,9 +146,9 @@
       const day = date.getDate();
       const month = date.getMonth() + 1;
       const year = date.getFullYear();
-      return isValidDate(day, month, year)
-        ? `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}`
-        : null;
+      return isValidDate(day, month, year) ?
+        `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}` :
+        null;
     }
     return null;
   };
@@ -156,7 +159,7 @@
       const arrayBuffer = await file.arrayBuffer();
       const workbook = new ExcelJS.Workbook();
       await workbook.xlsx.load(arrayBuffer);
-      
+
       const worksheet = workbook.worksheets[0];
       if (!worksheet) return displayError('File Excel không có dữ liệu');
 

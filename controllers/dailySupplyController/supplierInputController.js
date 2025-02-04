@@ -110,11 +110,14 @@ async function renderInputDataPage(req, res) {
 async function addData(req, res) {
   try {
     req.body = trimStringFields(req.body);
-
+    console.log(JSON.stringify(req.body, null, 2));
     const today = new Date();
     today.setUTCHours(today.getUTCHours() + 7);
 
-    const dailySupply = await DailySupply.findById(req.params.id);
+    const dailySupply = await DailySupply.findOne({
+      $or: [{ _id: req.params.id }, { _id: req.body.areaID }],
+    });
+
     if (!dailySupply) {
       return handleResponse(
         req,
@@ -403,8 +406,12 @@ async function updateSupplierData(req, res) {
           break;
       }
     });
-    
-    dataEntry.date = new Date(date).setUTCHours(new Date().getUTCHours(), new Date().getMinutes(), new Date().getSeconds());
+
+    dataEntry.date = new Date(date).setUTCHours(
+      new Date().getUTCHours(),
+      new Date().getMinutes(),
+      new Date().getSeconds()
+    );
     dataEntry.note = trimStringFields(note) || "";
 
     if (supplier) {

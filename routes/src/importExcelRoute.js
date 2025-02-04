@@ -9,13 +9,15 @@ const multer = require("multer");
 const upload = multer({
   storage: multer.memoryStorage(),
   fileFilter: (req, file, cb) => {
-    if (file.mimetype.includes('spreadsheet') || 
-        file.mimetype.includes('excel')) {
+    if (
+      file.mimetype.includes("spreadsheet") ||
+      file.mimetype.includes("excel")
+    ) {
       cb(null, true);
     } else {
-      cb(new Error('Only Excel files are allowed'));
+      cb(new Error("Only Excel files are allowed"));
     }
-  }
+  },
 });
 
 // Apply common middlewares
@@ -32,7 +34,7 @@ router.post(
 );
 
 router.post(
-  "/spend", 
+  "/spend",
   upload.single("excelFile"),
   checkPermission("add"),
   importExcelController.importSpendData
@@ -40,15 +42,22 @@ router.post(
 
 router.post(
   "/rawMaterial",
-  upload.single("excelFile"), 
+  upload.single("excelFile"),
   checkPermission("add"),
   importExcelController.importRawMaterialData
 );
 router.post(
   "/product",
-  upload.single("excelFile"), 
+  upload.single("excelFile"),
   checkPermission("add"),
   importExcelController.importProductData
+);
+
+router.post(
+  "/dailySupply",
+  upload.single("excelFile"),
+  checkPermission("add"),
+  importExcelController.importDailySupplyInputData
 );
 
 module.exports = router;

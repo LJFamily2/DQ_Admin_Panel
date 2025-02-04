@@ -20,6 +20,7 @@
         <%- include('../partials/dateSelection.ejs') %>
         <%- include('../partials/importExcelButton.ejs', {
           page: 'spend',
+          area: null,
           requiredFields: [
             { name: 'Ngày', description: 'Theo format dd/mm/yyyy', type: 'date' },
             { name: 'Đơn giá', description: '>0' , type:'number' },
