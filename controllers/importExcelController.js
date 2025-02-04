@@ -13,6 +13,30 @@ const { createData: createSpendData } = require('./spendController');
 const { createData: createRawMaterialData } = require('./rawMaterialController');
 const { createProduct: createProductData } = require('./productController');
 
+// Translated messages
+const messages = {
+  success: (count) => `Đã nhập thành công ${count} bản ghi`,
+  partialSuccess: (success, errors) => 
+    `Đã nhập thành công ${success} bản ghi. Lỗi: ${errors}`,
+  validation: (errors) => `Lỗi dữ liệu: ${errors}`,
+  notFound: "Không tìm thấy dữ liệu",
+  error: "Lỗi khi xử lý dữ liệu",
+  supplierNotFound: (code) => `Không tìm thấy nhà vườn với mã ${code}`,
+  areaNotFound: "Không tìm thấy vườn hoặc vườn chưa có nhà vườn!"
+};
+
+// Utility function for mock response
+const createMockRes = () => {
+  const mockRes = {
+    status: () => mockRes,
+    json: () => mockRes,
+    redirect: () => mockRes,
+    render: () => mockRes,
+    send: () => mockRes
+  };
+  return mockRes;
+};
+
 // Helper functions
 const formatExcelDate = (value) => {
   if (typeof value === "string" && /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(value)) {
@@ -175,369 +199,119 @@ const groupSalesByCode = (data) =>
     return grouped;
   }, new Map());
 
+// Generic import handler
+const genericImport = async (req, res, processor, historyDescription) => {
+  try {
+    const { processedData, errors } = await processExcelFile(
+      req.file.buffer,
+      JSON.parse(req.body.requiredFields)
+    );
+
+    if (errors.length) {
+      return handleResponse(req, res, 400, "fail", messages.validation(errors.join("; ")), req.headers.referer);
+    }
+
+    const results = [];
+    const failedRows = [];
+    const mockRes = createMockRes();
+
+    for (const [index, row] of processedData.entries()) {
+      try {
+        await processor(row, req, mockRes);
+        results.push(row);
+      } catch (error) {
+        failedRows.push(`Dòng ${index + 2}: ${error.message || messages.error}`);
+      }
+    }
+
+    if (results.length) {
+      await ActionHistory.create({
+        actionType: "create",
+        userId: req.user._id,
+        details: historyDescription,
+        newValues: results,
+      });
+    }
+
+    const success = results.length > 0;
+    const message = failedRows.length 
+      ? messages.partialSuccess(results.length, failedRows.join("; "))
+      : messages.success(results.length);
+
+    return handleResponse(
+      req, res,
+      success ? 200 : 400,
+      success ? "success" : "fail",
+      message,
+      req.headers.referer
+    );
+
+  } catch (error) {
+    console.error("Import error:", error);
+    return handleResponse(req, res, 500, "error", messages.error, req.headers.referer);
+  }
+};
+
 // Controller functions
 module.exports = {
   async importSaleData(req, res) {
-    try {
-      const { processedData, errors } = await processExcelFile(
-        req.file.buffer,
-        JSON.parse(req.body.requiredFields)
-      );
-
-      if (errors.length) {
-        return handleResponse(
-          req,
-          res,
-          400,
-          "fail",
-          `Lỗi kiểm tra dữ liệu: ${errors.join("; ")}`,
-          req.headers.referer
-        );
-      }
-
-      // Create mock response object for use with createData
-      const mockRes = {
-        status: () => mockRes,
-        json: () => mockRes,
-        redirect: () => mockRes,
-        render: () => mockRes,
-        send: () => mockRes,
+    const processor = async (row, req, mockRes) => {
+      const saleData = {
+        code: row["Mã hợp đồng"],
+        date: row["Ngày"],
+        notes: row["Ghi chú"] || "",
+        name: row["Tên sản phẩm"],
+        quantity: row["Số lượng"],
+        price: row["Giá"],
+        percentage: row["Phần trăm"] || 0,
       };
-
-      const results = [];
-      const failedRows = [];
-
-      // Process each row through createData
-      for (const [index, row] of processedData.entries()) {
-        try {
-          // Transform Excel data into the format expected by createData
-          const saleData = {
-            code: row["Mã hợp đồng"],
-            date: row["Ngày"],
-            notes: row["Ghi chú"] || "",
-            name: row["Tên sản phẩm"],
-            quantity: row["Số lượng"],
-            price: row["Giá"],
-            percentage: row["Phần trăm"] || 0,
-          };
-
-          // Create mock request object
-          const mockReq = {
-            body: saleData,
-            user: req.user,
-            headers: { referer: req.headers.referer },
-            flash: () => {},
-          };
-
-          await createData(mockReq, mockRes);
-          results.push(row);
-        } catch (error) {
-          failedRows.push(
-            `Dòng ${index + 2}: ${error.message || "Lỗi khi nhập dữ liệu"}`
-          );
-        }
-      }
-
-      // Create history if any successful imports
-      if (results.length) {
-        await ActionHistory.create({
-          actionType: "create",
-          userId: req.user._id,
-          details: "Imported sales data from Excel",
-          newValues: results,
-        });
-      }
-
-      // Return response
-      const success = results.length > 0;
-      const message = failedRows.length
-        ? `Đã nhập thành công ${
-            results.length
-          } bản ghi. Các lỗi: ${failedRows.join("; ")}`
-        : `Đã nhập thành công ${results.length} bản ghi`;
-
-      return handleResponse(
-        req,
-        res,
-        success ? 200 : 400,
-        success ? "success" : "fail",
-        message,
-        req.headers.referer
-      );
-    } catch (error) {
-      console.error("Import error:", error);
-      return handleResponse(
-        req,
-        res,
-        500,
-        "error",
-        `Lỗi khi nhập dữ liệu: ${error.message}`,
-        req.headers.referer
-      );
-    }
+      await createData({ ...req, body: saleData }, mockRes);
+    };
+    await genericImport(req, res, processor, "Nhập dữ liệu bán hàng từ Excel");
   },
 
   async importSpendData(req, res) {
-    try {
-      const { processedData, errors } = await processExcelFile(
-        req.file.buffer,
-        JSON.parse(req.body.requiredFields)
-      );
-
-      if (errors.length) {
-        return handleResponse(
-          req, res, 400, "fail", 
-          `Lỗi kiểm tra dữ liệu: ${errors.join("; ")}`, 
-          req.headers.referer
-        );
-      }
-
-      const mockRes = {
-        status: () => mockRes,
-        json: () => mockRes,
-        redirect: () => mockRes,
-        render: () => mockRes,
-        send: () => mockRes
+    const processor = async (row, req, mockRes) => {
+      const spendData = {
+        date: row["Ngày"],
+        product: row["Hàng hóa"],
+        quantity: row["Số lượng"],
+        price: row["Đơn giá"],
+        notes: row["Ghi chú"] || ""
       };
-
-      const results = [];
-      const failedRows = [];
-
-      // Process each row through createData
-      for (const [index, row] of processedData.entries()) {
-        try {
-          // Transform Excel data into the format expected by createData
-          const spendData = {
-            date: row["Ngày"],
-            product: row["Hàng hóa"],
-            quantity: row["Số lượng"],
-            price: row["Đơn giá"],
-            notes: row["Ghi chú"] || ""
-          };
-
-          // Create mock request object
-          const mockReq = {
-            body: spendData,
-            user: req.user,
-            headers: { referer: req.headers.referer },
-            flash: () => {}
-          };
-
-          await createSpendData(mockReq, mockRes);
-          results.push(row);
-        } catch (error) {
-          failedRows.push(`Dòng ${index + 2}: ${error.message || 'Lỗi khi nhập dữ liệu'}`);
-        }
-      }
-
-      // Create history if any successful imports
-      if (results.length) {
-        await ActionHistory.create({
-          actionType: "create",
-          userId: req.user._id,
-          details: "Imported spend data from Excel",
-          newValues: results,
-        });
-      }
-
-      // Return response
-      const success = results.length > 0;
-      const message = failedRows.length 
-        ? `Đã nhập thành công ${results.length} bản ghi. Các lỗi: ${failedRows.join("; ")}`
-        : `Đã nhập thành công ${results.length} bản ghi`;
-
-      return handleResponse(
-        req, res,
-        success ? 200 : 400,
-        success ? "success" : "fail",
-        message,
-        req.headers.referer
-      );
-
-    } catch (error) {
-      console.error("Import error:", error);
-      return handleResponse(
-        req, res, 500, "error",
-        `Lỗi khi nhập dữ liệu: ${error.message}`, 
-        req.headers.referer
-      );
-    }
+      await createSpendData({ ...req, body: spendData }, mockRes);
+    };
+    await genericImport(req, res, processor, "Nhập dữ liệu chi tiêu từ Excel");
   },
 
   async importRawMaterialData(req, res) {
-    try {
-      const { processedData, errors } = await processExcelFile(
-        req.file.buffer,
-        JSON.parse(req.body.requiredFields)
-      );
-
-      if (errors.length) {
-        return handleResponse(
-          req, res, 400, "fail", 
-          `Lỗi kiểm tra dữ liệu: ${errors.join("; ")}`, 
-          req.headers.referer
-        );
-      }
-
-      const mockRes = {
-        status: () => mockRes,
-        json: () => mockRes,
-        redirect: () => mockRes,
-        render: () => mockRes,
-        send: () => mockRes
+    const processor = async (row, req, mockRes) => {
+      const rawMaterialData = {
+        date: row["Ngày"],
+        notes: row["Ghi chú"] || "",
+        dryQuantity: row["Số lượng mủ nước"] || 0,
+        dryPercentage: row["Hàm lượng mủ nước"] || 0,
+        keQuantity: row["Số lượng mủ ké"] || 0,
+        kePercentage: row["Hàm lượng mủ ké"] || 0,
+        mixedQuantity: row["Số lượng mủ tạp"] || 0
       };
-
-      const results = [];
-      const failedRows = [];
-
-      // Process each row through createData
-      for (const [index, row] of processedData.entries()) {
-        try {
-          // Transform Excel data into the format expected by createData
-          const rawMaterialData = {
-            date: row["Ngày"],
-            notes: row["Ghi chú"] || "",
-            dryQuantity: row["Số lượng mủ nước"] || 0,
-            dryPercentage: row["Hàm lượng mủ nước"] || 0,
-            keQuantity: row["Số lượng mủ ké"] || 0,
-            kePercentage: row["Hàm lượng mủ ké"] || 0,
-            mixedQuantity: row["Số lượng mủ tạp"] || 0
-          };
-
-          // Create mock request object
-          const mockReq = {
-            body: rawMaterialData,
-            user: req.user,
-            headers: { referer: req.headers.referer },
-            flash: () => {}
-          };
-
-          await createRawMaterialData(mockReq, mockRes);
-          results.push(row);
-        } catch (error) {
-          failedRows.push(`Dòng ${index + 2}: ${error.message || 'Lỗi khi nhập dữ liệu'}`);
-        }
-      }
-
-      // Create history if any successful imports
-      if (results.length) {
-        await ActionHistory.create({
-          actionType: "create",
-          userId: req.user._id,
-          details: "Imported raw materials data from Excel",
-          newValues: results,
-        });
-      }
-
-      // Return response
-      const success = results.length > 0;
-      const message = failedRows.length 
-        ? `Đã nhập thành công ${results.length} bản ghi. Các lỗi: ${failedRows.join("; ")}`
-        : `Đã nhập thành công ${results.length} bản ghi`;
-
-      return handleResponse(
-        req, res,
-        success ? 200 : 400,
-        success ? "success" : "fail",
-        message,
-        req.headers.referer
-      );
-
-    } catch (error) {
-      console.error("Import error:", error);
-      return handleResponse(
-        req, res, 500, "error",
-        `Lỗi khi nhập dữ liệu: ${error.message}`, 
-        req.headers.referer
-      );
-    }
+      await createRawMaterialData({ ...req, body: rawMaterialData }, mockRes);
+    };
+    await genericImport(req, res, processor, "Nhập dữ liệu nguyên liệu thô từ Excel");
   },
 
   async importProductData(req, res) {
-    try {
-      const { processedData, errors } = await processExcelFile(
-        req.file.buffer,
-        JSON.parse(req.body.requiredFields)
-      );
-
-      if (errors.length) {
-        return handleResponse(
-          req, res, 400, "fail", 
-          `Lỗi kiểm tra dữ liệu: ${errors.join("; ")}`, 
-          req.headers.referer
-        );
-      }
-
-      const mockRes = {
-        status: () => mockRes,
-        json: () => mockRes,
-        redirect: () => mockRes,
-        render: () => mockRes,
-        send: () => mockRes
+    const processor = async (row, req, mockRes) => {
+      const productData = {
+        date: row["Ngày"],
+        dryRubberUsed: row["Số lượng mủ nước"] || 0,
+        dryPercentage: row["Hàm lượng mủ nước"] || 0,
+        quantity: row["Thành phẩm"] || 0,
+        notes: row["Ghi chú"] || ""
       };
-
-      const results = [];
-      const failedRows = [];
-
-      // Process each row through createData
-      for (const [index, row] of processedData.entries()) {
-        try {
-          // Transform Excel data into the format expected by createData
-          const productData = {
-            date: row["Ngày"],
-            dryRubberUsed: row["Số lượng mủ nước"] || 0,
-            dryPercentage: row["Hàm lượng mủ nước"] || 0,
-            quantity: row["Thành phẩm"] || 0,
-            notes: row["Ghi chú"] || ""
-          };
-
-          // Create mock request object
-          const mockReq = {
-            body: productData,
-            user: req.user,
-            headers: { referer: req.headers.referer },
-            flash: () => {}
-          };
-
-          await createProductData(mockReq, mockRes);
-          results.push(row);
-        } catch (error) {
-          failedRows.push(`Dòng ${index + 2}: ${error.message || 'Lỗi khi nhập dữ liệu'}`);
-        }
-      }
-
-      // Create history if any successful imports
-      if (results.length) {
-        await ActionHistory.create({
-          actionType: "create",
-          userId: req.user._id,
-          details: "Imported products data from Excel",
-          newValues: results,
-        });
-      }
-
-      // Return response
-      const success = results.length > 0;
-      const message = failedRows.length 
-        ? `Đã nhập thành công ${results.length} bản ghi. Các lỗi: ${failedRows.join("; ")}`
-        : `Đã nhập thành công ${results.length} bản ghi`;
-
-      return handleResponse(
-        req, res,
-        success ? 200 : 400,
-        success ? "success" : "fail",
-        message,
-        req.headers.referer
-      );
-
-    } catch (error) {
-      console.error("Import error:", error);
-      return handleResponse(
-        req, res, 500, "error",
-        `Lỗi khi nhập dữ liệu: ${error.message}`, 
-        req.headers.referer
-      );
-    }
+      await createProductData({ ...req, body: productData }, mockRes);
+    };
+    await genericImport(req, res, processor, "Nhập dữ liệu sản phẩm từ Excel");
   },
 
   async importDailySupplyInputData(req, res) {
@@ -577,93 +351,38 @@ module.exports = {
       // Process rows
       const results = [];
       const failedRows = [];
-      const mockRes = {
-        status: () => mockRes,
-        json: () => mockRes,
-        redirect: () => mockRes,
-        render: () => mockRes,
-        send: () => mockRes,
+      const mockRes = createMockRes();
+
+      const processor = async (row, req, mockRes) => {
+        const supplier = area.suppliers.find(s => s.code === row["Nhà vườn"]?.toString());
+        if (!supplier) {
+          throw new Error(messages.supplierNotFound(row["Nhà vườn"]));
+        }
+
+        await addData({
+          body: {
+            name: ["Mủ nước", "Mủ tạp", "Mủ ké", "Mủ đông"],
+            quantity: [
+              row["Số lượng mủ nước"] || 0,
+              row["Số lượng mủ tạp"] || 0,
+              row["Số lượng mủ ké"] || 0,
+              row["Số lượng mủ đông"] || 0,
+            ],
+            percentage: [row["Hàm lượng mủ nước"] || 0],
+            supplier: supplier.supplierSlug,
+            note: row["Ghi chú"] || "",
+            areaID: area._id,
+          },
+          params: { id: area._id },
+          user: req.user,
+          headers: req.headers,
+          flash: () => {},
+        }, mockRes);
       };
 
-      for (const [index, row] of processedData.entries()) {
-        try {
-          const supplier = area.suppliers.find(
-            (s) => s.code === row["Nhà vườn"]?.toString()
-          );
-          if (!supplier) {
-            failedRows.push(
-              `Dòng ${index + 2}: Không tìm thấy nhà vườn với mã ${
-                row["Nhà vườn"]
-              }`
-            );
-            continue;
-          }
-
-          await addData(
-            {
-              body: {
-                name: ["Mủ nước", "Mủ tạp", "Mủ ké", "Mủ đông"],
-                quantity: [
-                  row["Số lượng mủ nước"] || 0,
-                  row["Số lượng mủ tạp"] || 0,
-                  row["Số lượng mủ ké"] || 0,
-                  row["Số lượng mủ đông"] || 0,
-                ],
-                percentage: [row["Hàm lượng mủ nước"] || 0],
-                supplier: supplier.supplierSlug,
-                note: row["Ghi chú"] || "",
-                areaID: area._id,
-              },
-              params: { id: area._id },
-              user: req.user,
-              headers: { referer: req.headers.referer },
-              flash: () => {},
-            },
-            mockRes
-          );
-
-          results.push(row);
-        } catch (error) {
-          failedRows.push(`Dòng ${index + 2}: Lỗi khi nhập dữ liệu`);
-        }
-      }
-
-      // Create history if any successful imports
-      if (results.length) {
-        await ActionHistory.create({
-          actionType: "create",
-          userId: req.user._id,
-          details: "Imported daily supply data from Excel",
-          newValues: results,
-        });
-      }
-
-      // Return response
-      const success = results.length > 0;
-      const message = failedRows.length
-        ? `Đã nhập thành công ${
-            results.length
-          } bản ghi. Các lỗi: ${failedRows.join("; ")}`
-        : `Đã nhập thành công ${results.length} bản ghi`;
-
-      return handleResponse(
-        req,
-        res,
-        success ? 200 : 400,
-        success ? "success" : "fail",
-        message,
-        req.headers.referer
-      );
+      await genericImport(req, res, processor, "Nhập dữ liệu thu mua hàng ngày từ Excel");
     } catch (error) {
-      console.error("Import error:", error);
-      return handleResponse(
-        req,
-        res,
-        500,
-        "error",
-        "Lỗi khi nhập dữ liệu",
-        req.headers.referer
-      );
+      return handleResponse(req, res, 500, "error", messages.error, req.headers.referer);
     }
-  },
+  }
 };

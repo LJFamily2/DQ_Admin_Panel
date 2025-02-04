@@ -21,13 +21,20 @@ app.use(compression());
 // Trust the first proxy
 app.set("trust proxy", 1);
 
+// Create middleware to check role before applying rate limit
+const skipForAdmin = (req) => {
+  return req.user && (req.user.role === "Admin" || req.user.role === "superAdmin");
+};
+
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 500, // limit each IP to 500 requests per windowMs
   standardHeaders: true,
   legacyHeaders: false,
+  skip: skipForAdmin,
   message: "Đã quá nhiều thao tác trong thời gian ngắn. Vui lòng thử lại sau 15 phút.",
 });
+
 app.use(limiter);
 
 // Stricter limits for authentication routes
