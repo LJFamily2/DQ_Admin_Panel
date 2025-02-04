@@ -1,8 +1,4 @@
 const ExcelJS = require("exceljs");
-const SaleModel = require("../models/saleModel");
-const SpendModel = require("../models/spendModel");
-const RawMaterialModel = require("../models/rawMaterialModel");
-const ProductModel = require("../models/productModel");
 const { DailySupply } = require("../models/dailySupplyModel");
 const ActionHistory = require("../models/actionHistoryModel");
 const handleResponse = require("./utils/handleResponse");
@@ -173,32 +169,6 @@ const handleImport = async (
   }
 };
 
-// Add this helper function before the controller functions
-const groupSalesByCode = (data) =>
-  data.reduce((grouped, row) => {
-    const product = {
-      name: row["Tên sản phẩm"],
-      quantity: convertToDecimal(row["Số lượng"]),
-      percentage: row["Phần trăm"] ? convertToDecimal(row["Phần trăm"]) : 0,
-      price: convertToDecimal(row["Giá"]),
-      date: row["Ngày bán"],
-    };
-
-    const code = row["Mã hợp đồng"];
-    if (!grouped.has(code)) {
-      grouped.set(code, {
-        code,
-        date: row["Ngày"],
-        status: "active",
-        notes: row["Ghi chú"] || "",
-        products: [product],
-      });
-    } else {
-      grouped.get(code).products.push(product);
-    }
-    return grouped;
-  }, new Map());
-
 // Generic import handler
 const genericImport = async (req, res, processor, historyDescription) => {
   try {
@@ -347,11 +317,6 @@ module.exports = {
           req.headers.referer
         );
       }
-
-      // Process rows
-      const results = [];
-      const failedRows = [];
-      const mockRes = createMockRes();
 
       const processor = async (row, req, mockRes) => {
         const supplier = area.suppliers.find(s => s.code === row["Nhà vườn"]?.toString());
