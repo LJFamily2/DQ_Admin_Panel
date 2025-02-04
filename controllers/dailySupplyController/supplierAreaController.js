@@ -68,6 +68,33 @@ async function addArea(req, res) {
       );
     }
 
+    // Check for duplicate codes in the request
+    const supplierCodes = ensureArray(req.body.code).filter(Boolean);
+    const uniqueCodes = new Set(supplierCodes);
+    if (supplierCodes.length !== uniqueCodes.size) {
+      return handleResponse(
+        req,
+        res,
+        400,
+        "fail",
+        "Mã nhà vườn không được trùng lặp!",
+        req.headers.referer
+      );
+    }
+
+    // Check if any codes already exist in the database
+    const existingSuppliers = await Supplier.find({ code: { $in: supplierCodes } });
+    if (existingSuppliers.length > 0) {
+      return handleResponse(
+        req,
+        res,
+        400,
+        "fail",
+        `Mã nhà vườn đã tồn tại: ${existingSuppliers.map(s => s.code).join(', ')}`,
+        req.headers.referer
+      );
+    }
+
     const areaDimension = parseFloat(req.body.areaDimension) || 0;
     const purchasedAreaDimensions = ensureArray(
       req.body.purchasedAreaDimension
