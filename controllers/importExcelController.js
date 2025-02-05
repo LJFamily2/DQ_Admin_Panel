@@ -257,19 +257,85 @@ const genericImport = async (req, res, processor, historyDescription) => {
 // Controller functions
 module.exports = {
   async importSaleData(req, res) {
-    const processor = async (row, req, mockRes) => {
-      const saleData = {
-        code: row["Mã hợp đồng"],
-        date: row["Ngày"],
-        notes: row["Ghi chú"] || "",
-        name: row["Tên sản phẩm"],
-        quantity: row["Số lượng"],
-        price: row["Giá"],
-        percentage: row["Phần trăm"] || 0,
-      };
-      await createData({ ...req, body: saleData }, mockRes);
-    };
-    await genericImport(req, res, processor, "Nhập dữ liệu bán hàng từ Excel");
+    try {
+      const { processedData, errors } = await processExcelFile(
+        req.file.buffer,
+        JSON.parse(req.body.requiredFields)
+      );
+
+      if (errors.length) {
+        return handleResponse(
+          req,
+          res,
+          400,
+          "fail",
+          `Lỗi kiểm tra dữ liệu: ${errors.join("; ")}`,
+          req.headers.referer
+        );
+      }
+
+      // Group data by contract code
+      const groupedData = processedData.reduce((acc, row) => {
+        const key = `${row['Mã hợp đồng']}-${row['Ngày'].toISOString()}`;
+        if (!acc[key]) {
+          acc[key] = {
+            code: row['Mã hợp đồng'],
+            date: row['Ngày'],
+            notes: row['Ghi chú'] || '',
+            name: [],
+            quantity: [],
+            price: [],
+            percentage: []
+          };
+        }
+        acc[key].name.push(row['Tên sản phẩm']);
+        acc[key].quantity.push(row['Số lượng']);
+        acc[key].price.push(row['Giá']);
+        acc[key].percentage.push(row['Phần trăm'] || 0);
+        return acc;
+      }, {});
+
+      const results = [];
+      const failedRows = [];
+      const mockRes = createMockRes();
+
+      // Process each grouped contract
+      for (const saleData of Object.values(groupedData)) {
+        try {
+          await createData({ ...req, body: saleData }, mockRes);
+          results.push(saleData);
+        } catch (error) {
+          failedRows.push(`Mã hợp đồng ${saleData.code}: ${error.message || messages.error}`);
+        }
+      }
+
+      if (results.length) {
+        await ActionHistory.create({
+          actionType: "create",
+          userId: req.user._id,
+          details: "Nhập dữ liệu bán hàng từ Excel",
+          newValues: results,
+        });
+      }
+
+      const success = results.length > 0;
+      const message = failedRows.length 
+        ? messages.partialSuccess(results.length, failedRows.join("; "))
+        : messages.success(results.length);
+
+      return handleResponse(
+        req,
+        res,
+        success ? 200 : 400,
+        success ? "success" : "fail",
+        message,
+        req.headers.referer
+      );
+
+    } catch (error) {
+      console.error("Import error:", error);
+      return handleResponse(req, res, 500, "error", messages.error, req.headers.referer);
+    }
   },
 
   async importSpendData(req, res) {
