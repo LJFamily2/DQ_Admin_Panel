@@ -119,7 +119,8 @@ async function createUser(req, res, isNew) {
       });
     }
 
-    const hashedPassword = await bcrypt.hash(req.body.password, 20);
+    // Change from 20 rounds to 12 rounds
+    const hashedPassword = await bcrypt.hash(req.body.password, 12);
     
     const user = await UserModel.create({
       username: req.body.username,
@@ -153,7 +154,7 @@ async function createUser(req, res, isNew) {
     );
 
   } catch (error) {
-    console.error('Create user error:', error);
+    console.log('Create user error:', error);
     res.status(500).render("partials/500", { layout: false });
   }
 }
@@ -248,7 +249,7 @@ async function updateUser(req, res) {
     }
 
     if (newPassword) {
-      updateFields.password = await bcrypt.hash(newPassword, 20);
+      updateFields.password = await bcrypt.hash(newPassword, 12);
     }
 
     const updatedUser = await UserModel.findByIdAndUpdate(id, updateFields, { new: true });
