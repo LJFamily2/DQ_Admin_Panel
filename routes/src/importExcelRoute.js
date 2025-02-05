@@ -25,6 +25,14 @@ router.use(authMiddlewares.ensureLoggedIn);
 router.use(authMiddlewares.ensureWorkingHours);
 router.use(authMiddlewares.ensureRoles(["Admin", "Văn phòng", "superAdmin"]));
 
+// Download template routes
+router.get(
+  "/:page/:type",
+  authMiddlewares.ensureLoggedIn,
+  checkPermission("view"),
+  importExcelController.downloadTemplate
+);
+
 // Import routes for different data types
 router.post(
   "/sale",
