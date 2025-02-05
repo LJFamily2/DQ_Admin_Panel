@@ -37,13 +37,6 @@ const limiter = rateLimit({
 
 app.use(limiter);
 
-// Stricter limits for authentication routes
-const authLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour
-  max: 5,
-});
-app.use("/dang-nhap", authLimiter);
-
 // Reduce the size of data being transferred over the network
 app.use(compression());
 
