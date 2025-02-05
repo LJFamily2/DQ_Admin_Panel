@@ -42,6 +42,33 @@ const formatExcelDate = (value) => {
   return new Date(value);
 };
 
+const parseVietnameseNumber = (value) => {
+  if (value === null || value === undefined || value === '') return 0;
+  
+  // Convert to string and trim
+  const strValue = String(value).trim();
+  
+  // Check if it's already a valid number
+  if (!isNaN(strValue) && !strValue.includes(',') && !strValue.includes('.')) {
+    return Number(strValue);
+  }
+
+  // Check for invalid format (reject period as decimal separator)
+  if (strValue.includes('.')) {
+    throw new Error(`Số "${value}" không đúng định dạng. Vui lòng sử dụng dấu phẩy (,) để phân cách thập phân`);
+  }
+
+  // Replace comma with period and convert to number
+  const normalizedValue = strValue.replace(/,/g, '.');
+  const number = Number(normalizedValue);
+
+  if (isNaN(number)) {
+    throw new Error(`Giá trị "${value}" không phải là số hợp lệ`);
+  }
+
+  return number;
+};
+
 const validateRow = (row, requiredFields) => {
   const errors = [];
   requiredFields.forEach((field) => {
@@ -60,18 +87,23 @@ const validateRow = (row, requiredFields) => {
       return;
     }
 
-    if (field.type === "date") {
-      const dateValue = formatExcelDate(value);
-      if (!dateValue || isNaN(dateValue.getTime())) {
-        errors.push(`Invalid date value for ${field.name}`);
+    try {
+      if (field.type === "date") {
+        const dateValue = formatExcelDate(value);
+        if (!dateValue || isNaN(dateValue.getTime())) {
+          errors.push(`Giá trị ngày không hợp lệ cho trường ${field.name}`);
+        }
+      } else if (field.type === "number") {
+        const num = parseVietnameseNumber(value);
+        if (num < 0) {
+          errors.push(`Giá trị "${value}" của trường ${field.name} không được âm`);
+        }
+        row[field.name] = num; // Update the value in the row
+      } else if (!value && value !== 0) {
+        errors.push(`Thiếu trường bắt buộc ${field.name}`);
       }
-    } else if (field.type === "number") {
-      const num = convertToDecimal(value);
-      if (isNaN(num) || num < 0) {
-        errors.push(`Invalid number value for ${field.name}`);
-      }
-    } else if (!value && value !== 0) {
-      errors.push(`Missing required field ${field.name}`);
+    } catch (error) {
+      errors.push(error.message);
     }
   });
   return errors;

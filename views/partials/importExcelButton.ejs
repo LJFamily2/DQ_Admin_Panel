@@ -153,6 +153,32 @@
     return null;
   };
 
+  const parseVietnameseNumber = value => {
+    if (value == null || value === '') return 0;
+    const strValue = String(value).trim();
+    
+    if (!isNaN(strValue) && !strValue.includes(',') && !strValue.includes('.')) {
+      return strValue;
+    }
+    
+    // Reject period as decimal separator
+    if (strValue.includes('.')) {
+      throw new Error(`Số "${value}" không đúng định dạng. Vui lòng sử dụng dấu phẩy (,) để phân cách thập phân`);
+    }
+    
+    // For display purposes, keep the original format with comma
+    if (strValue.includes(',')) {
+      // Validate if it's a proper number format
+      const testValue = Number(strValue.replace(/,/g, '.'));
+      if (isNaN(testValue)) {
+        throw new Error(`Giá trị "${value}" không phải là số hợp lệ`);
+      }
+      return strValue; // Return original format with comma
+    }
+    
+    return strValue;
+  };
+
   document.querySelector('input[name="excelFile"]').addEventListener('change', async e => {
     try {
       const file = e.target.files[0];
@@ -194,13 +220,20 @@
               row[idx] = value;
             }
           } else {
-            value = value == null || value === '' ? 0 : Number(value);
-            if (isNaN(value)) {
-              errors.push(`Dòng ${i + 2}: Giá trị "${row[idx]}" của "${field}" phải là số`);
-            } else if (value < 0) {
-              errors.push(`Dòng ${i + 2}: Giá trị "${value}" của "${field}" không được âm`);
+            try {
+              value = parseVietnameseNumber(value);
+              if (value === 0) {
+                row[idx] = '0';
+              } else if (typeof value === 'string' && value.includes(',')) {
+                row[idx] = value; // Keep original format with comma
+              } else if (value < 0) {
+                errors.push(`Dòng ${i + 2}: Giá trị "${row[idx]}" của "${field}" không được âm`);
+              } else {
+                row[idx] = value;
+              }
+            } catch (error) {
+              errors.push(`Dòng ${i + 2}: ${error.message}`);
             }
-            row[idx] = value;
           }
         });
       });
