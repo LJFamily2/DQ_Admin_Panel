@@ -456,9 +456,9 @@ function initializeExportDataTable(
     stateSave: true,
     serverSide: true,
     processing: true,
+    responsive: true,
     lengthMenu: [10, 20, { label: "Tất cả", value: -1 }],
     paging: true,
-    scrollX: window.innerWidth < 1200 ? true : false,
     pagingType: "first_last_numbers",
     rowGroup: rowGroupOptions,
     ajax: {
