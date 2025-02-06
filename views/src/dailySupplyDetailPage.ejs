@@ -169,11 +169,11 @@
                             <label class="form-label fw-bold">Mủ nước</label>
                             <div class="col col-md-6">
                               <label for="muNuocQuantity<%= index %>" class="form-label">Số lượng</label>
-                              <input type="text" class="form-control" id="muNuocQuantity<%= index %>" name="muNuocQuantity" value="<%= raw.quantity.toLocaleString('vi-VN')%>" required onchange="newInput(this)" />
+                              <input type="text" class="form-control" id="muNuocQuantity<%= index %>" name="muNuocQuantity" value="<%= raw.quantity.toLocaleString('vi-VN')%>" required onchange="newInput(this)" inputmode="numeric" oninput="handleQuantityInput(this)" />
                             </div>
                             <div class="col col-md-6">
                               <label for="muNuocPercentage<%= index %>" class="form-label">Hàm lượng</label>
-                              <input type="text" class="form-control" id="muNuocPercentage<%= index %>" name="muNuocPercentage" value="<%= raw.percentage.toLocaleString('vi-VN') %>" required onchange="newInput(this)" />
+                              <input type="text" class="form-control" id="muNuocPercentage<%= index %>" name="muNuocPercentage" value="<%= raw.percentage.toLocaleString('vi-VN') %>" required onchange="newInput(this)" inputmode="numeric" oninput="handlePercentageInput(this)" />
                             </div>
                           </div>
                         </div>
@@ -183,7 +183,7 @@
                             <label class="form-label fw-bold">Mủ tạp</label>
                             <div class="col-12">
                               <label for="muTapQuantity<%= index %>" class="form-label">Số lượng</label>
-                              <input type="text" class="form-control" id="muTapQuantity<%= index %>" name="muTapQuantity" value="<%= raw.quantity.toLocaleString('vi-VN') %>" required onchange="newInput(this)" />
+                              <input type="text" class="form-control" id="muTapQuantity<%= index %>" name="muTapQuantity" value="<%= raw.quantity.toLocaleString('vi-VN') %>" required onchange="newInput(this)" inputmode="numeric" oninput="handleQuantityInput(this)" />
                             </div>
                           </div>
                         </div>
@@ -193,7 +193,7 @@
                             <label class="form-label fw-bold">Mủ Ké</label>
                             <div class="col-12">
                               <label for="muKeQuantity<%= index %>" class="form-label">Số lượng</label>
-                              <input type="text" class="form-control" id="muKeQuantity<%= index %>" name="muKeQuantity" value="<%= raw.quantity.toLocaleString('vi-VN') %>" required onchange="newInput(this)" />
+                              <input type="text" class="form-control" id="muKeQuantity<%= index %>" name="muKeQuantity" value="<%= raw.quantity.toLocaleString('vi-VN') %>" required onchange="newInput(this)" inputmode="numeric" oninput="handleQuantityInput(this)" />
                             </div>
                           </div>
                         </div>
@@ -203,7 +203,7 @@
                             <label class="form-label fw-bold">Mủ Đông</label>
                             <div class="col-12">
                               <label for="muDongQuantity<%= index %>" class="form-label">Số lượng</label>
-                              <input type="text" class="form-control" id="muDongQuantity<%= index %>" name="muDongQuantity" value="<%= raw.quantity.toLocaleString('vi-VN') %>" required onchange="newInput(this)" />
+                              <input type="text" class="form-control" id="muDongQuantity<%= index %>" name="muDongQuantity" value="<%= raw.quantity.toLocaleString('vi-VN') %>" required onchange="newInput(this)" inputmode="numeric" oninput="handleQuantityInput(this)" />
                             </div>
                           </div>
                         </div>
