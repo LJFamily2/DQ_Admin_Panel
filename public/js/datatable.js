@@ -160,7 +160,6 @@ function initializeDataTable(
       : [],
     serverSide: true,
     processing: true,
-    responsive: true,
     lengthMenu: [10, 20, { label: "Tất cả", value: -1 }],
     paging: !(queryPageFooter || dailySupplyFooter),
     pagingType: "first_last_numbers",

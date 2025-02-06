@@ -82,7 +82,7 @@ const onlyAdmin = user.role === "Admin" || user.role === 'superAdmin' ? '' : 'di
         </div>
         <%- include('../partials/displayAccessDate.ejs') %>
       </div>
-      <div class="card-body">
+      <div class="card-body table-responsive">
         <table class="table table-striped" id="table">
           <thead>
             <% if (area.areaDimension > 0 && area.areaPrice > 0) { %>
