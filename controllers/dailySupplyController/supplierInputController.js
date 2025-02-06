@@ -326,7 +326,7 @@ async function updateSupplierData(req, res) {
       );
 
       if (
-        req.user.role !== "Admin" &&
+        req.user.role !== "Admin" && req.user.role !== "superAdmin" &&
         (newDate < startDate || newDate > endDate)
       ) {
         return handleResponse(
