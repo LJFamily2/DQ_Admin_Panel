@@ -40,12 +40,12 @@ const dataSchema = new mongoose.Schema({
 // Suppliers Schema
 const supplierSchema = new mongoose.Schema(
   {
-    name: { type: String, required: true },
-    code: { type: String, required: true },
+    name: { type: String },
+    code: { type: String },
     supplierAddress: { type: String },
-    phone: { type: String, required: true },
-    identification: { type: String, required: true },
-    issueDate: { type: String, required: true },
+    phone: { type: String },
+    identification: { type: String },
+    issueDate: { type: String },
     manager: { type: Boolean, default: false },
     ratioRubberSplit: { type: Number, default: 100 }, //Tỉ lệ chia mủ
     ratioSumSplit: { type: Number, default: 100 }, //Tỉ lệ chia tổng
