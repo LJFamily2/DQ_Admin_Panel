@@ -351,7 +351,10 @@ async function deleteSupplier(req, res) {
     // Add back the purchasedAreaDimension to the remainingAreaDimension
     const dailySupply = await DailySupply.findOne({ suppliers: supplier._id });
     if (dailySupply) {
-      dailySupply.remainingAreaDimension += supplier.purchasedAreaDimension;
+      const purchasedAreaToAdd = supplier.purchasedAreaDimension || 0;
+      const currentRemaining = dailySupply.remainingAreaDimension || 0;
+      dailySupply.remainingAreaDimension = Number(currentRemaining) + Number(purchasedAreaToAdd);
+      
       const addedAreaBack = await dailySupply.save();
       if (!addedAreaBack) {
         return handleResponse(
