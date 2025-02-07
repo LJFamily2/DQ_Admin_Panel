@@ -91,7 +91,7 @@ async function createUser(req, res, isNew) {
       { path: "/quan-ly-hop-dong", allowed: true },
       { path: "/quan-ly-chi-tieu", allowed: true },
       { path: "/du-lieu-hang-ngay", allowed: true },
-      { path: "/nhap-du-lieu/nguyen-lieu", allowed: true },
+      { path: "/nhap-du-lieu", allowed: true },
       { path: "/du-lieu/nhat-ky-hoat-dong", allowed: true }
     ];
 
