@@ -51,7 +51,7 @@
     ] %>
 
     <% pages.forEach(page => { %>
-    <% if (user.role === 'Admin' || user.role === 'superAdmin' || ( user.permissions.pages.find(p => p.path === page.path)?.allowed)) { %>
+    <% if (user.role === 'Admin' || user.role === 'superAdmin' || ( user.permissions.pages.find(p => page.path.includes(p.path) )?.allowed)) { %>
     <li class="nav-item">
       <a href="<%= page.path %>" class="position-relative nav-link link-dark d-flex justify-content-between">
         <%= page.title %>
@@ -90,7 +90,7 @@
     <% const mobilePages = pages.filter(page => 
       user.role === 'Admin' || user.role === 'superAdmin' || 
       ( 
-       user.permissions.pages.find(p => p.path === page.path)?.allowed)
+       user.permissions.pages.find(p => page.path.includes(p.path))?.allowed)
     ).slice(0, 3) %>
 
     <% mobilePages.forEach(page => { %>
@@ -111,7 +111,7 @@
     <% const collapsedPages = pages.filter(page => 
       user.role === 'Admin' ||user.role === 'superAdmin' || 
       ( 
-       user.permissions.pages.find(p => p.path === page.path)?.allowed)
+       user.permissions.pages.find(p => page.path.includes(p.path))?.allowed)
     ).slice(3) %>
 
     <% collapsedPages.forEach(page => { %>
