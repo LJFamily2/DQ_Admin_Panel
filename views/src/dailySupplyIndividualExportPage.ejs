@@ -232,7 +232,7 @@ const onlyAdmin = user.role === "Admin" || user.role === 'superAdmin' ? '' : 'di
                           <div class="row my-3">
                             <div class="col">
                               <label for="muTapRatioSplit<%= index %>" class="form-label">Tỷ lệ (%)</label>
-                              <input type="text" class="form-control" id="muTapRatioSplit<%= index %>" name="muTapRatioSplit" value="<%= raw.ratioSplit ? raw.ratioSplit.toLocaleString('vi-VN') : '100' %>" oninput="handlePercentageInput(this)" inputmode="numeric" <%= onlyAdmin %>/>
+                              <input type="text" class="form-control" id="muTapRatioSplit<%= index %>" name="muTapRatioSplit" value="<%= raw.ratioSplit ? raw.ratioSplit.toLocaleString('vi-VN') : '100' %>" oninput="handlePercentageInput(this)" inputmode="numeric" <%= onlyAdmin %> />
                             </div>
                           </div>
                           <% } %>
@@ -254,7 +254,7 @@ const onlyAdmin = user.role === "Admin" || user.role === 'superAdmin' ? '' : 'di
                           <div class="row my-3">
                             <div class="col">
                               <label for="muKeRatioSplit<%= index %>" class="form-label">Tỷ lệ (%)</label>
-                              <input type="text" class="form-control" id="muKeRatioSplit<%= index %>" name="muKeRatioSplit" value="<%= raw.ratioSplit ? raw.ratioSplit.toLocaleString('vi-VN') : '100' %>" oninput="handlePercentageInput(this)" inputmode="numeric" <%= onlyAdmin %>/>
+                              <input type="text" class="form-control" id="muKeRatioSplit<%= index %>" name="muKeRatioSplit" value="<%= raw.ratioSplit ? raw.ratioSplit.toLocaleString('vi-VN') : '100' %>" oninput="handlePercentageInput(this)" inputmode="numeric" <%= onlyAdmin %> />
                             </div>
                           </div>
                           <% } %>
@@ -276,7 +276,7 @@ const onlyAdmin = user.role === "Admin" || user.role === 'superAdmin' ? '' : 'di
                           <div class="row my-3">
                             <div class="col">
                               <label for="muDongRatioSplit<%= index %>" class="form-label">Tỷ lệ (%)</label>
-                              <input type="text" class="form-control" id="muDongRatioSplit<%= index %>" name="muDongRatioSplit" value="<%= raw.ratioSplit ? raw.ratioSplit.toLocaleString('vi-VN') : '100' %>" oninput="handlePercentageInput(this)" inputmode="numeric" <%= onlyAdmin %>/>
+                              <input type="text" class="form-control" id="muDongRatioSplit<%= index %>" name="muDongRatioSplit" value="<%= raw.ratioSplit ? raw.ratioSplit.toLocaleString('vi-VN') : '100' %>" oninput="handlePercentageInput(this)" inputmode="numeric" <%= onlyAdmin %> />
                             </div>
                           </div>
                           <% } %>
@@ -424,11 +424,11 @@ const onlyAdmin = user.role === "Admin" || user.role === 'superAdmin' ? '' : 'di
             <div class="row">
               <div class="col col-md-6">
                 <label for="name" class="form-label fw-bold">Tên</label>
-                <input type="text" class="form-control" id="name" name="name" maxlength="30" value="<%= supplierData.name %>" required onchange="newInput(this)" />
+                <input type="text" class="form-control" id="name" name="name" maxlength="100" value="<%= supplierData.name %>" required onchange="newInput(this)" />
               </div>
               <div class="col col-md-6">
                 <label for="code" class="form-label fw-bold">Mã</label>
-                <input type="text" class="form-control" id="code" name="code" maxlength="20" value="<%= supplierData.code %>" required onchange="newInput(this)" />
+                <input type="text" class="form-control" id="code" name="code" maxlength="100" value="<%= supplierData.code %>" required onchange="newInput(this)" />
               </div>
             </div>
             <div class="mt-3">
@@ -449,12 +449,12 @@ const onlyAdmin = user.role === "Admin" || user.role === 'superAdmin' ? '' : 'di
               </div>
               <div class="col-5 mt-3">
                 <label for="issueDate" class="form-label fw-bold">Ngày cấp</label>
-                <input type="text" class="form-control" id="issueDate" name="issueDate" oninput="this.value = this.value.replace(/\D/g, '').replace(/(\d{2})(?=\d)/g, '$1/');" maxlength="8" value="<%= supplierData.issueDate %>" required onchange="newInput(this)" />
+                <input type="text" class="form-control" id="issueDate" name="issueDate" maxlength="10" value="<%= supplierData.issueDate %>" required onchange="newInput(this)" />
               </div>
             </div>
             <div class="mt-3">
               <label class="form-label fw-bold">Địa chỉ</label>
-              <input type="text" class="form-control" name="supplierAddress" value="<%= supplierData.supplierAddress %>" maxlength="70" onchange="newInput(this)" />
+              <input type="text" class="form-control" name="supplierAddress" value="<%= supplierData.supplierAddress %>" maxlength="350" onchange="newInput(this)" />
             </div>
 
             <% if (area.areaDimension > 0 && area.areaPrice > 0) { %>
@@ -462,25 +462,25 @@ const onlyAdmin = user.role === "Admin" || user.role === 'superAdmin' ? '' : 'di
               <label for="purchasedAreaDimension" class="form-label fw-bold">Diện tích mua (mẫu)</label>
               <input type="hidden" name="remainingAreaDimension" value="<%= area.remainingAreaDimension %>">
               <input type="hidden" name="slug" value="<%= area.slug %>">
-              <input type="number" class="form-control" id="purchasedAreaDimension" name="purchasedAreaDimension" step="0.1" min="0" value="<%= supplierData.purchasedAreaDimension %>" <%= onlyAdmin %>/>
+              <input type="number" class="form-control" id="purchasedAreaDimension" name="purchasedAreaDimension" step="0.1" min="0" value="<%= supplierData.purchasedAreaDimension %>" <%= onlyAdmin %> />
             </div>
             <div class="mt-3">
               <label for="purchasedAreaPrice" class="form-label fw-bold">Giá mua (VNĐ/mẫu)</label>
-              <input type="text" class="form-control" id="purchasedAreaPrice" name="purchasedAreaPrice" min="0" oninput="handleQuantityInput(this)" inputmode="numeric" value="<%= supplierData.purchasedAreaPrice.toLocaleString('vi-VN') %>" <%= onlyAdmin %>/>
+              <input type="text" class="form-control" id="purchasedAreaPrice" name="purchasedAreaPrice" min="0" oninput="handleQuantityInput(this)" inputmode="numeric" value="<%= supplierData.purchasedAreaPrice.toLocaleString('vi-VN') %>" <%= onlyAdmin %> />
             </div>
             <div class="mt-3">
               <label for="areaDeposit" class="form-label fw-bold">Tiền đặt cọc</label>
-              <input type="text" class="form-control" id="areaDeposit" name="areaDeposit" min="0" oninput="handleQuantityInput(this)" inputmode="numeric" value="<%= supplierData.areaDeposit.toLocaleString('vi-VN') %>" <%= onlyAdmin %>/>
+              <input type="text" class="form-control" id="areaDeposit" name="areaDeposit" min="0" oninput="handleQuantityInput(this)" inputmode="numeric" value="<%= supplierData.areaDeposit.toLocaleString('vi-VN') %>" <%= onlyAdmin %> />
             </div>
             <div class="mt-3">
               <div class="row">
                 <div class="col-6">
                   <label for="debt" class="form-label fw-bold">Nợ còn lại</label>
-                  <input type="text" class="form-control" id="debt" value="<%= remainingDebt > 0 ? remainingDebt.toLocaleString('vi-VN') : 0 %>" <%= onlyAdmin %>/>
+                  <input type="text" class="form-control" id="debt" value="<%= remainingDebt > 0 ? remainingDebt.toLocaleString('vi-VN') : 0 %>" <%= onlyAdmin %> />
                 </div>
                 <div class="col-6">
                   <label for="remaining" class="form-label fw-bold">Tổng tiền giữ lại</label>
-                  <input type="text" class="form-control" id="remaining" value="<%= totalMoneyRetainedAmount > 0 ? totalMoneyRetainedAmount.toLocaleString('vi-VN') : 0 %>" <%= onlyAdmin %>/>
+                  <input type="text" class="form-control" id="remaining" value="<%= totalMoneyRetainedAmount > 0 ? totalMoneyRetainedAmount.toLocaleString('vi-VN') : 0 %>" <%= onlyAdmin %> />
                 </div>
               </div>
             </div>
@@ -489,28 +489,28 @@ const onlyAdmin = user.role === "Admin" || user.role === 'superAdmin' ? '' : 'di
               <div class="row">
                 <div class="col-6">
                   <label for="areaDurationStart" class="form-label">Ngày bắt đầu</label>
-                  <input type="date" class="form-control" id="areaDurationStart" name="areaDuration[start]" value="<%= supplierData.areaDuration.start ? supplierData.areaDuration.start.toISOString().split('T')[0] : '' %>" <%= onlyAdmin %>/>
+                  <input type="date" class="form-control" id="areaDurationStart" name="areaDuration[start]" value="<%= supplierData.areaDuration.start ? supplierData.areaDuration.start.toISOString().split('T')[0] : '' %>" <%= onlyAdmin %> />
                 </div>
                 <div class="col-6">
                   <label for="areaDurationEnd" class="form-label">Ngày kết thúc</label>
-                  <input type="date" class="form-control" id="areaDurationEnd" name="areaDuration[end]" value="<%= supplierData.areaDuration.end ? supplierData.areaDuration.end.toISOString().split('T')[0] : '' %>" <%= onlyAdmin %>/>
+                  <input type="date" class="form-control" id="areaDurationEnd" name="areaDuration[end]" value="<%= supplierData.areaDuration.end ? supplierData.areaDuration.end.toISOString().split('T')[0] : '' %>" <%= onlyAdmin %> />
                 </div>
               </div>
             </div>
             <% } %>
             <div class="mt-3">
               <label for="advancePayment" class="form-label fw-bold">Tiền ứng</label>
-              <input type="text" class="form-control" id="advancePayment" name="advancePayment" value="<%= supplierData.advancePayment.toLocaleString('vi-VN') %>" oninput="handleQuantityInput(this)" inputmode="numeric" onchange="newInput(this)" <%= onlyAdmin %>/>
+              <input type="text" class="form-control" id="advancePayment" name="advancePayment" value="<%= supplierData.advancePayment.toLocaleString('vi-VN') %>" oninput="handleQuantityInput(this)" inputmode="numeric" onchange="newInput(this)" <%= onlyAdmin %> />
             </div>
             <% if (area.areaDimension > 0 && area.areaPrice > 0) { %>
             <div class="mt-3">
               <label for="ratioRubberSplit" class="form-label fw-bold">% nhận mủ mặc định</label>
-              <input type="text" class="form-control" id="ratioRubberSplit" name="ratioRubberSplit" value="<%= supplierData.ratioRubberSplit.toLocaleString('vi-VN') %>" oninput="handlePercentageInput(this)" inputmode="numeric" <%= onlyAdmin %>/>
+              <input type="text" class="form-control" id="ratioRubberSplit" name="ratioRubberSplit" value="<%= supplierData.ratioRubberSplit.toLocaleString('vi-VN') %>" oninput="handlePercentageInput(this)" inputmode="numeric" <%= onlyAdmin %> />
             </div>
             <% } %>
             <div class="mt-3">
               <label for="ratioSumSplit" class="form-label fw-bold">% nhận tổng mặc định</label>
-              <input type="text" class="form-control" id="ratioSumSplit" name="ratioSumSplit" value="<%= supplierData.ratioSumSplit.toLocaleString('vi-VN') %>" min="1" <%= onlyAdmin %>/>
+              <input type="text" class="form-control" id="ratioSumSplit" name="ratioSumSplit" value="<%= supplierData.ratioSumSplit.toLocaleString('vi-VN') %>" min="1" <%= onlyAdmin %> />
             </div>
           </div>
         </div>
@@ -582,9 +582,7 @@ const onlyAdmin = user.role === "Admin" || user.role === 'superAdmin' ? '' : 'di
       data: 'id',
       orderable: false
     },
-  ] 
-  : 
-  [{
+  ] : [{
       data: 'no',
       orderable: false
     },

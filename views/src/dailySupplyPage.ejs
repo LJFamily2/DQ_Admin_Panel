@@ -12,7 +12,7 @@
   <script src="https://unpkg.com/@popperjs/core@2"></script>
   <script src="https://unpkg.com/tippy.js@6"></script>
 
-  
+
   <style>
     .hide {
       display: none;
@@ -178,11 +178,11 @@
                         <div class="row normalFields m-0 p-0">
                           <div class="col col-md-6">
                             <label for="supplierName" class="form-label fw-bold">Tên</label>
-                            <input type="text" class="form-control" id="supplierName" name="supplierName" maxlength="30" />
+                            <input type="text" class="form-control" id="supplierName" name="supplierName" maxlength="100" />
                           </div>
                           <div class="col col-md-6">
                             <label for="code" class="form-label fw-bold">Mã</label>
-                            <input type="text" class="form-control" id="code" name="code" maxlength="20" />
+                            <input type="text" class="form-control" id="code" name="code" maxlength="100" />
                           </div>
                         </div>
                         <div class="mt-3">
@@ -196,12 +196,12 @@
                           </div>
                           <div class="col-5">
                             <label for="issueDate" class="form-label fw-bold">Ngày cấp</label>
-                            <input type="text" class="form-control" id="issueDate" name="issueDate" oninput="this.value = this.value.replace(/\D/g, '').replace(/(\d{2})(?=\d)/g, '$1/');" maxlength="8" inputmode="numeric" />
+                            <input type="text" class="form-control" id="issueDate" name="issueDate" maxlength="10" inputmode="numeric" />
                           </div>
                         </div>
                         <div class="mt-3">
                           <label class="form-label fw-bold">Địa chỉ</label>
-                          <input type="text" class="form-control" name="supplierAddress" maxlength="150" />
+                          <input type="text" class="form-control" name="supplierAddress" maxlength="350" />
                         </div>
                         <div class="mt-3 conditional-field">
                           <label for="purchasedAreaDimension" class="form-label fw-bold">Diện tích mua (mẫu)</label>
@@ -356,5 +356,4 @@
   initializeToggleFields("areaDimension", "areaPrice");
 
   tippy('.tooltip-wrapper');
-
 </script>
