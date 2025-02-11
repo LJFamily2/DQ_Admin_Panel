@@ -472,7 +472,6 @@ function initializeExportDataTable(
     serverSide: true,
     processing: true,
     lengthMenu: [10, 20, { label: "Tất cả", value: -1 }],
-    paging: true,
     pagingType: "first_last_numbers",
     rowGroup: rowGroupOptions,
     ajax: {
@@ -501,7 +500,6 @@ function initializeExportDataTable(
       infoEmpty: "Hiển thị 0 đến 0 của 0 bản ghi",
       infoFiltered: "(lọc từ _MAX_ bản ghi)",
     },
-    lengthMenu: [10, 20],
     columns: columns.map((column) => {
       if (column.data === "id") {
         return {
