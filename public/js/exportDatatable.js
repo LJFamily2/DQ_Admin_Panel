@@ -13,6 +13,17 @@ const parseNumber = (value) => {
   return typeof value === "number" ? value : 0;
 };
 
+const cleanExcelData = (data) => {
+  if (!data || data === "") return "";
+  if (typeof data === "string") {
+    const cleanText = data.replace(/<\/?[^>]+(>|$)/g, "").trim();
+    if (!cleanText) return "";
+    const number = cleanText.replace(/\./g, "").replace(",", ".");
+    return !isNaN(number) ? parseFloat(number).toString() : cleanText;
+  }
+  return data;
+};
+
 function createColvisGroup(text, columns) {
   return {
     extend: "colvisGroup",
@@ -178,6 +189,10 @@ function initializeExportDataTable(
                 extend: "excel",
                 exportOptions: {
                   columns: ":visible",
+                  format: {
+                    body: (data) => cleanExcelData(data),
+                    footer: (data) => cleanExcelData(data),
+                  },
                 },
               },
             ],
