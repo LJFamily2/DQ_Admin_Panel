@@ -298,7 +298,9 @@
               <% area.suppliers.sort((a, b) => a.name.localeCompare(b.name)).forEach((supplier, index) =>{ %>
               <li class="list-group-item d-flex justify-content-between align-items-start">
                 <div class="supplier-name ms-2 me-auto">
-                  <div class="fw-bold"><%= supplier.name %> <%= supplier.manager ? '(Quản lý)' : '' %></div>
+                  <div class="fw-bold"><%= supplier.name %> <%= supplier.manager ? '(Quản lý)' : '' %>     <% if (supplier.isVerified) { %>
+                    <i class="ri-verified-badge-fill text-primary" data-tippy-content="Đã xác minh"></i>
+                  <% } %></div>
                   <%= supplier.code %>
                 </div>
                 <div class="d-flex">
@@ -319,7 +321,10 @@
                     <div class="modal-content">
                       <div class="modal-header">
                         <h1 class="modal-title fs-5" id="staticBackdropLabel">
-                          Chỉnh sửa nhà vườn <%= supplier.name %>
+                          Chỉnh sửa nhà vườn <%= supplier.name %>     
+                          <% if (supplier.isVerified) { %>
+                            <i class="ri-verified-badge-fill text-primary" data-tippy-content="Đã xác minh"></i>
+                          <% } %>
                         </h1>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                       </div>

@@ -116,6 +116,19 @@ const dailySupplySchema = new mongoose.Schema({
   ]
 });
 
+// Virtual functions
+supplierSchema.virtual('isVerified').get(function() {
+  return Boolean(
+    this.supplierAddress && 
+    this.phone && 
+    this.identification && 
+    this.issueDate
+  );
+});
+
+// Make sure virtuals are included in JSON/Object conversion
+supplierSchema.set('toJSON', { virtuals: true });
+supplierSchema.set('toObject', { virtuals: true });
 
 
 // Models Export

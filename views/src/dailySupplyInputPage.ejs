@@ -32,6 +32,14 @@
     input[type='number'] {
       -moz-appearance: textfield;
     }
+
+    /* Add styles for verified badge */
+    .verified-badge {
+      display: inline-block;
+      vertical-align: middle;
+      margin-left: 4px;
+      color: #007bff;
+    }
   </style>
 </head>
 
@@ -111,7 +119,8 @@
                         <select type="text" class="form-control slim-select" id="supplier<%= index %>" name="supplier" required>
                           <% area.suppliers.forEach(supplier => { %>
                           <option value="<%= supplier.supplierSlug %>" <%= supplier.name === item.supplier?.name ? 'selected' : '' %>>
-                            <%= supplier.name %> (<%= supplier.code %>)
+                            <%= supplier.name %>
+                            (<%= supplier.code %>)
                           </option>
                           <% }) %>
                         </select>
@@ -264,7 +273,9 @@
                 <label for="supplier" class="form-label fw-bold">Nhà vườn</label>
                 <select type="text" class="form-control slim-select" id="supplier" name="supplier" required>
                   <% area.suppliers.sort((a, b) => a.name.localeCompare(b.name)).forEach(supplier => { %>
-                  <option value="<%= supplier.supplierSlug %>"><%= supplier.name %> (<%= supplier.code %>)</option>
+                  <option value="<%= supplier.supplierSlug %>"><%= supplier.name %>
+                    (<%= supplier.code %>)
+                  </option>
                   <% }) %>
                 </select>
               </div>
@@ -353,7 +364,11 @@
             <% area.suppliers.forEach((supplier, index) =>{ %>
             <li class="list-group-item d-flex justify-content-between align-items-start">
               <div class="supplier-name ms-2 me-auto">
-                <div class="fw-bold"><%= supplier.name %> <%= supplier.manager ? '(Quản lý)' : '' %></div>
+                <div class="fw-bold"><%= supplier.name %> <%= supplier.manager ? '(Quản lý)' : '' %>
+                  <% if (supplier.isVerified) { %>
+                  <i class="ri-verified-badge-fill verified-badge" data-tippy-content="Đã xác minh"></i>
+                  <% } %>
+                </div>
                 <%= supplier.code %>
               </div>
             </li>

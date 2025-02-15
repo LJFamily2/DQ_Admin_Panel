@@ -57,7 +57,7 @@ async function renderPage(req, res) {
 
     res.render("src/dailySupplyIndividualExportPage", {
       layout: "./layouts/defaultLayout",
-      title: `Xuất dữ liệu mủ của ${supplierData.name}`,
+      title: `Xuất dữ liệu mủ của ${supplierData.name} ${supplierData.isVerified ? '<i class="ri-verified-badge-fill text-primary"></i>' : ''}`,
       supplierData,
       supplierSpecificData,
       area,

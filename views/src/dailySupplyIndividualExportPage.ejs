@@ -41,6 +41,9 @@ const onlyAdmin = user.role === "Admin" || user.role === 'superAdmin' ? '' : 'di
     </li>
     <li class="breadcrumb-item" aria-current="page">
       <%= supplierData.name %>
+      <% if (supplierData.isVerified) { %>
+        <i class="ri-verified-badge-fill text-primary" data-tippy-content="Đã xác minh"></i>
+      <% } %>
     </li>
   </ol>
 </nav>
