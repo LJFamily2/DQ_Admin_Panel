@@ -119,10 +119,10 @@ const dailySupplySchema = new mongoose.Schema({
 // Virtual functions
 supplierSchema.virtual('isVerified').get(function() {
   return Boolean(
-    this.supplierAddress && 
-    this.phone && 
-    this.identification && 
-    this.issueDate
+    this.supplierAddress && this.supplierAddress.length > 7 &&
+    this.phone && this.phone.length === 10 &&
+    this.identification &&  this.identification.length === 12 &&
+    this.issueDate &&  this.issueDate.length === 10
   );
 });
 
