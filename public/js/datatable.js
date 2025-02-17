@@ -108,6 +108,15 @@ function initializeDataTable(
       },
     };
   }
+  if (dailySupplyInputFooter) {
+    const columns = [5, 6, 7, 8];
+    footerCallbackOptions = {
+      footerCallback: function () {
+        setupFooterCallback(columns, this.api());
+      },
+    };
+  }
+
   if (dailySupplyFooter) {
     const columns = [5, 6, 7, 8];
     footerCallbackOptions = {
