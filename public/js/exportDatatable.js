@@ -173,9 +173,9 @@ function initializeExportDataTable(
 
   const tableOptions = {
     dom:
-      "<'row m-0 p-0 py-2'<'col-sm-12 col-md-6 d-flex align-items-center'B><'col-sm-12 col-md-6 d-flex justify-content-end'f>>" +
+      "<'row m-0 p-0 py-2'<'col-sm-6 col-md-6 d-flex align-items-center'B><'col-sm-6 col-md-6 d-flex justify-content-end'f>>" +
       "<'row m-0 p-0'<'col-sm-12 p-0'tr>>" +
-      "<'row m-0 p-0 py-2'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7 d-flex justify-content-end'p>>",
+      "<'row m-0 p-0 py-2'<'col-sm-6 col-md-5'i><'col-sm-6 col-md-7 d-flex justify-content-end'p>>",
     buttons: exportsOption
       ? [
           {
