@@ -1,0 +1,155 @@
+<head>
+
+</head>
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#summaryModal">
+  Tổng hợp theo vườn
+</button>
+
+<!-- Summary Modal -->
+<div class="modal fade" id="summaryModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Tổng hợp dữ liệu theo vườn</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="table-responsive">
+          <table class="table table-striped" id="summaryTable">
+            <thead>
+              <tr>
+                <th>Ngày</th>
+                <th>Tên vườn</th>
+                <th>Tổng quy khô</th>
+                <th>Tổng mủ tạp</th>
+                <th>Tổng mủ ké</th>
+                <th>Tổng mủ đông</th>
+              </tr>
+            </thead>
+            <tfoot>
+              <tr>
+                <th colspan="2">Tổng cộng</th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function initializeSummaryTable() {
+    return $('#summaryTable').DataTable({
+      dom: "<'row  mx-0'<'col-sm-12 col-md-6 d-flex align-items-center'B><'col-sm-12 col-md-6 d-flex justify-content-end'f>>" +
+        "<'row my-2 mx-0'<'col-sm-12'tr>>" +
+        "<'row  mx-0'<'col-sm-12 col-md-5 d-flex justify-content-start'i><'col-sm-12 col-md-7 d-flex justify-content-end'p>>",
+      buttons: ['excel', 'pdf'],
+      processing: true,
+      serverSide: false,
+      ordering: false,
+      rowGroup: {
+        dataSrc: 'date'
+      },
+      ajax: {
+        url: '/du-lieu-hang-ngay/getSummaryData',
+        type: 'POST',
+        data: function(d) {
+          return {
+            startDate: $('#startDate').val(),
+            endDate: $('#endDate').val()
+          };
+        }
+      },
+      columns: [{
+          data: 'date',
+          visible: false,
+          orderable: false
+        },
+        {
+          data: 'areaName',
+          orderable: false
+        },
+        {
+          data: 'totalDryRubber',
+          orderable: false,
+          render: function(data) {
+            return data.toLocaleString('vi-VN');
+          }
+        },
+        {
+          data: 'totalMixedRubber',
+          orderable: false,
+          render: function(data) {
+            return data.toLocaleString('vi-VN');
+          }
+        },
+        {
+          data: 'totalKeRubber',
+          orderable: false,
+          render: function(data) {
+            return data.toLocaleString('vi-VN');
+          }
+        },
+        {
+          data: 'totalDongRubber',
+          orderable: false,
+          render: function(data) {
+            return data.toLocaleString('vi-VN');
+          }
+        }
+      ],
+      language: {
+        search: "_INPUT_",
+        searchPlaceholder: 'Tìm kiếm trong bảng',
+        emptyTable: "Không có dữ liệu",
+        info: "Hiển thị _START_ đến _END_ của _TOTAL_ bản ghi",
+        infoEmpty: "Hiển thị 0 đến 0 của 0 bản ghi",
+        loadingRecords: "Đang tải...",
+        processing: "Đang xử lý...",
+        zeroRecords: "Không tìm thấy dữ liệu",
+        paginate: {
+          first: "Đầu",
+          last: "Cuối",
+          next: "Sau",
+          previous: "Trước"
+        }
+      },
+      footerCallback: function(row, data, start, end, display) {
+        const api = this.api();
+
+        // Calculate totals for each column
+        [2, 3, 4, 5].forEach(colIndex => {
+          const total = api
+            .column(colIndex)
+            .data()
+            .reduce((a, b) => parseFloat(a) + parseFloat(b), 0);
+
+          $(api.column(colIndex).footer()).html(
+            total.toLocaleString('vi-VN')
+          );
+        });
+      }
+    });
+  }
+
+  // Initialize the summary table when modal is shown
+  $('#summaryModal').on('shown.bs.modal', function() {
+    if (!$.fn.DataTable.isDataTable('#summaryTable')) {
+      initializeSummaryTable();
+    } else {
+      $('#summaryTable').DataTable().ajax.reload();
+    }
+  });
+
+  // Refresh summary data when date range changes
+  $('#startDate, #endDate').on('change', function() {
+    if ($.fn.DataTable.isDataTable('#summaryTable')) {
+      $('#summaryTable').DataTable().ajax.reload();
+    }
+  });
+</script>

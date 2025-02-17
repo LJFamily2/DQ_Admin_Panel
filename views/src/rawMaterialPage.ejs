@@ -1,8 +1,10 @@
 <head>
   <!-- js -->
   <script src="https://cdn.datatables.net/buttons/3.0.2/js/dataTables.buttons.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/3.2.2/js/buttons.html5.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-  <script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.html5.min.js"></script>
+  <script src="https://cdn.datatables.net/rowgroup/1.5.1/js/dataTables.rowGroup.js"></script>
   <script src="/js/datatable.js"></script>
   <script src="/js/inputFieldRestriction.js" defer></script>
   <script src="/js/newInput.js" defer></script>
@@ -38,6 +40,7 @@
     <div class="card" style="box-shadow: 0 1px 2px">
       <div class="card-header bg-transparent">
         <%- include('../partials/dateSelection.ejs') %>
+        <%- include('../partials/summaryModal.ejs') %>
         <%- include('../partials/importExcelButton.ejs', {
           page: 'rawMaterial',
           area: null,
@@ -222,11 +225,11 @@
                 <label class="form-label fw-bold">Mủ nước</label>
                 <div class="col col-md-6">
                   <label for="dryQuantity" class="form-label">Số lượng</label>
-                  <input type="text" class="form-control" id="dryQuantity" name="dryQuantity" oninput="handleQuantityInput(this)" inputmode="numeric" required/>
+                  <input type="text" class="form-control" id="dryQuantity" name="dryQuantity" oninput="handleQuantityInput(this)" inputmode="numeric" required />
                 </div>
                 <div class="col col-md-6">
                   <label for="dryPercentage" class="form-label">Hàm lượng</label>
-                  <input type="text" class="form-control" id="dryPercentage" name="dryPercentage" oninput="handlePercentageInput(this)" inputmode="numeric" required/>
+                  <input type="text" class="form-control" id="dryPercentage" name="dryPercentage" oninput="handlePercentageInput(this)" inputmode="numeric" required />
                 </div>
               </div>
             </div>
@@ -238,7 +241,7 @@
                 <label class="form-label fw-bold">Mủ tạp</label>
                 <div class="col-12">
                   <label for="mixedQuantity" class="form-label">Số lượng</label>
-                  <input type="text" class="form-control" id="mixedQuantity" name="mixedQuantity" min="0" oninput="handleQuantityInput(this)" inputmode="numeric" required/>
+                  <input type="text" class="form-control" id="mixedQuantity" name="mixedQuantity" min="0" oninput="handleQuantityInput(this)" inputmode="numeric" required />
                 </div>
               </div>
             </div>
@@ -249,11 +252,11 @@
                 <label class="form-label fw-bold">Mủ Ké</label>
                 <div class="col col-md-6">
                   <label for="keQuantity" class="form-label">Số lượng</label>
-                  <input type="text" class="form-control" id="keQuantity" name="keQuantity" oninput="handleQuantityInput(this)" inputmode="numeric" required/>
+                  <input type="text" class="form-control" id="keQuantity" name="keQuantity" oninput="handleQuantityInput(this)" inputmode="numeric" required />
                 </div>
                 <div class="col col-md-6">
                   <label for="kePercentage" class="form-label">Hàm lượng</label>
-                  <input type="text" class="form-control" id="kePercentage" name="kePercentage" oninput="handlePercentageInput(this)" inputmode="numeric" required/>
+                  <input type="text" class="form-control" id="kePercentage" name="kePercentage" oninput="handlePercentageInput(this)" inputmode="numeric" required />
                 </div>
               </div>
             </div>

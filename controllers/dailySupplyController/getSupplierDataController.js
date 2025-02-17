@@ -14,6 +14,8 @@ module.exports = {
 
   // Admin side for exportin individual data
   getIndividualSupplierExportData,
+
+  getSummaryData,
 };
 const formatNumber = (num) => (num = num.toLocaleString("vi-VN"));
 
@@ -720,5 +722,126 @@ async function getIndividualSupplierExportData(req, res, sendResponse = true) {
       data: flattenedData,
       latestPrices: latestPrices,
     };
+  }
+}
+
+async function getSummaryData(req, res) {
+  try {
+    const { draw, startDate, endDate } = req.body;
+    const { startDateUTC, endDateUTC } = parseDates(startDate, endDate);
+
+    const pipeline = [
+      { $match: { slug: { $exists: true } } },
+      { $unwind: "$data" },
+      {
+        $match: {
+          "data.date": {
+            $gte: new Date(startDateUTC),
+            $lte: new Date(endDateUTC),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            date: {
+              $dateToString: {
+                format: "%d-%m-%Y",
+                date: "$data.date",
+              },
+            },
+            areaName: "$name",
+          },
+          totalDryRubber: {
+            $sum: {
+              $reduce: {
+                input: {
+                  $filter: {
+                    input: "$data.rawMaterial",
+                    as: "material",
+                    cond: { $eq: ["$$material.name", "Mủ nước"] },
+                  },
+                },
+                initialValue: 0,
+                in: {
+                  $sum: {
+                    $multiply: ["$$this.quantity", "$$this.percentage", 0.01],
+                  },
+                },
+              },
+            },
+          },
+          totalMixedRubber: {
+            $sum: {
+              $reduce: {
+                input: {
+                  $filter: {
+                    input: "$data.rawMaterial",
+                    as: "material",
+                    cond: { $eq: ["$$material.name", "Mủ tạp"] },
+                  },
+                },
+                initialValue: 0,
+                in: { $sum: "$$this.quantity" },
+              },
+            },
+          },
+          totalKeRubber: {
+            $sum: {
+              $reduce: {
+                input: {
+                  $filter: {
+                    input: "$data.rawMaterial",
+                    as: "material",
+                    cond: { $eq: ["$$material.name", "Mủ ké"] },
+                  },
+                },
+                initialValue: 0,
+                in: { $sum: "$$this.quantity" },
+              },
+            },
+          },
+          totalDongRubber: {
+            $sum: {
+              $reduce: {
+                input: {
+                  $filter: {
+                    input: "$data.rawMaterial",
+                    as: "material",
+                    cond: { $eq: ["$$material.name", "Mủ đông"] },
+                  },
+                },
+                initialValue: 0,
+                in: { $sum: "$$this.quantity" },
+              },
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          date: "$_id.date",
+          areaName: "$_id.areaName",
+          totalDryRubber: { $round: ["$totalDryRubber", 2] },
+          totalMixedRubber: { $round: ["$totalMixedRubber", 2] },
+          totalKeRubber: { $round: ["$totalKeRubber", 2] },
+          totalDongRubber: { $round: ["$totalDongRubber", 2] },
+        },
+      },
+      { $sort: { date: 1, areaName: 1 } },
+    ];
+
+    const summaryData = await DailySupply.aggregate(pipeline);
+
+    res.json({
+      draw: parseInt(draw || 1),
+      recordsTotal: summaryData.length,
+      recordsFiltered: summaryData.length,
+      data: summaryData,
+    });
+  } catch (error) {
+    console.error("Error in getSummaryData:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 }

@@ -123,4 +123,6 @@ router.post(
   dailySupplyController.getSupplierDataController.getIndividualSupplierExportData
 );
 
+router.post('/getSummaryData', dailySupplyController.getSupplierDataController.getSummaryData);
+
 module.exports = router;
