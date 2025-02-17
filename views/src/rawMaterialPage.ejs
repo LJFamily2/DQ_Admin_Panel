@@ -2,6 +2,7 @@
   <!-- js -->
   <script src="https://cdn.datatables.net/buttons/3.0.2/js/dataTables.buttons.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
   <script src="https://cdn.datatables.net/buttons/3.2.2/js/buttons.html5.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script src="https://cdn.datatables.net/rowgroup/1.5.1/js/dataTables.rowGroup.js"></script>
@@ -31,7 +32,7 @@
 <%- include('../partials/totalValue') %>
 
 <% if(user.role === 'Admin' || user.role === 'superAdmin'){ %>
-<button type="button" class="btn btn-danger mx-2 mx-md-3 mt-2" data-bs-toggle="modal" data-bs-target="#deleteAll" style="width: max-content">
+<button type="button" class="btn btn-danger mx-2 mx-md-2 mt-2" data-bs-toggle="modal" data-bs-target="#deleteAll" style="width: max-content">
   Xóa tất cả thông tin
 </button>
 <% } %>
@@ -39,20 +40,30 @@
   <div class="col-12 col-md-9 mt-2">
     <div class="card" style="box-shadow: 0 1px 2px">
       <div class="card-header bg-transparent">
-        <%- include('../partials/dateSelection.ejs') %>
-        <%- include('../partials/summaryModal.ejs') %>
-        <%- include('../partials/importExcelButton.ejs', {
-          page: 'rawMaterial',
-          area: null,
-          requiredFields: [
-            { name: 'Ngày', description: 'Theo format dd/mm/yyyy', type:'date' },
-            { name: 'Số lượng mủ nước', description: '>0' , type:'number' },
-            { name: 'Hàm lượng mủ nước', description: '>0' , type:'number' },
-            { name: 'Số lượng mủ tạp', description: '>0' , type:'number' },
-            { name: 'Số lượng mủ ké', description: '>0', type:'number' },
-            { name: 'Hàm lượng mủ ké', description: '>0' , type:'number' },
-          ]
-        }) %>
+        <div class="element">
+          <%- include('../partials/dateSelection.ejs') %>
+        </div>
+
+        <% if(user.role === 'Admin' || user.role === 'superAdmin'){ %>
+        <div class="element">
+          <%- include('../partials/summaryModal.ejs') %>
+        </div>
+        <% } %>
+
+        <div class="element">
+          <%- include('../partials/importExcelButton.ejs', {
+              page: 'rawMaterial',
+              area: null,
+              requiredFields: [
+                { name: 'Ngày', description: 'Theo format dd/mm/yyyy', type:'date' },
+                { name: 'Số lượng mủ nước', description: '>0' , type:'number' },
+                { name: 'Hàm lượng mủ nước', description: '>0' , type:'number' },
+                { name: 'Số lượng mủ tạp', description: '>0' , type:'number' },
+                { name: 'Số lượng mủ ké', description: '>0', type:'number' },
+                { name: 'Hàm lượng mủ ké', description: '>0' , type:'number' },
+              ]
+            }) %>
+        </div>
       </div>
       <div class="card-body table-responsive">
         <table class="table table-striped" id="table">

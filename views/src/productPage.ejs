@@ -11,7 +11,7 @@
 <%- include('../partials/totalValue') %>
 
 <% if(user.role === 'Admin' || user.role === 'superAdmin'){ %>
-<button type="button" class="btn btn-danger mx-2 mx-md-3 mt-2" data-bs-toggle="modal" data-bs-target="#deleteAll" style="width: max-content">
+<button type="button" class="btn btn-danger mx-2 mx-md-2 mt-2" data-bs-toggle="modal" data-bs-target="#deleteAll" style="width: max-content">
   Xóa tất cả thông tin
 </button>
 <% } %>
@@ -63,7 +63,7 @@
                     <div class="modal-body">
                       <div>
                         <label for="date" class="form-label fw-bold">Ngày chạy lò</label>
-                        <input type="date" class="form-control"  name="date" value="<%= product.date.toISOString().slice(0,10)  %>" onchange="newInput(this)" required />
+                        <input type="date" class="form-control" name="date" value="<%= product.date.toISOString().slice(0,10)  %>" onchange="newInput(this)" required />
                       </div>
 
                       <div class="my-3">
@@ -71,11 +71,11 @@
                           <label for="dryRubberUsed" class="form-label fw-bold">Nguyên liệu</label>
                           <div class="col-6">
                             <label for="dryRubberUsed" class="form-label ">Số lượng</label>
-                            <input type="text" class="form-control"  name="dryRubberUsed" oninput="handleQuantityInput(this)" onchange="newInput(this)" inputmode="numeric" value="<%= product.dryRubberUsed.toLocaleString('vi-VN') %>" />
+                            <input type="text" class="form-control" name="dryRubberUsed" oninput="handleQuantityInput(this)" onchange="newInput(this)" inputmode="numeric" value="<%= product.dryRubberUsed.toLocaleString('vi-VN') %>" />
                           </div>
                           <div class="col-6">
                             <label for="dryPercentage" class="form-label ">Hàm lượng</label>
-                            <input type="text" class="form-control"  name="dryPercentage" oninput="handlePercentageInput(this)" onchange="newInput(this)" inputmode="numeric" value="<%= product.dryPercentage.toLocaleString('vi-VN') %>" />
+                            <input type="text" class="form-control" name="dryPercentage" oninput="handlePercentageInput(this)" onchange="newInput(this)" inputmode="numeric" value="<%= product.dryPercentage.toLocaleString('vi-VN') %>" />
                           </div>
                         </div>
                       </div>
@@ -189,18 +189,18 @@
               <label for="dryRubberUsed" class="form-label fw-bold">Nguyên liệu</label>
               <div class="col-6">
                 <label for="dryRubberUsed" class="form-label">Số lượng</label>
-                <input type="text" class="form-control" id="dryRubberUsed" name="dryRubberUsed" oninput="handleQuantityInput(this)" inputmode="numeric" required/>
+                <input type="text" class="form-control" id="dryRubberUsed" name="dryRubberUsed" oninput="handleQuantityInput(this)" inputmode="numeric" required />
               </div>
               <div class="col-6">
                 <label for="dryPercentage" class="form-label">Hàm lượng</label>
-                <input type="text" class="form-control" id="dryPercentage" name="dryPercentage" oninput="handlePercentageInput(this)" inputmode="numeric" required/>
+                <input type="text" class="form-control" id="dryPercentage" name="dryPercentage" oninput="handlePercentageInput(this)" inputmode="numeric" required />
               </div>
             </div>
           </div>
 
           <div class="my-3">
             <label for="quantity" class="form-label fw-bold">Thành phẩm</label>
-            <input type="text" class="form-control" id="quantity" name="quantity" oninput="handleQuantityInput(this)" inputmode="numeric" required/>
+            <input type="text" class="form-control" id="quantity" name="quantity" oninput="handleQuantityInput(this)" inputmode="numeric" required />
           </div>
 
           <div class="my-3">

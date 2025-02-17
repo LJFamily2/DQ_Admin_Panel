@@ -3,13 +3,13 @@
   <script src="/js/datatable.js"></script>
   <script src="/js/inputFieldRestriction.js" defer></script>
   <script src="/js/newInput.js" defer></script>
-  
+
   <!-- Slim select -->
   <script src="/js/slim-select.js" defer></script>
 </head>
 
 <%- include('../partials/totalValue') %> <% if(user.role === 'Admin' || user.role === 'superAdmin'){ %>
-<button type="button" class="btn btn-danger mx-2 mx-md-3 mt-2" data-bs-toggle="modal" data-bs-target="#deleteAll" style="width: max-content">
+<button type="button" class="btn btn-danger mx-2 mx-md-2 mt-2" data-bs-toggle="modal" data-bs-target="#deleteAll" style="width: max-content">
   Xóa tất cả thông tin
 </button>
 <% } %>
@@ -65,7 +65,7 @@
 
                       <div class="my-3">
                         <label for="product" class="form-label fw-bold">Hàng hóa</label>
-                        <input type="text" class="form-control"  name="product" required value="<%= spend.product %>" <%= spend.product === 'Lương' ? 'disabled' : '' %> onchange="newInput(this)" />
+                        <input type="text" class="form-control" name="product" required value="<%= spend.product %>" <%= spend.product === 'Lương' ? 'disabled' : '' %> onchange="newInput(this)" />
                       </div>
 
                       <% if(spend.product === 'Lương'){ %>
@@ -76,19 +76,19 @@
                       <% } else { %>
                       <div class="my-3">
                         <label for="quantity" class="form-label fw-bold">Số lượng</label>
-                        <input type="text" class="form-control"  name="quantity" oninput="handleQuantityInput(this)" inputmode="numeric" value="<%= spend.quantity.toLocaleString('vi-VN') %>" onchange="newInput(this)" />
+                        <input type="text" class="form-control" name="quantity" oninput="handleQuantityInput(this)" inputmode="numeric" value="<%= spend.quantity.toLocaleString('vi-VN') %>" onchange="newInput(this)" />
                       </div>
 
                       <div class="my-3">
                         <label for="price" class="form-label fw-bold">Đơn giá</label>
-                        <input type="text" class="form-control"  name="price" oninput="handleQuantityInput(this)" inputmode="numeric" value="<%= spend.price.toLocaleString('vi-VN') %>" onchange="newInput(this)" />
+                        <input type="text" class="form-control" name="price" oninput="handleQuantityInput(this)" inputmode="numeric" value="<%= spend.price.toLocaleString('vi-VN') %>" onchange="newInput(this)" />
                       </div>
 
                       <% } %>
 
                       <div class="my-3">
                         <label for="notes" class="form-label fw-bold">Ghi chú</label>
-                        <textarea type="text" class="form-control" rows="2"  name="notes" onchange="newInput(this)">
+                        <textarea type="text" class="form-control" rows="2" name="notes" onchange="newInput(this)">
 <%= spend.notes %></textarea>
                       </div>
                     </div>
