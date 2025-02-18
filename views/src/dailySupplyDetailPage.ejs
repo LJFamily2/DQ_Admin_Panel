@@ -264,8 +264,7 @@
             <th></th>
             <th></th>
             <th></th>
-            <th></th>
-            <th colspan="2"></th>
+            <th colspan="3"></th>
           </tfoot>
         </table>
       </div>
@@ -298,9 +297,10 @@
               <% area.suppliers.sort((a, b) => a.name.localeCompare(b.name)).forEach((supplier, index) =>{ %>
               <li class="list-group-item d-flex justify-content-between align-items-start">
                 <div class="supplier-name ms-2 me-auto">
-                  <div class="fw-bold"><%= supplier.name %> <%= supplier.manager ? '(Quản lý)' : '' %>     <% if (supplier.isVerified) { %>
+                  <div class="fw-bold"><%= supplier.name %> <%= supplier.manager ? '(Quản lý)' : '' %> <% if (supplier.isVerified) { %>
                     <i class="ri-verified-badge-fill text-primary" data-tippy-content="Đã xác minh"></i>
-                  <% } %></div>
+                    <% } %>
+                  </div>
                   <%= supplier.code %>
                 </div>
                 <div class="d-flex">
@@ -321,9 +321,9 @@
                     <div class="modal-content">
                       <div class="modal-header">
                         <h1 class="modal-title fs-5" id="staticBackdropLabel">
-                          Chỉnh sửa nhà vườn <%= supplier.name %>     
+                          Chỉnh sửa nhà vườn <%= supplier.name %>
                           <% if (supplier.isVerified) { %>
-                            <i class="ri-verified-badge-fill text-primary" data-tippy-content="Đã xác minh"></i>
+                          <i class="ri-verified-badge-fill text-primary" data-tippy-content="Đã xác minh"></i>
                           <% } %>
                         </h1>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -728,63 +728,6 @@
   // Initialize toggle fields with initial values
   toggleFields(initialAreaDimension, initialAreaPrice);
   initializeToggleFields('areaDimension', 'areaPrice');
-
-  // function checkAdditionalFields() {
-  // const suppliers = document.querySelectorAll('.additionalField .supplier');
-  // const submitButton = document.querySelector('#dynamicForm button[type="submit" onclick="handleFormSubmit(this)"]');
-  // if (suppliers.length === 0) {
-  // submitButton.style.display = 'none';
-  // } else {
-  // submitButton.style.display = 'block';
-  // }
-  // }
-
-  // function calculateAverageRatioSplit(rawMaterials) {
-  // const materialData = rawMaterials.reduce((acc, rawMaterialArray) => {
-  // rawMaterialArray.forEach(raw => {
-  // const {
-  // name,
-  // quantity = 0,
-  // ratioSplit = 100,
-  // price = 0,
-  // percentage = 0
-  // } = raw;
-  // if (!acc[name]) {
-  // acc[name] = {
-  // quantity: 0,
-  // ratioSplit: 0,
-  // price: 0,
-  // total: 0,
-  // afterSplit: 0,
-  // rawMaterial: [],
-  // count: 0,
-  // };
-  // }
-  // acc[name].quantity += quantity;
-  // acc[name].rawMaterial.push(raw);
-  // acc[name].count += 1;
-
-  // if (name === 'Mủ nước') {
-  // acc[name].afterSplit += (quantity * percentage / 100 * ratioSplit / 100);
-  // acc[name].total += (((quantity * (percentage / 100)) * (ratioSplit)) / 100) * price;
-  // } else {
-  // acc[name].afterSplit += (quantity * (ratioSplit) / 100);
-  // acc[name].total += ((quantity * (ratioSplit)) / 100) * price;
-  // }
-
-  // if (price) {
-  // acc[name].price += price;
-  // }
-  // });
-  // return acc;
-  // }, {});
-
-  // Object.keys(materialData).forEach(key => {
-  // materialData[key].ratioSplit = materialData[key].ratioSplit / materialData[key].count;
-  // });
-
-  // return materialData;
-  // }
 
   tippy('.tooltip-wrapper');
 </script>
