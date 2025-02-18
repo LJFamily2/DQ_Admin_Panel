@@ -100,14 +100,7 @@ function initializeDataTable(
       },
     };
   }
-  if (dailySupplyDetailFooter) {
-    const columns = [6, 7, 8, 9];
-    footerCallbackOptions = {
-      footerCallback: function () {
-        setupFooterCallback(columns, this.api());
-      },
-    };
-  }
+
   if (dailySupplyInputFooter) {
     const columns = [5, 6, 7, 8];
     footerCallbackOptions = {
@@ -121,6 +114,16 @@ function initializeDataTable(
       },
     };
   }
+  
+  if (dailySupplyDetailFooter) {
+    const columns = [6, 7, 8, 9];
+    footerCallbackOptions = {
+      footerCallback: function () {
+        setupFooterCallback(columns, this.api());
+      },
+    };
+  }
+
 
   if (dailySupplyFooter) {
     const columns = [5, 6, 7, 8];
