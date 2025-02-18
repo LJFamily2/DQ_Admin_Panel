@@ -53,8 +53,8 @@ function initializeDataTable(
           const num = parseNumber(val);
           return !isNaN(num) ? acc + num : acc;
         }, 0);
-        const formatted = formatNumberForDisplay(total, locale);
-        $(api.column(colIndex).footer()).html(`<strong>${formatted}</strong>`);
+      const formatted = formatNumberForDisplay(total, locale);
+      $(api.column(colIndex).footer()).html(`<strong>${formatted}</strong>`);
     });
   };
 
@@ -77,7 +77,7 @@ function initializeDataTable(
   }
 
   if (productPageFooter) {
-    const columns = [2,3];
+    const columns = [2, 3];
     footerCallbackOptions = {
       footerCallback: function () {
         setupFooterCallback(columns, this.api());
@@ -102,24 +102,22 @@ function initializeDataTable(
   }
 
   if (dailySupplyInputFooter) {
-    const columns = [3,5, 6, 7, 8];
+    const columns = [3, 5, 6, 7, 8];
     footerCallbackOptions = {
       footerCallback: function () {
         setupFooterCallback(columns, this.api());
       },
     };
   }
-
 
   if (dailySupplyDetailFooter) {
-    const columns = [6, 7, 8, 9];
+    const columns = [4, 6, 7, 8, 9];
     footerCallbackOptions = {
       footerCallback: function () {
         setupFooterCallback(columns, this.api());
       },
     };
   }
-
 
   if (dailySupplyFooter) {
     const columns = [5, 6, 7, 8];
@@ -205,7 +203,7 @@ function initializeDataTable(
         // previous: "Trước",
       },
       search: "_INPUT_",
-      searchPlaceholder: 'Tìm kiếm trong bảng',
+      searchPlaceholder: "Tìm kiếm trong bảng",
       lengthMenu: "Hiển thị _MENU_ bản ghi",
       info: "Hiển thị _START_ đến _END_ của _TOTAL_ bản ghi",
       infoEmpty: "Hiển thị 0 bản ghi",
