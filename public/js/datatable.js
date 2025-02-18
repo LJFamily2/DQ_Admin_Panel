@@ -105,16 +105,12 @@ function initializeDataTable(
     const columns = [5, 6, 7, 8];
     footerCallbackOptions = {
       footerCallback: function () {
-        const api = this.api();
-        columns.forEach(col => {
-          console.log(`Column ${col} header:`, $(api.column(col).header()).text());
-          console.log(`Column ${col} data:`, api.column(col, {search:'applied'}).data());
-        });
-        setupFooterCallback(columns, api);
+        setupFooterCallback(columns, this.api());
       },
     };
   }
-  
+
+
   if (dailySupplyDetailFooter) {
     const columns = [6, 7, 8, 9];
     footerCallbackOptions = {
