@@ -17,7 +17,12 @@ module.exports = {
 
   getSummaryData,
 };
-const formatNumber = (num) => (num = num.toLocaleString("vi-VN"));
+const formatNumber = (num) => {
+  return new Intl.NumberFormat("vi-VN", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  }).format(parseFloat(num) || 0);
+};
 
 // Get today date in UTC+7
 function getTodayDate() {
@@ -242,7 +247,7 @@ async function getSupplierInputData(req, res, isArea) {
       const muNuocQuantity = rawMaterials["Mủ nước"]?.quantity || 0;
       const muNuocPercentage = rawMaterials["Mủ nước"]?.percentage || 0;
       const muNuocQuantityTotal = Number(
-        ((muNuocQuantity * muNuocPercentage) / 100).toFixed(5)
+        ((muNuocQuantity * muNuocPercentage) / 100).toFixed(2)
       );
       return {
         no: index + 1,
