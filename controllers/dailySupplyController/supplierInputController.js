@@ -110,9 +110,10 @@ async function renderInputDataPage(req, res) {
 async function addData(req, res) {
   try {
     req.body = trimStringFields(req.body);
-    console.log(JSON.stringify(req.body, null, 2));
+
     const today = new Date();
     today.setUTCHours(today.getUTCHours() + 7);
+    const inputDate = req.body.date ? req.body.date : today;
 
     const dailySupply = await DailySupply.findOne({
       $or: [{ _id: req.params.id }, { _id: req.body.areaID }],
@@ -185,7 +186,7 @@ async function addData(req, res) {
     }
 
     const inputedData = {
-      date: today,
+      date: inputDate,
       rawMaterial: rawMaterials,
       supplier: existedSupplier._id,
       note: trimStringFields(req.body.note) || "",

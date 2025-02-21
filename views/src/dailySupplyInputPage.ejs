@@ -272,6 +272,11 @@
             <div class="card-body">
               <%- include('../partials/notificationMessage.ejs') %>
 
+              <div class="my-3">
+                <label for="date" class="form-label fw-bold">Ngày nhập</label>
+                <input type="date" class="form-control" id="date" name="date" required value="<%= new Date().toISOString().split('T')[0] %>" />
+              </div>
+
               <div>
                 <label for="supplier" class="form-label fw-bold">Nhà vườn</label>
                 <select type="text" class="form-control slim-select" id="supplier" name="supplier" required>

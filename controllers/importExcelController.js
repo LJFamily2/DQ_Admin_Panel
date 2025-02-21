@@ -12,6 +12,14 @@ const processExcelFile = require("./helper/processExcelFile");
 const genericImport = require("./helper/genericImport");
 const path = require("path");
 
+// Helper function for mocking response object
+const createMockRes = () => ({
+  status: () => ({ json: () => {}, send: () => {} }),
+  json: () => {},
+  send: () => {},
+  redirect: () => {},
+});
+
 // Controller functions
 module.exports = {
   importSaleData,
@@ -256,6 +264,7 @@ async function importDailySupplyInputData(req, res) {
       await addData(
         {
           body: {
+            date: row["Ngày"],
             name: ["Mủ nước", "Mủ tạp", "Mủ ké", "Mủ đông"],
             quantity: [
               row["Số lượng mủ nước"] || 0,
