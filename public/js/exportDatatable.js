@@ -160,70 +160,99 @@ function initializeExportDataTable(
   }
 
   const pdfButton = {
-    extend: 'pdf',
-    orientation: 'landscape',
-    pageSize: 'A4',
+    extend: "pdf",
+    orientation: "landscape",
+    pageSize: "A4",
     exportOptions: {
-      columns: ':visible'
+      columns: ":visible",
     },
-    customize: function(doc) {
+    customize: function (doc) {
       // Basic styling
       doc.defaultStyle = {
         fontSize: 8,
-        alignment: 'center'
+        alignment: "center",
       };
-      
+
       if (doc.content[1] && doc.content[1].table) {
         // Equal width columns
-        doc.content[1].table.widths = Array(doc.content[1].table.body[0].length).fill('*');
-        
+        doc.content[1].table.widths = Array(
+          doc.content[1].table.body[0].length
+        ).fill("*");
+
         // Define table layout with borders
         doc.content[1].layout = {
-          hLineWidth: function(i) { return 1; },
-          vLineWidth: function(i) { return 1; },
-          hLineColor: function(i) { return '#666666'; },
-          vLineColor: function(i) { return '#666666'; },
-          paddingLeft: function(i) { return 4; },
-          paddingRight: function(i) { return 4; },
-          paddingTop: function(i) { return i === 0 ? 8 : 3; },  // More padding for header
-          paddingBottom: function(i) { return i === 0 ? 8 : 3; }  // More padding for header
+          hLineWidth: function (i) {
+            return 1;
+          },
+          vLineWidth: function (i) {
+            return 1;
+          },
+          hLineColor: function (i) {
+            return "#666666";
+          },
+          vLineColor: function (i) {
+            return "#666666";
+          },
+          paddingLeft: function (i) {
+            return 4;
+          },
+          paddingRight: function (i) {
+            return 4;
+          },
+          paddingTop: function (i) {
+            return i === 0 ? 8 : 3;
+          }, // More padding for header
+          paddingBottom: function (i) {
+            return i === 0 ? 8 : 3;
+          }, // More padding for header
         };
 
         // Enhanced header styling with bigger font
         if (doc.content[1].table.body[0]) {
-          doc.content[1].table.body[0] = doc.content[1].table.body[0].map((cell, index) => ({
-            text: cell.text || cell,
-            fillColor: '#E8E8E8',
-            bold: true,
-            fontSize: 10,  // Increased from 9 to 10
-            alignment: 'center',
-            margin: [0, 4, 0, 4],  // Add vertical margin for centering
-            colSpan: cell.colSpan,
-            rowSpan: cell.rowSpan,
-            vLineWidth: function(i) { return 1; },  // Ensure vertical lines in header
-            vLineColor: function(i) { return '#666666'; }  // Match vertical line color
-          }));
+          doc.content[1].table.body[0] = doc.content[1].table.body[0].map(
+            (cell, index) => ({
+              text: cell.text || cell,
+              fillColor: "#E8E8E8",
+              bold: true,
+              fontSize: 10, // Increased from 9 to 10
+              alignment: "center",
+              margin: [0, 4, 0, 4], // Add vertical margin for centering
+              colSpan: cell.colSpan,
+              rowSpan: cell.rowSpan,
+              vLineWidth: function (i) {
+                return 1;
+              }, // Ensure vertical lines in header
+              vLineColor: function (i) {
+                return "#666666";
+              }, // Match vertical line color
+            })
+          );
         }
 
         // If there's a second header row, apply same styling
-        if (doc.content[1].table.body[1] && doc.content[1].table.headerRows > 1) {
-          doc.content[1].table.body[1] = doc.content[1].table.body[1].map(cell => ({
-            text: cell.text || cell,
-            fillColor: '#E8E8E8',
-            bold: true,
-            fontSize: 10,  // Increased from 9 to 10
-            alignment: 'center',
-            margin: [0, 4, 0, 4]
-          }));
+        if (
+          doc.content[1].table.body[1] &&
+          doc.content[1].table.headerRows > 1
+        ) {
+          doc.content[1].table.body[1] = doc.content[1].table.body[1].map(
+            (cell) => ({
+              text: cell.text || cell,
+              fillColor: "#E8E8E8",
+              bold: true,
+              fontSize: 10, // Increased from 9 to 10
+              alignment: "center",
+              margin: [0, 4, 0, 4],
+            })
+          );
         }
       }
-    }
+    },
   };
 
   if (exportPageFooter) {
     Object.assign(pdfButton, {
-      orientation: 'landscape',
-      pageSize: 'A4'
+      orientation: "landscape",
+      pageSize: "A4",
     });
   }
 
