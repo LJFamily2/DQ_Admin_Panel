@@ -23,3 +23,10 @@ table td {
 body .modal-backdrop.show {
   opacity: 0.8;
 }
+
+/* DataTable button hover styles */
+.dt-button:hover {
+  background-color: var(--bs-primary) !important;
+  color: white !important;
+  border-color: var(--bs-primary) !important;
+}
