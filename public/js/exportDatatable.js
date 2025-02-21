@@ -179,10 +179,8 @@ function initializeExportDataTable(
     buttons: exportsOption
       ? [
           {
-            extend: "collection",
+            extend: "colvis",
             text: "Xuất file",
-            collectionLayout: "fixed columns",
-            popoverTitle: `<h4 class='m-0'>Xuất file</h4><hr>`,
             buttons: [
               pdfButton,
               {
