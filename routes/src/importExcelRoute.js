@@ -27,7 +27,7 @@ router.use(authMiddlewares.ensureRoles(["Admin", "Văn phòng", "superAdmin"]));
 
 // Download template routes
 router.get(
-  "/:page/:type",
+  "/:page",
   authMiddlewares.ensureLoggedIn,
   checkPermission("view"),
   importExcelController.downloadTemplate

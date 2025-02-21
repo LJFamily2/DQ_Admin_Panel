@@ -21,11 +21,8 @@
             </div>
             <p class="card-text">Sử dụng mẫu Excel này để nhập dữ liệu của bạn:</p>
             <div class="d-flex gap-2">
-              <a href="/import/<%= page %>/template" download="xlsx" class="btn btn-primary">
-                <i class="ri-download-line me-2"></i>File Mẫu
-              </a>
-              <a href="/import/<%= page %>/input" download="xlsx" class="btn btn-secondary">
-                <i class="ri-download-line me-2"></i>File Nhập
+              <a href="/import/<%= page %>" download="xlsx" class="btn btn-primary">
+                <i class="ri-download-line me-2"></i>Tải Mẫu Excel
               </a>
             </div>
           </div>
@@ -57,7 +54,7 @@
             </div>
             <form action="/import/<%= page %>" method="post" enctype="multipart/form-data">
               <% if(area && area._id){ %>
-                <input type="hidden" name="areaId" value="<%= area._id %>">
+              <input type="hidden" name="areaId" value="<%= area._id %>">
               <% } %>
               <div class="mb-3">
                 <label class="form-label">Chọn Tệp Excel</label>
@@ -161,16 +158,16 @@
   const parseVietnameseNumber = value => {
     if (value == null || value === '') return 0;
     const strValue = String(value).trim();
-    
+
     if (!isNaN(strValue) && !strValue.includes(',') && !strValue.includes('.')) {
       return strValue;
     }
-    
+
     // Reject period as decimal separator
     if (strValue.includes('.')) {
       throw new Error(`Số "${value}" không đúng định dạng. Vui lòng sử dụng dấu phẩy (,) để phân cách thập phân`);
     }
-    
+
     // For display purposes, keep the original format with comma
     if (strValue.includes(',')) {
       // Validate if it's a proper number format
@@ -180,7 +177,7 @@
       }
       return strValue; // Return original format with comma
     }
-    
+
     return strValue;
   };
 

@@ -37,42 +37,26 @@ const messages = {
 };
 
 const templateMapping = {
-  dailySupply: {
-    template: "Mau_Nhap_Nguyen_Lieu.xlsx",
-    input: "Nhap_Nguyen_Lieu.xlsx",
-  },
-  sale: {
-    template: "Mau_Nhap_Hop_Dong.xlsx",
-    input: "Nhap_Hop_Dong.xlsx",
-  },
-  spend: {
-    template: "Mau_Nhap_Chi_Tieu.xlsx",
-    input: "Nhap_Chi_Tieu.xlsx",
-  },
-  rawMaterial: {
-    template: "Mau_Nhap_Du_Lieu_Tong.xlsx",
-    input: "Nhap_Du_Lieu_Tong.xlsx",
-  },
-  product: {
-    template: "Mau_Nhap_Chay_Lo.xlsx",
-    input: "Nhap_Chay_Lo.xlsx",
-  },
+  dailySupply: "Nhap_Nguyen_Lieu.xlsx",
+  sale: "Nhap_Hop_Dong.xlsx",
+  spend: "Nhap_Chi_Tieu.xlsx",
+  rawMaterial: "Nhap_Du_Lieu_Tong.xlsx",
+  product: "Nhap_Chay_Lo.xlsx",
 };
 
 async function downloadTemplate(req, res) {
   try {
-    const { page, type } = req.params;
+    const { page } = req.params;
 
     if (!templateMapping[page]) {
       return res.status(404).send("Template not found");
     }
 
-    const filename =
-      type === "template"
-        ? templateMapping[page].template
-        : templateMapping[page].input;
-
-    const filePath = path.join("public", "excelTemplates", filename);
+    const filePath = path.join(
+      "public",
+      "excelTemplates",
+      templateMapping[page]
+    );
     res.download(filePath);
   } catch (error) {
     console.error("Template download error:", error);
