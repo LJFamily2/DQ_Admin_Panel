@@ -294,7 +294,8 @@
           <div id="suppliers" class="collapse show" aria-labelledby="suppliersHeading" data-bs-parent="#areaAccordion">
             <h4 class="fw-bold">Nhà vườn</h4>
             <!-- Search for a supplier  -->
-            <input type="text" class="form-control mb-3" id="supplierSearch" placeholder="Tìm kiếm nhà vườn" oninput="debounce(() => filterSuppliers('supplierSearch', 'supplierList', 'li' ,'supplier-name'), 200)()" />
+            <input type="text" class="form-control" id="supplierSearch" placeholder="Tìm kiếm" oninput="debounce(() => filterSuppliers('supplierSearch', 'supplierList', 'li' ,'supplier-name'), 200)()" />
+            <button class="btn btn-link" type="button" data-bs-toggle="modal" data-bs-target="#addSupplierModal" style="font-size: smaller;">+ Thêm nhà vườn</button>
             <ol class="list-group list-group-numbered my-2" id="supplierList">
               <% area.suppliers.sort((a, b) => a.name.localeCompare(b.name)).forEach((supplier, index) =>{ %>
               <li class="list-group-item d-flex justify-content-between align-items-start">
@@ -540,6 +541,112 @@
   </div>
 </div>
 
+<!-- Add Supplier Modal -->
+<div class="modal fade" id="addSupplierModal" tabindex="-1" aria-labelledby="addSupplierModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="addSupplierModalLabel">Thêm nhà vườn mới</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <form action="/du-lieu-hang-ngay/addSupplier/<%= area._id %>?_method=POST" method="post">
+        <div class="modal-body">
+          <div class="row">
+            <div class="col col-md-6">
+              <label for="supplierName" class="form-label fw-bold">Tên</label>
+              <input type="text" class="form-control" id="supplierName" name="supplierName" maxlength="100" required />
+            </div>
+            <div class="col col-md-6">
+              <label for="code" class="form-label fw-bold">Mã</label>
+              <input type="text" class="form-control" id="code" name="code" maxlength="100" required />
+            </div>
+          </div>
+
+          <div class="mt-3">
+            <label for="manager" class="form-label fw-bold">Vai trò</label>
+            <select class="form-select" id="manager" name="manager" required>
+              <option value="false" selected>Nhà vườn</option>
+              <option value="true">Quản lý</option>
+            </select>
+          </div>
+
+          <div class="mt-3">
+            <label for="phone" class="form-label fw-bold">Số điện thoại</label>
+            <input type="text" class="form-control" id="phone" name="phone" maxlength="10" oninput="this.value = this.value.replace(/\D/g, '');" inputmode="numeric" />
+          </div>
+
+          <div class="row mt-3">
+            <div class="col-7">
+              <label for="identification" class="form-label fw-bold">Căn cước công dân</label>
+              <input type="text" class="form-control" id="identification" name="identification" maxlength="12" inputmode="numeric" oninput="this.value = this.value.replace(/\D/g, '');" />
+            </div>
+            <div class="col-5">
+              <label for="issueDate" class="form-label fw-bold">Ngày cấp</label>
+              <input type="text" class="form-control" id="issueDate" name="issueDate" maxlength="10" inputmode="numeric" />
+            </div>
+          </div>
+
+          <div class="mt-3">
+            <label class="form-label fw-bold">Địa chỉ</label>
+            <input type="text" class="form-control" name="supplierAddress" maxlength="350" />
+          </div>
+
+          <% if(area.areaDimension > 0 && area.areaPrice > 0) { %>
+          <div class="mt-3">
+            <label for="purchasedAreaDimension" class="form-label fw-bold">Diện tích mua (mẫu)</label>
+            <input type="number" class="form-control" id="purchasedAreaDimension" name="purchasedAreaDimension" step="0.1" min="0" inputmode="numeric" />
+          </div>
+
+          <div class="mt-3">
+            <label for="purchasedAreaPrice" class="form-label fw-bold">Giá mua (VNĐ/mẫu)</label>
+            <input type="text" class="form-control" id="purchasedAreaPrice" name="purchasedAreaPrice" oninput="handleQuantityInput(this)" inputmode="numeric" />
+          </div>
+
+          <div class="mt-3">
+            <label for="areaDeposit" class="form-label fw-bold">Tiền đặt cọc</label>
+            <input type="text" class="form-control" id="areaDeposit" name="areaDeposit" min="0" oninput="handleQuantityInput(this)" inputmode="numeric" />
+          </div>
+
+          <div class="mt-3">
+            <label class="form-label fw-bold">Thời hạn mua</label>
+            <div class="row">
+              <div class="col-6">
+                <label for="areaDurationStart" class="form-label">Ngày bắt đầu</label>
+                <input type="date" class="form-control" id="areaDurationStart" name="areaDuration[start]" />
+              </div>
+              <div class="col-6">
+                <label for="areaDurationEnd" class="form-label">Ngày kết thúc</label>
+                <input type="date" class="form-control" id="areaDurationEnd" name="areaDuration[end]" />
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-3">
+            <label for="ratioRubberSplit" class="form-label fw-bold">% nhận mủ mặc định</label>
+            <input type="text" class="form-control" id="ratioRubberSplit" name="ratioRubberSplit" value="100" oninput="handlePercentageInput(this)" inputmode="numeric" />
+          </div>
+          <% } %>
+
+          <div class="mt-3">
+            <label for="advancePayment" class="form-label fw-bold">Tiền ứng</label>
+            <input type="text" class="form-control" id="advancePayment" name="advancePayment" value="0" oninput="handleQuantityInput(this)" inputmode="numeric" />
+          </div>
+
+          <div class="mt-3">
+            <label for="ratioSumSplit" class="form-label fw-bold">% nhận tổng mặc định</label>
+            <input type="text" class="form-control" id="ratioSumSplit" name="ratioSumSplit" value="100" oninput="handlePercentageInput(this)" inputmode="numeric" />
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+          <button type="submit" onclick="handleFormSubmit(this)" class="btn btn-primary">Thêm mới</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 
 
 <script>
