@@ -302,11 +302,13 @@
                 <!-- Search for a supplier  -->
                 <input type="text" class="form-control" id="supplierSearch" placeholder="Tìm kiếm" oninput="debounce(() => filterSuppliers('supplierSearch', 'supplierList', 'li' ,'supplier-name'), 200)()" />
               </div>
-              <div class="col-4 p-0">
+              <div class="col-4">
+                <div class="row m-0">
+                  <button class="btn btn-secondary" onclick="exportSupplierList()">
+                    <i class="ri-file-excel-line me-1"></i>Xuất DS
+                  </button>
+                </div>
                 <!-- Export the supplier to excel -->
-                <button class="btn btn-secondary" onclick="exportSupplierList()">
-                  <i class="ri-file-excel-line me-1"></i>Xuất DS
-                </button>
               </div>
             </div>
 
