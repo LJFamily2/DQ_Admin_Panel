@@ -70,8 +70,8 @@
             <% if(area.areaDimension > 0 && area.areaPrice > 0) {%>
             <tr>
               <th rowspan="2">STT</th>
+              <th rowspan="2">Mã nhà vườn</th>
               <th rowspan="2">Nhà vườn</th>
-              <th rowspan="2">Mã</th>
               <th rowspan="2">Mẫu</th>
               <th rowspan="2">Giá</th>
               <th rowspan="2">Thành tiền</th>
@@ -113,8 +113,8 @@
             <% } else { %>
             <tr>
               <th>STT</th>
+              <th>Mã nhà vườn</th>
               <th>Nhà vườn</th>
-              <th>Mã</th>
               <th>Mủ quy khô</th>
               <th>Mủ tạp</th>
               <th>Mủ ké</th>
@@ -362,11 +362,10 @@
         orderable: false
       },
       {
-        data: "supplier"
+        data: "code"
       },
       {
-        data: "code",
-        orderable: false
+        data: "supplier"
       },
       {
         data: "areaPurchased",
@@ -493,11 +492,10 @@
         orderable: false
       },
       {
-        data: "supplier"
+        data: "code"
       },
       {
-        data: "code",
-        orderable: false
+        data: "supplier"
       },
       {
         data: "muQuyKhoQuantity",
