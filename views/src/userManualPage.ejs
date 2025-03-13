@@ -1,87 +1,84 @@
 <!-- breadcrumb -->
-<nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: '>'" class="mx-2 mx-md-4">
+<!-- <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: '>'" class="mx-2 mx-md-4">
   <ol class="breadcrumb">
     <li class="breadcrumb-item active" aria-current="page">
       Hướng dẫn sử dụng
     </li>
   </ol>
-</nav>
+</nav> -->
 
-<div class="container mt-4">
-  <div class="row">
-    <div class="col-12">
-      <%- include('../partials/notificationMessage.ejs') %>
-      <div class="card" style="box-shadow: 0 1px 2px">
-        <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
-          <h4 class="m-0">Hướng dẫn sử dụng hệ thống</h4>
+<div class="row">
+  <div class="col-12">
+    <%- include('../partials/notificationMessage.ejs') %>
+    <div class="card" style="box-shadow: 0 1px 2px">
+      <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
+        <h4 class="m-0">Hướng dẫn sử dụng hệ thống</h4>
+      </div>
+      <div class="card-body">
+        <p class="lead">Chào mừng đến với trang hướng dẫn sử dụng hệ thống DQ Admin Panel. Trang này sẽ giúp bạn hiểu rõ hơn về các tính năng và cách sử dụng hệ thống.</p>
+
+        <!-- Table of contents -->
+        <div class="mb-4">
+          <h5>Mục lục:</h5>
+          <ul class="list-unstyled ps-3">
+            <% manualSections.forEach(section => { %>
+            <li class="mb-1">
+              <a href="#section-<%= section.id %>" class="text-decoration-none">
+                <i class="ri-arrow-right-s-line"></i> <%= section.title %>
+              </a>
+            </li>
+            <% }); %>
+          </ul>
         </div>
-        <div class="card-body">
-          <p class="lead">Chào mừng đến với trang hướng dẫn sử dụng hệ thống DQ Admin Panel. Trang này sẽ giúp bạn hiểu rõ hơn về các tính năng và cách sử dụng hệ thống.</p>
 
-          <!-- Table of contents -->
-          <div class="mb-4">
-            <h5>Mục lục:</h5>
-            <ul class="list-unstyled ps-3">
-              <% manualSections.forEach(section => { %>
-              <li class="mb-1">
-                <a href="#<%= section.id %>" class="text-decoration-none">
-                  <i class="ri-arrow-right-s-line"></i> <%= section.title %>
-                </a>
-              </li>
-              <% }); %>
-            </ul>
-          </div>
-
-          <!-- Accordion sections -->
-          <div class="accordion" id="userManualAccordion">
-            <% manualSections.forEach((section, index) => { %>
-            <div class="accordion-item">
-              <h2 class="accordion-header" id="heading<%= section.id %>">
-                <button class="accordion-button <%= index !== 0 ? 'collapsed' : '' %>" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<%= section.id %>" aria-expanded="<%= index === 0 ? 'true' : 'false' %>" aria-controls="collapse<%= section.id %>" id="<%= section.id %>">
-                  <strong><%= section.title %></strong>
-                </button>
-              </h2>
-              <div id="collapse<%= section.id %>" class="accordion-collapse collapse <%= index === 0 ? 'show' : '' %>" aria-labelledby="heading<%= section.id %>" data-bs-parent="#userManualAccordion">
-                <div class="accordion-body">
-                  <div class="manual-content">
-                    <!-- Content will be added later -->
-                    <p class="text-muted">Nội dung hướng dẫn sẽ được cập nhật...</p>
-                  </div>
+        <!-- Accordion sections -->
+        <div class="accordion" id="userManualAccordion">
+          <% manualSections.forEach((section, index) => { %>
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="heading<%= section.id %>">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<%= section.id %>" aria-expanded="false" aria-controls="collapse<%= section.id %>" id="section-<%= section.id %>">
+                <strong><%= section.title %></strong>
+              </button>
+            </h2>
+            <div id="collapse<%= section.id %>" class="accordion-collapse collapse " aria-labelledby="heading<%= section.id %>" data-bs-parent="#userManualAccordion">
+              <div class="accordion-body">
+                <div class="manual-content">
+                  <%- section.content %>
                 </div>
               </div>
             </div>
-            <% }); %>
           </div>
+          <% }); %>
+        </div>
 
-          <!-- Additional resources -->
-          <div class="mt-5">
-            <h5>Tài liệu bổ sung</h5>
-            <div class="row">
-              <div class="col-md-4 mb-3">
-                <div class="card h-100">
-                  <div class="card-body">
-                    <h5 class="card-title">Video hướng dẫn</h5>
-                    <p class="card-text">Xem các video hướng dẫn chi tiết về cách sử dụng hệ thống.</p>
-                    <a href="#" class="btn btn-outline-primary">Xem video</a>
-                  </div>
+        <!-- Additional resources -->
+        <div class="mt-5">
+          <h5>Tài liệu bổ sung</h5>
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <div class="card h-100">
+                <div class="card-body">
+                  <h5 class="card-title">Video hướng dẫn</h5>
+                  <p class="card-text">Xem các video hướng dẫn chi tiết về cách sử dụng hệ thống.</p>
+                  <a href="#" class="btn btn-outline-primary">Xem video</a>
                 </div>
               </div>
-              <div class="col-md-4 mb-3">
-                <div class="card h-100">
-                  <div class="card-body">
-                    <h5 class="card-title">Câu hỏi thường gặp</h5>
-                    <p class="card-text">Tìm câu trả lời cho các câu hỏi thường gặp khi sử dụng hệ thống.</p>
-                    <a href="#" class="btn btn-outline-primary">Xem FAQ</a>
-                  </div>
+            </div>
+            <div class="col-md-4 mb-3">
+              <div class="card h-100">
+                <div class="card-body">
+                  <h5 class="card-title">Câu hỏi thường gặp</h5>
+                  <p class="card-text">Tìm câu trả lời cho các câu hỏi thường gặp khi sử dụng hệ thống.</p>
+                  <a href="#" class="btn btn-outline-primary">Xem FAQ</a>
                 </div>
               </div>
-              <div class="col-md-4 mb-3">
-                <div class="card h-100">
-                  <div class="card-body">
-                    <h5 class="card-title">Liên hệ hỗ trợ</h5>
-                    <p class="card-text">Liên hệ đội ngũ hỗ trợ kỹ thuật khi cần trợ giúp thêm.</p>
-                    <a href="#" class="btn btn-outline-primary">Liên hệ</a>
-                  </div>
+            </div>
+            <div class="col-md-4 mb-3">
+              <div class="card h-100">
+                <div class="card-body">
+                  <h5 class="card-title">Liên hệ hỗ trợ</h5>
+                  <p class="card-text">Liên hệ đội ngũ hỗ trợ kỹ thuật khi cần trợ giúp thêm.</p>
+                  <a href="#" class="btn btn-outline-primary">Liên hệ</a>
                 </div>
               </div>
             </div>
@@ -94,27 +91,17 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    // Handle anchor links with smooth scrolling
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function(e) {
-        e.preventDefault();
+    document.querySelectorAll('.list-unstyled a[href^="#section-"]').forEach(link => {
+      link.addEventListener('click', function(e) {
+        const accordionButton = document.getElementById(this.getAttribute('href').substring(1));
 
-        const targetId = this.getAttribute('href').substring(1);
-        const targetElement = document.getElementById(targetId);
-
-        if (targetElement) {
-          // Scroll to element
-          window.scrollTo({
-            top: targetElement.getBoundingClientRect().top + window.pageYOffset - 100,
-            behavior: 'smooth'
-          });
-
-          // Open accordion if it's closed
-          const accordionCollapse = bootstrap.Collapse.getInstance(document.getElementById(`collapse${targetId}`));
-          if (accordionCollapse && !accordionCollapse._isShown) {
-            accordionCollapse.show();
-          }
+        if (accordionButton?.classList.contains('collapsed')) {
+          accordionButton.click();
         }
+
+        setTimeout(() => accordionButton?.scrollIntoView({
+          behavior: 'smooth'
+        }), 300);
       });
     });
   });
