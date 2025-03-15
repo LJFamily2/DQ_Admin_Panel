@@ -1,18 +1,7 @@
-/**
- * Controller for user manual pages
- */
-
-const { raw } = require("express");
-
 module.exports = {
   renderPage,
 };
 
-/**
- * Renders the user manual page
- * @param {object} req - Express request object
- * @param {object} res - Express response object
- */
 async function renderPage(req, res) {
   try {
     // Define the manual sections (content will be added later)
@@ -151,29 +140,30 @@ async function renderPage(req, res) {
         content: `
         <h4>Quản lý Dữ liệu Tổng</h4>
         
-        <p>Module dữ liệu tổng cho phép bạn quản lý thông tin về các nguyên liệu thô đầu vào. Đây là nơi bạn có thể nhập liệu và theo dõi tất cả nguyên liệu mủ cao su được thu mua.</p>
+        <p>Module dữ liệu tổng cho phép bạn quản lý thông tin về các nguyên liệu thô đầu vào. Đây là nơi bạn có thể nhập liệu và theo dõi tất cả nguyên liệu mủ cao su được thu mua khi được đưa về nhà máy.</p>
         
         <h5>Truy cập trang dữ liệu tổng</h5>
         <p>Để truy cập trang quản lý dữ liệu tổng, bạn cần:</p>
         <ol>
           <li>Đăng nhập vào hệ thống</li>
-          <li>Từ menu bên trái, chọn "Quản lý dữ liệu" > "Dữ liệu tổng", hoặc truy cập đường dẫn <code>/quan-ly-du-lieu-tong</code></li>
+          <li>Từ menu bên trái, chọn "Dữ liệu tổng", hoặc truy cập đường dẫn <code>/quan-ly-du-lieu</code></li>
         </ol>
         
         <h5>Các chức năng chính</h5>
         
         <h6>1. Nhập dữ liệu mới</h6>
         <ol>
-          <li>Nhấn nút "Thêm mới" ở phía trên bảng dữ liệu</li>
+          <li>Nhìn qua phần nhập liệu tại cột bên phảiphải</li>
           <li>Điền thông tin vào form bao gồm:
             <ul>
               <li>Ngày nhập liệu</li>
               <li>Thông tin mủ khô (số lượng, phần trăm hàm lượng)</li>
               <li>Thông tin mủ tạp (số lượng)</li>
+              <li>Thông tin mủ kéké (số lượng, phần trăm hàm lượng)</li>
               <li>Ghi chú (nếu có)</li>
             </ul>
           </li>
-          <li>Nhấn "Lưu" để hoàn tất việc nhập liệu</li>
+          <li>Nhấn "Tạo" để hoàn tất việc nhập liệu</li>
         </ol>
         
         <h6>2. Chỉnh sửa dữ liệu</h6>
@@ -203,12 +193,8 @@ async function renderPage(req, res) {
           <li>Nhấn nút "Nhập Excel" ở phía trên bảng dữ liệu</li>
           <li>Tải xuống mẫu Excel nếu cần (bằng cách nhấn "Tải mẫu Excel")</li>
           <li>Chọn file Excel đã điền thông tin</li>
-          <li>Nhấn "Nhập" để tiến hành nhập dữ liệu</li>
+          <li>Nhấn "Tải lên" để tiến hành nhập dữ liệu</li>
         </ol>
-        
-        <div class="alert alert-info">
-          <strong>Mẹo:</strong> Bạn có thể xuất dữ liệu hiện tại ra các định dạng như Excel, CSV, PDF bằng cách sử dụng các nút xuất dữ liệu ở phía trên bảng.
-        </div>
         
         <div class="alert alert-warning">
           <strong>Lưu ý:</strong> Các thao tác thêm, sửa, xóa dữ liệu sẽ được ghi lại trong nhật ký hoạt động của hệ thống.
