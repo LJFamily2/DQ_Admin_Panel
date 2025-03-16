@@ -424,7 +424,7 @@ async function renderPage(req, res) {
         <p>Để truy cập trang quản lý dữ liệu hàng ngày, bạn cần:</p>
         <ol>
           <li>Đăng nhập vào hệ thống</li>
-          <li>Từ menu bên trái, chọn "Dữ liệu hàng ngày", hoặc truy cập đường dẫn <code>/du-lieu-hang-ngay</code></li>
+          <li>Từ menu bên trái, chọn "Dữ liệu ngày", hoặc truy cập đường dẫn <code>/du-lieu-hang-ngay</code></li>
         </ol>
         
         <h5>Các chức năng chính</h5>
@@ -432,8 +432,8 @@ async function renderPage(req, res) {
         <h6>1. Quản lý vườn</h6>
         <ol>
           <li>Xem danh sách vườn hiện có</li>
-          <li>Thêm vườn mới: Nhấn "Thêm vườn" và điền thông tin cần thiết</li>
-          <li>Chỉnh sửa thông tin vườn: Nhấn vào tên vườn và chọn "Cập nhật"</li>
+          <li>Nhìn qua cột nhập liệu bên phải</li>
+          <li>Chỉnh sửa thông tin vườn: Nhấn vào tên vườn và chọn biểu tượng cây bút chì</li>
           <li>Xóa vườn: Nhấn vào biểu tượng xóa bên cạnh tên vườn</li>
         </ol>
         
@@ -451,7 +451,7 @@ async function renderPage(req, res) {
         
         <h6>3. Quản lý nhà vườn</h6>
         <ol>
-          <li>Thêm nhà vườn: Nhấn "Thêm nhà vườn" trên trang chi tiết vườn</li>
+          <li>Nhìn qua cột nhập liệu bên phải</li>
           <li>Chỉnh sửa thông tin nhà vườn: Nhấn vào biểu tượng chỉnh sửa</li>
           <li>Xóa nhà vườn: Nhấn vào biểu tượng xóa và xác nhận</li>
         </ol>
@@ -465,7 +465,7 @@ async function renderPage(req, res) {
         
         <h6>5. In và xuất dữ liệu</h6>
         <p><strong>Xuất dữ liệu cho toàn bộ vườn:</strong></p>
-        <ol>
+        <ol>b
           <li>Truy cập trang xuất dữ liệu của vườn tại <code>/du-lieu-hang-ngay/{slug-vuon}/xuat-du-lieu</code></li>
           <li>Sử dụng bộ lọc ngày để chọn khoảng thời gian cần xuất dữ liệu</li>
           <li>Nhấn vào một trong các nút xuất dữ liệu:
