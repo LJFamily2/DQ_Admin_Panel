@@ -185,7 +185,7 @@ async function renderPage(req, res) {
         <ol>
           <li>Sử dụng ô tìm kiếm ở góc trên bên phải của bảng để lọc dữ liệu theo từ khóa</li>
           <li>Để lọc theo khoảng ngày, sử dụng chức năng "Từ ngày - đến ngày" và nhấn "Lọc"</li>
-          <li>Để xóa bộ lọc, nhấn nút "Làm mới"</li>
+          <li>Để xóa bộ lọc, nhấn nút "X"</li>
         </ol>
         
         <h6>5. Nhập dữ liệu từ Excel</h6>
@@ -208,32 +208,30 @@ async function renderPage(req, res) {
         content: `
         <h4>Quản lý Chạy Lò</h4>
         
-        <p>Module quản lý chạy lò giúp bạn theo dõi quá trình sản xuất mủ cao su, từ nguyên liệu đầu vào đến sản phẩm cuối cùng.</p>
+        <p>Module quản lý chạy lò giúp bạn theo dõi quá trình sản xuất mủ cao su, từ nguyên liệu đầu vào đến sản phẩm cuối cùng trong nhà máy.</p>
         
         <h5>Truy cập trang quản lý chạy lò</h5>
         <p>Để truy cập trang quản lý chạy lò, bạn cần:</p>
         <ol>
           <li>Đăng nhập vào hệ thống</li>
-          <li>Từ menu bên trái, chọn "Quản lý dữ liệu" > "Quản lý chạy lò", hoặc truy cập đường dẫn <code>/quan-ly-hang-hoa</code></li>
+          <li>Từ menu bên trái, chọn "Chạy lò", hoặc truy cập đường dẫn <code>/quan-ly-hang-hoa</code></li>
         </ol>
         
         <h5>Các chức năng chính</h5>
         
         <h6>1. Thêm mới dữ liệu chạy lò</h6>
         <ol>
-          <li>Nhấn nút "Thêm mới" trên trang</li>
+          <li>Nhìn qua cột nhập liệu bên phải</li>
           <li>Điền các thông tin cần thiết:
             <ul>
               <li>Ngày chạy lò</li>
-              <li>Lượng mủ khô sử dụng (kg)</li>
-              <li>Hàm lượng mủ khô (%)</li>
-              <li>Lượng mủ tạp sử dụng (kg)</li>
+              <li>Số lượng mủ nước sử dụng (kg)</li>
+              <li>Hàm lượng mủ nước (%)</li>
               <li>Số lượng sản phẩm (kg)</li>
-              <li>Loại sản phẩm</li>
               <li>Ghi chú (nếu có)</li>
             </ul>
           </li>
-          <li>Nhấn "Lưu" để hoàn tất việc thêm mới</li>
+          <li>Nhấn "Tạo" để hoàn tất việc thêm mới</li>
         </ol>
         
         <h6>2. Chỉnh sửa thông tin chạy lò</h6>
@@ -255,7 +253,7 @@ async function renderPage(req, res) {
         <ol>
           <li>Sử dụng ô tìm kiếm để lọc dữ liệu theo từ khóa</li>
           <li>Để lọc theo khoảng thời gian, sử dụng bộ lọc ngày và nhấn "Lọc"</li>
-          <li>Để xóa bộ lọc, nhấn "Làm mới"</li>
+          <li>Để xóa bộ lọc, nhấn "X"</li>
         </ol>
         
         <h6>5. Nhập dữ liệu từ Excel</h6>
@@ -263,7 +261,7 @@ async function renderPage(req, res) {
           <li>Nhấn nút "Nhập Excel" trên trang</li>
           <li>Tải xuống mẫu Excel nếu cần</li>
           <li>Chọn file Excel đã điền thông tin</li>
-          <li>Nhấn "Nhập" để tiến hành nhập dữ liệu</li>
+          <li>Nhấn "Tải lên" để tiến hành nhập dữ liệu</li>
         </ol>
         
         <div class="alert alert-info">
@@ -275,6 +273,70 @@ async function renderPage(req, res) {
         </div>
         `,
       },
+      // Sales
+      {
+        id: "contracts",
+        title: "Quản lý Hợp đồng",
+        content: `
+        <h4>Quản lý Hợp đồng</h4>
+        
+        <p>Module quản lý hợp đồng giúp theo dõi các hợp đồng bán mủ cho khách hàng. Đây là nơi quản lý toàn bộ quá trình từ tạo hợp đồng và thanh toán.</p>
+        
+        <h5>Truy cập trang quản lý hợp đồng</h5>
+        <p>Để truy cập trang quản lý hợp đồng, bạn cần:</p>
+        <ol>
+          <li>Đăng nhập vào hệ thống</li>
+          <li>Từ menu bên trái, chọn "Hợp đồng", hoặc truy cập đường dẫn <code>/quan-ly-hop-dong</code></li>
+        </ol>
+        
+        <h5>Các chức năng chính</h5>
+        
+        <h6>1. Tạo hợp đồng mới</h6>
+        <ol>
+          <li>Nhìn qua cột nhập liệu bên phải</li>
+          <li>Điền thông tin hợp đồng vào form:
+            <ul>
+              <li>Mã hợp đồng</li>
+              <li>Ngày ký</li>
+              <li>Loại sản phẩm (mủ khô, mủ tạp, mủ ké)</li>
+              <li>Số lượng (kg)</li>
+              <li>Giá (VNĐ/kg)</li>
+              <li>Ghi chú (nếu có)</li>
+            </ul>
+          </li>
+          <li>Nhấn "Tạo" để hoàn tất việc tạo hợp đồng</li>
+        </ol>
+        
+        <h6>2. Quản lý trạng thái hợp đồng</h6>
+        <ol>
+          <li>Các trạng thái hợp đồng bao gồm:
+            <ul>
+              <li><span class="badge bg-success">Đang mở</span>: Đang mở</li>
+              <li><span class="badge bg-danger">Đã đóng</span>: Đã đóng</li>
+            </ul>
+          </li>
+          <li>Để cập nhật trạng thái: Nhấn vào biểu tượng chỉnh sửa và thay đổi trạng thái trong form</li>
+        </ol>
+        
+        <h6>3. Thêm sản phẩm vào hợp đồng</h6>
+        <ol>
+          <li>Nhìn qua cột nhập liệu bên phải</li>
+          <li>Chọn loại sản phẩm, nhập số lượng và giá</li>
+          <li>Nhấn "Tạo" để thêm sản phẩm vào hợp đồng</li>
+        </ol>
+        
+        <h6>5. Lọc và tìm kiếm hợp đồng</h6>
+        <ol>
+          <li>Sử dụng ô tìm kiếm để lọc theo mã hợp đồng hoặc ghi chú</li>
+          <li>Sử dụng bộ lọc ngày để tìm hợp đồng trong khoảng thời gian cụ thể</li>
+          <li>Lọc theo trạng thái để xem các hợp đồng mới, đang xử lý, hoàn thành hoặc đã hủy</li>
+        </ol>
+        
+        <div class="alert alert-warning">
+          <strong>Lưu ý:</strong> Chỉ người dùng có quyền Admin hoặc Văn phòng mới có thể tạo, chỉnh sửa hoặc hủy hợp đồng.
+        </div>
+        `,
+      },
       // Spend
       {
         id: "spend",
@@ -282,31 +344,32 @@ async function renderPage(req, res) {
         content: `
         <h4>Quản lý Chi Tiêu</h4>
         
-        <p>Module quản lý chi tiêu giúp theo dõi và quản lý các khoản chi phí phát sinh trong hoạt động kinh doanh.</p>
+        <p>Module quản lý chi tiêu giúp theo dõi và quản lý các khoản chi phí phát sinh trong hoạt động kinh doanh của nhà máymáy.</p>
         
         <h5>Truy cập trang quản lý chi tiêu</h5>
         <p>Để truy cập trang quản lý chi tiêu, bạn cần:</p>
         <ol>
           <li>Đăng nhập vào hệ thống</li>
-          <li>Từ menu bên trái, chọn "Chi tiêu", hoặc truy cập đường dẫn <code>/chi-tieu</code></li>
+          <li>Từ menu bên trái, chọn "Chi tiêu", hoặc truy cập đường dẫn <code>/quan-ly-chi-tieu</code></li>
         </ol>
         
         <h5>Các chức năng chính</h5>
         
         <h6>1. Thêm khoản chi tiêu mới</h6>
         <ol>
-          <li>Nhấn nút "Thêm mới" trên trang</li>
+          <li>Nhìn qua cột nhập liệu bên phải</li>
           <li>Điền thông tin chi tiêu vào form:
             <ul>
               <li>Ngày chi tiêu</li>
-              <li>Loại chi tiêu (chọn từ danh sách có sẵn hoặc thêm mới)</li>
-              <li>Số tiền</li>
-              <li>Mô tả chi tiết</li>
-              <li>Người chi tiêu</li>
-              <li>Hình ảnh hoặc chứng từ (nếu cần)</li>
+              <li>Loại chi tiêu (chọn từ danh sách có sẵn. Các trường nhập sẽ xuất hiện tùy vào loại chi tiêutiêu)</li>
+              <li>Tên hàng hóa</li>
+              <li>Số lượng</li>
+              <li>Đơn giá</li>
+              <li>Tổng tiền lương (nếu hàng loại chi tiêu là Lương)</li>
+              <li>Ghi chú</li>
             </ul>
           </li>
-          <li>Nhấn "Lưu" để hoàn tất việc thêm khoản chi tiêu</li>
+          <li>Nhấn "Tạo" để hoàn tất việc thêm khoản chi tiêu</li>
         </ol>
         
         <h6>2. Chỉnh sửa khoản chi tiêu</h6>
@@ -327,8 +390,6 @@ async function renderPage(req, res) {
         <h6>4. Lọc và thống kê chi tiêu</h6>
         <ol>
           <li>Sử dụng bộ lọc thời gian để xem chi tiêu trong khoảng ngày cụ thể</li>
-          <li>Sử dụng bộ lọc loại chi tiêu để xem chi tiêu theo từng danh mục</li>
-          <li>Xem biểu đồ thống kê chi tiêu theo thời gian và danh mục</li>
         </ol>
         
         <h6>5. Nhập chi tiêu từ Excel</h6>
@@ -336,7 +397,7 @@ async function renderPage(req, res) {
           <li>Nhấn nút "Nhập Excel" trên trang</li>
           <li>Tải xuống mẫu Excel nếu cần</li>
           <li>Điền thông tin vào file Excel</li>
-          <li>Chọn file đã điền thông tin và nhấn "Nhập" để tiến hành nhập dữ liệu</li>
+          <li>Chọn file đã điền thông tin và nhấn "Tải lênlên" để tiến hành nhập dữ liệu</li>
         </ol>
         
         <h6>6. Xuất báo cáo chi tiêu</h6>
@@ -345,93 +406,10 @@ async function renderPage(req, res) {
           <li>Nhấn nút xuất dữ liệu (PDF, Excel, CSV) để tải báo cáo</li>
         </ol>
         
-        <div class="alert alert-info">
-          <strong>Phân loại chi tiêu:</strong> Để quản lý hiệu quả, hãy phân loại chi tiêu vào các danh mục phù hợp như: Chi phí sản xuất, Chi phí vận chuyển, Chi phí nhân công, Chi phí khác, v.v.
-        </div>
-        
         <div class="alert alert-warning">
           <strong>Lưu ý về quyền hạn:</strong> Chỉ người dùng có quyền Admin hoặc Văn phòng mới có thể xóa hoặc chỉnh sửa các khoản chi tiêu đã được tạo.
         </div>
         `,
-      },
-      // Sales
-      {
-        id: "contracts",
-        title: "Quản lý Hợp đồng",
-        content: `
-              <h4>Quản lý Hợp đồng</h4>
-              
-              <p>Module quản lý hợp đồng giúp theo dõi các hợp đồng bán mủ cho khách hàng. Đây là nơi quản lý toàn bộ quá trình từ tạo hợp đồng đến giao hàng và thanh toán.</p>
-              
-              <h5>Truy cập trang quản lý hợp đồng</h5>
-              <p>Để truy cập trang quản lý hợp đồng, bạn cần:</p>
-              <ol>
-                <li>Đăng nhập vào hệ thống</li>
-                <li>Từ menu bên trái, chọn "Quản lý hợp đồng", hoặc truy cập đường dẫn <code>/quan-ly-hop-dong</code></li>
-              </ol>
-              
-              <h5>Các chức năng chính</h5>
-              
-              <h6>1. Tạo hợp đồng mới</h6>
-              <ol>
-                <li>Nhấn nút "Thêm mới" trên trang</li>
-                <li>Điền thông tin hợp đồng vào form:
-                  <ul>
-                    <li>Mã hợp đồng</li>
-                    <li>Ngày ký</li>
-                    <li>Loại sản phẩm (mủ khô, mủ tạp, mủ ké)</li>
-                    <li>Số lượng (kg)</li>
-                    <li>Giá (VNĐ/kg)</li>
-                    <li>Ngày giao hàng</li>
-                    <li>Ghi chú (nếu có)</li>
-                  </ul>
-                </li>
-                <li>Nhấn "Lưu" để hoàn tất việc tạo hợp đồng</li>
-              </ol>
-              
-              <h6>2. Quản lý trạng thái hợp đồng</h6>
-              <ol>
-                <li>Các trạng thái hợp đồng bao gồm:
-                  <ul>
-                    <li><span class="badge bg-info">Mới</span>: Hợp đồng vừa được tạo</li>
-                    <li><span class="badge bg-primary">Đang xử lý</span>: Đang trong quá trình chuẩn bị hàng</li>
-                    <li><span class="badge bg-success">Hoàn thành</span>: Đã giao hàng và thanh toán</li>
-                    <li><span class="badge bg-danger">Hủy</span>: Hợp đồng bị hủy</li>
-                  </ul>
-                </li>
-                <li>Để cập nhật trạng thái: Nhấn vào biểu tượng chỉnh sửa và thay đổi trạng thái trong form</li>
-              </ol>
-              
-              <h6>3. Thêm sản phẩm vào hợp đồng</h6>
-              <ol>
-                <li>Trên trang chi tiết hợp đồng, nhấn "Thêm sản phẩm"</li>
-                <li>Chọn loại sản phẩm, nhập số lượng và giá</li>
-                <li>Nhấn "Lưu" để thêm sản phẩm vào hợp đồng</li>
-              </ol>
-              
-              <h6>4. In và xuất hợp đồng</h6>
-              <ol>
-                <li>Tại trang chi tiết hợp đồng, nhấn nút "In hợp đồng" để mở trang in</li>
-                <li>Hệ thống sẽ hiển thị bản xem trước của hợp đồng với đầy đủ thông tin</li>
-                <li>Chọn "In" trong trình duyệt để in trực tiếp hoặc lưu thành PDF</li>
-                <li>Bạn cũng có thể xuất danh sách hợp đồng ra Excel bằng cách nhấn nút "Xuất Excel" trên trang danh sách hợp đồng</li>
-              </ol>
-              
-              <h6>5. Lọc và tìm kiếm hợp đồng</h6>
-              <ol>
-                <li>Sử dụng ô tìm kiếm để lọc theo mã hợp đồng hoặc ghi chú</li>
-                <li>Sử dụng bộ lọc ngày để tìm hợp đồng trong khoảng thời gian cụ thể</li>
-                <li>Lọc theo trạng thái để xem các hợp đồng mới, đang xử lý, hoàn thành hoặc đã hủy</li>
-              </ol>
-              
-              <div class="alert alert-info">
-                <strong>Mẹo:</strong> Thường xuyên cập nhật trạng thái hợp đồng để theo dõi tiến độ giao hàng và thanh toán một cách hiệu quả.
-              </div>
-              
-              <div class="alert alert-warning">
-                <strong>Lưu ý:</strong> Chỉ người dùng có quyền Admin hoặc Văn phòng mới có thể tạo, chỉnh sửa hoặc hủy hợp đồng.
-              </div>
-              `,
       },
       // Daily Data
       {
