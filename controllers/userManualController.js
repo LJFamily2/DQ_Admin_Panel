@@ -575,8 +575,8 @@ async function renderPage(req, res) {
         <h5>Truy cập trang quản lý người dùng</h5>
         <p>Để truy cập trang quản lý người dùng, bạn cần:</p>
         <ol>
-          <li>Đăng nhập vào hệ thống với quyền Admin hoặc superAdmin</li>
-          <li>Từ menu bên trái, chọn "Quản lý người dùng", hoặc truy cập đường dẫn <code>/quan-ly-nguoi-dung</code></li>
+          <li>Đăng nhập vào hệ thống với quyền Admin</li>
+          <li>Từ menu bên trái, chọn "Quản lý tài khoản", hoặc truy cập đường dẫn <code>/quan-ly-tai-khoan</code></li>
         </ol>
         
         <div class="alert alert-warning">
@@ -594,15 +594,15 @@ async function renderPage(req, res) {
         
         <h6>2. Thêm người dùng mới</h6>
         <ol>
-          <li>Nhấn nút "Thêm người dùng" trên trang</li>
+          <li>Nhấn nút "Tạo tài khoản" trên trang</li>
           <li>Điền thông tin vào form:
             <ul>
               <li>Tên tài khoản (username)</li>
               <li>Mật khẩu (tối thiểu 8 ký tự)</li>
-              <li>Vai trò (Admin, Văn phòng, Hàm lượng, hoặc superAdmin)</li>
+              <li>Vai trò (Admin, Văn phòng, và Hàm lượng)</li>
             </ul>
           </li>
-          <li>Nhấn "Lưu" để tạo người dùng mới</li>
+          <li>Nhấn "Tạo" để tạo người dùng mới</li>
         </ol>
         
         <h6>3. Chỉnh sửa thông tin người dùng</h6>
@@ -619,14 +619,7 @@ async function renderPage(req, res) {
           <li>Nhấn "Lưu" để cập nhật mật khẩu</li>
         </ol>
         
-        <h6>5. Khóa/Mở khóa tài khoản</h6>
-        <ol>
-          <li>Nhấn vào biểu tượng trạng thái (bật/tắt) bên cạnh người dùng</li>
-          <li>Xác nhận hành động trong hộp thoại hiện ra</li>
-          <li>Khi tài khoản bị khóa, người dùng sẽ không thể đăng nhập vào hệ thống</li>
-        </ol>
-        
-        <h6>6. Xóa người dùng</h6>
+        <h6>5. Xóa người dùng</h6>
         <ol>
           <li>Nhấn vào biểu tượng xóa (thùng rác) bên cạnh người dùng</li>
           <li>Xác nhận việc xóa trong hộp thoại cảnh báo</li>
@@ -636,7 +629,6 @@ async function renderPage(req, res) {
         <h5>Vai trò người dùng</h5>
         <p>Hệ thống có 4 vai trò người dùng với các quyền hạn khác nhau:</p>
         <ul>
-          <li><strong>superAdmin:</strong> Có toàn quyền trên hệ thống, bao gồm quản lý người dùng và cài đặt hệ thống</li>
           <li><strong>Admin:</strong> Có quyền truy cập và chỉnh sửa hầu hết các module, trừ một số cài đặt hệ thống cao cấp</li>
           <li><strong>Văn phòng:</strong> Có quyền quản lý dữ liệu hàng ngày, hợp đồng, chi tiêu và xuất báo cáo</li>
           <li><strong>Hàm lượng:</strong> Chỉ có quyền nhập và chỉnh sửa dữ liệu về nguyên liệu và hàm lượng</li>
@@ -644,10 +636,6 @@ async function renderPage(req, res) {
         
         <div class="alert alert-info">
           <strong>Thực hành tốt nhất:</strong> Tuân theo nguyên tắc "quyền tối thiểu cần thiết" - chỉ cấp cho người dùng những quyền họ thực sự cần để thực hiện công việc của mình.
-        </div>
-        
-        <div class="alert alert-warning">
-          <strong>Lưu ý về bảo mật:</strong> Người dùng có vai trò superAdmin có quyền cao nhất trong hệ thống. Hãy đảm bảo rằng chỉ những người thực sự có trách nhiệm mới được cấp quyền này và sử dụng mật khẩu mạnh.
         </div>
         `,
       },
