@@ -533,37 +533,6 @@ async function renderPage(req, res) {
           <li>Nhấn "In tất cả" để xuất báo cáo chi tiết cho tất cả các nhà vườn, được tự động chia trang cho việc in</li>
         </ol>
         
-        <h6>3. Báo cáo dữ liệu tổng</h6>
-        <ol>
-          <li>Truy cập trang dữ liệu tổng (<code>/quan-ly-du-lieu-tong</code>)</li>
-          <li>Lọc dữ liệu theo khoảng thời gian cần báo cáo</li>
-          <li>Nhấn vào nút "Excel", "CSV", hoặc "PDF" để xuất báo cáo theo định dạng tương ứng</li>
-        </ol>
-        
-        <h6>4. Báo cáo quản lý chạy lò</h6>
-        <ol>
-          <li>Truy cập trang quản lý chạy lò (<code>/quan-ly-hang-hoa</code>)</li>
-          <li>Lọc dữ liệu theo thời gian</li>
-          <li>Sử dụng các nút xuất dữ liệu để tạo báo cáo</li>
-          <li>Báo cáo bao gồm chi tiết về lượng mủ sử dụng, sản phẩm tạo ra và hiệu suất</li>
-        </ol>
-        
-        <h6>5. Báo cáo chi tiêu</h6>
-        <ol>
-          <li>Truy cập trang quản lý chi tiêu (<code>/chi-tieu</code>)</li>
-          <li>Lọc theo loại chi tiêu và khoảng thời gian</li>
-          <li>Xuất báo cáo chi tiêu theo các định dạng khác nhau</li>
-        </ol>
-        
-        <h6>6. Báo cáo hợp đồng</h6>
-        <ol>
-          <li>Truy cập trang quản lý hợp đồng (<code>/quan-ly-hop-dong</code>)</li>
-          <li>Lọc theo trạng thái hợp đồng và thời gian</li>
-          <li>Xuất danh sách hợp đồng hoặc in hợp đồng cụ thể</li>
-        </ol>
-        
-        <h5>Tùy chỉnh báo cáo</h5>
-        
         <h6>1. Lọc dữ liệu trước khi xuất báo cáo</h6>
         <ol>
           <li>Sử dụng các bộ lọc có sẵn trên mỗi trang để giới hạn dữ liệu hiển thị</li>
