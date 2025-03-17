@@ -113,8 +113,16 @@
   </div>
 </div>
 
-<script src="https://unpkg.com/exceljs/dist/exceljs.min.js"></script>
 <script>
+  document.getElementById('importExcelModal').addEventListener('show.bs.modal', function() {
+    // Check if ExcelJS is already loaded
+    if (!window.ExcelJS) {
+      const script = document.createElement('script');
+      script.src = "https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js";
+      document.head.appendChild(script);
+    }
+  });
+
   const requiredFields = [
     <% requiredFields.forEach((field, index) => { %> '<%= field.name %>'
     <%= index < requiredFields.length - 1 ? ',' : '' %>
@@ -211,18 +219,18 @@
         requiredFields.forEach(field => {
           const idx = headers.indexOf(field);
           if (idx === -1) return;
-      
+
           // Get the field value
           let value = row[idx];
           const isDateField = ['Ngày', 'Ngày bán', 'Ngày bắt đầu hợp đồng nhà vườn',
             'Ngày kết thúc hợp đồng nhà vườn', 'Ngày bắt đầu hợp đồng',
             'Ngày kết thúc hợp đồng', 'Ngày cấp'
           ].includes(field);
-          
+
           // Find field config to check if it's required
           const fieldConfig = requiredFields.find(f => f.name === field);
           const isRequired = fieldConfig && !fieldConfig.optional;
-      
+
           // Handle empty values
           if (value === null || value === undefined || value === '') {
             // Only add errors for required non-date fields
@@ -232,7 +240,7 @@
             row[idx] = '';
             return;
           }
-      
+
           try {
             // Process date fields
             if (isDateField) {
@@ -263,8 +271,8 @@
           }
         });
       });
-      
-      
+
+
       errors.length ? displayError(errors.join('<br>')) : displayTable(filteredData);
     } catch (error) {
       displayError('Lỗi khi đọc file Excel: ' + error.message);
@@ -279,15 +287,15 @@
     document.getElementById('submitButton').disabled = true;
   };
 
-    // Function to display the table with Excel data
+  // Function to display the table with Excel data
   const displayTable = data => {
     const tableDisplay = document.getElementById('tableDisplay');
     const tableHead = tableDisplay.querySelector('thead tr');
     const tableBody = tableDisplay.querySelector('tbody');
-    
+
     // Generate header row
     tableHead.innerHTML = data[0].map(header => `<th>${header || ''}</th>`).join('');
-    
+
     // Generate data rows - ensure all cells exist even if empty
     tableBody.innerHTML = data.slice(1).map(row => {
       // Ensure the row has cells for all columns, even if data is missing
@@ -296,10 +304,10 @@
       while (paddedRow.length < data[0].length) {
         paddedRow.push('');
       }
-      
+
       return `<tr>${paddedRow.map(cell => `<td>${cell !== null && cell !== undefined ? cell : ''}</td>`).join('')}</tr>`;
     }).join('');
-    
+
     tableDisplay.classList.remove('d-none');
     document.getElementById('errorDisplay').classList.add('d-none');
     document.getElementById('submitButton').disabled = false;
