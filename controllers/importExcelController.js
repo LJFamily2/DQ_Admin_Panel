@@ -298,181 +298,44 @@ async function importDailySupplyInputData(req, res) {
 
 async function importDailySupplyArea(req, res) {
   try {
+    // 1. Process Excel file and filter out date validation errors
     const { processedData, errors: fileErrors } = await processExcelFile(
       req.file.buffer,
       JSON.parse(req.body.requiredFields)
     );
+    
+    // Filter out date-related validation errors that we'll handle separately
+    const dateFields = ['Ngày bắt đầu hợp đồng', 'Ngày kết thúc hợp đồng', 
+                       'Ngày bắt đầu hợp đồng nhà vườn', 'Ngày kết thúc hợp đồng nhà vườn', 'Ngày cấp'];
+    const errors = fileErrors.filter(error => 
+      !dateFields.some(field => error.includes(`Giá trị ngày không hợp lệ cho trường ${field}`)));
 
-    if (fileErrors.length) {
+    if (errors.length) {
       return handleResponse(
-        req,
-        res,
-        400,
-        "fail",
-        `Lỗi kiểm tra dữ liệu: ${fileErrors.join("; ")}`,
+        req, res, 400, "fail", 
+        `Lỗi kiểm tra dữ liệu: ${errors.join("; ")}`,
         req.headers.referer
       );
     }
 
-    // Group data by area name
-    const groupedData = processedData.reduce((acc, row) => {
-      const areaName = row["Tên vườn"];
-
-      if (!acc[areaName]) {
-        acc[areaName] = {
-          areaName,
-          areaGroup: row["Khu vực"] || "Chưa phân loại",
-          areaDimension: row["Diện tích vườn"] || 0,
-          areaPrice: row["Giá vườn"] || 0,
-          address: row["Địa chỉ vườn"] || "Không có địa chỉ",
-          contractDuration: {
-            start: row["Ngày bắt đầu hợp đồng"] || null,
-            end: row["Ngày kết thúc hợp đồng"] || null,
-          },
-
-          // Supplier arrays
-          supplierName: [],
-          code: [],
-          phone: [],
-          identification: [],
-          issueDate: [],
-          supplierAddress: [],
-          ratioSumSplit: [],
-          ratioRubberSplit: [],
-          areaDeposit: [],
-          purchasedAreaPrice: [],
-          purchasedAreaDimension: [],
-          moneyRetainedPercentage: [],
-          advancePayment: [],
-          areaDuration: {
-            start: [],
-            end: [],
-          },
-        };
-      }
-
-      // Add supplier details to arrays
-      if (row["Tên nhà vườn"]) {
-        acc[areaName].supplierName.push(row["Tên nhà vườn"]);
-        acc[areaName].code.push(row["Mã nhà vườn"]);
-        acc[areaName].phone.push(row["Số điện thoại"] || "");
-        acc[areaName].identification.push(row["CMND/CCCD"] || "");
-        const issueDate = row["Ngày cấp"] 
-        ? (typeof row["Ngày cấp"] === 'string' 
-           ? row["Ngày cấp"] 
-           : `${row["Ngày cấp"].getDate().toString().padStart(2, '0')}/${(row["Ngày cấp"].getMonth() + 1).toString().padStart(2, '0')}/${row["Ngày cấp"].getFullYear()}`)
-        : "";
-      acc[areaName].issueDate.push(issueDate);
-        acc[areaName].supplierAddress.push(row["Địa chỉ"] || "");
-        acc[areaName].purchasedAreaDimension.push(row["Diện tích mua"] || 0);
-        acc[areaName].purchasedAreaPrice.push(row["Giá mua"] || 0);
-        acc[areaName].areaDeposit.push(row["Tiền cọc"] || 0);
-        acc[areaName].areaDuration.start.push(
-          row["Ngày bắt đầu hợp đồng nhà vườn"] || row["Ngày bắt đầu hợp đồng"] || null
-        );
-        acc[areaName].areaDuration.end.push(
-          row["Ngày kết thúc hợp đồng nhà vườn"] || row["Ngày kết thúc hợp đồng"] || null
-        );
-        acc[areaName].ratioSumSplit.push(row["% nhận tổng mặc định"] || 100);
-        acc[areaName].ratioRubberSplit.push(row["% nhận mủ mặc định"] || 100);
-        acc[areaName].moneyRetainedPercentage.push(row["% giữ lại"] || 0);
-        acc[areaName].advancePayment.push(row["Tạm ứng"] || 0);
-      }
-
-      return acc;
-    }, {});
-
-    // First, validate all areas without saving any
-    const validationErrors = [];
-    const mockRes = createMockRes();
-    const areaDataList = Object.values(groupedData);
+    // 2. Group data by area name
+    const groupedData = processExcelToGroupedData(processedData);
     
-    // Perform all validations first
-    for (const areaData of areaDataList) {
-      try {
-        // Check for duplicate supplier codes
-        const supplierCodes = areaData.code.filter(Boolean);
-        const uniqueCodes = new Set(supplierCodes);
-
-        if (supplierCodes.length !== uniqueCodes.size) {
-          validationErrors.push(`"${areaData.areaName}": Mã nhà vườn không được trùng lặp!`);
-          continue;
-        }
-
-        // Check if any area name already exists
-        const existingArea = await DailySupply.findOne({
-          name: areaData.areaName,
-        });
-        if (existingArea) {
-          validationErrors.push(`"${areaData.areaName}": Vườn "${areaData.areaName}" đã tồn tại!`);
-          continue;
-        }
-
-        // Check if any codes already exist in the database
-        const existingSuppliers = await Supplier.find({
-          code: { $in: supplierCodes },
-        });
-        if (existingSuppliers.length > 0) {
-          validationErrors.push(`"${areaData.areaName}": Mã nhà vườn đã tồn tại: ${existingSuppliers
-            .map((s) => s.code)
-            .join(", ")}`);
-          continue;
-        }
-
-        // Calculate total purchased area dimension
-        const totalPurchasedAreaDimension =
-          areaData.purchasedAreaDimension.reduce(
-            (sum, dim) => sum + (parseFloat(dim) || 0),
-            0
-          );
-
-        // Check if remainingAreaDimension is sufficient
-        if (totalPurchasedAreaDimension > parseFloat(areaData.areaDimension)) {
-          validationErrors.push(`"${areaData.areaName}": Tổng diện tích mua vượt quá diện tích vườn!`);
-          continue;
-        }
-      } catch (error) {
-        validationErrors.push(`"${areaData.areaName}": ${error.message || "Lỗi không xác định"}`);
-      }
-    }
-
-    // If any errors were found during validation, return immediately
+    // 3. Validate all areas before saving
+    const { validationErrors, areaDataList } = await validateAreas(groupedData);
+    
     if (validationErrors.length > 0) {
       return handleResponse(
-        req,
-        res,
-        400,
-        "fail",
+        req, res, 400, "fail",
         `Lỗi kiểm tra dữ liệu: ${validationErrors.join("; ")}`,
         req.headers.referer
       );
     }
 
-    // If no errors, proceed with saving all areas
-    const results = [];
-    for (const areaData of areaDataList) {  
-      try {
-        // Call addArea function with mocked request/response
-        await require("./dailySupplyController/supplierAreaController").addArea(
-          { body: areaData, user: req.user, headers: req.headers },
-          mockRes
-        );
-        results.push(areaData);
-      } catch (error) {
-        // This should not happen as we've already validated everything,
-        // but just in case there's an unexpected error
-        return handleResponse(
-          req,
-          res,
-          500,
-          "error",
-          `Lỗi hệ thống khi tạo vườn: ${error.message}`,
-          req.headers.referer
-        );
-      }
-    }
+    // 4. Save all valid areas
+    const results = await saveAreas(areaDataList, req);
 
-    // If we got here, all areas were created successfully
+    // 5. Record action history
     if (results.length) {
       await ActionHistory.create({
         actionType: "create",
@@ -483,22 +346,191 @@ async function importDailySupplyArea(req, res) {
     }
 
     return handleResponse(
-      req,
-      res,
-      200,
-      "success",
+      req, res, 200, "success",
       `Đã tạo ${results.length} vườn thành công`,
       req.headers.referer
     );
   } catch (error) {
     console.error("Import error:", error);
     return handleResponse(
-      req,
-      res,
-      500,
-      "error",
+      req, res, 500, "error",
       "Lỗi hệ thống khi xử lý file Excel",
       req.headers.referer
     );
   }
+}
+
+// Helper function to process Excel data into grouped data by area
+function processExcelToGroupedData(processedData) {
+  return processedData.reduce((acc, row) => {
+    const areaName = row["Tên vườn"];
+
+    // Initialize area if not exists
+    if (!acc[areaName]) {
+      acc[areaName] = initializeAreaData(row);
+    }
+
+    // Add supplier details to arrays
+    if (row["Tên nhà vườn"]) {
+      addSupplierToArea(acc[areaName], row);
+    }
+
+    return acc;
+  }, {});
+}
+
+// Helper function to initialize area data
+function initializeAreaData(row) {
+  return {
+    areaName: row["Tên vườn"],
+    areaGroup: row["Khu vực"] || "Chưa phân loại",
+    areaDimension: row["Diện tích vườn"] || 0,
+    areaPrice: row["Giá vườn"] || 0,
+    address: row["Địa chỉ vườn"] || "Không có địa chỉ",
+    contractDuration: {
+      start: row["Ngày bắt đầu hợp đồng"] && row["Ngày bắt đầu hợp đồng"] !== "" ? 
+        row["Ngày bắt đầu hợp đồng"] : null,
+      end: row["Ngày kết thúc hợp đồng"] && row["Ngày kết thúc hợp đồng"] !== "" ? 
+        row["Ngày kết thúc hợp đồng"] : null,
+    },
+    // Initialize empty arrays for supplier data
+    supplierName: [],
+    code: [],
+    phone: [],
+    identification: [],
+    issueDate: [],
+    supplierAddress: [],
+    ratioSumSplit: [],
+    ratioRubberSplit: [],
+    areaDeposit: [],
+    purchasedAreaPrice: [],
+    purchasedAreaDimension: [],
+    moneyRetainedPercentage: [],
+    advancePayment: [],
+    areaDuration: {
+      start: [],
+      end: [],
+    },
+  };
+}
+
+// Helper function to add supplier data to an area
+function addSupplierToArea(area, row) {
+  area.supplierName.push(row["Tên nhà vườn"]);
+  area.code.push(row["Mã nhà vườn"]);
+  area.phone.push(row["Số điện thoại"] || "");
+  area.identification.push(row["CMND/CCCD"] || "");
+  
+  // Format issue date correctly
+  const issueDate = formatIssueDate(row["Ngày cấp"]);
+  area.issueDate.push(issueDate);
+  
+  area.supplierAddress.push(row["Địa chỉ"] || "");
+  area.purchasedAreaDimension.push(row["Diện tích mua"] || 0);
+  area.purchasedAreaPrice.push(row["Giá mua"] || 0);
+  area.areaDeposit.push(row["Tiền cọc"] || 0);
+  
+  // Handle supplier contract start date
+  area.areaDuration.start.push(
+    row["Ngày bắt đầu hợp đồng nhà vườn"] && row["Ngày bắt đầu hợp đồng nhà vườn"] !== "" ?
+      row["Ngày bắt đầu hợp đồng nhà vườn"] :
+      row["Ngày bắt đầu hợp đồng"] && row["Ngày bắt đầu hợp đồng"] !== "" ?
+        row["Ngày bắt đầu hợp đồng"] : null
+  );
+  
+  // Handle supplier contract end date
+  area.areaDuration.end.push(
+    row["Ngày kết thúc hợp đồng nhà vườn"] && row["Ngày kết thúc hợp đồng nhà vườn"] !== "" ?
+      row["Ngày kết thúc hợp đồng nhà vườn"] :
+      row["Ngày kết thúc hợp đồng"] && row["Ngày kết thúc hợp đồng"] !== "" ?
+        row["Ngày kết thúc hợp đồng"] : null
+  );
+  
+  area.ratioSumSplit.push(row["% nhận tổng mặc định"] || 100);
+  area.ratioRubberSplit.push(row["% nhận mủ mặc định"] || 100);
+  area.moneyRetainedPercentage.push(row["% giữ lại"] || 0);
+  area.advancePayment.push(row["Tạm ứng"] || 0);
+}
+
+// Helper function to format issue date
+function formatIssueDate(date) {
+  if (!date) return "";
+  
+  if (typeof date === "string") return date;
+  
+  return `${date.getDate().toString().padStart(2, "0")}/${
+    (date.getMonth() + 1).toString().padStart(2, "0")
+  }/${date.getFullYear()}`;
+}
+
+// Helper function to validate areas
+async function validateAreas(groupedData) {
+  const validationErrors = [];
+  const areaDataList = Object.values(groupedData);
+  
+  for (const areaData of areaDataList) {
+    try {
+      // Check for duplicate supplier codes
+      const supplierCodes = areaData.code.filter(Boolean);
+      const uniqueCodes = new Set(supplierCodes);
+      
+      if (supplierCodes.length !== uniqueCodes.size) {
+        validationErrors.push(`"${areaData.areaName}": Mã nhà vườn không được trùng lặp!`);
+        continue;
+      }
+      
+      // Check if area name already exists
+      const existingArea = await DailySupply.findOne({ name: areaData.areaName });
+      if (existingArea) {
+        validationErrors.push(`"${areaData.areaName}": Vườn "${areaData.areaName}" đã tồn tại!`);
+        continue;
+      }
+      
+      // Check if any supplier codes already exist
+      const existingSuppliers = await Supplier.find({ code: { $in: supplierCodes } });
+      if (existingSuppliers.length > 0) {
+        validationErrors.push(
+          `"${areaData.areaName}": Mã nhà vườn đã tồn tại: ${
+            existingSuppliers.map((s) => s.code).join(", ")
+          }`
+        );
+        continue;
+      }
+      
+      // Check if total purchased area dimension exceeds area dimension
+      const totalPurchasedAreaDimension = areaData.purchasedAreaDimension.reduce(
+        (sum, dim) => sum + (parseFloat(dim) || 0), 0
+      );
+      
+      if (parseFloat(areaData.areaDimension) > 0 && 
+          totalPurchasedAreaDimension > parseFloat(areaData.areaDimension)) {
+        validationErrors.push(`"${areaData.areaName}": Tổng diện tích mua vượt quá diện tích vườn!`);
+        continue;
+      }
+    } catch (error) {
+      validationErrors.push(`"${areaData.areaName}": ${error.message || "Lỗi không xác định"}`);
+    }
+  }
+  
+  return { validationErrors, areaDataList };
+}
+
+// Helper function to save areas
+async function saveAreas(areaDataList, req) {
+  const results = [];
+  const mockRes = createMockRes();
+  
+  for (const areaData of areaDataList) {
+    try {
+      await require("./dailySupplyController/supplierAreaController").addArea(
+        { body: areaData, user: req.user, headers: req.headers },
+        mockRes
+      );
+      results.push(areaData);
+    } catch (error) {
+      throw new Error(`Lỗi hệ thống khi tạo vườn: ${error.message}`);
+    }
+  }
+  
+  return results;
 }
