@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
           searchPlaceholder: "Tìm kiếm...",
           searchText: "Không có kết quả",
           searchingText: "Tìm kiếm",
-          placeholderText: "Chọn vườn",
+          placeholderText: "Chọn ở trong danh sách",
         },
       });
     });

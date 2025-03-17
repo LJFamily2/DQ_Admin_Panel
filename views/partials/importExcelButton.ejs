@@ -212,17 +212,33 @@
           const idx = headers.indexOf(field);
           if (idx === -1) return;
 
+          // Get the field value
           let value = row[idx];
-          if (field === 'Ngày' || field === 'Ngày bán') {
-            if (dateIdx !== -1) {
-              value = formatExcelDate(value);
-              if (!value || !/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(value)) {
-                errors.push(`Dòng ${i + 2}: Giá trị "${row[idx]}" không phải là ngày hợp lệ`);
+          const isDateField = ['Ngày', 'Ngày bán', 'Ngày bắt đầu hợp đồng nhà vườn',
+            'Ngày kết thúc hợp đồng nhà vườn', 'Ngày bắt đầu hợp đồng',
+            'Ngày kết thúc hợp đồng', 'Ngày cấp'
+          ].includes(field);
+
+          // Handle empty values
+          if (value === null || value === undefined || value === '') {
+            errors.push(`Dòng ${i + 2}: Thiếu giá trị cho trường "${field}"`);
+            row[idx] = '';
+            return;
+          }
+
+          try {
+            // Process date fields
+            if (isDateField) {
+              const formattedDate = formatExcelDate(value);
+              if (!formattedDate || !/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(formattedDate)) {
+                errors.push(`Dòng ${i + 2}: Giá trị "${value}" không phải là ngày hợp lệ cho trường "${field}"`);
+                row[idx] = '';
+              } else {
+                row[idx] = formattedDate;
               }
-              row[idx] = value;
             }
-          } else {
-            try {
+            // Process number/text fields
+            else {
               value = parseVietnameseNumber(value);
               if (value === 0) {
                 row[idx] = '0';
@@ -233,9 +249,10 @@
               } else {
                 row[idx] = value;
               }
-            } catch (error) {
-              errors.push(`Dòng ${i + 2}: ${error.message}`);
             }
+          } catch (error) {
+            errors.push(`Dòng ${i + 2}: ${error.message}`);
+            row[idx] = '';
           }
         });
       });

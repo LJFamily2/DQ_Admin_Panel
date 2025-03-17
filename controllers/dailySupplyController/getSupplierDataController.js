@@ -88,6 +88,11 @@ function calculateContractDuration(startDate, endDate) {
       duration: Math.ceil((end - today) / (1000 * 60 * 60 * 24)),
       status: "valid",
     };
+  } else if (start > today) {
+    return {
+      duration: Math.ceil((end - start) / (1000 * 60 * 60 * 24)),
+      status: "future", 
+    };
   }
 
   return { duration: null, status: "No contract" };

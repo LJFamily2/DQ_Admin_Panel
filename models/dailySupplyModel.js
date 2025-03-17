@@ -58,7 +58,6 @@ const supplierSchema = new mongoose.Schema({
         const deposit = this.areaDeposit || 0;
         return this.purchasedAreaDimension * this.purchasedAreaPrice - deposit;
       }
-      // Return 0 if values are not available
       return 0;
     },
   },
@@ -66,7 +65,7 @@ const supplierSchema = new mongoose.Schema({
   moneyRetainedHistory: [
     { type: mongoose.Schema.Types.ObjectId, ref: "moneyRetaineds" },
   ],
-  moneyRetainedPercentage: { type: Number },
+  moneyRetainedPercentage: { type: Number }, //Phần trăm giữ lại
   purchasedAreaDimension: { type: Number },
   areaDuration: {
     start: { type: Date },

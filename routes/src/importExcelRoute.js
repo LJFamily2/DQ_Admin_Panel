@@ -68,4 +68,11 @@ router.post(
   importExcelController.importDailySupplyInputData
 );
 
+router.post(
+  "/dailySupplyArea",
+  upload.single("excelFile"),
+  checkPermission("add"),
+  importExcelController.importDailySupplyArea
+);
+
 module.exports = router;
