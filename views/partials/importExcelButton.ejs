@@ -222,14 +222,16 @@
 
           // Get the field value
           let value = row[idx];
+
+          // Get field configuration to check type
+          const fieldConfig = requiredFields.find(f => f.name === field);
+          const isRequired = fieldConfig && !fieldConfig.optional;
+          const fieldType = fieldConfig ? fieldConfig.type : 'text'; // Default to text if not specified
+
           const isDateField = ['Ngày', 'Ngày bán', 'Ngày bắt đầu hợp đồng nhà vườn',
             'Ngày kết thúc hợp đồng nhà vườn', 'Ngày bắt đầu hợp đồng',
             'Ngày kết thúc hợp đồng', 'Ngày cấp'
           ].includes(field);
-
-          // Find field config to check if it's required
-          const fieldConfig = requiredFields.find(f => f.name === field);
-          const isRequired = fieldConfig && !fieldConfig.optional;
 
           // Handle empty values
           if (value === null || value === undefined || value === '') {
@@ -252,8 +254,8 @@
                 row[idx] = formattedDate;
               }
             }
-            // Process number/text fields
-            else {
+            // Process number fields only
+            else if (fieldType === 'number') {
               value = parseVietnameseNumber(value);
               if (value === 0) {
                 row[idx] = '0';
@@ -264,6 +266,10 @@
               } else {
                 row[idx] = value;
               }
+            }
+            // For text fields, just use the value as is
+            else {
+              row[idx] = String(value);
             }
           } catch (error) {
             errors.push(`Dòng ${i + 2}: ${error.message}`);
