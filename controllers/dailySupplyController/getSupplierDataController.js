@@ -496,7 +496,9 @@ async function getSupplierExportData(req, res, isArea) {
             : 0
         ),
         muQuyKhoQuantityAfterSplit: formatNumber(muQuyKhoData.afterSplit || 0),
-        muQuyKhoDonGia: formatNumber(muQuyKhoData.price || 0),
+        muQuyKhoDonGia: formatNumber(muQuyKhoData.count > 0
+          ? muQuyKhoData.price / muQuyKhoData.count
+          : 0),
         muQuyKhoTotal: formatNumber(muQuyKhoData.total || 0),
         // Mu tap
         muTapQuantity: formatNumber(muTapData.quantity || 0),
@@ -504,7 +506,9 @@ async function getSupplierExportData(req, res, isArea) {
           muTapData.count > 0 ? muTapData.ratioSplit / muTapData.count : 0
         ),
         muTapAfterSplit: formatNumber(muTapData.afterSplit || 0),
-        muTapDonGia: formatNumber(muTapData.price || 0),
+        muTapDonGia: formatNumber(muTapData.count > 0
+          ? muTapData.price / muTapData.count
+          : 0),
         muTapTotal: formatNumber(muTapData.total || 0),
         // Mu ke
         muKeQuantity: formatNumber(muKeData.quantity || 0),
@@ -512,7 +516,9 @@ async function getSupplierExportData(req, res, isArea) {
           muKeData.count > 0 ? muKeData.ratioSplit / muKeData.count : 0
         ),
         muKeAfterSplit: formatNumber(muKeData.afterSplit || 0),
-        muKeDonGia: formatNumber(muKeData.price || 0),
+        muKeDonGia: formatNumber(muKeData.count > 0
+          ? muKeData.price / muKeData.count
+          : 0),
         muKeTotal: formatNumber(muKeData.total || 0),
         // Mu dong
         muDongQuantity: formatNumber(muDongData.quantity || 0),
@@ -520,7 +526,9 @@ async function getSupplierExportData(req, res, isArea) {
           muDongData.count > 0 ? muDongData.ratioSplit / muDongData.count : 0
         ),
         muDongAfterSplit: formatNumber(muDongData.afterSplit || 0),
-        muDongDonGia: formatNumber(muDongData.price || 0),
+        muDongDonGia: formatNumber(muDongData.count > 0
+          ? muDongData.price / muDongData.count
+          : 0),
         muDongTotal: formatNumber(muDongData.total || 0),
         totalSum: formatNumber(totalSum),
         note,
