@@ -36,11 +36,9 @@ function initializeDataTable(
 ) {
   let rowGroupOptions = {};
 
-  if (rowGroup !== false || rowGroup !== null) {
-    rowGroupOptions = {
-      dataSrc: rowGroup,
-    };
-  }
+  rowGroupOptions = (rowGroup !== false && rowGroup !== null) 
+    ? { dataSrc: rowGroup }
+    : false;
 
   let footerCallbackOptions = {};
 
