@@ -386,7 +386,7 @@
                           <input type="text" class="form-control" name="supplierAddress" value="<%= supplier.supplierAddress %>" maxlength="70" />
                         </div>
                         <% 
-                        const onlyAdmin = user.role === "Admin" || user.role === "superAdmin" ? '' : 'disabled'; 
+                        const onlyAdmin = user.role === "Admin" || user.role === "superAdmin" ? '' : ''; 
                         %>
                         <% if(area.areaDimension > 0 && area.areaPrice > 0){ %>
                         <div class="mt-3">
