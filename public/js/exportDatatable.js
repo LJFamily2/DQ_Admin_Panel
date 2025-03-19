@@ -267,9 +267,23 @@ function initializeExportDataTable(
             extend: "colvis",
             text: "Xuất file",
             buttons: [
-              pdfButton,
+              {
+                ...pdfButton,
+                title: function() {
+                  const startDate = $(startDateId).val() ? new Date($(startDateId).val()).toLocaleDateString("vi-VN") : '';
+                  const endDate = $(endDateId).val() ? new Date($(endDateId).val()).toLocaleDateString("vi-VN") : '';
+                  const dateRange = startDate && endDate ? `(${startDate} - ${endDate})` : '';
+                  return `${individualExportPage ? "PHIẾU TÍNH TIỀN MỦ CAO SU" : `${supplierName} ${dateRange} BẢNG KÊ KÝ NHẬN TIỀN THANH TOÁN MUA MỦ CAO SU`} `;
+                }
+              },
               {
                 extend: "excel",
+                title: function() {
+                  const startDate = $(startDateId).val() ? new Date($(startDateId).val()).toLocaleDateString("vi-VN") : '';
+                  const endDate = $(endDateId).val() ? new Date($(endDateId).val()).toLocaleDateString("vi-VN") : '';
+                  const dateRange = startDate && endDate ? `(${startDate} - ${endDate})` : '';
+                  return `${individualExportPage ? "PHIẾU TÍNH TIỀN MỦ CAO SU" : `${supplierName} ${dateRange} BẢNG KÊ KÝ NHẬN TIỀN THANH TOÁN MUA MỦ CAO SU`}`;
+                },
                 exportOptions: {
                   columns: ":visible",
                   format: {
