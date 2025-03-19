@@ -8,6 +8,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
   <script src="https://cdn.datatables.net/buttons/3.1.2/js/buttons.print.min.js"></script>
   <script src="/js/exportDatatable.js"></script>
+  <script src="/js/debounce.js"></script>
 
   <script src="/js/inputFieldRestriction.js" defer></script>
   <script src="/js/newInput.js" defer></script>
@@ -39,11 +40,32 @@ const onlyAdmin = user.role === "Admin" || user.role === 'superAdmin' ? '' : '';
     <li class="breadcrumb-item">
       <a href="/du-lieu-hang-ngay/<%= area.slug %>/xuat-file">Xuất file</a>
     </li>
-    <li class="breadcrumb-item" aria-current="page">
-      <%= supplierData.name %>
-      <% if (supplierData.isVerified) { %>
-        <i class="ri-verified-badge-fill text-primary" data-tippy-content="Đã xác minh"></i>
-      <% } %>
+    <li class="breadcrumb-item d-flex align-items-center" aria-current="page">
+      <div class="dropdown">
+        <a class="d-flex align-items-center text-decoration-none text-dark dropdown-toggle" id="supplierDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
+          <%= supplierData.name %>
+          <% if (supplierData.isVerified) { %>
+          <i class="ri-verified-badge-fill text-primary ms-1" data-tippy-content="Đã xác minh"></i>
+          <% } %>
+        </a>
+        <ul class="dropdown-menu supplier-list shadow" aria-labelledby="supplierDropdown">
+          <div class="p-2">
+            <input type="text" class="form-control form-control-sm supplier-search" placeholder="Tìm nhà vườn..." oninput="filterSupplierDropdown()">
+          </div>
+          <% area.suppliers.sort((a, b) => a.name.localeCompare(b.name)).forEach(supplier => { %>
+          <% if(supplier.supplierSlug !== supplierData.supplierSlug) { %>
+          <li>
+            <a class="dropdown-item supplier-item" href="/du-lieu-hang-ngay/<%= area.slug %>/xuat-file/<%= supplier.supplierSlug %>?startDate=<%= startDate %>&endDate=<%= endDate %>">
+              <%= supplier.name %> <small class="text-muted">(<%= supplier.code %>)</small>
+              <% if (supplier.isVerified) { %>
+              <i class="ri-verified-badge-fill text-primary"></i>
+              <% } %>
+            </a>
+          </li>
+          <% } %>
+          <% }) %>
+        </ul>
+      </div>
     </li>
   </ol>
 </nav>
@@ -724,6 +746,24 @@ const onlyAdmin = user.role === "Admin" || user.role === 'superAdmin' ? '' : '';
       areaPrice: '<%= area.areaPrice %>'
     }
   );
+
+  const filterSupplierList = function() {
+    const input = document.querySelector('.supplier-search');
+    const filter = input.value.toLowerCase();
+    const items = document.querySelectorAll('.supplier-item');
+
+    items.forEach(item => {
+      const text = item.textContent.toLowerCase();
+      if (text.includes(filter)) {
+        item.parentElement.style.display = '';
+      } else {
+        item.parentElement.style.display = 'none';
+      }
+    });
+  };
+
+  // Create a debounced version of the filter function
+  const filterSupplierDropdown = debounce(filterSupplierList, 200);
 
   tippy('.tooltip-wrapper');
 </script>

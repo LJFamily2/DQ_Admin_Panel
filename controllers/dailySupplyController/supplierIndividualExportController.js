@@ -20,7 +20,6 @@ async function renderPage(req, res) {
       })
       .populate({
         path: "suppliers",
-        match: { supplierSlug },
         populate: ["moneyRetainedHistory", "debtHistory"],
       });
 
