@@ -9,15 +9,16 @@ const parseVietnameseNumber = (value) => {
     return Number(strValue);
   }
 
-  // Check for invalid format (reject period as decimal separator)
+  // Accept both period and comma as decimal separators
+  let normalizedValue;
   if (strValue.includes(".")) {
-    throw new Error(
-      `Số "${value}" không đúng định dạng. Vui lòng sử dụng dấu phẩy (,) để phân cách thập phân`
-    );
+    // Already in American format, keep as is
+    normalizedValue = strValue;
+  } else {
+    // Convert from Vietnamese format (comma) to American format (period)
+    normalizedValue = strValue.replace(/,/g, ".");
   }
 
-  // Replace comma with period and convert to number
-  const normalizedValue = strValue.replace(/,/g, ".");
   const number = Number(normalizedValue);
 
   if (isNaN(number)) {
