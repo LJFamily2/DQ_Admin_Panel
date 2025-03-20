@@ -36,9 +36,8 @@ function initializeDataTable(
 ) {
   let rowGroupOptions = {};
 
-  rowGroupOptions = (rowGroup !== false && rowGroup !== null) 
-    ? { dataSrc: rowGroup }
-    : false;
+  rowGroupOptions =
+    rowGroup !== false && rowGroup !== null ? { dataSrc: rowGroup } : false;
 
   let footerCallbackOptions = {};
 
@@ -169,7 +168,7 @@ function initializeDataTable(
       : [],
     serverSide: true,
     processing: true,
-    lengthMenu: [10, 20, { label: "Tất cả", value: -1 }],
+    lengthMenu: [{ label: "Tất cả", value: -1 }, 10, 20],
     paging: !(queryPageFooter || dailySupplyFooter),
     pagingType: "first_last_numbers",
     rowGroup: rowGroupOptions,

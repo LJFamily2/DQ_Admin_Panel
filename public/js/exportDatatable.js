@@ -269,20 +269,38 @@ function initializeExportDataTable(
             buttons: [
               {
                 ...pdfButton,
-                title: function() {
-                  const startDate = $(startDateId).val() ? new Date($(startDateId).val()).toLocaleDateString("vi-VN") : '';
-                  const endDate = $(endDateId).val() ? new Date($(endDateId).val()).toLocaleDateString("vi-VN") : '';
-                  const dateRange = startDate && endDate ? `(${startDate} - ${endDate})` : '';
-                  return `${individualExportPage ? "PHIẾU TÍNH TIỀN MỦ CAO SU" : `${supplierName} ${dateRange} BẢNG KÊ KÝ NHẬN TIỀN THANH TOÁN MUA MỦ CAO SU`} `;
-                }
+                title: function () {
+                  const startDate = $(startDateId).val()
+                    ? new Date($(startDateId).val()).toLocaleDateString("vi-VN")
+                    : "";
+                  const endDate = $(endDateId).val()
+                    ? new Date($(endDateId).val()).toLocaleDateString("vi-VN")
+                    : "";
+                  const dateRange =
+                    startDate && endDate ? `(${startDate} - ${endDate})` : "";
+                  return `${
+                    individualExportPage
+                      ? "PHIẾU TÍNH TIỀN MỦ CAO SU"
+                      : `${supplierName} ${dateRange} BẢNG KÊ KÝ NHẬN TIỀN THANH TOÁN MUA MỦ CAO SU`
+                  } `;
+                },
               },
               {
                 extend: "excel",
-                title: function() {
-                  const startDate = $(startDateId).val() ? new Date($(startDateId).val()).toLocaleDateString("vi-VN") : '';
-                  const endDate = $(endDateId).val() ? new Date($(endDateId).val()).toLocaleDateString("vi-VN") : '';
-                  const dateRange = startDate && endDate ? `(${startDate} - ${endDate})` : '';
-                  return `${individualExportPage ? "PHIẾU TÍNH TIỀN MỦ CAO SU" : `${supplierName} ${dateRange} BẢNG KÊ KÝ NHẬN TIỀN THANH TOÁN MUA MỦ CAO SU`}`;
+                title: function () {
+                  const startDate = $(startDateId).val()
+                    ? new Date($(startDateId).val()).toLocaleDateString("vi-VN")
+                    : "";
+                  const endDate = $(endDateId).val()
+                    ? new Date($(endDateId).val()).toLocaleDateString("vi-VN")
+                    : "";
+                  const dateRange =
+                    startDate && endDate ? `(${startDate} - ${endDate})` : "";
+                  return `${
+                    individualExportPage
+                      ? "PHIẾU TÍNH TIỀN MỦ CAO SU"
+                      : `${supplierName} ${dateRange} BẢNG KÊ KÝ NHẬN TIỀN THANH TOÁN MUA MỦ CAO SU`
+                  }`;
                 },
                 exportOptions: {
                   columns: ":visible",
@@ -568,7 +586,7 @@ function initializeExportDataTable(
     stateSave: true,
     serverSide: true,
     processing: true,
-    lengthMenu: [10, 20, { label: "Tất cả", value: -1 }],
+    lengthMenu: [{ label: "Tất cả", value: -1 }, 10, 20],
     pagingType: "first_last_numbers",
     rowGroup: rowGroupOptions,
     ajax: {
